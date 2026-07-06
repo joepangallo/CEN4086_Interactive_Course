@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Week 4 · Session 11 — Managing the Cloud</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--wk:#7b5ea7}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--wk);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+.topnav .mid{font-weight:700}
+#scoreChip{background:var(--pri);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:700}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#2b2a6e 100%);color:#fff;border-radius:16px;padding:28px 26px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:30px;line-height:1.25}
+.hero .sub{margin:0 0 12px;opacity:.9;font-size:16.5px}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:var(--ink)}
+.hero .chip{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .chip.obj{background:var(--amb);border-color:var(--amb);color:#3a2c05}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
+h3{font-size:18px;margin:20px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.warmup{border-top:6px solid var(--amb)}
+.card.ai{border-top:6px solid var(--vio);background:linear-gradient(180deg,#f7f3fc,#fff 90px)}
+.card.disc{border-top:6px solid var(--acc)}
+.card.capstone{border-top:6px solid var(--pri);background:linear-gradient(180deg,#f0f0fa,#fff 90px)}
+.card.exit{border-top:6px solid var(--bad)}
+.segment{position:relative}
+.segno{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--wk);color:#fff;font-weight:800;font-size:15px;margin-right:8px}
+.agenda{width:100%;border-collapse:collapse;font-size:14px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.agenda td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.15)}
+.agenda tr:last-child td{border-bottom:none}
+.bdg{display:inline-block;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
+.b-lec{background:#c9d4f5;color:#22307a}.b-int{background:#ffe3a3;color:#6b4d05}.b-lab{background:#bfe6e0;color:#0b5450}.b-quiz{background:#f3c9c2;color:#7a2417}.b-brk{background:#e4e4e4;color:#555}.b-cap{background:#ddd3f0;color:#432c73}
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.flip{border:1.5px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
+.flip h5{margin:0;font-size:15px;color:var(--pri)}
+.flip .back{display:none;margin-top:8px;font-size:14px;color:var(--ink)}
+.flip.open{background:#eef4f4;border-color:var(--acc)}
+.flip.open .back{display:block}
+.flip .hint{font-size:12px;color:var(--mut)}
+.tabs .tabrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:-1px}
+.tabbtn{border:1px solid var(--line);border-bottom:none;background:#eceadf;border-radius:10px 10px 0 0;padding:8px 16px;cursor:pointer;font:inherit;font-weight:600;font-size:14px}
+.tabbtn.on{background:#fff;color:var(--pri)}
+.tabpane{display:none;border:1px solid var(--line);border-radius:0 12px 12px 12px;background:#fff;padding:16px 18px}
+.tabpane.on{display:block}
+.matcher{margin:14px 0}
+.mcards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.mcard{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.mcard.sel{outline:3px solid var(--amb);border-color:var(--amb)}
+.mcard.ok{background:#e7f3ec;border-color:var(--ok);color:#28583b;cursor:default}
+.mcard.ok::after{content:" ✓"}
+.mcard.no{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.mzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.mzone{border:2px dashed var(--acc);border-radius:12px;background:#f4faf9;padding:12px;cursor:pointer;font:inherit;text-align:center;font-weight:700;color:var(--acc)}
+.mzone small{display:block;font-weight:400;color:var(--mut);margin-top:4px}
+.mstatus{margin-top:10px;font-weight:700;color:var(--pri)}
+.lab{border-left:6px solid var(--acc)}
+.lab .labno{color:var(--acc);font-weight:800;letter-spacing:.5px;font-size:13px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--acc);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.quiz .q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.quiz .q h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
+.stem{margin:6px 0 10px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fbfaf7;cursor:pointer;font:inherit;font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--pri)}
+.opt:disabled{cursor:default;opacity:.85}
+.opt.right{background:#e7f3ec;border-color:var(--ok);opacity:1;font-weight:600}
+.opt.wrong{background:#f8e9e7;border-color:var(--bad);opacity:1}
+.expl{display:none;margin-top:10px;padding:12px 14px;background:#f4f6fb;border-left:4px solid var(--pri);border-radius:8px;font-size:14.5px}
+.q.done .expl{display:block}
+.qresult{margin-top:16px}
+.bar{height:12px;background:#e8e4da;border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .4s}
+.scoreline{font-weight:700;margin:6px 0 0}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.small{padding:5px 12px;font-size:13px}
+.kpis{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.kpi{flex:1;min-width:130px;background:#f4f6fb;border-radius:10px;padding:10px 14px;text-align:center}
+.kpi b{display:block;font-size:22px;color:var(--pri);line-height:1.2}
+.kpi small{color:var(--mut)}
+.poll .popt{display:inline-block;margin:4px 6px 4px 0;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;cursor:pointer;font:inherit;font-size:14px}
+.poll .popt.sel{background:var(--amb);border-color:var(--amb);font-weight:700}
+.pollwhy{display:none;margin-top:8px;padding:10px 12px;background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;font-size:14px}
+.poll.done .pollwhy{display:block}
+.stackrow{display:flex;align-items:center;gap:10px;margin:3px 0}
+.stackrow .lay{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;background:#fbfaf7;transition:all .3s}
+.stackrow .who{width:96px;text-align:center;font-size:12px;font-weight:800;border-radius:8px;padding:4px}
+.who.you{background:#f3c9c2;color:#7a2417}
+.who.prov{background:#bfe6e0;color:#0b5450}
+input[type=range]{width:100%;accent-color:var(--pri)}
+.svgwrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;overflow-x:auto;text-align:center}
+.note{font-size:13.5px;color:var(--mut)}
+.serverfarm{display:flex;flex-wrap:wrap;gap:5px;min-height:40px;margin:8px 0}
+.srv{width:34px;height:40px;border-radius:6px;background:linear-gradient(180deg,#3f3d99,#2b2a6e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px}
+.srv.big{width:64px;height:56px;font-size:26px}
+.checkfield{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.checkfield input[type=number],.checkfield input[type=text]{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;width:110px}
+.fb{font-weight:700;font-size:14px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;min-height:70px}
+.exitrow{display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap}
+.light{font-size:20px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;cursor:pointer}
+.footer-nav{display:flex;justify-content:space-between;margin-top:30px;gap:10px;flex-wrap:wrap}
+table.simple{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+table.simple th{background:#f0eee6;text-align:left}
+table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+<style>
+/* ===== Session 11 additions ===== */
+.dashgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:10px 0}
+.chartbox{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.chartbox h5{margin:0 0 2px;font-size:13px;color:var(--mut);display:flex;justify-content:space-between}
+.chartbox h5 b{font-size:14px;color:var(--pri)}
+.chartbox h5 b.hot{color:var(--bad)}
+.chartbox svg{width:100%;height:auto;display:block}
+.mline{fill:none;stroke:var(--pri);stroke-width:2}
+.warnline{stroke:var(--bad);stroke-dasharray:4 4;stroke-width:1}
+.gridline{stroke:#eee9df;stroke-width:1}
+.incrow,.resprow{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.dashstatus{font-weight:800;margin:6px 0;font-size:15px}
+.dashstatus.hot{color:var(--bad)}
+.dashstatus.okk{color:var(--ok)}
+.verdict{display:none;margin-top:10px;padding:12px 14px;border-radius:8px;font-size:14.5px;border-left:4px solid var(--pri);background:#f4f6fb}
+.verdict.show{display:block}
+.verdict.good{background:#e7f3ec;border-left-color:var(--ok)}
+.verdict.bad{background:#f8e9e7;border-left-color:var(--bad)}
+.scorebd{font-weight:700;color:var(--pri);margin:8px 0}
+.billtable{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+.billrow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 14px;cursor:pointer;font:inherit;font-size:14px}
+.billrow small{color:var(--mut);display:block;font-size:12.5px}
+.billrow .amt{font-weight:800;color:var(--pri);font-size:15px}
+.billrow.waste{background:#e7f3ec;border-color:var(--ok);cursor:default}
+.billrow.waste .amt{color:var(--ok)}
+.billrow.no{animation:shake .35s}
+.billfb{margin-top:8px;padding:10px 12px;border-radius:8px;background:#f4f6fb;border-left:4px solid var(--pri);font-size:14px;display:none}
+.billfb.show{display:block}
+.thrwrap{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}
+.thrwrap svg{width:100%;height:auto;display:block}
+.incwin{fill:#c04f43;opacity:.09}
+.thrline{stroke:var(--bad);stroke-width:2;stroke-dasharray:6 4}
+.thrseries{fill:none;stroke:var(--acc);stroke-width:2}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">⌂ Course Hub</a>
+  <span class="mid">Week 4 · Session 11 — Managing the Cloud</span>
+  <span><a href="week4-session10.html">← Session 10</a> &nbsp; <span id="scoreChip">Quiz: 0/0</span> &nbsp; <a href="week4-session12.html">Session 12 →</a></span>
+</nav>
+<main>
+
+
+<!-- ============ WARM-UP ============ -->
+<section class="card warmup">
+  <h3>🔥 Warm-Up Polls <span class="note">(no wrong answers — vote, then we discuss)</span></h3>
+  <div class="poll" id="poll1">
+    <p><strong>Poll 1:</strong> Your web store got slow at 2:07 AM. When should the team have found out?</p>
+    <button class="popt">When customers complain on social media</button><button class="popt">At the morning standup</button><button class="popt">At 2:07 AM, from an automated alert</button><button class="popt">Slowness at 2 AM doesn't matter</button>
+    <div class="pollwhy">2:07 AM, from a machine — that's the whole premise of monitoring. Metrics watch every second; alerts wake a human only when a rule crosses a line. "Customers as monitoring" is the most expensive detection system ever invented: by the time they tweet, you've been losing orders for hours. And 2 AM slowness DOES matter — that's peak time somewhere, and batch jobs, backups, and attackers all love the night shift.</div>
+  </div>
+  <div class="poll" id="poll2">
+    <p><strong>Poll 2:</strong> Industry FinOps surveys keep estimating how much of a typical cloud bill is <em>wasted</em>. Your guess?</p>
+    <button class="popt">About 5%</button><button class="popt">About 10%</button><button class="popt">Around 30%</button><button class="popt">Over 75%</button>
+    <div class="pollwhy">Around 30% is the recurring survey answer (estimates commonly land between 25% and 35%). The waste hides in boring places: instances left running nights and weekends, oversized "just in case" servers, storage volumes orphaned by deleted VMs. That's why cost management is an operations discipline, not just a finance one — engineers create the waste, so engineers must see the bill. You'll hunt exactly these three species in today's bill explorer.</div>
+  </div>
+  <div class="poll" id="poll3">
+    <p><strong>Poll 3:</strong> A pager alert fires 40 times a night and is a false alarm 39 of those times. What happens to the on-call engineer within a month?</p>
+    <button class="popt">They carefully read all 40 every night</button><button class="popt">They mute or ignore the alert</button><button class="popt">They quit</button><button class="popt">Either of the middle two — that's alert fatigue</button>
+    <div class="pollwhy">Alert fatigue is a documented failure mode: humans habituate to noise, so the 40th page gets the same glance as spam — including the one night it's real. Famous outages have post-mortems containing the sentence "the alert fired, but was ignored." The fix is engineering, not discipline: fewer, better alerts tuned to real incidents. You'll feel this trade-off yourself in the threshold tuner in Segment 1.</div>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 1 ============ -->
+<section class="segment">
+  <h2><span class="segno">1</span> Monitoring: Metrics, Logs, Alerts &amp; Dashboards</h2>
+  <div class="card">
+    <h3>You can't manage what you can't see</h3>
+    <p>Today's session starts from a blunt truth: once your systems live in a provider's data center, <strong>monitoring data is your only eyes</strong>. Four instruments matter. <strong>Metrics</strong> are numbers sampled on a schedule — CPU %, memory %, request rate, error rate, latency — cheap to store, perfect for graphs and math. <strong>Logs</strong> are timestamped event records ("order 8812 failed: card declined") — expensive and detailed, perfect for answering <em>why</em> after metrics tell you <em>that</em>. <strong>Dashboards</strong> arrange metrics for human eyes so the on-call brain can grasp system health in five seconds. <strong>Alerts</strong> are rules that watch metrics for you and page a human when a line is crossed — they're what lets forty engineers sleep while software stands guard.</p>
+    <p>One metric deserves special respect: <strong>latency percentiles</strong>. The <em>average</em> response time is a liar — if 95 requests take 100 ms and 5 take 8 seconds, the average (~495 ms) describes literally no one's experience. Operations teams track <strong>p95</strong> or <strong>p99</strong>: "95% of requests finished faster than this." When today's dashboard shows p95 latency, it's showing the experience of your unluckiest customers-who-still-matter. A p95 of 2 seconds means 1 in 20 clicks feels broken — and those are often your biggest-cart users, because heavy accounts generate heavy queries.</p>
+    <p><strong>Common misconception:</strong> "more alerts = more safety." Alerting is a signal-to-noise problem: set thresholds too low and you page people for noise until they stop reading (alert fatigue — Poll 3); set them too high and real incidents slip past. Every alert should be <em>actionable</em> — if the correct response to a page is "shrug and go back to sleep," the alert is a defect. Tune it below.</p>
+    <h3>🎚️ Interactive: The Alert-Threshold Tuner</h3>
+    <p>Below is 60 minutes of real-looking p95 latency history for Harbor Lane's web store (one sample per minute). Normal traffic is noisy (~110–185 ms). Three genuine incidents are shaded in red. Drag the threshold: every noise sample above the line = one false page to on-call; every shaded incident whose peak stays below the line = an incident you slept through. Find the sweet spot.</p>
+    <div class="thrwrap">
+      <svg id="thrSvg" viewBox="0 0 620 160" role="img" aria-label="Noisy latency history with three shaded incident windows and a draggable alert threshold line">
+        <rect class="incwin" x="140" y="5" width="30" height="140"></rect>
+        <rect class="incwin" x="310" y="5" width="30" height="140"></rect>
+        <rect class="incwin" x="480" y="5" width="30" height="140"></rect>
+        <line class="gridline" x1="0" y1="145" x2="620" y2="145"></line>
+        <line class="gridline" x1="0" y1="85" x2="620" y2="85"></line>
+        <line class="gridline" x1="0" y1="25" x2="620" y2="25"></line>
+        <polyline id="thrSeries" class="thrseries" points=""></polyline>
+        <line id="thrLine" class="thrline" x1="0" y1="100" x2="620" y2="100"></line>
+      </svg>
+    </div>
+    <p style="margin:10px 0 2px"><strong>Alert threshold:</strong> <span id="thrVal" style="font-weight:800;color:var(--pri)">150</span> ms</p>
+    <input type="range" id="thrSlider" min="120" max="450" step="5" value="150">
+    <div class="kpis">
+      <div class="kpi"><b id="thrFA">—</b><small>false pages tonight</small></div>
+      <div class="kpi"><b id="thrMiss">—</b><small>incidents missed (of 3)</small></div>
+      <div class="kpi"><b id="thrGrade">—</b><small>verdict</small></div>
+    </div>
+    <p class="note" id="thrNote">Drag the slider and watch both failure modes trade off. Lab A asks you to record a threshold that scores zero on both.</p>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 2 ============ -->
+<section class="segment">
+  <h2><span class="segno">2</span> Scaling, Capacity Planning &amp; the Live Dashboard</h2>
+  <div class="card">
+    <h3>Scale up vs. scale out — the operations rerun</h3>
+    <p>You met this pair in Session 1 and priced it in Session 3; today's session asks the <em>operational</em> question: which lever do you pull at 2 AM? <strong>Scaling up</strong> (a bigger machine) is simple but interrupts service during the resize, hits a hardware ceiling, and leaves you with one bigger single point of failure — it's usually a <em>planned</em> daytime decision, best for stateful systems like databases that hate being split. <strong>Scaling out</strong> (more copies behind the load balancer) is the emergency lever: no downtime, near-instant, and it's what <em>autoscaling</em> automates by watching metrics and adding/removing instances by rule. Scaling out only works because Session 10 made your services <strong>stateless</strong> — any copy can serve any request.</p>
+    <p><strong>Capacity planning</strong> is scaling's calm sibling: forecast next quarter's demand from growth trends, seasonality (Harbor Lane's holiday rush), and marketing's launch calendar, then decide how much <em>headroom</em> to keep — enough that a spike doesn't topple you, not so much that Poll 2's waste statistics come true. <strong>Automation</strong> closes the loop: autoscaling rules, scheduled scale-downs at night, and <strong>runbooks</strong> — written, step-by-step responses to known situations ("memory alert → check for leak → rolling restart → open ticket"). A runbook is how the new hire handles at 3 AM what the senior engineer figured out at 3 PM. Your capstone adds one tonight.</p>
+    <div style="margin:10px 0">
+      <button class="btn small" id="btnUp">Scale UP view</button>
+      <button class="btn ghost small" id="btnOut">Scale OUT view</button>
+    </div>
+    <div id="scalePanel"></div>
+    <h3>📟 Interactive: The Harbor Lane Ops Dashboard — your on-call shift starts now</h3>
+    <p>Three live charts stream below: <strong>CPU %</strong>, <strong>memory %</strong>, and <strong>p95 latency</strong> across the store's web fleet, updating every 0.8 s. Inject an incident, read the metrics like an SRE, and choose ONE response. The right call recovers the system; the wrong one makes the graphs worse (and teaches you why). Your first attempt on each incident type is scored — 3 incidents, 3 points.</p>
+    <div class="dashgrid">
+      <div class="chartbox"><h5>CPU (fleet avg) <b id="valCpu">35%</b></h5><svg viewBox="0 0 400 120"><line class="gridline" x1="0" y1="110" x2="400" y2="110"></line><line class="gridline" x1="0" y1="60" x2="400" y2="60"></line><line class="warnline" x1="0" y1="25" x2="400" y2="25"></line><polyline id="polyCpu" class="mline" points=""></polyline></svg></div>
+      <div class="chartbox"><h5>Memory (fleet avg) <b id="valMem">45%</b></h5><svg viewBox="0 0 400 120"><line class="gridline" x1="0" y1="110" x2="400" y2="110"></line><line class="gridline" x1="0" y1="60" x2="400" y2="60"></line><line class="warnline" x1="0" y1="25" x2="400" y2="25"></line><polyline id="polyMem" class="mline" points=""></polyline></svg></div>
+      <div class="chartbox"><h5>p95 latency <b id="valLat">120 ms</b></h5><svg viewBox="0 0 400 120"><line class="gridline" x1="0" y1="110" x2="400" y2="110"></line><line class="gridline" x1="0" y1="60" x2="400" y2="60"></line><line class="warnline" x1="0" y1="55" x2="400" y2="55"></line><polyline id="polyLat" class="mline" points=""></polyline></svg></div>
+    </div>
+    <p class="dashstatus okk" id="dashStatus">🟢 All systems normal. Inject an incident when you're ready.</p>
+    <div class="incrow">
+      <strong style="align-self:center">Inject:</strong>
+      <button class="btn small" id="incSpike" style="background:var(--amb);color:#3a2c05">🌊 Traffic spike</button>
+      <button class="btn small" id="incLeak" style="background:var(--amb);color:#3a2c05">🐛 Memory leak</button>
+      <button class="btn small" id="incOutage" style="background:var(--amb);color:#3a2c05">⚡ Zone outage</button>
+    </div>
+    <div class="resprow">
+      <strong style="align-self:center">Respond:</strong>
+      <button class="btn small resp" data-r="out" disabled>➕ Scale out</button>
+      <button class="btn small resp" data-r="up" disabled>⬆️ Scale up</button>
+      <button class="btn small resp" data-r="restart" disabled>🔄 Restart nodes</button>
+      <button class="btn small resp" data-r="failover" disabled>🌍 Failover region</button>
+    </div>
+    <div class="verdict" id="dashVerdict"></div>
+    <p class="scorebd" id="dashScore">First-try score: 0/3 · 🌊 spike — · 🐛 leak — · ⚡ outage —</p>
+    <p class="note">Reading guide: the dashed red line on each chart is its warning threshold (CPU/mem 85%, latency 500 ms). Before you click a response, say out loud WHICH metric moved first and what that pattern usually means — that habit is 80% of real incident response.</p>
+    <h3>🧾 The incident log <span class="note">(auto-written — you'll feed this to an AI in Lab B)</span></h3>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre id="incLog">[13:41:02] INFO  monitoring online — baselines: CPU 35%, MEM 45%, p95 120 ms (sample shift, yesterday)
+[13:52:17] ALERT p95 latency 618 ms (threshold 500) — store checkout degraded
+[13:52:44] ALERT CPU 93% fleet-wide (threshold 85%)
+[13:53:10] ACTION on-call chose SCALE OUT (+4 instances via autoscaling group)
+[13:56:39] INFO  p95 latency 142 ms — recovered; instance count will scale back automatically
+[13:57:01] RESOLVED traffic spike (flash sale) handled — duration 4m 44s, no orders lost</pre></div>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 3 ============ -->
+<section class="segment">
+  <h2><span class="segno">3</span> Cost Management, SLAs, Audits &amp; Support</h2>
+  <div class="card">
+    <h3>The bill is a metric too</h3>
+    <p>Session 1 promised "measured service"; today's session delivers the invoice. A cloud bill is an itemized ledger — every instance-hour, gigabyte-month, and million requests, metered and priced. That granularity is a gift (you can see exactly where money goes) and a hazard (nobody is forced to look). <strong>Cost management</strong> is the discipline of looking: budgets with automatic alerts ("page finance at 80% of forecast"), tagging resources by team and project so spend is attributable, and a monthly waste hunt for the classic three: <em>idle compute</em> left running around the clock, <em>orphaned storage</em> surviving its deleted VM, and <em>over-provisioned</em> resources sized for a fantasy workload. <strong>Chargebacks</strong> bill each department for its actual usage (its gentler sibling, <em>showback</em>, just displays the number) — the moment teams see their own line item, oversized dev servers mysteriously shrink.</p>
+    <p><strong>SLA management</strong> turns Session 9's availability math into a vendor relationship: know each service's promised uptime (99.9% ≈ 43.8 minutes of allowed downtime a month), remember that chained dependencies <em>multiply</em> (two serial 99.9% services ≈ 99.8% together), monitor the provider's status page against your own metrics, and actually claim the service credits when SLAs are missed — providers rarely volunteer them. <strong>Audits</strong> are scheduled self-checks: security (who still has admin?), configuration (does prod match the documented architecture?), and cost (the waste hunt above). <strong>Support and ticketing</strong> round out today's toolkit: know your support tier and response times BEFORE the outage, and route every incident through a ticket — the ticket trail becomes tomorrow's runbook and next month's audit evidence.</p>
+    <p><strong>Common misconception:</strong> "the provider manages the cloud, so we don't have to." Session 8's shared-responsibility line applies to operations too: the provider keeps the <em>platform</em> alive; the sizing, the alerts, the bill, and the 2 AM decisions above the line are permanently yours.</p>
+    <h3>🧾 Interactive: The Cloud Bill Explorer — find the three wasteful lines</h3>
+    <p>Harbor Lane's March invoice, ten line items, <strong>$6,157 total</strong>. Exactly three lines are waste. Click a line to flag it — right finds turn green with the fix; wrong flags explain why that line is legitimate.</p>
+    <div class="billtable" id="billTable"></div>
+    <div class="billfb" id="billFb"></div>
+    <p class="scorebd" id="billScore">Waste found: 0/3 · potential monthly savings identified: $0</p>
+  </div>
+</section>
+
+<!-- ============ AI SPOTLIGHT ============ -->
+<section class="card ai">
+  <h3>🧠 AI Concept of the Day · MLOps &amp; AIOps — running models like production services</h3>
+  <p class="note" style="margin-top:-4px"><strong>AI concepts track:</strong> every session teaches one real AI concept through that day's cloud objective. Today, while learning to operate cloud systems (Objectives 7–8), you learn <em>MLOps, AIOps, and AI FinOps</em> — how teams run AI in production, and which signals exist only because a model is in the loop.</p>
+  <p>An AI feature in production is <strong>a service PLUS a model</strong> — which means everything on today's dashboard still applies, and none of it is enough. <strong>MLOps</strong> is today's management discipline extended to that second half: keep the classic golden signals (latency, error rate, saturation) and add the model-specific ones no classic tool knows to collect: <strong>token spend per day</strong>, <strong>cost per request</strong>, <strong>refusal/error rate</strong> (how often the model declines, times out, or returns junk), and — the subtle one — <strong>answer quality scored against a fixed evaluation set</strong>: the same bank of questions with known-good answers, re-run on a schedule and on every model-version change. That eval score is the only way to catch <strong>silent drift</strong> — a model version updates or your data shifts, and answers quietly get worse while every uptime graph stays green. When the score slides from 91% to 78%, THAT is the page.</p>
+  <p><strong>AIOps</strong> points the telescope the other way: AI watching your metrics. Today's tuner taught you why fixed thresholds are hard — too low pages all night, too high sleeps through incidents; learned baselines adapt instead. Anomaly detection learns each metric's normal <em>rhythm</em> — Tuesday lunch spikes, quiet Sunday mornings, month-end batch jobs — and flags "this pattern is weird" before any static line fires: 3 AM traffic that's five times normal <em>for 3 AM</em> yet still below the daytime threshold, or latency that quietly doubled over three weeks without one alert. AIOps also clusters alert storms (200 alerts, one root cause) into a single incident and flags the disk that will fill <em>next Tuesday</em>. Two honest cautions: a badly tuned anomaly model just <em>automates alert fatigue</em> — the tuner trade-off moves up a level, it never disappears — and an AI-drafted incident summary is a draft, not a record, which is why Lab B makes you audit one against the raw log.</p>
+  <p><strong>FinOps for AI</strong> applies today's cost discipline to the newest meter: set <strong>token budgets</strong> with alerts like any other budget line; <strong>allocate cost per feature</strong> (tag which product feature burned which tokens — chargeback, reborn); <strong>cache frequent answers</strong> so "what are your store hours?" doesn't hit a metered model 4,000 times a day; and <strong>right-size the model</strong> — a small, cheap model for classifying support tickets, the frontier model only where quality measurably demands it. Right-sizing is cloud management's oldest lesson (the 6%-utilized 4xlarge from the bill explorer!) applied to intelligence.</p>
+  <p><strong>Common misconception:</strong> "latency and uptime look green, so the AI feature is healthy." Classic dashboards cannot see quality: a recommender can serve confident nonsense at a beautiful 200 ms and 100% uptime, and token cost can double under flat traffic. Green classic signals are necessary — nowhere near sufficient. Prove you can tell the two families apart:</p>
+  <div class="matcher" id="aiSignalMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="classic">p95 latency 900 ms</button>
+      <button class="mcard" data-match="aisig">Refusal rate jumped 3× after a model version update</button>
+      <button class="mcard" data-match="aisig">Token spend doubled with flat traffic</button>
+      <button class="mcard" data-match="classic">CPU at 85% on 2 nodes</button>
+      <button class="mcard" data-match="aisig">Eval-set accuracy fell from 91% to 78%</button>
+      <button class="mcard" data-match="classic">5xx errors spiking</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="classic">📟 Classic ops signal<small>any web service has it — today's dashboard sees it</small></button>
+      <button class="mzone" data-zone="aisig">🧠 AI-specific signal<small>exists only because a model is in the loop</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+  <p><strong>Your turn — which alerts NEED anomaly detection?</strong> Sort each situation by whether a static threshold catches it or only a learned-pattern model would:</p>
+  <div class="matcher" id="aiMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="static">CPU pinned at 99% for ten straight minutes</button>
+      <button class="mcard" data-match="anom">3 AM traffic is 5× normal-for-3-AM but below the daytime peak</button>
+      <button class="mcard" data-match="anom">p95 latency has drifted from 120 ms to 260 ms over three weeks</button>
+      <button class="mcard" data-match="static">Disk volume hits 100% full</button>
+      <button class="mcard" data-match="anom">Order volume drops 60% below the usual Tuesday pattern (checkout silently broken)</button>
+      <button class="mcard" data-match="static">Health-check endpoint stops responding entirely</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="static">📏 Static threshold catches it<small>a fixed line works fine</small></button>
+      <button class="mzone" data-zone="anom">🧠 Needs anomaly detection<small>only "unusual vs. learned normal" sees it</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+</section>
+
+<!-- ============ LEARN IT WITH AI ============ -->
+<section class="card ai">
+  <h3>🎓 Learn Objectives 7 &amp; 8 with AI (running cloud systems)</h3>
+  <p><strong>Objective 7: Examine and evaluate virtualization solutions. Objective 8: Define and describe Service-Oriented Architecture.</strong> Today's session is where both objectives go to work — operating the virtualized fleet and keeping its services healthy. Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor. Log every drill in your AI Use Log.</p>
+  <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you, not the other way around:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for my cloud computing course (today's session:
+Managing the Cloud). Topics: monitoring
+(metrics vs. logs vs. alerts, p95 latency), scaling up vs. scaling out,
+capacity planning, and cost control (waste hunting, tagging, chargebacks).
+Ask me ONE question at a time, easy to hard, 10 questions total. After each
+of my answers, tell me exactly what I got right or wrong before asking the
+next one. Finish with a summary of my weak spots and which of those topics
+I should restudy.</pre></div>
+  <p><strong>Drill 2 · Incident commander</strong> — harder than today's dashboard: ambiguous symptoms, one move per turn:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Run an incident-commander simulation for my cloud operations course (topic:
+managing cloud systems). You are the monitoring system of a bookstore
+chain's cloud web store; I am the on-call engineer. Play exactly 3 rounds.
+Each round: present ONE ambiguous production symptom (e.g., "checkout feels
+slow since 2 AM") and never name the root cause. Each turn I may do exactly
+ONE thing: request one specific metric or log, OR take one action (scale
+out, scale up, restart, roll back, failover). Reveal only the realistic
+consequence of my move, then wait for my next one. End the round when I
+resolve the incident or clearly make it worse. After round 3, give me a
+graded debrief: score each round 1–10, name what I should have checked
+first, and say which cloud-management concept I misused.</pre></div>
+  <p><strong>Drill 3 · Quiz master</strong> — unlimited ops practice in this course's exact quiz style:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Quiz me with workplace story problems about managing cloud systems
+(monitoring, scaling, cost control, SLAs) — the style where a named character faces a
+realistic situation and I pick from options A–D. Cover: alert tuning and
+alert fatigue, cloud bill anomalies and waste, SLA math and breach claims,
+scale up vs. scale out, and runbooks/automation. One question at a time.
+After I answer, explain why EVERY option is right or wrong, then ask the
+next. 8 questions, track my score, get harder as I improve.</pre></div>
+  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify the tutor:</strong> AI tutors occasionally misstate definitions or invent plausible numbers. Cross-check one claim it made (an SLA downtime allowance, a metric definition, a scaling trade-off) against today's dashboard, Segment 3's SLA math, or this session's definitions above, and note in your log whether it held up.</span></label>
+  <p class="note">If you can close all three incident-commander rounds cleanly, your Checkpoint 11 runbook is probably ready. Free tier is plenty.</p>
+</section>
+
+<!-- ============ LABS ============ -->
+<h2>🔬 Hands-On Labs</h2>
+
+<section class="card lab">
+  <p class="labno">LAB A · IN-PAGE SIMULATOR · ~30 MIN</p>
+  <h3>Your On-Call Shift: Three Incidents, One Bill, One Threshold</h3>
+  <p>Work the Segment 1 tuner, the Segment 2 dashboard, and the Segment 3 bill. Then answer — the page checks you:</p>
+  <label class="step"><input type="checkbox" data-step="a1"><span>Dashboard: inject all THREE incidents (one at a time) and get each one resolved. Watch which metric moves first in each — that's the fingerprint.</span></label>
+  <div class="checkfield">→ During the 🌊 traffic spike, which metric crossed its red line first? <input type="text" id="labA1" placeholder="cpu / memory / latency"> <button class="btn small" onclick="checkA(1)">Check</button> <span class="fb" id="fbA1"></span></div>
+  <div class="checkfield">→ Which response resolved the 🐛 memory leak? <input type="text" id="labA2" placeholder="e.g., failover"> <button class="btn small" onclick="checkA(2)">Check</button> <span class="fb" id="fbA2"></span></div>
+  <label class="step"><input type="checkbox" data-step="a2"><span>Threshold tuner: find a threshold with <strong>0 false pages AND 0 missed incidents</strong>, and record it.</span></label>
+  <div class="checkfield">→ Your sweet-spot threshold (ms): <input type="number" id="labA3"> <button class="btn small" onclick="checkA(3)">Check</button> <span class="fb" id="fbA3"></span></div>
+  <label class="step"><input type="checkbox" data-step="a3"><span>Bill explorer: find all 3 wasteful lines, then add up those three line amounts.</span></label>
+  <div class="checkfield">→ Total of the 3 wasteful lines: $<input type="number" id="labA4"> <button class="btn small" onclick="checkA(4)">Check</button> <span class="fb" id="fbA4"></span></div>
+  <label class="step"><input type="checkbox" data-step="a4"><span>In your notebook: for ONE incident you handled, write the two-line runbook entry you wish you'd had (symptom fingerprint → response). You'll reuse it in the capstone tonight.</span></label>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB B · FREE AI CHATBOT · ~15 MIN · 🆓 ChatGPT / Gemini / Claude / Copilot (any free tier)</p>
+  <h3>The AI-Drafted Postmortem — You Are the Reviewer</h3>
+  <p>Real teams write a <strong>blameless postmortem</strong> after every incident. Copy the <strong>incident log</strong> from Segment 2 (📋 button — it now contains YOUR shift's events plus the sample), then paste this prompt followed by the log:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>You are a senior SRE. Below is the raw incident log from our bookstore's
+cloud ops dashboard. Draft a blameless postmortem with EXACTLY these
+sections: Summary (2 sentences) / Timeline (from the log's timestamps) /
+Customer impact / Root cause / What went well / Action items (3, each with
+an owner role). Under 350 words. Use ONLY facts present in the log — if the
+log doesn't say it, write "unknown" rather than guessing.
+
+INCIDENT LOG:
+(paste the log here)</pre></div>
+  <label class="step"><input type="checkbox" data-step="b1"><span>Generate the postmortem from your real log.</span></label>
+  <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> check the structure (all six sections present?), then audit the Timeline line-by-line against the raw log: are the timestamps real or invented? Did it claim a root cause the log doesn't actually establish? Find <strong>at least one</strong> hallucinated detail, smoothed-over gap, or vague action item ("improve monitoring" — how?) and make the AI fix it.</span></label>
+  <label class="step"><input type="checkbox" data-step="b3"><span>Add the prompt + what you corrected to your <strong>AI Use Log</strong>.</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — AI FinOps, by hand first:</strong> Harbor Lane's recommender will serve <strong>4,000 recommendations/day</strong>, averaging <strong>700 input + 250 output tokens</strong> per request, priced at <strong>$0.15 per million input tokens</strong> and <strong>$0.60 per million output tokens</strong>. Compute the monthly cost by hand (input $/day + output $/day, then × days), enter it below, THEN paste your arithmetic into the chatbot and ask it to check you — you should both land near <strong>≈ $31.50/month</strong> ($1.02/day: $30.60 for a 30-day month, $31.62 for 31). If you and the AI disagree, one of you slipped a decimal — find out which, and log the winner in your AI Use Log.</span></label>
+  <div class="checkfield">→ Your monthly total (30–31 days): $<input type="number" id="labB4" step="0.01"> <button class="btn small" onclick="checkB4()">Check</button> <span class="fb" id="fbB4"></span></div>
+  <p class="note">Why this matters: AIOps tools now auto-draft postmortems from logs exactly like this. The engineer who can audit the draft against the evidence is the one who stays valuable.</p>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB C · REAL FREE TOOLS · ~20 MIN · 🆓 browser DevTools + Google Sheets (free account)</p>
+  <h3>Measure a Real Site, Split a Real Bill</h3>
+  <p><strong>Part 1 — DevTools as your monitoring agent:</strong></p>
+  <label class="step"><input type="checkbox" data-step="c1"><span>Open any busy public site, press F12 → <strong>Network</strong> tab → reload. Record: number of requests, total transferred, and the load time shown in the status bar.</span></label>
+  <label class="step"><input type="checkbox" data-step="c2"><span>Use the throttling dropdown (usually "No throttling") → pick <strong>Slow 3G</strong> → reload. Record the new load time. That gap is what a p95 user on hotel Wi-Fi feels — and why latency percentiles, not averages, drive ops decisions.</span></label>
+  <div class="checkfield">→ Requests: <input type="text" data-persist="c1r" style="width:80px"> · Normal load: <input type="text" data-persist="c1n" style="width:80px"> · Slow-3G load: <input type="text" data-persist="c1s" style="width:80px"></div>
+  <label class="step"><input type="checkbox" data-step="c3"><span>Visit a real provider status/health page (search "AWS health dashboard" or "Google Cloud status") and find one recent incident entry. Note how they report impact and duration — that's SLA management from the vendor side.</span></label>
+  <p><strong>Part 2 — Google Sheets chargeback calculator:</strong></p>
+  <label class="step"><input type="checkbox" data-step="c4"><span>Harbor Lane's total March bill is <strong>$8,400</strong>, and metering tags attribute usage: Web store 46%, Analytics 31%, Internal apps 23%. In a new Google Sheet, build a 3-row chargeback table: department, %, and a formula computing its dollar share.</span></label>
+  <div class="checkfield">→ Analytics department's chargeback: $<input type="number" id="labC5"> <button class="btn small" onclick="checkA(5)">Check</button> <span class="fb" id="fbC5"></span></div>
+  <label class="step"><input type="checkbox" data-step="c5"><span>Add a fourth row: if Analytics cut its share by the ~30% waste figure from Poll 2, how much would Harbor Lane save per year? Put the formula in the sheet — this exact table belongs in your capstone cost plan.</span></label>
+</section>
+
+<!-- ============ STORY QUIZ ============ -->
+<h2>📝 Session Quiz — Story Problems</h2>
+<p>Ten workplace scenarios — the last two test today's AI concept. Pick the best answer; every question explains all four options after you answer. Counts toward the syllabus "Exercises/Quizzes" grade (30%).</p>
+<section class="quiz" id="quiz1">
+
+  <div class="q" data-a="2">
+    <h4>Q1 · <em>The dashboard that lied politely</em></h4>
+    <p class="stem">Yuki runs operations for BentoBox Meals' ordering platform. Her dashboard's headline number, "average response time: 180 ms," has been green all week — yet support logged 61 complaints about a "frozen checkout." Digging in, she finds 94% of requests finish in ~120 ms while about 5% (heavy carts hitting a slow inventory query) take 6–9 seconds. Which monitoring change would have surfaced this problem immediately?</p>
+    <button class="opt">A. Track the average with two decimal places instead of one</button>
+    <button class="opt">B. Poll customers weekly about perceived speed</button>
+    <button class="opt">C. Track p95/p99 latency, which would have shown several seconds while the average looked healthy</button>
+    <button class="opt">D. Remove the latency panel — error rate is the only metric that matters</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Percentiles describe the unlucky tail: with 5% of requests taking 6–9 s, p95 would read in the seconds — a screaming red panel — while the mean stays a soothing 180 ms because the fast majority drowns out the slow few. Averages hide exactly the customers who suffer most (big carts = heavy queries = your best buyers). ✘ A adds precision to the wrong statistic — a more precise lie. ✘ B is Poll 1's "customers as monitoring": slow, vague, and after the damage. ✘ D throws away signal; checkout wasn't erroring, it was <em>slow</em> — an error-rate-only view would stay green forever.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q2 · <em>Forty pages a night</em></h4>
+    <p class="stem">Omar inherits on-call for Riverbend Software. The previous admin set a CPU alert at 60% "to be safe." It now pages roughly 40 times a night — almost always during harmless nightly backups — and Omar catches himself deleting pages without reading them. Last Tuesday, page #23 was a genuine database failure; it sat unread for three hours. What is the correct fix?</p>
+    <button class="opt">A. Re-engineer the alerts: alert on user-facing symptoms (latency, error rate) with thresholds that fire only for genuine incidents, and suppress the known backup pattern</button>
+    <button class="opt">B. Discipline Omar for ignoring pages — the process was fine</button>
+    <button class="opt">C. Add MORE alerts so the real ones can't be missed</button>
+    <button class="opt">D. Route the 40 nightly pages to a channel nobody reads</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ This is alert fatigue, and it's an engineering defect, not a character flaw: 39 false pages a night <em>train</em> any human to ignore page #23. The fix is fewer, truer alerts — page on what customers feel (latency, errors, availability), tune thresholds against history like today's tuner, and suppress the predictable backup spike. ✘ B blames the person for a system that made vigilance impossible; the next on-call will fail identically. ✘ C multiplies noise — the signal-to-noise ratio gets worse, not better. ✘ D is muting with extra steps: the real incident lands in the ignored channel too. An alert that's safe to ignore is a defect either way.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q3 · <em>Two systems, two levers</em></h4>
+    <p class="stem">Priyanka's architecture at TicketNest has two hot spots before Saturday's on-sale: the <em>stateless</em> web/API tier (any server can answer any request) and the single PostgreSQL <em>write master</em> that all orders funnel through. She can prepare both tiers today. Which scaling plan matches each tier's nature?</p>
+    <button class="opt">A. Scale both tiers up — bigger machines everywhere is simplest</button>
+    <button class="opt">B. Scale both tiers out — more copies of everything</button>
+    <button class="opt">C. Scale the web tier UP and the database OUT</button>
+    <button class="opt">D. Scale the web tier OUT (autoscale more instances) and the database UP (a larger machine, resized in a planned window)</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Match the lever to the state: stateless web servers are interchangeable, so adding copies behind the load balancer is cheap, instant, and reversible — perfect for autoscaling into a spike. A single write master, though, can't simply be photocopied (two masters accepting the same seat purchase = double-sold tickets), so you grow it vertically, in a planned maintenance window before Saturday. ✘ A wastes the web tier's superpower and hits scale-up ceilings during the rush. ✘ B naively "scales out" the database write path, which requires re-architecture (sharding/replicas), not a Saturday-morning button press. ✘ C is exactly backwards on both counts.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q4 · <em>The 40→92% staircase</em></h4>
+    <p class="stem">At Big Cypress Outfitters, fleet memory has climbed 40% → 92% over six hours — a straight staircase since yesterday's 2 PM deploy of release 4.7. Restarting a node drops its memory to 40%, then the climb resumes. CPU and traffic are normal. The on-call, Dre, must pick tonight's plan. Which is right?</p>
+    <button class="opt">A. Permanently double the RAM on every instance — problem solved</button>
+    <button class="opt">B. Use rolling restarts tonight as mitigation, and roll back (or hotfix) release 4.7 — the restart buys time; the leaking code is the root cause</button>
+    <button class="opt">C. Fail over to the standby region</button>
+    <button class="opt">D. Do nothing; memory will stabilize on its own</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ The fingerprint (steady climb, reset by restart, started with a deploy, traffic normal) is a memory leak, and the discipline is <em>mitigate vs. root cause</em>: rolling restarts keep customers unaffected tonight, while rolling back 4.7 removes the defect that restarts merely postpone. ✘ A treats a software bug with a hardware invoice — doubled RAM doubles the time-to-crash and the bill, forever. ✘ C ships the leak to the standby region: the bug is in the release, and the release deploys there too. ✘ D ignores that leaks don't stabilize; at ~98% the out-of-memory killer starts executing processes, and Dre's quiet night becomes an outage call.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q5 · <em>The volumes nobody owned</em></h4>
+    <p class="stem">Auditing Mangrove Media's bill, Fatima finds a $410/month line: "block storage volumes — 22 units, 5.1 TB." Cross-checking, she discovers 19 of the 22 volumes are attached to nothing — they belonged to VMs deleted during last year's re-platforming; the delete dialog's "also delete storage" box was never checked. The volumes hold old boot disks nobody has mounted in 14 months. What is this, and what's the fix?</p>
+    <button class="opt">A. Healthy DR practice — unattached volumes are backups; keep paying</button>
+    <button class="opt">B. A provider billing error — dispute the invoice</button>
+    <button class="opt">C. Classic orphaned-storage waste — snapshot anything conceivably needed to cheap archival storage, then delete the volumes and add a "delete storage with VM" policy</button>
+    <button class="opt">D. A security breach — someone is hiding data in the volumes</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Orphaned volumes are the classic waste species (one of your three finds in the bill explorer): storage outlives its VM by default in most clouds, silently billing forever. The professional fix keeps a safety net — snapshot to archive tier (pennies) before deleting — then prevents recurrence with policy/automation. ✘ A flatters the mistake: real backups are <em>deliberate</em>, tested, and lifecycle-managed; accidental leftovers are none of those. ✘ B — the provider metered exactly what was provisioned; the meter is honest, the housekeeping wasn't. ✘ D has no supporting evidence; the boring explanation (an unchecked checkbox, 22 times) is the true one.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q6 · <em>Making the meter visible</em></h4>
+    <p class="stem">CloudWays' CFO, Selma, is furious: cloud spend doubled in a year, and when she asks engineering managers why, each shrugs — "that's the platform team's bill." The platform team, in turn, can't say which product lines drive the cost. Selma mandates resource tagging by team, monthly cost reports per department, and — starting next quarter — each department's cloud usage charged against its own budget. What is Selma implementing, and what's the realistic expected effect?</p>
+    <button class="opt">A. Chargeback (after a showback phase) — once teams see and pay their own usage, spending behavior measurably changes</button>
+    <button class="opt">B. A cost-cutting freeze — no new cloud resources for anyone</button>
+    <button class="opt">C. Vendor lock-in — tying departments to one provider</button>
+    <button class="opt">D. An SLA renegotiation with the cloud provider</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Reports-only is <em>showback</em>; charging budgets is <em>chargeback</em> — and the sequence Selma chose (visibility first, accountability second) is the recommended rollout. The effect is well documented: when the team that provisions the oversized instance also eats its cost, rightsizing stops being the platform team's nagging and becomes self-interest. ✘ B is a blunt instrument that punishes growth products and creates shadow IT; nothing in her mandate freezes anything. ✘ C involves provider switching costs — unrelated to internal cost attribution. ✘ D changes what the <em>provider</em> promises and charges; Selma's problem is internal: nobody owns the meter. Tags + budgets fix ownership, not vendor terms.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q7 · <em>The 99.99% brochure</em></h4>
+    <p class="stem">Marketing at PayLagoon wants to advertise "99.99% uptime" for the new checkout API. Ops lead Viktor points out the checkout's critical path chains TWO dependencies in series: the identity service (SLA 99.9%) and the payments processor (SLA 99.9%) — if either is down, checkout is down. Ignoring everything else, what availability can the chain honestly support, and what should Viktor tell marketing?</p>
+    <button class="opt">A. 99.99% is fine — take the higher of the two numbers</button>
+    <button class="opt">B. About 99.8% (0.999 × 0.999) — roughly 87 minutes of expected downtime a month; you cannot honestly promise 99.99% on top of two serial 99.9% dependencies</button>
+    <button class="opt">C. Exactly 99.9% — the chain is as strong as either link</button>
+    <button class="opt">D. Availability math is unknowable; publish whatever sounds good</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Serial dependencies multiply: 0.999 × 0.999 = 0.998001 ≈ 99.8%, about 87 minutes of expected monthly downtime — nearly TWENTY times the ~4.4 minutes that 99.99% permits. Advertising 99.99% would commit PayLagoon to paying SLA credits for math it never controlled. ✘ A takes the maximum, but failures are independent events — either failing kills checkout, so risk adds, not filters. ✘ C is the subtle trap: 99.9% would hold only if both services failed at exactly the same moments; independent failures make the chain <em>weaker</em> than its weakest link. ✘ D — this math is precisely knowable; that's why Session 9 made you do it. Honest options: redundancy per dependency, or an honest number.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q8 · <em>Every Sunday at 3 AM</em></h4>
+    <p class="stem">For 14 consecutive Sundays, DockPilot's on-call has been paged at ~3 AM: a log partition fills, the fix is the same documented five commands (compress, ship to object storage, clear, verify, close ticket), takes 20 minutes, and has never varied. The team lead, Ana, is reviewing the on-call load. What should she do with this alert-and-response pair?</p>
+    <button class="opt">A. Keep waking a human — manual work builds character and vigilance</button>
+    <button class="opt">B. Delete the alert; the disk will probably manage itself</button>
+    <button class="opt">C. Write an even more detailed runbook page for the 3 AM human</button>
+    <button class="opt">D. Automate the known remediation (scheduled/log-triggered script or lifecycle policy), keep an alert only for when automation itself fails, and reserve humans for novel incidents</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Today's automation principle: a response that is <em>documented, identical, and safe</em> 14 times running is a script, not a human's night. Automate it (better: a log-rotation/lifecycle policy that prevents the fill entirely), and alert only on the exception — automation failed, or the pattern changed. That's how on-call capacity gets reserved for problems that need judgment. ✘ A romanticizes toil; fatigue makes engineers worse at the incidents that DO need them. ✘ B removes the safety net without removing the risk — the disk still fills, now silently. ✘ C polishes the wrong artifact: a perfect runbook for a task no human should perform is documentation of waste. Runbooks are for judgment calls and for automation's edge cases.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q9 · <em>Green dashboards, angry readers</em> 🧠 AI concept</h4>
+    <p class="stem">PalmReads' AI "next book" recommender launched behind full classic monitoring: uptime 100%, p95 latency 210 ms, 5xx error rate 0.02% — green for eleven straight weeks. In week twelve, support tickets triple: "the recommendations turned useless." Investigation reveals the model provider shipped a new model version in week nine; reply quality degraded immediately, but every dashboard stayed green because requests kept succeeding, quickly. Which monitoring was missing?</p>
+    <button class="opt">A. More latency percentiles — p99 and p99.9 would have caught it</button>
+    <button class="opt">B. A fixed evaluation set — a bank of known-good question/answer pairs scored on a schedule and on every model-version change, so a quality regression pages a human the week it happens instead of surfacing as customer complaints three weeks later</button>
+    <button class="opt">C. CPU and memory monitoring on the model provider's GPU fleet</button>
+    <button class="opt">D. None — if uptime, latency, and errors are green, the complaints must be coincidence</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ This is silent drift, the failure mode classic monitoring is structurally blind to: every request succeeded, fast — the answers were just <em>worse</em>. Only comparing outputs against a fixed eval set detects that, which is why MLOps treats eval scores as a first-class production metric and re-runs them whenever the model version changes. ✘ A measures speed more precisely; the replies were fast and bad — no percentile of a healthy latency distribution encodes answer quality. ✘ C monitors infrastructure PalmReads doesn't operate and can't see — and the provider's fleet was healthy; the model <em>changed</em>, nothing broke. ✘ D is the exact misconception this session kills: three weeks of tickets weren't coincidence, they were the only quality monitor PalmReads had — customers-as-monitoring, the most expensive detection system ever invented (Poll 1).</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q10 · <em>The bill that doubled quietly</em> 🧠 AI concept</h4>
+    <p class="stem">Gullwing Travel's AI trip-planner served the same ~60,000 requests in April as in March — traffic flat, features unchanged, per-token prices unchanged. Yet April's token invoice is 2.1× March's. CFO Elena asks ops lead Mateo for the likely cause and the controls. What should Mateo answer?</p>
+    <button class="opt">A. The provider must be overbilling — dispute the invoice and wait for a credit</button>
+    <button class="opt">B. Token prices double automatically as models improve; nothing can be done</button>
+    <button class="opt">C. Tokens per request grew — classic prompt bloat: a lengthened system prompt, ever-growing conversation history, or extra context attached to every call. Controls: measure cost per request, trim and cap prompts, cache frequent answers, and route simple queries to a smaller, cheaper model</button>
+    <button class="opt">D. The request counter must be broken — flat traffic with a doubled bill is impossible</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Token cost = requests × tokens-per-request × price. With requests and price flat, the factor that grew is tokens per request — and prompt bloat is the usual culprit: someone enriched the system prompt, or each call now ships the full conversation history or a fatter retrieval context. The AI-FinOps controls mirror today's cost discipline: watch the meter (cost per request), right-size (trim, cap, and match model size to task), and cache the repeats. ✘ A skips diagnosis — the meter is almost always honest; check your own token telemetry before accusing the vendor's. ✘ B invents an escalator that doesn't exist: per-token prices have generally <em>fallen</em>, and contracts don't auto-double. ✘ D — far from impossible, this is the standard AI-FinOps incident; cost per request is exactly the metric that catches it, which is why it's on today's list.</div>
+  </div>
+
+  <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+</section>
+
+<!-- ============ DISCUSSION ============ -->
+<section class="card disc">
+  <h3>💬 Discussion Forum Prompts <span class="note">(syllabus: Discussion Forums = 15%)</span></h3>
+  <p><strong>Prompt 1:</strong> Being paged at 3 AM is treated as normal in tech. Is it a fair part of the job, or a design failure we've normalized? Use today's concepts (alert tuning, automation, runbooks, follow-the-sun teams) to argue how much of on-call pain is <em>engineered</em> vs. inevitable. Reply to two classmates.</p>
+  <p><strong>Prompt 2:</strong> Chargebacks make teams pay for their own cloud usage — supporters say "you can't manage what you don't pay for"; critics say it breeds penny-pinching, hoarding, and internal politics. Where's the line for a 240-person company like Harbor Lane? Propose a policy (showback vs. chargeback, what's exempt, who reviews) and defend it.</p>
+</section>
+
+<!-- ============ CAPSTONE ============ -->
+<section class="card capstone">
+  <h3>🏗️ Capstone · Harbor Lane Books — Checkpoint 11 of 12: Ops Runbook &amp; Monitoring Plan</h3>
+  <p>Deliverable 4 needs proof that Harbor Lane can <em>run</em> what you designed. The owner's nightmare is the old one — the site dying mid author-event while nobody notices. Your monitoring plan is the answer. Full brief and D4 rubric: <a href="project.html"><strong>open the Project Brief →</strong></a></p>
+  <p><strong>Due before Session 12 (individual project):</strong></p>
+  <label class="step"><input type="checkbox" data-step="cap1"><span><strong>Monitoring plan (1 page):</strong> the 5 metrics you'll watch for the web store (include p95 latency and error rate), each with a threshold and a one-line justification tied to today's tuner lesson (why not lower? why not higher?).</span></label>
+  <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Mini-runbook (3 entries):</strong> for traffic spike, memory leak, and zone outage — symptom fingerprint → first response → escalation path. Steal shamelessly from your Lab A notes; that's what they were for.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap3"><span><strong>Cost guardrails (3 bullets):</strong> a monthly budget alert level, a tagging rule, and a scheduled waste review — plus your Lab C chargeback table as evidence.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap4"><span>Update the <strong>AI Use Log</strong> with Lab B's postmortem entry (prompt + what you corrected).</span></label>
+</section>
+
+<!-- ============ EXIT TICKET ============ -->
+<section class="card exit">
+  <h3>🎟️ Exit Ticket</h3>
+  <p>Tap each light until it matches your confidence: 🔴 lost · 🟡 shaky · 🟢 got it</p>
+  <div class="exitrow"><button class="light" data-exit="e1">⚪</button><span>I can explain metrics vs. logs vs. alerts, and why p95 beats the average.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e2">⚪</button><span>I can match an incident fingerprint (spike / leak / outage) to the right response.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e3">⚪</button><span>I can find waste in a cloud bill and explain chargebacks and SLA math to a manager.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e4">⚪</button><span>🧠 AI concept: I can name the AI-specific metrics (tokens, refusals, eval quality) that classic dashboards miss.</span></div>
+  <p style="margin-top:10px"><strong>Muddiest point</strong> — one thing still fuzzy (instructor reads these at the start of Session 12):</p>
+  <textarea data-persist="muddy" placeholder="The thing I'm least sure about is…"></textarea>
+</section>
+
+<footer>
+  <div class="card" style="background:#f0eee6">
+    <strong>📚 Before Session 12 (the finale):</strong> preview <strong>Session 12 (Migrating to the Cloud — the 6 Rs, waves, cutover)</strong> by skimming its opening segment; finish Checkpoint 11; <strong>find your Session 1 pre-test score</strong> — you'll need it for the post-test comparison; and come with Deliverable 4 nearly complete: final presentations happen in Session 12.
+  </div>
+  <div class="footer-nav">
+    <a class="btn ghost" href="week4-session10.html">← Session 10: SOA &amp; REST</a>
+    <span><a class="btn ghost" href="index.html">⌂ Course Hub</a> <button class="btn ghost small" onclick="resetPage()">Reset my progress on this page</button></span>
+    <a class="btn" href="week4-session12.html">Session 12: Migration + Final Review →</a>
+  </div>
+</footer>
+
+</main>
+<script>
+/* ===== CEN4086 core framework (copy verbatim into every session file) ===== */
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'page');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+function resetPage(){try{localStorage.removeItem(PKEY)}catch(e){};location.reload()}
+
+/* flips */
+document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));
+/* tabs */
+document.querySelectorAll('.tabs').forEach(t=>{
+  t.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>{
+    t.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('on'));
+    t.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');t.querySelector('.tabpane[data-p="'+b.dataset.t+'"]').classList.add('on');
+  }));
+});
+/* polls */
+document.querySelectorAll('.poll').forEach((p,pi)=>{
+  const key='poll:'+(p.id||pi);
+  p.querySelectorAll('.popt').forEach((o,oi)=>o.addEventListener('click',()=>{
+    if(p.classList.contains('done'))return;
+    o.classList.add('sel');p.classList.add('done');save(key,oi);
+  }));
+  if(S[key]!=null){p.classList.add('done');const o=p.querySelectorAll('.popt')[S[key]];if(o)o.classList.add('sel');}
+});
+/* quiz engine */
+function updateQuiz(qz){
+  const qs=[...qz.querySelectorAll('.q')];
+  const done=qs.filter(q=>q.classList.contains('done'));
+  const right=qs.filter(q=>q.classList.contains('gotit')).length;
+  const res=qz.querySelector('.qresult');
+  if(res){res.querySelector('.bar span').style.width=(done.length?Math.round(100*right/qs.length):0)+'%';
+    res.querySelector('.scoreline').textContent='Score: '+right+' / '+qs.length+(done.length===qs.length?(right===qs.length?' — perfect! 🎉':' — review the explanations above.'):' ('+(qs.length-done.length)+' remaining)');}
+  updateChip();
+}
+function updateChip(){
+  let r=0,t=0;
+  document.querySelectorAll('.quiz').forEach(qz=>qz.querySelectorAll('.q').forEach(q=>{t++;if(q.classList.contains('gotit'))r++;}));
+  const c=document.getElementById('scoreChip');if(c)c.textContent='Quiz: '+r+'/'+t;
+}
+document.querySelectorAll('.quiz').forEach((qz,qzi)=>{
+  const qid=qz.id||('qz'+qzi);
+  qz.querySelectorAll('.q').forEach((q,i)=>{
+    const a=+q.dataset.a,opts=[...q.querySelectorAll('.opt')];
+    const key=qid+':q'+i;
+    function answer(j,fresh){
+      q.classList.add('done');if(j===a)q.classList.add('gotit');
+      opts.forEach(o=>o.disabled=true);
+      opts[a].classList.add('right');if(j!==a)opts[j].classList.add('wrong');
+      if(fresh)save(key,j);
+    }
+    opts.forEach((o,j)=>o.addEventListener('click',()=>{if(!q.classList.contains('done')){answer(j,true);updateQuiz(qz);}}));
+    if(S[key]!=null)answer(S[key],false);
+  });
+  updateQuiz(qz);
+});
+/* matcher engine */
+document.querySelectorAll('.matcher').forEach((m,mi)=>{
+  const key='match:'+(m.id||mi);let sel=null,done=0;
+  const cards=[...m.querySelectorAll('.mcard')],st=m.querySelector('.mstatus');
+  function stat(){st.textContent=done+'/'+cards.length+' placed'+(done===cards.length?' — all correct! 🎉':'');}
+  cards.forEach((c,ci)=>{c.addEventListener('click',()=>{
+    if(c.classList.contains('ok'))return;
+    cards.forEach(x=>x.classList.remove('sel'));c.classList.add('sel');sel=c;
+  });});
+  m.querySelectorAll('.mzone').forEach(z=>z.addEventListener('click',()=>{
+    if(!sel)return;
+    if(sel.dataset.match===z.dataset.zone){
+      sel.classList.remove('sel');sel.classList.add('ok');done++;stat();
+      const solved=(S[key]||[]);solved.push(cards.indexOf(sel));save(key,solved);sel=null;
+    }else{sel.classList.add('no');setTimeout(()=>sel&&sel.classList.remove('no'),400);}
+  }));
+  (S[key]||[]).forEach(ci=>{if(cards[ci]&&!cards[ci].classList.contains('ok')){cards[ci].classList.add('ok');done++;}});
+  stat();
+});
+/* lab step checkboxes */
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+/* persisted inputs/textareas */
+document.querySelectorAll('[data-persist]').forEach(el=>{
+  const key='p:'+el.dataset.persist;
+  if(S[key]!=null)el.value=S[key];
+  el.addEventListener('input',()=>save(key,el.value));
+});
+/* exit ticket lights */
+const LIGHTS=['⚪','🔴','🟡','🟢'];
+document.querySelectorAll('.light').forEach(b=>{
+  const key='exit:'+b.dataset.exit;let i=S[key]||0;b.textContent=LIGHTS[i];
+  b.addEventListener('click',()=>{i=(i+1)%4;b.textContent=LIGHTS[i];save(key,i);});
+});
+/* copy prompt */
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+
+/* ===== Session 11 custom interactives ===== */
+/* ---- scale up vs out review toggle ---- */
+const SP=document.getElementById('scalePanel');
+function paintScale(m){
+  if(m==='up'){
+    SP.innerHTML='<div class="serverfarm"><div class="srv big">🖥</div></div>'+
+      '<p><strong>Scale UP</strong> = replace the machine with a bigger one. <span style="color:var(--ok);font-weight:700">Pros:</span> simple, no load balancer, keeps stateful systems (databases) in one piece. <span style="color:var(--bad);font-weight:700">Cons:</span> resizing usually means a restart window, price climbs faster than capacity at the top end, a hard hardware ceiling, and one bigger single point of failure. Best as a <em>planned</em> move for stateful tiers.</p>';
+  }else{
+    SP.innerHTML='<div class="serverfarm"><div class="srv" title="load balancer" style="background:linear-gradient(180deg,#0f8b8d,#0a6365)">LB</div><div class="srv">🖥</div><div class="srv">🖥</div><div class="srv">🖥</div><div class="srv">🖥</div></div>'+
+      '<p><strong>Scale OUT</strong> = add more copies behind the load balancer. <span style="color:var(--ok);font-weight:700">Pros:</span> no downtime, near-limitless, survives single-server failure, and autoscaling can do it while you sleep. <span style="color:var(--bad);font-weight:700">Cons:</span> requires stateless design (Session 10!), adds the LB and coordination complexity. The <em>emergency</em> lever — and the everyday one.</p>';
+  }
+  document.getElementById('btnUp').className='btn small'+(m==='up'?'':' ghost');
+  document.getElementById('btnOut').className='btn small'+(m==='out'?'':' ghost');
+}
+document.getElementById('btnUp').addEventListener('click',()=>paintScale('up'));
+document.getElementById('btnOut').addEventListener('click',()=>paintScale('out'));
+paintScale('out');
+
+/* ---- ops dashboard simulator ---- */
+const METRICS={
+  cpu:{v:35,base:35,noise:5,max:100,warn:85,poly:'polyCpu',val:'valCpu',fmt:v=>Math.round(v)+'%'},
+  mem:{v:45,base:45,noise:3,max:100,warn:85,poly:'polyMem',val:'valMem',fmt:v=>Math.round(v)+'%'},
+  lat:{v:120,base:120,noise:18,max:1000,warn:500,poly:'polyLat',val:'valLat',fmt:v=>Math.round(v)+' ms'}
+};
+const HIST={cpu:[],mem:[],lat:[]};
+for(const k in HIST){for(let i=0;i<40;i++)HIST[k].push(METRICS[k].base);}
+const TARGETS={
+  spike:{cpu:95,mem:62,lat:880},
+  leak:{cpu:58,mem:97,lat:420},
+  outage:{cpu:80,mem:56,lat:940}
+};
+const WORSE={cpu:99,mem:99,lat:990};
+/* per-incident ramp rates give each incident a distinct fingerprint:
+   spike → CPU crosses its red line first; leak → only memory alarms; outage → latency slams instantly */
+const RATES={spike:{cpu:.5,mem:.16,lat:.12},leak:{cpu:.05,mem:.25,lat:.05},outage:{cpu:.2,mem:.16,lat:.5}};
+let INC=null;
+function tick(){
+  for(const k in METRICS){
+    const m=METRICS[k];
+    let target=m.base,rate=0.16;
+    if(INC){target=INC.worse?Math.max(TARGETS[INC.type][k],WORSE[k]-6):TARGETS[INC.type][k];rate=RATES[INC.type][k];}
+    m.v+=(target-m.v)*rate+(Math.random()-0.5)*m.noise;
+    m.v=Math.max(2,Math.min(m.max*0.995,m.v));
+    HIST[k].push(m.v);HIST[k].shift();
+    const pts=HIST[k].map((v,i)=>((i*400/39).toFixed(1))+','+((112-(v/m.max)*104).toFixed(1))).join(' ');
+    document.getElementById(m.poly).setAttribute('points',pts);
+    const lab=document.getElementById(m.val);
+    lab.textContent=m.fmt(m.v);
+    lab.classList.toggle('hot',m.v>m.warn);
+  }
+}
+setInterval(tick,800);tick();
+
+const INCMETA={
+  spike:{label:'🌊 Traffic spike',start:'ALERT request rate 6.4× baseline — CPU and p95 latency climbing fleet-wide'},
+  leak:{label:'🐛 Memory leak',start:'ALERT memory climbing steadily on all nodes since deploy 4.7 — node restart resets it, then it climbs again'},
+  outage:{label:'⚡ Zone outage',start:'ALERT zone-B unreachable — 50% of fleet capacity lost, timeouts spiking on remaining nodes'}
+};
+const RESPNAME={out:'SCALE OUT',up:'SCALE UP',restart:'RESTART NODES',failover:'FAILOVER REGION'};
+const CORRECT={spike:'out',leak:'restart',outage:'failover'};
+const EXPLAIN={
+  spike:{
+    out:'<strong>Scale out — correct.</strong> A traffic spike on a stateless web tier is exactly what horizontal scaling exists for: the autoscaling group adds instances, the load balancer spreads the flood, per-node CPU falls, and p95 recovers — zero downtime, and the fleet shrinks again when the rush ends. (Watch the charts settle.)',
+    up:'<strong>Scale up — wrong lever.</strong> Resizing means restarting servers at their busiest moment: you took capacity OFFLINE during peak demand, and even the biggest machine has a ceiling. Vertical resizes are planned-window moves, not emergency ones. Metrics worsening — try again.',
+    restart:'<strong>Restart — wrong lever.</strong> Restarting dumps healthy in-memory work and pulls nodes out of rotation while demand is 6× normal — you reduced capacity mid-rush. Restarts cure corrupted state; nothing here is corrupted, it is just busy. Metrics worsening — try again.',
+    failover:'<strong>Failover — wrong lever.</strong> You relocated the SAME overload to a standby region, adding cold caches and connection churn on top. The problem is insufficient capacity, not an unhealthy region. Metrics worsening — try again.'
+  },
+  leak:{
+    restart:'<strong>Restart nodes — correct, as MITIGATION.</strong> Rolling restarts reclaim the leaked memory node-by-node with no downtime and reset the clock. Now log the real action item: the leak lives in deploy 4.7’s code, so the root-cause fix is a rollback or patch — restarts only buy time. (Charts recovering.)',
+    out:'<strong>Scale out — wrong lever.</strong> Every new instance runs the same leaking code, so you now have MORE nodes marching toward out-of-memory, plus a bigger bill. The staircase-that-resets-on-restart fingerprint says software defect, not capacity shortage. Metrics worsening — try again.',
+    up:'<strong>Scale up — wrong lever.</strong> Bigger RAM just lengthens the staircase before the same crash — you postponed the incident and made the cost permanent. Leaked memory is not legitimately needed memory. Metrics worsening — try again.',
+    failover:'<strong>Failover — wrong lever.</strong> The standby region runs the same leaking release, so the bug travels with you — you added a regional cutover’s risk for zero benefit. Failover answers infrastructure failure; this infrastructure is fine. Metrics worsening — try again.'
+  },
+  outage:{
+    failover:'<strong>Failover region — correct.</strong> Zone-B’s infrastructure is gone; no command you send to dead machines helps. Shifting traffic to the healthy standby restores full capacity, timeouts stop, latency recovers. This is Session 9’s DR investment paying its dividend. (Charts recovering.)',
+    out:'<strong>Scale out — wrong lever.</strong> Your autoscaler is trying to launch instances IN the failed zone — those API calls time out along with everything else. Replacement capacity must come from somewhere healthy, and that decision is called failover. Metrics worsening — try again.',
+    up:'<strong>Scale up — wrong lever.</strong> Resizing the surviving nodes takes part of your REMAINING capacity offline mid-outage, chasing a ceiling you will still hit. The problem is a missing zone, not undersized machines. Metrics worsening — try again.',
+    restart:'<strong>Restart — wrong lever.</strong> Dead nodes in a dead zone cannot hear you, and restarting the SURVIVORS briefly removes the only capacity you have left. Neither act restores the missing half of the fleet. Metrics worsening — try again.'
+  }
+};
+let SCORE=S['opsScore']||{spike:null,leak:null,outage:null};
+function ilog(msg){
+  const t=new Date().toTimeString().slice(0,8);
+  document.getElementById('incLog').textContent+='\n['+t+'] '+msg;
+}
+function fmtScore(){
+  const mk=v=>v==null?'—':(v?'✓':'✗');
+  const n=['spike','leak','outage'].filter(k=>SCORE[k]===true).length;
+  document.getElementById('dashScore').textContent='First-try score: '+n+'/3 · 🌊 spike '+mk(SCORE.spike)+' · 🐛 leak '+mk(SCORE.leak)+' · ⚡ outage '+mk(SCORE.outage);
+}
+function setResp(on){document.querySelectorAll('.resp').forEach(b=>b.disabled=!on);}
+function setInc(on){['incSpike','incLeak','incOutage'].forEach(id=>document.getElementById(id).disabled=!on);}
+function startInc(type){
+  if(INC)return;
+  INC={type,first:true,worse:false};
+  const st=document.getElementById('dashStatus');
+  st.textContent='🔴 INCIDENT ACTIVE — '+INCMETA[type].label+'. Read the charts: which metric moved first? Then choose ONE response.';
+  st.className='dashstatus hot';
+  const v=document.getElementById('dashVerdict');v.className='verdict';v.innerHTML='';
+  ilog(INCMETA[type].start);
+  setResp(true);setInc(false);
+}
+document.getElementById('incSpike').addEventListener('click',()=>startInc('spike'));
+document.getElementById('incLeak').addEventListener('click',()=>startInc('leak'));
+document.getElementById('incOutage').addEventListener('click',()=>startInc('outage'));
+document.querySelectorAll('.resp').forEach(b=>b.addEventListener('click',()=>{
+  if(!INC)return;
+  const r=b.dataset.r,type=INC.type,good=(CORRECT[type]===r);
+  ilog('ACTION on-call chose '+RESPNAME[r]);
+  if(INC.first){if(SCORE[type]==null){SCORE[type]=good;save('opsScore',SCORE);}INC.first=false;}
+  const v=document.getElementById('dashVerdict');
+  v.innerHTML=(good?'✅ ':'❌ ')+EXPLAIN[type][r];
+  v.className='verdict show '+(good?'good':'bad');
+  const st=document.getElementById('dashStatus');
+  if(good){
+    INC=null;
+    ilog('RESOLVED — metrics returning to baseline');
+    st.textContent='🟢 Recovered. Baselines restoring — inject the next incident when ready.';
+    st.className='dashstatus okk';
+    setResp(false);setInc(true);
+  }else{
+    INC.worse=true;
+    ilog('IMPACT worsening — metrics degrading further');
+    st.textContent='🔴 Situation worsening — the charts are telling you it was the wrong lever. Pick another response.';
+    st.className='dashstatus hot';
+  }
+  fmtScore();
+}));
+fmtScore();
+
+/* ---- alert threshold tuner ---- */
+const TH_DATA=[128,142,117,155,131,146,122,163,138,151,127,170,144,132,240,330,265,158,136,149,161,127,143,175,152,138,166,131,148,157,124,290,385,320,172,146,133,159,141,168,129,154,147,136,162,150,139,171,235,305,255,148,134,158,143,127,165,139,152,130];
+const TH_WINS=[[14,16],[31,33],[48,50]];
+const STEP=620/59;
+function yMap(v){return 152-(v/450)*140}
+document.getElementById('thrSeries').setAttribute('points',TH_DATA.map((v,i)=>(i*STEP).toFixed(1)+','+yMap(v).toFixed(1)).join(' '));
+const winRects=document.querySelectorAll('#thrSvg .incwin');
+TH_WINS.forEach((w,i)=>{const x1=w[0]*STEP-4,x2=w[1]*STEP+4;winRects[i].setAttribute('x',x1.toFixed(1));winRects[i].setAttribute('width',(x2-x1).toFixed(1));});
+const thrSlider=document.getElementById('thrSlider');
+function drawTuner(){
+  const thr=+thrSlider.value;
+  document.getElementById('thrVal').textContent=thr;
+  const y=yMap(thr).toFixed(1);
+  document.getElementById('thrLine').setAttribute('y1',y);
+  document.getElementById('thrLine').setAttribute('y2',y);
+  const inWin=i=>TH_WINS.some(w=>i>=w[0]&&i<=w[1]);
+  let fa=0;TH_DATA.forEach((v,i)=>{if(!inWin(i)&&v>thr)fa++;});
+  let missed=0;TH_WINS.forEach(w=>{let peak=0;for(let i=w[0];i<=w[1];i++)peak=Math.max(peak,TH_DATA[i]);if(peak<=thr)missed++;});
+  document.getElementById('thrFA').textContent=fa;
+  document.getElementById('thrMiss').textContent=missed+'/3';
+  let g,note;
+  if(fa===0&&missed===0){g='🎯 sweet spot';note='Every real incident caught, zero false pages. THIS threshold goes in your Lab A answer — and in your capstone monitoring plan.';}
+  else if(missed===0){g='😫 noisy';note=fa+' false page'+(fa>1?'s':'')+' tonight. You catch everything, but on-call learns to ignore you — and then misses the real one (Poll 3).';}
+  else if(fa===0){g='😴 deaf';note='A quiet pager… too quiet: you slept through '+missed+' real incident'+(missed>1?'s':'')+'. Customers found out before you did.';}
+  else{g='🙃 worst of both';note='False pages AND missed incidents — the threshold sits inside the noise band while sitting above an incident peak. Keep moving.';}
+  document.getElementById('thrGrade').textContent=g;
+  document.getElementById('thrNote').textContent=note;
+}
+thrSlider.addEventListener('input',drawTuner);drawTuner();
+
+/* ---- cloud bill explorer ---- */
+const BILL=[
+  {t:'Compute — web autoscaling group (3–9 × t3.medium)',d:'Scales with traffic · 61% average utilization',amt:412,w:0,why:'Legit — this is elasticity doing its job: the fleet grows for evening rushes and shrinks overnight, and 61% utilization is healthy headroom.'},
+  {t:'Compute — GPU instance p3.2xlarge "rec-engine-dev"',d:'Running 730 hrs/mo since January · 2% utilization',amt:2142,w:1,why:'WASTE #1 — the AI project’s dev box, left running 24/7 at 2% utilization. Stop it nights and weekends (or make it on-demand): roughly $1,900/mo back for zero lost work.'},
+  {t:'Database — db.r5.4xlarge (production POS DB)',d:'Peak CPU over last 90 days: 6%',amt:1916,w:1,why:'WASTE #2 — over-provisioning: paying 4xlarge prices for 6% peak usage. Right-size two tiers down in a planned resize window: roughly $1,400/mo back, same performance.'},
+  {t:'Storage — object storage, book images + backups (4.2 TB)',d:'Lifecycle rules tier old backups to archive',amt:97,w:0,why:'Legit — pennies per GB with lifecycle tiering already configured (Session 5’s lesson, applied). This line is what good looks like.'},
+  {t:'Storage — block volumes, 14 unattached (3.5 TB)',d:'Orphaned when old VMs were deleted',amt:358,w:1,why:'WASTE #3 — orphaned volumes billing quietly since their VMs were deleted. Snapshot anything conceivably needed to archive, delete the volumes, and set a delete-with-VM policy.'},
+  {t:'Network — load balancer + data transfer',d:'Egress 1.9 TB to customers',amt:203,w:0,why:'Legit — the LB is the store’s front door and egress tracks real customer traffic. Watch its growth trend, but it is earning its keep.'},
+  {t:'Cache — managed Redis (cache.t3.small)',d:'94% hit rate',amt:37,w:0,why:'Legit — $37 that absorbs thousands of repeated catalog queries before they hit the database. Possibly the best value on the invoice.'},
+  {t:'Identity — IDaaS, 240 staff seats',d:'SSO + MFA, contracted per seat',amt:720,w:0,why:'Legit — Session 4’s deliverable in production. Do verify the seat count at renewal (departed employees!), but the service itself is essential.'},
+  {t:'Backup + DR — cross-region replication',d:'Meets RTO 4h / RPO 15m targets',amt:184,w:0,why:'Legit — your Session 9 DR plan as a line item. Cutting it would reintroduce the single-server-closet risk Harbor Lane hired you to eliminate.'},
+  {t:'Monitoring + logs',d:'Metrics, dashboards, 30-day log retention',amt:88,w:0,why:'Legit — $88 for the eyes that caught today’s three incidents within seconds. The cheapest insurance on the bill.'}
+];
+const BT=document.getElementById('billTable');
+let found=S['billFound']||[];
+BILL.forEach((li,i)=>{
+  const b=document.createElement('button');
+  b.className='billrow';b.type='button';
+  b.innerHTML='<span>'+li.t+'<small>'+li.d+'</small></span><span class="amt">$'+li.amt.toLocaleString('en-US')+'</span>';
+  b.addEventListener('click',()=>billClick(i,b));
+  BT.appendChild(b);
+});
+function billStat(){
+  const n=found.length,tot=found.reduce((s,i)=>s+BILL[i].amt,0);
+  document.getElementById('billScore').textContent='Waste found: '+n+'/3 · the flagged lines total: $'+tot.toLocaleString('en-US')+(n===3?' of the $6,157 bill (~72%!). Exaggerated for teaching — real FinOps reviews typically recover 25–35%.':'');
+}
+function billClick(i,b){
+  const fb=document.getElementById('billFb');fb.className='billfb show';
+  if(BILL[i].w){
+    if(!found.includes(i)){found.push(i);save('billFound',found);}
+    b.classList.add('waste');
+    fb.innerHTML='<strong>✔ Found it.</strong> '+BILL[i].why;
+  }else{
+    b.classList.add('no');setTimeout(()=>b.classList.remove('no'),400);
+    fb.innerHTML='<strong>✘ Not this one.</strong> '+BILL[i].why;
+  }
+  billStat();
+}
+found.forEach(i=>{const b=BT.children[i];if(b)b.classList.add('waste');});
+billStat();
+
+/* ---- Lab A / C checks ---- */
+function checkA(i){
+  let el,fb,ok=false,msg='';
+  if(i===5){el=document.getElementById('labC5');fb=document.getElementById('fbC5');}
+  else{el=document.getElementById('labA'+i);fb=document.getElementById('fbA'+i);}
+  if(i===1){const v=el.value.trim().toLowerCase();ok=v.includes('cpu')||v.includes('processor');msg=ok?'✔ CPU first — a spike is work arriving faster than processors can chew; latency follows as queues form.':'✘ Inject the 🌊 spike again and watch which chart hits its dashed red line first. (Hint: requests are work, and work burns…)';}
+  if(i===2){const v=el.value.trim().toLowerCase();ok=v.includes('restart');msg=ok?'✔ Restart nodes — rolling restarts reclaim leaked memory; the root-cause fix is rolling back the leaking deploy.':'✘ Try each response on the 🐛 leak and read the explanations. Which one actually resets the memory staircase?';}
+  if(i===3){const v=+el.value;ok=(v>=175&&v<=300);msg=ok?'✔ That threshold rides above the noise (max ~175 ms) and below the smallest incident peak (~305 ms) — 0 false pages, 0 misses.':'✘ Not the sweet spot. Slide until BOTH KPIs read zero: above all the noise, below every shaded incident peak.';}
+  if(i===4){const v=+el.value;ok=(v===4416);msg=ok?'✔ $2,142 + $1,916 + $358 = $4,416/month of action items. Now imagine nobody ever audits it.':'✘ Find all three waste lines first (GPU dev box, oversized DB, orphaned volumes), then add exactly those three line amounts.';}
+  if(i===5){const v=+el.value;ok=(v===2604);msg=ok?'✔ $8,400 × 31% = $2,604 — Analytics sees its own meter for the first time.':'✘ Chargeback math: total bill × the department’s metered share. Check your formula: 8400 × 0.31.';}
+  fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
+}
+/* Lab B token-budget check (🧠 AI concept) */
+function checkB4(){
+  const v=+document.getElementById('labB4').value,fb=document.getElementById('fbB4');
+  const ok=(v>=30&&v<=32);
+  fb.textContent=ok?'✔ Right: 4,000 × 700 = 2.8M input tokens/day ($0.42) + 4,000 × 250 = 1.0M output tokens/day ($0.60) = $1.02/day ≈ $31.50/month. The whole AI feature costs less than 2% of that idle GPU dev box on the bill.':'✘ Recompute: 2.8M input tokens/day × $0.15 per million + 1.0M output tokens/day × $0.60 per million = $1.02/day; multiply by 30–31 days.';
+  fb.className='fb '+(ok?'ok':'no');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Week 1 · Session 3 — Infrastructure as a Service</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--wk:#0f8b8d}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--wk);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+.topnav .mid{font-weight:700}
+#scoreChip{background:var(--pri);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:700}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#2b2a6e 100%);color:#fff;border-radius:16px;padding:28px 26px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:30px;line-height:1.25}
+.hero .sub{margin:0 0 12px;opacity:.9;font-size:16.5px}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:var(--ink)}
+.hero .chip{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .chip.obj{background:var(--amb);border-color:var(--amb);color:#3a2c05}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
+h3{font-size:18px;margin:20px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.warmup{border-top:6px solid var(--amb)}
+.card.ai{border-top:6px solid var(--vio);background:linear-gradient(180deg,#f7f3fc,#fff 90px)}
+.card.disc{border-top:6px solid var(--acc)}
+.card.capstone{border-top:6px solid var(--pri);background:linear-gradient(180deg,#f0f0fa,#fff 90px)}
+.card.exit{border-top:6px solid var(--bad)}
+.segment{position:relative}
+.segno{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--wk);color:#fff;font-weight:800;font-size:15px;margin-right:8px}
+.agenda{width:100%;border-collapse:collapse;font-size:14px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.agenda td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.15)}
+.agenda tr:last-child td{border-bottom:none}
+.bdg{display:inline-block;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
+.b-lec{background:#c9d4f5;color:#22307a}.b-int{background:#ffe3a3;color:#6b4d05}.b-lab{background:#bfe6e0;color:#0b5450}.b-quiz{background:#f3c9c2;color:#7a2417}.b-brk{background:#e4e4e4;color:#555}.b-cap{background:#ddd3f0;color:#432c73}
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.flip{border:1.5px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
+.flip h5{margin:0;font-size:15px;color:var(--pri)}
+.flip .back{display:none;margin-top:8px;font-size:14px;color:var(--ink)}
+.flip.open{background:#eef4f4;border-color:var(--acc)}
+.flip.open .back{display:block}
+.flip .hint{font-size:12px;color:var(--mut)}
+.tabs .tabrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:-1px}
+.tabbtn{border:1px solid var(--line);border-bottom:none;background:#eceadf;border-radius:10px 10px 0 0;padding:8px 16px;cursor:pointer;font:inherit;font-weight:600;font-size:14px}
+.tabbtn.on{background:#fff;color:var(--pri)}
+.tabpane{display:none;border:1px solid var(--line);border-radius:0 12px 12px 12px;background:#fff;padding:16px 18px}
+.tabpane.on{display:block}
+.matcher{margin:14px 0}
+.mcards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.mcard{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.mcard.sel{outline:3px solid var(--amb);border-color:var(--amb)}
+.mcard.ok{background:#e7f3ec;border-color:var(--ok);color:#28583b;cursor:default}
+.mcard.ok::after{content:" ✓"}
+.mcard.no{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.mzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.mzone{border:2px dashed var(--acc);border-radius:12px;background:#f4faf9;padding:12px;cursor:pointer;font:inherit;text-align:center;font-weight:700;color:var(--acc)}
+.mzone small{display:block;font-weight:400;color:var(--mut);margin-top:4px}
+.mstatus{margin-top:10px;font-weight:700;color:var(--pri)}
+.lab{border-left:6px solid var(--acc)}
+.lab .labno{color:var(--acc);font-weight:800;letter-spacing:.5px;font-size:13px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--acc);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.quiz .q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.quiz .q h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
+.stem{margin:6px 0 10px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fbfaf7;cursor:pointer;font:inherit;font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--pri)}
+.opt:disabled{cursor:default;opacity:.85}
+.opt.right{background:#e7f3ec;border-color:var(--ok);opacity:1;font-weight:600}
+.opt.wrong{background:#f8e9e7;border-color:var(--bad);opacity:1}
+.expl{display:none;margin-top:10px;padding:12px 14px;background:#f4f6fb;border-left:4px solid var(--pri);border-radius:8px;font-size:14.5px}
+.q.done .expl{display:block}
+.qresult{margin-top:16px}
+.bar{height:12px;background:#e8e4da;border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .4s}
+.scoreline{font-weight:700;margin:6px 0 0}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.small{padding:5px 12px;font-size:13px}
+.kpis{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.kpi{flex:1;min-width:130px;background:#f4f6fb;border-radius:10px;padding:10px 14px;text-align:center}
+.kpi b{display:block;font-size:22px;color:var(--pri);line-height:1.2}
+.kpi small{color:var(--mut)}
+.poll .popt{display:inline-block;margin:4px 6px 4px 0;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;cursor:pointer;font:inherit;font-size:14px}
+.poll .popt.sel{background:var(--amb);border-color:var(--amb);font-weight:700}
+.pollwhy{display:none;margin-top:8px;padding:10px 12px;background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;font-size:14px}
+.poll.done .pollwhy{display:block}
+.stackrow{display:flex;align-items:center;gap:10px;margin:3px 0}
+.stackrow .lay{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;background:#fbfaf7;transition:all .3s}
+.stackrow .who{width:96px;text-align:center;font-size:12px;font-weight:800;border-radius:8px;padding:4px}
+.who.you{background:#f3c9c2;color:#7a2417}
+.who.prov{background:#bfe6e0;color:#0b5450}
+input[type=range]{width:100%;accent-color:var(--pri)}
+.svgwrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;overflow-x:auto;text-align:center}
+.note{font-size:13.5px;color:var(--mut)}
+.serverfarm{display:flex;flex-wrap:wrap;gap:5px;min-height:40px;margin:8px 0}
+.srv{width:34px;height:40px;border-radius:6px;background:linear-gradient(180deg,#3f3d99,#2b2a6e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px}
+.srv.big{width:64px;height:56px;font-size:26px}
+.checkfield{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.checkfield input[type=number],.checkfield input[type=text]{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;width:110px}
+.fb{font-weight:700;font-size:14px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;min-height:70px}
+.exitrow{display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap}
+.light{font-size:20px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;cursor:pointer}
+.footer-nav{display:flex;justify-content:space-between;margin-top:30px;gap:10px;flex-wrap:wrap}
+table.simple{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+table.simple th{background:#f0eee6;text-align:left}
+table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+<style>
+/* ===== Session 3 custom styles ===== */
+.vmgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:10px 0}
+.vmbox{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fbfaf7}
+.vmbox h5{margin:0 0 8px;font-size:14px;color:var(--pri)}
+.vmbox label{font-size:13.5px;font-weight:600;display:block;margin-top:6px}
+.regsel{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;background:#fff;width:100%;margin-top:4px}
+.verdict{margin:8px 0;padding:10px 14px;border-radius:10px;background:#f4f6fb;border-left:4px solid var(--pri);font-weight:700;font-size:14.5px}
+.lbrow{display:flex;align-items:center;gap:8px;margin:4px 0}
+.lbrow .lbl{width:52px;font-size:12px;font-weight:700;color:var(--mut);text-align:right}
+.lbtrack{flex:1;height:16px;background:#e8e4da;border-radius:99px;overflow:hidden}
+.lbfill{height:100%;background:var(--ok);transition:width .25s,background .25s}
+.lbfill.warn{background:var(--amb)}
+.lbfill.hot{background:var(--bad)}
+.lbrow .pct{width:110px;font-size:12px;font-weight:700}
+.stepper{display:inline-flex;align-items:center;gap:10px;margin:6px 0}
+.stepbtn{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--pri);background:#fff;color:var(--pri);font-size:20px;font-weight:800;cursor:pointer;line-height:1}
+.stepbtn:hover{background:#f0f0fa}
+.lbcount{font-size:20px;font-weight:800;color:var(--pri);min-width:110px;text-align:center}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">⌂ Course Hub</a>
+  <span class="mid">Week 1 · Session 3 — Infrastructure as a Service</span>
+  <span><a href="week1-session2.html">← Session 2</a> &nbsp; <span id="scoreChip">Quiz: 0/0</span> &nbsp; <a href="week2-session4.html">Session 4 →</a></span>
+</nav>
+<main>
+
+
+<!-- ============ WARM-UP ============ -->
+<section class="card warmup">
+  <h3>🔥 Warm-Up Polls <span class="note">(no wrong answers — vote, then we discuss)</span></h3>
+  <div class="poll" id="poll1">
+    <p><strong>Poll 1:</strong> You need a real Linux server for a side project <em>tonight</em>. Realistically, how long until you're logged in?</p>
+    <button class="popt">Weeks — order hardware, wait, rack it</button><button class="popt">A weekend of setup</button><button class="popt">Under 5 minutes</button><button class="popt">I've honestly never done this</button>
+    <div class="pollwhy">With IaaS: <strong>under 5 minutes</strong> — pick a size and region, click Create, SSH in. Before the cloud, "get me a server" meant purchase orders, shipping, racking, cabling: weeks. That compression from weeks to minutes IS on-demand computing, and it's today's opening topic. (If you voted "never done this" — by Lab C you'll have priced one at three different providers, no account needed.)</div>
+  </div>
+  <div class="poll" id="poll2">
+    <p><strong>Poll 2:</strong> Best guess — a basic cloud VM (2 vCPU, 8 GB RAM) costs about how much per month, on-demand?</p>
+    <button class="popt">~$5</button><button class="popt">~$75</button><button class="popt">~$400</button><button class="popt">~$2,000</button>
+    <div class="pollwhy">Around <strong>$60–90/month</strong> at the big providers depending on region — our VM Builder's formula lands it at $76. The surprise cuts both ways: entry-level compute is genuinely cheap, but "just to be safe" oversizing multiplies fast — a 32-vCPU monster runs well over $1,100/month <em>whether or not you use it</em>. Measured service bills what you provision, not what you need. Hold that thought for the quiz.</div>
+  </div>
+  <div class="poll" id="poll3">
+    <p><strong>Poll 3:</strong> When ChatGPT writes your essay outline, the computation physically happens on:</p>
+    <button class="popt">Your laptop</button><button class="popt">Your Wi-Fi router</button><button class="popt">GPU servers in a cloud data center</button><button class="popt">The blockchain, probably</button>
+    <div class="pollwhy"><strong>GPU servers</strong> — racks and racks of them, consumed at IaaS scale. Your prompt travels to a data center where GPU instances (the most expensive line items in any provider's catalog) run the model and stream the answer back. Today's 🧠 AI Concept of the Day card sizes that hardware and explains why nearly every AI company <em>rents</em> it instead of buying — the same rent-vs-own logic you'll apply to Harbor Lane's web store within the hour.</div>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 1 ============ -->
+<section class="segment">
+  <h2><span class="segno">1</span> On-Demand Computing &amp; the IaaS Contract</h2>
+  <div class="card">
+    <h3>On-demand computing: capacity like tap water</h3>
+    <p>This session opens with the idea that made IaaS thinkable: <strong>on-demand computing — getting computing capacity the moment you need it, in the amount you need, and releasing it the moment you don't.</strong> The lineage runs from 1960s time-sharing (many users renting slices of one mainframe) through "utility computing" (the dream of CPU-by-the-hour, like electricity) to 2006, when Amazon started renting virtual machines by the hour to anyone with a browser. <strong>Why it matters:</strong> demand for computing is lumpy — Harbor Lane needs 10× capacity on author-event nights and almost nothing at 4 AM — but owned hardware is a flat, fixed quantity you bought for the peak. On-demand computing lets capacity <em>track</em> demand, so money tracks value. <strong>Concrete example:</strong> a studio renting 100 machines for a weekend render, then deleting them Monday, having paid for exactly 48 hours. <strong>Misconception:</strong> "renting is always cheaper." Not always — a server running flat-out 24/7/365 can be cheaper to own, just as owning a car beats renting one daily. On-demand wins on <em>bursts, uncertainty, and speed</em>; the honest consultant models both (you did exactly this in Session 2's calculator).</p>
+    <h3>IaaS defined — and the line you must memorize</h3>
+    <p><strong>Infrastructure as a Service rents you the fundamental computing resources — virtual machines (compute), storage volumes, and networking — while the provider owns and operates the physical world: data centers, power, cooling, hardware, and the virtualization layer that slices real machines into virtual ones.</strong> Everything above that line is yours: you choose and patch the operating system, install runtimes, deploy applications, and secure your data. It is the most flexible cloud model — you can run almost anything — and the most demanding, because "flexible" is a synonym for "your job." Examples of the product: Amazon EC2, Microsoft Azure Virtual Machines, Google Compute Engine. A virtual machine order sheet has five main knobs: <strong>vCPUs</strong> (processing cores), <strong>RAM</strong>, <strong>storage</strong> (attached disk, GB), <strong>region</strong> (which of the provider's data-center clusters worldwide — affecting price, latency to your users, and legal jurisdiction of the data), and the <strong>image</strong> (the OS snapshot it boots from). <strong>Misconception:</strong> "the cloud provider manages my server." In IaaS they manage the <em>hardware under</em> your server. If your OS goes unpatched, that breach is yours — a distinction with legal and quiz consequences.</p>
+    <h3>🖥️ Interactive: The VM Builder</h3>
+    <p>Spec out a virtual machine and watch the meter. Pricing model (plausible, simplified from real on-demand rates): <em>monthly $ = (vCPU × $18 + RAM GB × $4.50 + storage GB × $0.08) × region multiplier</em>.</p>
+    <div class="vmgrid">
+      <div class="vmbox">
+        <h5>⚙️ Compute</h5>
+        <label>vCPUs: <span id="vmCpuVal" style="color:var(--pri)">2</span></label>
+        <input type="range" id="vmCpu" min="1" max="64" step="1" value="2">
+        <label>RAM: <span id="vmRamVal" style="color:var(--pri)">8</span> GB</label>
+        <input type="range" id="vmRam" min="1" max="256" step="1" value="8">
+      </div>
+      <div class="vmbox">
+        <h5>💾 Storage &amp; Region</h5>
+        <label>SSD storage: <span id="vmStoVal" style="color:var(--pri)">50</span> GB</label>
+        <input type="range" id="vmSto" min="20" max="2000" step="10" value="50">
+        <label>Region</label>
+        <select class="regsel" id="vmRegion">
+          <option value="1" selected>US East (N. Virginia) · ×1.00</option>
+          <option value="1.04">US West (Oregon) · ×1.04</option>
+          <option value="1.12">Europe (Frankfurt) · ×1.12</option>
+          <option value="1.2">Asia Pacific (Tokyo) · ×1.20</option>
+          <option value="1.38">South America (São Paulo) · ×1.38</option>
+        </select>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><b id="vmSpec">—</b><small>your build</small></div>
+      <div class="kpi"><b id="vmPrice">$0</b><small>per month</small></div>
+      <div class="kpi"><b id="vmHr">$0.00</b><small>per hour (÷730)</small></div>
+    </div>
+    <div class="verdict" id="vmVerdict">—</div>
+    <p class="note">Region prices differ because land, power, cooling, taxes, and network capacity differ — São Paulo compute has historically run 30–40% above US East. But region choice isn't only about price: it sets latency to your customers and which country's laws hold your data. A Florida bookstore has no business defaulting to Tokyo.</p>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 2 ============ -->
+<section class="segment">
+  <h2><span class="segno">2</span> Load Balancing &amp; Monitoring — Keeping Rented Fleets Honest</h2>
+  <div class="card">
+    <h3>Load balancing: the maître d' of your server fleet</h3>
+    <p>Once you rent more than one server, you need a way to share the work. A <strong>load balancer is a network device (in the cloud, a rented service) that receives all incoming requests and distributes them across a pool of servers</strong> — round-robin (take turns) or least-connections (send work to the least busy) being the classic algorithms. Users see one address; behind it, any number of machines come and go. <strong>Why it matters twice:</strong> first, <em>scale</em> — it's the front door that makes Session 1's "scale out" strategy possible at all. Second, and less obvious: <em>fault tolerance</em>. The balancer <strong>health-checks</strong> every server continuously (an HTTP probe every few seconds); when a server hangs or dies, it's silently pulled from rotation and the survivors absorb its share — users never know. That same trick enables zero-downtime deploys: drain one server, upgrade it, return it to the pool. <strong>Concrete example:</strong> Harbor Lane's event-night crash was a single web server taking 100% of a 10× spike; three servers behind a balancer, with autoscaling adding more at 70% load, is the boring, correct fix. <strong>Misconception:</strong> a load balancer does not <em>add</em> capacity — it only spreads load across capacity you're paying for. Balancing three drowning servers gives you three evenly drowning servers.</p>
+    <h3>Monitoring: you can't manage what you don't measure</h3>
+    <p>This session pairs IaaS with <strong>system and network monitoring</strong> for a blunt reason: measured service means every rented hour is billed, so waste and trouble both show up as numbers — <em>if you look</em>. The starter kit: <strong>metrics</strong> (CPU %, memory, requests/min, latency, error rate — sampled continuously), <strong>dashboards</strong> (the graphs humans glance at), and <strong>alerts</strong> (rules that page a human or trigger automation when a threshold is crossed: "CPU &gt; 80% for 5 minutes → add a server"; "monthly spend forecast &gt; $1,500 → email the manager"). Alerts convert monitoring from wall art into a control system — and billing alarms are the difference between catching a forgotten test fleet in week one versus meeting it in the month-end invoice. Watch the per-server load bars below cross 70% and imagine the alert firing; in Session 11 you'll run a full incident-response dashboard built on these ideas.</p>
+    <h3>⚖️ Interactive: Load-Balancer Simulator</h3>
+    <p>Each web server comfortably serves <strong>700 req/min</strong> (green), strains to its <strong>1,000 req/min</strong> capacity (amber), then overloads (red = queuing, timeouts, lost sales). Servers cost <strong>$48/mo</strong> each + <strong>$18/mo</strong> for the balancer. Drag traffic, add/remove servers:</p>
+    <p style="margin:4px 0"><strong>Incoming traffic:</strong> <span id="lbTVal" style="font-weight:800;color:var(--pri)">2,400</span> req/min</p>
+    <input type="range" id="lbTraffic" min="500" max="12000" step="100" value="2400">
+    <div class="stepper">
+      <button class="stepbtn" id="lbMinus" aria-label="remove a server">−</button>
+      <span class="lbcount" id="lbN">3 servers</span>
+      <button class="stepbtn" id="lbPlus" aria-label="add a server">+</button>
+    </div>
+    <div id="lbBars"></div>
+    <div class="kpis">
+      <div class="kpi"><b id="lbLoad">—</b><small>load per server</small></div>
+      <div class="kpi"><b id="lbLat">—</b><small>p95 latency</small></div>
+      <div class="kpi"><b id="lbCost">—</b><small>monthly cost</small></div>
+    </div>
+    <div class="verdict" id="lbStatus">—</div>
+    <p class="note">Lab A's challenge lives here: find the <strong>cheapest</strong> fleet with every bar green at 6,000 req/min. Also try this: at 6,000, remove servers until the bars go red — that red state is Harbor Lane's author-event night today, and it explains itself.</p>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 3 ============ -->
+<section class="segment">
+  <h2><span class="segno">3</span> Server Types, Cloud NAS &amp; the Provider Market</h2>
+  <div class="card">
+    <h3>Not all servers do the same job</h3>
+    <p>"Server" is a role, not a shape — and today's catalog of server types matters because <strong>each role has a different resource appetite and a different scaling story</strong>. A <strong>web server</strong> terminates HTTPS and serves pages and images — light, stateless, and the easiest thing in computing to scale out (just add clones behind the balancer). An <strong>application server</strong> runs business logic — checkout rules, coupon math, tax calculation — CPU-hungrier, still usually clonable. A <strong>database server</strong> keeps the structured truth (orders, inventory) and answers queries — RAM- and disk-I/O-hungry, and the hardest to scale because all copies must agree; the classic pattern is one bigger primary plus read replicas. A <strong>cache server</strong> holds the hottest data in RAM (session tokens, the 500 bestselling covers) to answer repeat reads in ~1 ms and shield the database — RAM is nearly its whole diet. A <strong>file server</strong> holds shared documents at the OS-folder level. <strong>Why you care:</strong> sizing a VM (Segment 1) starts with asking which role it plays — a cache wants the RAM-heavy shape, a batch encoder wants CPU-heavy. <strong>Misconception:</strong> "one big server can just do everything." It can — right up until the roles fight over resources and you can't scale or troubleshoot any of them independently. Separating roles is step one of every real architecture, including your capstone diagram.</p>
+    <h3>🗄️ Match each duty to its server type</h3>
+    <div class="matcher" id="srvMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="web">Terminates HTTPS and serves product pages &amp; cover images to browsers</button>
+        <button class="mcard" data-match="app">Runs checkout logic: applies coupons, computes tax, calls the payment gateway</button>
+        <button class="mcard" data-match="db">Stores orders &amp; inventory in tables; answers SQL queries; must never lose a write</button>
+        <button class="mcard" data-match="cache">Keeps session tokens and the 500 hottest book covers in RAM for ~1 ms reads</button>
+        <button class="mcard" data-match="file">Holds the 12 stores' shared spreadsheets, HR PDFs, and marketing assets</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="web">Web server<small>HTTP front door</small></button>
+        <button class="mzone" data-zone="app">App server<small>business logic</small></button>
+        <button class="mzone" data-zone="db">Database server<small>structured truth</small></button>
+        <button class="mzone" data-zone="cache">Cache server<small>hot data in RAM</small></button>
+        <button class="mzone" data-zone="file">File server / NAS<small>shared folders</small></button>
+      </div>
+      <p class="mstatus">0/5 placed</p>
+    </div>
+    <h3>Cloud-based NAS: the file server, minus the closet</h3>
+    <p><strong>Network-Attached Storage (NAS) is shared file storage reached over a network — the "shared drive" every office knows. Cloud-based NAS delivers that same folders-and-files model as a rented service</strong>, so every location mounts the <em>same</em> authoritative storage instead of emailing copies around. What the provider adds beneath the familiar surface: automatic replication across hardware (a dying disk is their non-event, not your catastrophe), snapshots (yesterday's version of the folder, recoverable in clicks), capacity that grows by slider instead of by purchase order, and access control per user or store. <strong>Concrete example:</strong> Harbor Lane's 12 stores currently share files via a 9-year-old box with a clicking hard drive and no offsite copy — cloud NAS retires that single point of failure for tens of dollars a month. <strong>Misconception:</strong> NAS is not the same as consumer file-sync apps — NAS presents live shared folders to many machines; sync apps copy files to each device. (Block vs. object vs. file storage — the full taxonomy — is Session 5's opening act.)</p>
+    <h3>The provider market — who actually sells IaaS</h3>
+    <p>Objective 4 says "identify solution providers," so here is the field, provider-neutral: three hyperscalers dominate, dozens of smaller players (DigitalOcean, Linode/Akamai, Hetzner, OVH, Oracle Cloud) compete on price and simplicity. Browse the tabs — note how the same product (a VM) wears different names:</p>
+    <div class="tabs" id="provTabs">
+      <div class="tabrow">
+        <button class="tabbtn on" data-t="p1">AWS</button>
+        <button class="tabbtn" data-t="p2">Microsoft Azure</button>
+        <button class="tabbtn" data-t="p3">Google Cloud</button>
+        <button class="tabbtn" data-t="p4">Free tiers 🆓</button>
+      </div>
+      <div class="tabpane on" data-p="p1"><strong>Amazon Web Services — the first mover (EC2 launched 2006) and largest provider.</strong> VMs are <em>EC2 instances</em>, in hundreds of sizes grouped by family: general purpose (m-series), compute-optimized (c-series), memory-optimized (r-series), GPU (p/g-series) — the families map directly to the server roles above. Block storage is EBS; the load balancer is ELB; 30+ regions worldwide. Strengths commonly cited: biggest service catalog and ecosystem. Watch-outs: a bill with hundreds of line items and real data-egress fees — monitoring (Segment 2) is not optional here.</div>
+      <div class="tabpane" data-p="p2"><strong>Microsoft Azure — the enterprise and hybrid specialist.</strong> VMs are <em>Azure Virtual Machines</em> (D-series general purpose, E-series memory-optimized, N-series GPU). Strengths commonly cited: deep integration with Windows Server, Active Directory, and Microsoft 365 — organizations already on Microsoft identity often find Azure the path of least resistance — plus strong hybrid tooling for keeping some workloads on-premises (Session 1's hybrid model, productized). Its identity service (Entra ID) stars in Session 4. Watch-outs: licensing complexity is its own skill.</div>
+      <div class="tabpane" data-p="p3"><strong>Google Cloud Platform — the engineering-culture pick.</strong> VMs are <em>Compute Engine instances</em> (e2 economy, n2 general purpose, a-series GPU). Historically notable for billing granularity (per-second billing arrived here first) and automatic sustained-use discounts — run a VM most of the month and the rate drops without paperwork. Strengths commonly cited: networking, data/analytics services, and Kubernetes (which Google originated). Watch-outs: smaller enterprise-support ecosystem than AWS/Azure in some industries.</div>
+      <div class="tabpane" data-p="p4"><strong>Free tiers — real, but read the labels.</strong> Three different species: <em>(1) Always-free allowances</em>: Oracle Cloud's always-free ARM VMs and Google Cloud's e2-micro instance (select US regions) run indefinitely at $0 — small but genuinely useful for student projects. <em>(2) Trial credits</em>: $200–300 valid ~30–90 days (Azure, GCP) — powerful, then gone. <em>(3) 12-month tiers</em>: AWS's 750 hrs/month of small instances for a year. ⚠️ Most require a credit card for identity verification even when nothing is charged — this course never requires that; today's Lab C uses the providers' public pricing calculators, which need no account at all. Terms change often: verify on the provider's own free-tier page before believing any summary — including this one and especially an AI chatbot's.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AI SPOTLIGHT ============ -->
+<section class="card ai">
+  <h3>🧠 AI Concept of the Day · GPUs &amp; AI Infrastructure — the hottest real estate in IaaS</h3>
+  <p class="note" style="margin-top:-4px"><strong>AI concepts track:</strong> every session teaches one real AI concept through that day's cloud objective. Today, while mastering Objective 4, you learn what AI actually runs on — why GPUs and not CPUs, why memory (not speed) is the wall, and why the answer to "should we just buy one?" is almost always no.</p>
+  <p>Modern AI is the loudest possible advertisement for IaaS, because it splits into two workloads with opposite shapes — and both are rented. <strong>Training</strong> a large model is a months-long marathon on thousands of GPU instances wired together with data-center-grade networking; frontier training runs are estimated in the tens or hundreds of millions of dollars of compute. It is the burstiest purchase imaginable: titanic capacity, needed intensely, then not needed at all — exactly the demand shape on-demand computing was invented for. Nobody rational buys 10,000 GPUs for a project that ends; even the biggest AI labs largely rent capacity from (or co-build with) cloud providers. <strong>Inference</strong> — serving your chat requests — is the opposite: millions of small, latency-sensitive requests, 24/7, spread across fleets of smaller GPU instances behind load balancers with autoscaling, precisely the Segment 2 architecture with pricier chips. Sizing vocabulary shifts, too: for AI instances, the headline spec isn't vCPUs but <strong>GPU class and VRAM</strong> — the model must physically fit in GPU memory, so VRAM plays the role RAM played in your VM Builder. When a provider lists a GPU instance at 30–100× the price of a web server, you're reading the economics of the entire AI industry in one pricing row.</p>
+  <h3>The concept: wide beats fast — and memory beats both</h3>
+  <p>Why GPUs? A <strong>CPU</strong> is a few brilliant generalists: a handful of powerful cores built to race through varied, branching work one task at a time — parse a request, check a password, update a row. A <strong>GPU</strong> is thousands of simple cores that all perform the same arithmetic on different numbers at the same instant. Neural networks are almost nothing but <em>matrix multiplication</em> — millions of independent multiply-adds that never wait on each other — exactly the shape GPUs were invented for (originally, coloring a million pixels at once). The GPU wins not because each core is faster — individually they're slower — but because it is thousands of lanes <em>wide</em>. Feed it AI math and it finishes in hours what a CPU grinds at for weeks.</p>
+  <p>The spec that decides whether a model runs at all isn't speed — it's <strong>VRAM</strong>, the GPU's on-board memory. Generating even one token reads essentially <em>every parameter</em>, so the whole model must sit in GPU memory: a 70-billion-parameter model at two bytes per parameter is roughly 140 GB of weights. No gaming card (16–24 GB) holds that, at any clock speed — you need data-center GPUs (80 GB class), usually several of them linked by fast interconnect. <strong>Misconception to bust:</strong> "any fast computer can run any AI model." Capacity decides <em>if</em> it runs; speed only decides <em>how fast</em>. VRAM plays the role RAM played in your VM Builder: check fit first, speed second.</p>
+  <p>Now the price tag. GPU instances rent for <strong>10–100×</strong> a comparable CPU web server because the chips cost tens of thousands of dollars each, draw enormous power, need exotic cooling and networking, and are scarce. So why does nearly everyone <em>rent</em> them anyway? Demand shape — this session's favorite argument. A <strong>training cluster</strong> (thousands of GPUs, running for weeks, then nothing) is the burstiest purchase in computing; owned, it would idle most of the year while depreciating and being obsoleted by next year's chips. An <strong>inference fleet</strong> must autoscale with user traffic behind load balancers — Segment 2's architecture with pricier silicon. AI infrastructure is Session 1's rent-vs-own logic at maximum stakes, and the reason "GPU capacity" now headlines cloud-provider earnings calls.</p>
+  <p><strong>🎯 GPU job or CPU job? Sort each workload onto the right silicon:</strong></p>
+  <div class="matcher" id="gpuMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="gpu">Train an image model on 10 million photos</button>
+      <button class="mcard" data-match="cpu">Serve the company website</button>
+      <button class="mcard" data-match="cpu">Run the payroll batch job</button>
+      <button class="mcard" data-match="gpu">Generate 500 chat replies per second</button>
+      <button class="mcard" data-match="cpu">Host the MySQL database</button>
+      <button class="mcard" data-match="gpu">Fine-tune a speech model overnight</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="gpu">🎮 GPU<small>thousands of cores · parallel matrix math</small></button>
+      <button class="mzone" data-zone="cpu">⚙️ CPU<small>a few fast cores · varied sequential logic</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+  <p><strong>⚡ Activity — size it, then check the sizer (10 min):</strong></p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>You are a cloud capacity planner. Recommend virtual machine specs
+(vCPU, RAM in GB, storage in GB) for this workload, and briefly justify:
+a Python web app for a 12-store bookstore chain — about 2,000 visitors/day,
+a product database around 40 GB, plus a nightly batch job that builds
+sales reports for 30 minutes. One VM for now; name which spec drives cost.</pre></div>
+  <label class="step"><input type="checkbox" data-step="ai1"><span>Run the prompt in any free chatbot. Note its vCPU / RAM / storage numbers.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify with the VM Builder:</strong> dial in the AI's exact specs. Is the monthly price sane for a small business (&lt; $200)? Does the verdict call it a reasonable shape, or overkill? AI planners love rounding up "to be safe" — you now own a tool that prices that habit.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai3"><span>Log the exchange in your AI Use Log: prompt, the AI's sizing, the Builder's verdict, and your final call.</span></label>
+</section>
+
+<!-- ============ LEARN IT WITH AI ============ -->
+<section class="card ai">
+  <h3>🎓 Learn Objective 4 with AI — personal tutor drills</h3>
+  <p><strong>Objective 4: Describe IaaS and identify solution providers.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor. Log every drill in your AI Use Log.</p>
+  <p><strong>Drill 1 · Socratic tutor</strong> — the AI grills you on the machinery of rented infrastructure:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for Session 3 of my cloud computing course —
+Infrastructure as a Service. Topics: on-demand computing, what IaaS
+rents vs. what the customer still manages (who patches the guest OS?),
+sizing a virtual machine (vCPU, RAM, storage, region), load balancing
+and health checks, server types (web, application, database, cache,
+file), and cloud-based NAS. Ask me ONE question at a time, easy to
+hard, 12 questions total. After each of my answers, tell me exactly
+what I got right or wrong before asking the next one. End with my three
+weakest areas and which topics on my session page to review.</pre></div>
+  <p><strong>Drill 2 · Capacity-planning consultation</strong> — the AI plays the client; you must ask the sizing questions:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Roleplay a client consultation. You are the non-technical owner of a
+growing online pet-supply shop who wants "a server in the cloud"; I am
+your IaaS consultant. Invent a realistic workload, but reveal the facts
+ONLY when I ask the right sizing questions (normal and peak traffic,
+database size, batch jobs, budget, where your customers live). One
+short turn at a time, keep each of your turns under 80 words, 8
+exchanges total — then I will propose a build: vCPUs, RAM, storage,
+region, and whether I would add a load balancer or autoscaling. After
+my proposal, break character and critique me against my course's IaaS
+material: correct anything I got wrong, list the sizing questions I
+forgot to ask, and say whether my build is over- or under-provisioned
+for the workload you described.</pre></div>
+  <p><strong>Drill 3 · Quiz master</strong> — IaaS scenarios and name-that-provider:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Quiz me with workplace story problems on IaaS (Session 3 of my cloud
+computing course): rent vs. own, rightsizing oversized VMs, load
+balancers and health checks, matching server types to duties, and
+identifying solution providers — AWS, Azure, Google Cloud, and Oracle
+Cloud — including which free-tier species (always-free, trial credits,
+12-month tier) fits a given scenario. One question at a time, options
+A–D. After I answer, explain why EVERY option is right or wrong before
+asking the next. 8 questions, track my score, get harder as I improve.</pre></div>
+  <label class="step"><input type="checkbox" data-step="ai4"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai5"><span><strong>Verify the tutor:</strong> AI tutors misremember provider details — free-tier terms especially. Cross-check one claim it made against the VM Builder or the provider tabs above, and note in your log whether it held up.</span></label>
+  <p class="note">Every session page carries a "Learn it with AI" block tuned to that day's objective — free tier is plenty. Bonus: the consultation drill is a dress rehearsal for D1's IaaS sizing section.</p>
+</section>
+
+<!-- ============ LABS ============ -->
+<h2>🔬 Hands-On Labs</h2>
+
+<section class="card lab">
+  <p class="labno">LAB A · IN-PAGE SIMULATOR · ~25 MIN</p>
+  <h3>The Load-Balancer Cost Challenge</h3>
+  <p>Use the <strong>VM Builder</strong> (Segment 1) and the <strong>Load-Balancer Simulator</strong> (Segment 2). Type your answers and check them — the page tells you if you're right.</p>
+  <label class="step"><input type="checkbox" data-step="a1"><span>VM Builder: build <strong>4 vCPU / 16 GB RAM / 100 GB</strong> in <strong>US East</strong>. Record the monthly price.</span></label>
+  <div class="checkfield">→ Monthly price: $<input type="number" id="labA1"> <button class="btn small" onclick="checkA(1)">Check</button> <span class="fb" id="fbA1"></span></div>
+  <label class="step"><input type="checkbox" data-step="a2"><span>Keep the same build; switch region to <strong>South America (São Paulo)</strong>. New monthly price?</span></label>
+  <div class="checkfield">→ São Paulo price: $<input type="number" id="labA2"> <button class="btn small" onclick="checkA(2)">Check</button> <span class="fb" id="fbA2"></span></div>
+  <label class="step"><input type="checkbox" data-step="a3"><span>LB Simulator — the headline task: set traffic to <strong>6,000 req/min</strong> (an author-event sale). Find the <strong>cheapest</strong> server count where <strong>every bar is green</strong>. How many servers?</span></label>
+  <div class="checkfield">→ Servers needed: <input type="number" id="labA3"> <button class="btn small" onclick="checkA(3)">Check</button> <span class="fb" id="fbA3"></span></div>
+  <label class="step"><input type="checkbox" data-step="a4"><span>Record that winning config's total monthly cost (servers + balancer).</span></label>
+  <div class="checkfield">→ Monthly cost: $<input type="number" id="labA4"> <button class="btn small" onclick="checkA(4)">Check</button> <span class="fb" id="fbA4"></span></div>
+  <label class="step"><input type="checkbox" data-step="a5"><span>Stress test: still at 6,000 req/min, click − down to 5 servers, then 4. Watch latency and the status line. In your notebook, one sentence: what do Harbor Lane customers experience at 4 servers, and what would autoscaling have done at the 70% threshold?</span></label>
+  <label class="step"><input type="checkbox" data-step="a6"><span>🧠 <strong>AI-infrastructure check:</strong> a model needs <strong>80 GB of VRAM</strong> to load; each rented GPU instance offers <strong>16 GB usable</strong>. Minimum GPUs just to <em>hold</em> the model?</span></label>
+  <div class="checkfield">→ Minimum GPUs: <input type="number" id="labA6"> <button class="btn small" onclick="checkA(6)">Check</button> <span class="fb" id="fbA6"></span></div>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB B · FREE AI CHATBOT · ~15 MIN · 🆓 ChatGPT / Gemini / Claude / Copilot (any free tier)</p>
+  <h3>Capacity Planning with an AI Junior Analyst — Then Audit It</h3>
+  <p>Give your junior analyst a real sizing job, then audit the arithmetic with the simulator — the exact skill (delegate, then verify) your AI Use Log exists to document:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as my capacity-planning analyst. My client's online store normally
+serves 300 requests/minute, but during 2-hour author-event sales traffic
+reaches 3,000 requests/minute. Each web server comfortably handles
+700 requests/minute. Recommend:
+(1) how many servers to run for NORMAL load (consider redundancy),
+(2) how many servers during EVENT peaks,
+(3) whether to run event capacity 24/7 or use autoscaling — and why.
+Show your arithmetic for each answer.</pre></div>
+  <p><strong>What to look for:</strong> division with a ceiling (3,000 ÷ 700 = 4.29 → 5 servers), an N+1 redundancy argument for normal load (1 server carries 300, but 2 means one can fail), and a clear autoscaling recommendation tied to cost.</p>
+  <label class="step"><input type="checkbox" data-step="b1"><span>Run the prompt; read the plan and the arithmetic.</span></label>
+  <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> set the LB simulator to <strong>3,000 req/min</strong> and the AI's event-peak server count. Are all bars green? If the AI said 4 servers (integer division without the ceiling — a genuinely common AI arithmetic slip), the simulator shows amber/red at 750 req/server. Record verified ✔ or corrected ✘.</span></label>
+  <label class="step"><input type="checkbox" data-step="b3"><span>Follow up: <em>"What monthly cost difference between running 5 servers 24/7 versus autoscaling 2→5 for roughly 20 event-hours a month, at $48/server/month?"</em> Sanity-check its math with a calculator.</span></label>
+  <label class="step"><input type="checkbox" data-step="b5"><span>🧠 <strong>Concept check — GPU capacity math:</strong> ask a follow-up: <em>"Our AI feature must generate 600 chat replies per second at peak; one GPU server sustains 40 replies per second. How many GPU servers do we need, including one spare for failure?"</em> Verify by hand before trusting it: 600 ÷ 40 = 15, +1 spare = <strong>16</strong>. Watch for the same floor-division slip you audited in task 2 — except now each wrongly-counted server costs 10–100× a web server. Log verified ✔ or corrected ✘.</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>AI Use Log entry: prompt, what you verified with the simulator, anything corrected.</span></label>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB C · REAL FREE TOOLS · ~20 MIN · 🆓 public pricing calculators — no account, no card</p>
+  <h3>Three Real Quotes: Price the Same VM at AWS, Azure &amp; GCP</h3>
+  <p>Every provider publishes a public pricing calculator precisely so you can shop before signing up. Price roughly the same machine — <strong>2 vCPU / 8 GB RAM, Linux, ~50 GB disk, cheapest US region, on-demand</strong> — at all three. Names differ; the shape is what you're matching.</p>
+  <label class="step"><input type="checkbox" data-step="c1"><span><strong>AWS:</strong> open <code>calculator.aws</code> → Create estimate → search "EC2" → Configure. Region: US East (N. Virginia). Instance: <code>t3.large</code> (2 vCPU / 8 GB). On-Demand, 730 hrs/mo, ~50 GB gp3 storage. Note the monthly total.</span></label>
+  <label class="step"><input type="checkbox" data-step="c2"><span><strong>Azure:</strong> open <code>azure.com/pricing/calculator</code> → add "Virtual Machines". Region: East US, Linux, <code>D2s v3</code> (2 vCPU / 8 GB), pay-as-you-go, 730 hrs. Note the monthly total.</span></label>
+  <label class="step"><input type="checkbox" data-step="c3"><span><strong>GCP:</strong> open <code>cloud.google.com/products/calculator</code> → Compute Engine. Region: us-central1 (Iowa), <code>e2-standard-2</code> (2 vCPU / 8 GB), 730 hrs, 50 GB balanced disk. Note the monthly total.</span></label>
+  <p><strong>Record your three quotes</strong> (they save with the page — you'll cite them in D1):</p>
+  <div class="checkfield">AWS $/mo: <input type="text" id="qAws" data-persist="quoteAws" placeholder="e.g., 68.50"> Azure $/mo: <input type="text" id="qAz" data-persist="quoteAzure" placeholder="e.g., 74.20"> GCP $/mo: <input type="text" id="qGcp" data-persist="quoteGcp" placeholder="e.g., 65.90"></div>
+  <label class="step"><input type="checkbox" data-step="c4"><span>Compare: are the three quotes within ~25% of each other? Compare them to the VM Builder's $76 estimate for the same shape (2 vCPU / 8 GB / 50 GB, US East) — real markets cluster, which is why a simplified formula can be honest.</span></label>
+  <label class="step"><input type="checkbox" data-step="c5"><span>In your project doc, one paragraph: which provider would you shortlist for Harbor Lane's web store and why — price, the Microsoft-shop argument (Azure tab), ecosystem, or free-tier on-ramp? There is no single right answer; there IS an unjustified one.</span></label>
+</section>
+
+<!-- ============ STORY QUIZ ============ -->
+<h2>📝 Session Quiz — Story Problems</h2>
+<p>Ten workplace scenarios on IaaS — the last two test today's AI concept. Pick the best answer; every question explains all four options after you answer. Counts toward the syllabus "Exercises/Quizzes" grade (30%).</p>
+<section class="quiz" id="quiz1">
+
+  <div class="q" data-a="2">
+    <h4>Q1 · <em>Whose patch was it anyway?</em></h4>
+    <p class="stem">Marisol, IT lead at Pelican Point Outfitters, proudly migrates the web store from the office closet to two rented IaaS virtual machines. Four months later, attackers compromise both VMs through a Linux kernel vulnerability that had been patched upstream nine weeks earlier. The provider's incident report is blunt: physical hosts, network, and hypervisor were fully patched and uncompromised; the <em>guest</em> operating systems on Marisol's VMs had never been updated. Whose job was that patching, and why?</p>
+    <button class="opt">A. The provider's — IaaS includes full management of everything you rent</button>
+    <button class="opt">B. Nobody's — cloud VMs patch themselves by definition</button>
+    <button class="opt">C. Marisol's team's — in IaaS the customer manages the OS and everything above it; the provider manages virtualization and below</button>
+    <button class="opt">D. The Linux Foundation's, since its developers wrote the kernel</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ This is THE IaaS dividing line: the provider owns data centers, hardware, network, and hypervisor; the customer owns the guest OS, runtimes, applications, and data. Renting infrastructure rents the machine, not the administration of what you install on it — Marisol's team skipped nine weeks of updates on systems that were theirs to maintain. ✘ A describes a different, higher-abstraction purchase (managed hosting, PaaS, SaaS); if she wanted OS care included, IaaS was the wrong product. ✘ B — some providers <em>offer</em> optional auto-patching services, but they must be chosen and configured; nothing is automatic "by definition." ✘ D — upstream maintainers shipped the fix nine weeks early; applying fixes to running systems is the operator's job, and the operator here is Marisol. Session 8 formalizes this as the shared-responsibility model.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q2 · <em>Forty-eight hours of fur</em></h4>
+    <p class="stem">Studio Marmoset must render a four-minute animated short — 6,000 frames at roughly 40 core-minutes each, about 4,000 core-hours — before Monday's festival submission deadline. The studio's eight workstations would need three weeks. There's no cash to buy servers, and after Monday the rendering need disappears entirely. What is the classic IaaS move?</p>
+    <button class="opt">A. Rent ~100 cloud VMs for the weekend, render in parallel, delete the fleet Monday, and pay only for the hours used</button>
+    <button class="opt">B. Buy 100 servers on credit and resell them Tuesday</button>
+    <button class="opt">C. Subscribe to a SaaS office suite with more storage</button>
+    <button class="opt">D. Push the deadline — three weeks isn't that long</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ A huge, parallelizable, hard-deadline, <em>temporary</em> workload is on-demand computing's founding use case: ~100 VMs working the weekend deliver ~4,000 core-hours, then the fleet — and the bill — evaporates. CapEx becomes a small, precise OpEx purchase shaped exactly like the need. (Note the echo of Session 1's grid-computing protein problem, now with rented iron.) ✘ B — procurement lead times alone (ordering, shipping, racking) blow the deadline, and reselling week-old depreciated hardware locks in a loss; every step fights the calendar. ✘ C is a category error: a SaaS office suite delivers finished productivity software; it cannot execute render jobs no matter how much storage it has. ✘ D — the festival deadline is fixed, and even "negotiable" deadlines spend reputation the studio needs. Renting beats both buying and surrendering.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q3 · <em>The Tuesday 2 PM mystery</em></h4>
+    <p class="stem">BrightCart's web tier is four identical IaaS servers behind a load balancer. On Tuesday at 2 PM, server #3's application hangs — the process stays alive but stops answering requests. Support tickets that afternoon: zero. Revenue: normal. On Wednesday an engineer discovers #3 was effectively dead for six hours while no customer noticed anything. What most likely protected BrightCart?</p>
+    <button class="opt">A. All four servers share one large hard drive, so #3 wasn't needed</button>
+    <button class="opt">B. Customers only shop on weekends</button>
+    <button class="opt">C. DNS caching kept serving the site from users' browsers</button>
+    <button class="opt">D. The load balancer's health checks detected failed probes and quietly routed all traffic to the three healthy servers</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ A load balancer probes every backend continuously (e.g., an HTTP request to /healthz every few seconds). When #3 stopped passing probes, it was pulled from rotation automatically; the other three absorbed its quarter of the traffic (each rising from ~25% to ~33% of load — visible headroom permitting, no user impact). Fault tolerance arrives as a side effect of scaling out. ✘ A — shared storage, besides being an unusual web-tier design, cannot redirect HTTP requests away from a hung process; routing is the balancer's job. ✘ B contradicts the stem: Tuesday revenue was <em>normal</em>, meaning traffic flowed — it just avoided #3. ✘ C — DNS maps the site's name to the balancer's address; it neither detects nor works around a dead backend behind that address, and browsers can't serve dynamic checkout pages from cache. This is Segment 2's health-check story, verbatim.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q4 · <em>Milliseconds matter</em></h4>
+    <p class="stem">GameDen's product pages assemble from database queries on every single view. Detail pages now take 340 ms, and the database server runs at 85% CPU — mostly re-answering identical queries about the same 200 bestselling games thousands of times per hour. Architect Ines says the fix is not a bigger database but one additional server TYPE. Which server, doing what?</p>
+    <button class="opt">A. A file server, to store the game images as shared documents</button>
+    <button class="opt">B. A cache server holding the hottest query results in RAM, answering repeats in ~1 ms and shielding the database</button>
+    <button class="opt">C. A second load balancer, to split the queries evenly</button>
+    <button class="opt">D. A backup server, to protect against data loss</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Frequently read, rarely changed, wildly repetitive — that workload is the cache server's exact job description (the Redis/Memcached role). Hot results for the top 200 games live in RAM; repeat reads never touch the database; DB CPU collapses, page times fall from 340 ms toward tens of milliseconds, and the expensive database upgrade is deferred, maybe forever. ✘ A — file servers share documents between humans and systems; they don't accelerate query workloads, and images aren't the bottleneck here — repeated queries are. ✘ C — a balancer <em>distributes</em> work; it cannot answer queries or reduce the total repeated work reaching the database, and nothing says the existing balancer is saturated. ✘ D — backups protect against loss, serve zero production reads, and change latency not at all. Matching duty to server type is today's matcher game with money attached.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q5 · <em>The $4,100 surprise</em></h4>
+    <p class="stem">In March, a developer at Opal Threads spun up six large test VMs for a one-day load test — and forgot them. Finance discovers the damage in MAY's statement: $4,100 for machines that idled at 2% CPU for nine weeks. The CEO's question to IT is precise: "What practice would have caught this in week one instead of week nine?" What should IT implement?</p>
+    <button class="opt">A. Monitoring with alerts — utilization dashboards plus billing/budget alarms that fire when spend forecasts or idle-capacity thresholds are crossed</button>
+    <button class="opt">B. Stronger passwords on the six VMs</button>
+    <button class="opt">C. A faster internet connection to reach the VMs sooner</button>
+    <button class="opt">D. Moving the test VMs to a pricier region with better hardware</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Measured service bills every provisioned hour, so waste is <em>visible</em> — but only to those who look. The professional kit: metrics collection (CPU, network, per-resource spend), dashboards for humans, and above all <strong>alert rules</strong> — "flag any VM under 5% CPU for 7 days," "email when the monthly forecast passes $1,500." A billing alarm converts this $4,100 lesson into a ~$450 one caught in week one. ✘ B — access control matters, but these VMs weren't breached; they were <em>forgotten</em>, and passwords don't page anyone about idleness. ✘ C — bandwidth changes how fast you reach servers, not whether anyone notices they exist. ✘ D — region choice sets the price multiplier (your VM Builder proves it); moving waste somewhere pricier just makes the surprise bigger. Session 11 builds an entire ops dashboard around this exact failure mode.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q6 · <em>Twelve stores, one spreadsheet, forty versions</em></h4>
+    <p class="stem">Harbor Lane Books' twelve stores share inventory spreadsheets and HR documents by emailing copies to each other — nobody is sure which "FINAL_v7" is real. The master file server is a nine-year-old machine in the closet with a clicking hard drive and no offsite copy. Ops wants every store working from the SAME files, with automatic redundancy, without buying any hardware. Which IaaS-family service fits?</p>
+    <button class="opt">A. A GPU compute instance for faster spreadsheet math</button>
+    <button class="opt">B. A larger email-attachment limit so copies flow faster</button>
+    <button class="opt">C. Cloud-based NAS — provider-hosted network file storage all locations access, with built-in replication and snapshots</button>
+    <button class="opt">D. A load balancer installed in each store</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Cloud NAS delivers the familiar shared-folder model as a service: one authoritative copy visible to all twelve stores, replication across the provider's hardware (the clicking drive's death becomes a non-event), snapshots for "we deleted the payroll folder" moments, and capacity that grows by slider, not purchase order. It retires both the single point of failure and the FINAL_v7 chaos. ✘ A — GPU instances accelerate parallel computation (rendering, ML); they store nothing shared and are the priciest possible non-answer. ✘ B — bigger attachments industrialize the disease: more diverging copies, faster, still with no authoritative version. ✘ D — load balancers spread request traffic across servers; the stores have a storage-truth problem, not a traffic-distribution problem. Storage taxonomy goes deeper (block vs. object vs. file) in Session 5.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q7 · <em>Zero dollars, zero card</em></h4>
+    <p class="stem">Professor Okafor's networking students must each keep a small Linux VM running for a ten-week semester project. Hard rules: genuinely $0, no credit card, running continuously. One student suggests signing up his dad's card for a premium trial "because it's refundable." Based on today's provider survey, what should the class actually use?</p>
+    <button class="opt">A. Nothing — free cloud compute does not exist</button>
+    <button class="opt">B. Always-free tiers built for exactly this — e.g., Oracle Cloud's always-free VMs or Google Cloud's always-free e2-micro (small and region-restricted, but real and indefinite) — while noting that time-boxed trial credits and card-verified tiers are different animals</button>
+    <button class="opt">C. AWS's largest GPU instances, which are free on weekends</button>
+    <button class="opt">D. A "free cloud" download from a forum the student found</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Today's free-tier taxonomy has three species: (1) <strong>always-free allowances</strong> — small resources, indefinitely (Oracle's ARM VMs, GCP's e2-micro in select US regions); (2) <strong>trial credits</strong> — $200–300 that expire in weeks; (3) <strong>12-month tiers</strong> — like AWS's 750 hrs/month of small instances for a year, typically card-verified. A ten-week, always-on, tiny-VM project maps precisely onto species 1 — and terms change, so verify on the provider's own page first. ✘ A — false: always-free tiers are limited, conditional, and entirely real. ✘ C is fabricated — GPU instances are among the most expensive SKUs in any catalog and are never free on a schedule. ✘ D — forum "free clouds" are malware with a landing page, and dad's "refundable" card violates both the assignment's rules and common sense.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q8 · <em>The 3% server</em></h4>
+    <p class="stem">Auditing Corvid Analytics' cloud account, Jae finds the marketing site's VM: 32 vCPU, 128 GB RAM, 200 GB storage in US East, provisioned "to be safe." Monitoring shows 3% average CPU and a 5 GB RAM peak. Under today's pricing model (vCPU $18, RAM $4.50/GB, storage $0.08/GB, US East ×1.00) it costs about $1,168/month. Jae proposes 4 vCPU / 16 GB / 200 GB — about $160/month. What is Jae doing, and what is the approximate annual saving?</p>
+    <button class="opt">A. Scaling out; roughly $1,000 a year</button>
+    <button class="opt">B. Increasing elasticity; roughly $500 a year</button>
+    <button class="opt">C. Load balancing; roughly $12,000 a year</button>
+    <button class="opt">D. Rightsizing an overprovisioned instance; roughly $12,000 a year (≈ $1,008/month) — with generous headroom still left over</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Check the arithmetic: big VM = 32×18 + 128×4.50 + 200×0.08 = 576 + 576 + 16 = $1,168; right-size = 72 + 72 + 16 = $160; difference $1,008/month ≈ <strong>$12,096/year</strong>. Matching provisioned capacity to <em>measured</em> demand is called rightsizing — and at 3% CPU, even the smaller box has lots of room. "To be safe" oversizing is a pre-cloud reflex: when resizing takes weeks, you overbuy; when it takes minutes (elasticity!), you size to reality. ✘ A — scaling out means <em>adding</em> instances; Jae is shrinking one, and the figure is off by 12×. ✘ B — elasticity is capacity tracking demand automatically; a fixed oversized VM is its <em>absence</em>, and $500 is wrong. ✘ C names the wrong technique with the right number — nothing here distributes traffic; the fix is sizing, not balancing. Distractors with correct math and wrong concepts are how audits get argued, so know both.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q9 · <em>The fastest computer money can buy</em> 🧠 AI concept</h4>
+    <p class="stem">Aria's CEO returns from an electronics megastore with the most expensive gaming PC on the shelf — flagship CPU, record clock speeds, and a top gaming GPU with 24 GB of VRAM. "Fastest machine they make. Load up that open-source 70-billion-parameter model our competitors use." At full precision, the model's weights come to roughly 140 GB. Why is Aria about to disappoint the CEO?</p>
+    <button class="opt">A. Open-source models are illegal to run on consumer hardware without a license</button>
+    <button class="opt">B. The CPU's clock speed is too low — overclocking it would fix everything</button>
+    <button class="opt">C. Home internet is too slow for AI, which must stream its computation from the cloud</button>
+    <button class="opt">D. The model physically can't fit: generating each token reads essentially every parameter, so ~140 GB of weights must sit in GPU memory — and no 24 GB card can hold them. VRAM capacity, not speed, decides whether a model runs at all</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Inference touches virtually all parameters for every token, so the whole model must live in VRAM; 140 GB into 24 GB doesn't go, at any clock speed. This is why data-center GPUs ship with 80 GB of memory and get ganged together over fast interconnect — and why they rent at prices no gaming PC hints at. (Running a smaller model, or a heavily compressed "quantized" version, is the realistic workaround — a different, humbler purchase.) ✘ A — open weights are free to download and run; the obstacle is physics, not law. ✘ B — overclocking multiplies operations per second, not gigabytes of memory; a faster engine doesn't enlarge the fuel tank. ✘ C — once weights are downloaded, local inference needs no internet at all. The gaming PC is a Ferrari being asked to haul a shipping container: impressive speed, wrong dimension.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q10 · <em>Own the mountain, or rent it?</em> 🧠 AI concept</h4>
+    <p class="stem">Ostara Labs fine-tunes its industry model twice a year — each run needs a 512-GPU training cluster for about three weeks. The rest of the year, its chatbot serves customers from a small GPU inference fleet that autoscales between 2 and 10 instances with daily traffic. A board member, horrified by the cloud invoices, proposes buying the 512 GPUs outright (~$15M, plus power, cooling, and replacement every few years): "We'd own our future." As CTO, what is the financially sound reply?</p>
+    <button class="opt">A. Agree — owned hardware always beats renting over any time horizon</button>
+    <button class="opt">B. Keep renting both: the training cluster runs ~6 weeks a year, so owning it means ~88% idle time on rapidly depreciating chips, while bursty rental maps cost to actual use — and the inference fleet must autoscale with traffic, which owned fixed hardware can't do cheaply</button>
+    <button class="opt">C. Buy the 512-GPU training cluster, but rent the small inference fleet</button>
+    <button class="opt">D. Replace the GPUs with 512 cheaper CPU servers for training</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Do the utilization math: two 3-week bursts ≈ 6 weeks of use and ~46 weeks of idleness — an owned cluster sits ~88% wasted while it depreciates and next-generation chips obsolete it. Renting shapes spend exactly like demand: pay titanically for six weeks, near zero after — on-demand computing's founding case at AI scale. The inference side is Segment 2 economics with pricier silicon: autoscaling 2→10 with traffic only works when capacity rents by the hour. ✘ A — "owning always wins" fails at 12% utilization; ownership pencils out only for near-saturated, 24/7 workloads. ✘ C inverts the logic: the near-idle training cluster is the <em>worst</em> candidate to own; steadier inference would be the less-bad one, and even it is spiky. ✘ D — CPUs lack the parallel width for matrix math; the job would take months and cost more in total compute. Today's GPU-vs-CPU lesson, with an invoice attached.</div>
+  </div>
+
+  <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+</section>
+
+<!-- ============ DISCUSSION ============ -->
+<section class="card disc">
+  <h3>💬 Discussion Forum Prompts <span class="note">(syllabus: Discussion Forums = 15%)</span></h3>
+  <p><strong>Prompt 1:</strong> IaaS gives you the most control of any cloud model — and Q1's Marisol got breached <em>because</em> of that control. Is maximum control a feature or a liability for a small business with no dedicated IT staff? Take a position, defend it with the IaaS responsibility line and at least one cost figure from today's simulators, and reply to two classmates who chose differently.</p>
+  <p><strong>Prompt 2:</strong> Your VM Builder proves São Paulo costs ~38% more than US East. Under what circumstances should a company pay that premium anyway? List at least two legitimate reasons (think: who are the users, and whose laws govern the data) — and one illegitimate reason you'd challenge in a design review.</p>
+</section>
+
+<!-- ============ CAPSTONE ============ -->
+<section class="card capstone">
+  <h3>🏗️ Capstone · Harbor Lane Books — Checkpoint 3 of 12 · 📦 <span style="color:var(--bad)">DELIVERABLE D1 DUE TODAY</span></h3>
+  <p><strong>End of Week 1 = end of this session = Deliverable D1 (Cloud Adoption Proposal) is due.</strong> Today's IaaS work is its final ingredient. Full brief and rubric: <a href="project.html"><strong>open the Project Brief →</strong></a></p>
+  <p><strong>D1 must contain (assemble and submit as one document):</strong></p>
+  <label class="step"><input type="checkbox" data-step="cap1"><span><strong>Pain-point table</strong> (from Checkpoint 1): Harbor Lane's 5 biggest problems, each mapped to the cloud characteristic or model that addresses it.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap2"><span><strong>SaaS stack recommendation</strong> (from Checkpoint 2): email + docs suite and CRM, with the 3-year cost table (verified public prices, not AI guesses).</span></label>
+  <label class="step"><input type="checkbox" data-step="cap3"><span><strong>One PaaS candidate</strong> for the web-store rebuild, with a two-sentence fit rationale and one lock-in risk you'd manage.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap4"><span><strong>IaaS section (today's work):</strong> chosen provider + instance sizes for the web store — normal-night fleet AND author-event fleet (use LB-sim evidence: server count, cost/month), one VM Builder screenshot or spec line for the database server, and your Lab C quotes as the pricing citation. One page of justification.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap5"><span><strong>Architecture diagram</strong> (diagrams.net, PNG): users → load balancer → web servers → database, labeled with your chosen sizes.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap6"><span><strong>AI Use Log</strong> attached: every prompt used across Sessions 1–3, with what you verified or corrected each time.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap7"><span>Submit per your instructor's directions before leaving. Give yourself a high-five. Week 2 (Deliverable D2) starts with identity — read ahead.</span></label>
+</section>
+
+<!-- ============ EXIT TICKET ============ -->
+<section class="card exit">
+  <h3>🎟️ Exit Ticket</h3>
+  <p>Tap each light until it matches your confidence: 🔴 lost · 🟡 shaky · 🟢 got it</p>
+  <div class="exitrow"><button class="light" data-exit="e1">⚪</button><span>I can define IaaS, name three providers, and draw the customer/provider responsibility line (who patches the guest OS?).</span></div>
+  <div class="exitrow"><button class="light" data-exit="e2">⚪</button><span>I can size a VM for a workload, price it with region multipliers, and spot an overprovisioned "3% server."</span></div>
+  <div class="exitrow"><button class="light" data-exit="e3">⚪</button><span>I can explain load balancing (including health checks), justify a server count for a traffic target, and match duties to server types.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e4">⚪</button><span>🧠 AI concept: I can explain why AI runs on GPUs, what VRAM limits, and why AI infrastructure is rented, not bought.</span></div>
+  <p style="margin-top:10px"><strong>Muddiest point</strong> — one thing still fuzzy (instructor reads these at the start of Session 4):</p>
+  <textarea data-persist="muddy" placeholder="The thing I'm least sure about is…"></textarea>
+</section>
+
+<footer>
+  <div class="card" style="background:#f0eee6">
+    <strong>📚 Before Session 4 (Week 2 begins):</strong> preview <strong>Session 4 (Identity as a Service)</strong> by skimming its opening segment; make sure Deliverable D1 is submitted; post to both discussion prompts. Coming up: single sign-on, MFA, and why "who are you, really?" is the cloud's hardest question.
+  </div>
+  <div class="footer-nav">
+    <a class="btn ghost" href="week1-session2.html">← Session 2: SaaS &amp; PaaS</a>
+    <span><a class="btn ghost" href="index.html">⌂ Course Hub</a> <button class="btn ghost small" onclick="resetPage()">Reset my progress on this page</button></span>
+    <a class="btn" href="week2-session4.html">Session 4: Identity as a Service →</a>
+  </div>
+</footer>
+
+</main>
+<script>
+/* ===== CEN4086 core framework (copy verbatim into every session file) ===== */
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'page');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+function resetPage(){try{localStorage.removeItem(PKEY)}catch(e){};location.reload()}
+
+/* flips */
+document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));
+/* tabs */
+document.querySelectorAll('.tabs').forEach(t=>{
+  t.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>{
+    t.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('on'));
+    t.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');t.querySelector('.tabpane[data-p="'+b.dataset.t+'"]').classList.add('on');
+  }));
+});
+/* polls */
+document.querySelectorAll('.poll').forEach((p,pi)=>{
+  const key='poll:'+(p.id||pi);
+  p.querySelectorAll('.popt').forEach((o,oi)=>o.addEventListener('click',()=>{
+    if(p.classList.contains('done'))return;
+    o.classList.add('sel');p.classList.add('done');save(key,oi);
+  }));
+  if(S[key]!=null){p.classList.add('done');const o=p.querySelectorAll('.popt')[S[key]];if(o)o.classList.add('sel');}
+});
+/* quiz engine */
+function updateQuiz(qz){
+  const qs=[...qz.querySelectorAll('.q')];
+  const done=qs.filter(q=>q.classList.contains('done'));
+  const right=qs.filter(q=>q.classList.contains('gotit')).length;
+  const res=qz.querySelector('.qresult');
+  if(res){res.querySelector('.bar span').style.width=(done.length?Math.round(100*right/qs.length):0)+'%';
+    res.querySelector('.scoreline').textContent='Score: '+right+' / '+qs.length+(done.length===qs.length?(right===qs.length?' — perfect! 🎉':' — review the explanations above.'):' ('+(qs.length-done.length)+' remaining)');}
+  updateChip();
+}
+function updateChip(){
+  let r=0,t=0;
+  document.querySelectorAll('.quiz').forEach(qz=>qz.querySelectorAll('.q').forEach(q=>{t++;if(q.classList.contains('gotit'))r++;}));
+  const c=document.getElementById('scoreChip');if(c)c.textContent='Quiz: '+r+'/'+t;
+}
+document.querySelectorAll('.quiz').forEach((qz,qzi)=>{
+  const qid=qz.id||('qz'+qzi);
+  qz.querySelectorAll('.q').forEach((q,i)=>{
+    const a=+q.dataset.a,opts=[...q.querySelectorAll('.opt')];
+    const key=qid+':q'+i;
+    function answer(j,fresh){
+      q.classList.add('done');if(j===a)q.classList.add('gotit');
+      opts.forEach(o=>o.disabled=true);
+      opts[a].classList.add('right');if(j!==a)opts[j].classList.add('wrong');
+      if(fresh)save(key,j);
+    }
+    opts.forEach((o,j)=>o.addEventListener('click',()=>{if(!q.classList.contains('done')){answer(j,true);updateQuiz(qz);}}));
+    if(S[key]!=null)answer(S[key],false);
+  });
+  updateQuiz(qz);
+});
+/* matcher engine */
+document.querySelectorAll('.matcher').forEach((m,mi)=>{
+  const key='match:'+(m.id||mi);let sel=null,done=0;
+  const cards=[...m.querySelectorAll('.mcard')],st=m.querySelector('.mstatus');
+  function stat(){st.textContent=done+'/'+cards.length+' placed'+(done===cards.length?' — all correct! 🎉':'');}
+  cards.forEach((c,ci)=>{c.addEventListener('click',()=>{
+    if(c.classList.contains('ok'))return;
+    cards.forEach(x=>x.classList.remove('sel'));c.classList.add('sel');sel=c;
+  });});
+  m.querySelectorAll('.mzone').forEach(z=>z.addEventListener('click',()=>{
+    if(!sel)return;
+    if(sel.dataset.match===z.dataset.zone){
+      sel.classList.remove('sel');sel.classList.add('ok');done++;stat();
+      const solved=(S[key]||[]);solved.push(cards.indexOf(sel));save(key,solved);sel=null;
+    }else{sel.classList.add('no');setTimeout(()=>sel&&sel.classList.remove('no'),400);}
+  }));
+  (S[key]||[]).forEach(ci=>{if(cards[ci]&&!cards[ci].classList.contains('ok')){cards[ci].classList.add('ok');done++;}});
+  stat();
+});
+/* lab step checkboxes */
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+/* persisted inputs/textareas */
+document.querySelectorAll('[data-persist]').forEach(el=>{
+  const key='p:'+el.dataset.persist;
+  if(S[key]!=null)el.value=S[key];
+  el.addEventListener('input',()=>save(key,el.value));
+});
+/* exit ticket lights */
+const LIGHTS=['⚪','🔴','🟡','🟢'];
+document.querySelectorAll('.light').forEach(b=>{
+  const key='exit:'+b.dataset.exit;let i=S[key]||0;b.textContent=LIGHTS[i];
+  b.addEventListener('click',()=>{i=(i+1)%4;b.textContent=LIGHTS[i];save(key,i);});
+});
+/* copy prompt */
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+
+/* ===== Session 3 custom interactives ===== */
+function fmt(n){return n.toLocaleString('en-US')}
+
+/* VM Builder */
+const vmCpu=document.getElementById('vmCpu'),vmRam=document.getElementById('vmRam'),vmSto=document.getElementById('vmSto'),vmReg=document.getElementById('vmRegion');
+function vmCalc(){
+  const c=+vmCpu.value,r=+vmRam.value,s=+vmSto.value,m=+vmReg.value;
+  document.getElementById('vmCpuVal').textContent=c;
+  document.getElementById('vmRamVal').textContent=r;
+  document.getElementById('vmStoVal').textContent=s;
+  const total=(c*18+r*4.5+s*0.08)*m;
+  const monthly=Math.round(total);
+  document.getElementById('vmSpec').textContent=c+' vCPU · '+r+' GB · '+s+' GB';
+  document.getElementById('vmPrice').textContent='$'+fmt(monthly);
+  document.getElementById('vmHr').textContent='$'+(total/730).toFixed(2);
+  let v;
+  if(c<=2&&r<=4){v='🌱 Starter box — right for a personal blog, portfolio, or dev sandbox. A 12-store web front end would outgrow it on event nights.';}
+  else if(c<=4&&r<=16){v='🏪 Small-business workhorse — the classic shape for a store’s web or app server. Real architectures run several of these behind a load balancer (Segment 2) instead of one giant.';}
+  else if(c<=16&&r<=64){v='🏭 Mid-size muscle — a busy web store, a mid-size database, or a CI runner. Fine IF monitoring shows demand that justifies it.';}
+  else{v='🐘 Big iron — large databases or in-memory analytics territory. Overkill for a blog by roughly '+Math.round(total/(24.1*m))+'× — and measured service bills every idle hour at full price.';}
+  const ratio=r/c;
+  if(ratio>=16){v+=' Shape note: very RAM-heavy — a cache / in-memory-database ratio.';}
+  else if(ratio<2){v+=' Shape note: CPU-heavy — a batch/encoding ratio; most web workloads want more RAM per core.';}
+  document.getElementById('vmVerdict').textContent=v;
+}
+[vmCpu,vmRam,vmSto,vmReg].forEach(el=>{el.addEventListener('input',vmCalc);el.addEventListener('change',vmCalc);});
+vmCalc();
+
+/* Load-balancer simulator */
+let lbServers=3;
+const lbT=document.getElementById('lbTraffic');
+function lbSim(){
+  const t=+lbT.value;
+  document.getElementById('lbTVal').textContent=fmt(t);
+  document.getElementById('lbN').textContent=lbServers+(lbServers===1?' server':' servers');
+  const per=t/lbServers,u=per/1000;
+  const bars=document.getElementById('lbBars');
+  let html='';
+  for(let i=1;i<=lbServers;i++){
+    const w=Math.min(100,u*100);
+    const cls=per<=700?'':(per<=950?' warn':' hot');
+    html+='<div class="lbrow"><span class="lbl">SRV '+i+'</span><div class="lbtrack"><div class="lbfill'+cls+'" style="width:'+w+'%"></div></div><span class="pct">'+Math.round(per)+' req/min · '+Math.round(u*100)+'%</span></div>';
+  }
+  bars.innerHTML=html;
+  let lat;
+  if(u<=0.7)lat=Math.round(38+u*10)+' ms';
+  else if(u<=0.95)lat=Math.round(45+(u-0.7)*580)+' ms';
+  else if(u<=1.05)lat=Math.round(190+(u-0.95)*3000)+' ms';
+  else lat='2,500+ ms ⚠';
+  document.getElementById('lbLoad').textContent=Math.round(per)+' /min';
+  document.getElementById('lbLat').textContent=lat;
+  document.getElementById('lbCost').textContent='$'+fmt(lbServers*48+18);
+  const st=document.getElementById('lbStatus');
+  if(per<=700){st.textContent='🟢 All green — healthy headroom (every server under 70% of its 1,000 req/min capacity). This is where autoscaling policies aim to keep you.';}
+  else if(per<=950){st.textContent='🟡 Running hot — past the 70% alert threshold. Requests are queuing and latency is climbing; one traffic bump or one server failure tips this red. An autoscaler would be adding a server right now.';}
+  else if(per<=1050){st.textContent='🟠 Saturated — at or beyond rated capacity. p95 latency is spiking and frustrated users are hitting refresh, which adds MORE traffic.';}
+  else{st.textContent='🔴 Overloaded — servers are dropping requests and timing out. This is Harbor Lane’s author-event crash, reproduced on purpose. Add servers or shed load.';}
+}
+document.getElementById('lbMinus').addEventListener('click',()=>{lbServers=Math.max(1,lbServers-1);lbSim();});
+document.getElementById('lbPlus').addEventListener('click',()=>{lbServers=Math.min(12,lbServers+1);lbSim();});
+lbT.addEventListener('input',lbSim);
+lbSim();
+
+/* Lab A checks */
+function checkA(i){
+  const val=+document.getElementById('labA'+i).value,fb=document.getElementById('fbA'+i);
+  let ok=false,msg='';
+  if(i===1){ok=(val===152);msg=ok?'✔ Correct: (4×$18)+(16×$4.50)+(100×$0.08) = 72+72+8 = $152/month in US East.':'✘ Not yet. Set exactly 4 vCPU, 16 GB, 100 GB, US East. Formula: (4×18)+(16×4.5)+(100×0.08).';}
+  if(i===2){ok=(val===210);msg=ok?'✔ Right: $152 × 1.38 = $209.76 → $210/month. Same machine, ~38% more — geography is a pricing input.':'✘ Keep the 4/16/100 build and pick São Paulo (×1.38). $152 × 1.38 rounds to $210.';}
+  if(i===3){ok=(val===9);msg=ok?'✔ Yes: green needs ≤700 req/min per server, and 6,000 ÷ 700 = 8.57 → ceiling = 9 servers (8 servers = 750 each = amber).':'✘ Not it. Green means ≤700 req/min per server. Divide 6,000 by 700 and round UP — then confirm on the bars.';}
+  if(i===4){ok=(val===450);msg=ok?'✔ Correct: 9 × $48 + $18 balancer = $450/month — the price of never crashing an author event again.':'✘ Cost = servers × $48 + $18 for the balancer. With the all-green fleet from Task 3 that is 9×48+18.';}
+  if(i===6){ok=(val===5);msg=ok?'✔ Correct: ceil(80 ÷ 16) = 5 GPUs — every parameter must sit in GPU memory before a single token can be generated. Capacity sets the floor; speed comes second. (Real deployments then add headroom for working data, so 5 is the bare minimum.)':'✘ Divide 80 GB by 16 GB per GPU and round UP — 4 GPUs give only 64 GB, leaving 16 GB of parameters with nowhere to live. Same ceiling-division reflex as the server math in Task 3.';}
+  fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Week 4 · Session 10 — Service-Oriented Architecture</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--wk:#7b5ea7}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--wk);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+.topnav .mid{font-weight:700}
+#scoreChip{background:var(--pri);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:700}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#2b2a6e 100%);color:#fff;border-radius:16px;padding:28px 26px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:30px;line-height:1.25}
+.hero .sub{margin:0 0 12px;opacity:.9;font-size:16.5px}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:var(--ink)}
+.hero .chip{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .chip.obj{background:var(--amb);border-color:var(--amb);color:#3a2c05}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
+h3{font-size:18px;margin:20px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.warmup{border-top:6px solid var(--amb)}
+.card.ai{border-top:6px solid var(--vio);background:linear-gradient(180deg,#f7f3fc,#fff 90px)}
+.card.disc{border-top:6px solid var(--acc)}
+.card.capstone{border-top:6px solid var(--pri);background:linear-gradient(180deg,#f0f0fa,#fff 90px)}
+.card.exit{border-top:6px solid var(--bad)}
+.segment{position:relative}
+.segno{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--wk);color:#fff;font-weight:800;font-size:15px;margin-right:8px}
+.agenda{width:100%;border-collapse:collapse;font-size:14px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.agenda td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.15)}
+.agenda tr:last-child td{border-bottom:none}
+.bdg{display:inline-block;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
+.b-lec{background:#c9d4f5;color:#22307a}.b-int{background:#ffe3a3;color:#6b4d05}.b-lab{background:#bfe6e0;color:#0b5450}.b-quiz{background:#f3c9c2;color:#7a2417}.b-brk{background:#e4e4e4;color:#555}.b-cap{background:#ddd3f0;color:#432c73}
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.flip{border:1.5px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
+.flip h5{margin:0;font-size:15px;color:var(--pri)}
+.flip .back{display:none;margin-top:8px;font-size:14px;color:var(--ink)}
+.flip.open{background:#eef4f4;border-color:var(--acc)}
+.flip.open .back{display:block}
+.flip .hint{font-size:12px;color:var(--mut)}
+.tabs .tabrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:-1px}
+.tabbtn{border:1px solid var(--line);border-bottom:none;background:#eceadf;border-radius:10px 10px 0 0;padding:8px 16px;cursor:pointer;font:inherit;font-weight:600;font-size:14px}
+.tabbtn.on{background:#fff;color:var(--pri)}
+.tabpane{display:none;border:1px solid var(--line);border-radius:0 12px 12px 12px;background:#fff;padding:16px 18px}
+.tabpane.on{display:block}
+.matcher{margin:14px 0}
+.mcards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.mcard{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.mcard.sel{outline:3px solid var(--amb);border-color:var(--amb)}
+.mcard.ok{background:#e7f3ec;border-color:var(--ok);color:#28583b;cursor:default}
+.mcard.ok::after{content:" ✓"}
+.mcard.no{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.mzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.mzone{border:2px dashed var(--acc);border-radius:12px;background:#f4faf9;padding:12px;cursor:pointer;font:inherit;text-align:center;font-weight:700;color:var(--acc)}
+.mzone small{display:block;font-weight:400;color:var(--mut);margin-top:4px}
+.mstatus{margin-top:10px;font-weight:700;color:var(--pri)}
+.lab{border-left:6px solid var(--acc)}
+.lab .labno{color:var(--acc);font-weight:800;letter-spacing:.5px;font-size:13px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--acc);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.quiz .q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.quiz .q h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
+.stem{margin:6px 0 10px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fbfaf7;cursor:pointer;font:inherit;font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--pri)}
+.opt:disabled{cursor:default;opacity:.85}
+.opt.right{background:#e7f3ec;border-color:var(--ok);opacity:1;font-weight:600}
+.opt.wrong{background:#f8e9e7;border-color:var(--bad);opacity:1}
+.expl{display:none;margin-top:10px;padding:12px 14px;background:#f4f6fb;border-left:4px solid var(--pri);border-radius:8px;font-size:14.5px}
+.q.done .expl{display:block}
+.qresult{margin-top:16px}
+.bar{height:12px;background:#e8e4da;border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .4s}
+.scoreline{font-weight:700;margin:6px 0 0}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.small{padding:5px 12px;font-size:13px}
+.kpis{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.kpi{flex:1;min-width:130px;background:#f4f6fb;border-radius:10px;padding:10px 14px;text-align:center}
+.kpi b{display:block;font-size:22px;color:var(--pri);line-height:1.2}
+.kpi small{color:var(--mut)}
+.poll .popt{display:inline-block;margin:4px 6px 4px 0;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;cursor:pointer;font:inherit;font-size:14px}
+.poll .popt.sel{background:var(--amb);border-color:var(--amb);font-weight:700}
+.pollwhy{display:none;margin-top:8px;padding:10px 12px;background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;font-size:14px}
+.poll.done .pollwhy{display:block}
+.stackrow{display:flex;align-items:center;gap:10px;margin:3px 0}
+.stackrow .lay{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;background:#fbfaf7;transition:all .3s}
+.stackrow .who{width:96px;text-align:center;font-size:12px;font-weight:800;border-radius:8px;padding:4px}
+.who.you{background:#f3c9c2;color:#7a2417}
+.who.prov{background:#bfe6e0;color:#0b5450}
+input[type=range]{width:100%;accent-color:var(--pri)}
+.svgwrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;overflow-x:auto;text-align:center}
+.note{font-size:13.5px;color:var(--mut)}
+.serverfarm{display:flex;flex-wrap:wrap;gap:5px;min-height:40px;margin:8px 0}
+.srv{width:34px;height:40px;border-radius:6px;background:linear-gradient(180deg,#3f3d99,#2b2a6e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px}
+.srv.big{width:64px;height:56px;font-size:26px}
+.checkfield{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.checkfield input[type=number],.checkfield input[type=text]{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;width:110px}
+.fb{font-weight:700;font-size:14px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;min-height:70px}
+.exitrow{display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap}
+.light{font-size:20px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;cursor:pointer}
+.footer-nav{display:flex;justify-content:space-between;margin-top:30px;gap:10px;flex-wrap:wrap}
+table.simple{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+table.simple th{background:#f0eee6;text-align:left}
+table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+<style>
+/* ===== Session 10 additions ===== */
+.apibar{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.apiconsole{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.55;max-height:380px;overflow:auto}
+.apiconsole .xchg{border-bottom:1px dashed #39415e;padding:9px 0}
+.apiconsole .xchg:last-child{border-bottom:none}
+.reqline{color:#9db4ff;font-weight:700}
+.stline{font-weight:700}
+.st2{color:#7ee2a8}.st4{color:#ff9d8f}
+.hdrline{color:#8f9bbd}
+.apiconsole pre{margin:6px 0 0;white-space:pre-wrap;font-family:inherit}
+.apiform{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#fbfaf7;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0}
+.apiform input{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;width:190px}
+.apiform .flab{font-size:13px;font-weight:700;color:var(--mut)}
+#coupleSvg .box{fill:#fff;stroke:#5c6474;stroke-width:1.5;transition:fill .3s,stroke .3s}
+#coupleSvg text{font:700 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;fill:#1d2433}
+#coupleSvg text.sub{font-weight:400;font-size:11px;fill:#5c6474}
+#coupleSvg text.mode{font-weight:600;font-size:12.5px;fill:#5c6474}
+#coupleSvg .link{stroke:#8a92a6;stroke-width:2;transition:stroke .3s}
+#coupleSvg.tight .link{stroke:#b3543f;stroke-width:3}
+#coupleSvg.tight .contract{display:none}
+#coupleSvg .contract{fill:#fff;stroke:var(--acc);stroke-width:2.5;transition:fill .25s}
+#coupleSvg .contract.flash{fill:#7ee2a8}
+#coupleSvg g.hit rect{fill:#f8d7d2;stroke:var(--bad);stroke-width:2.5}
+#coupleSvg g.safe rect{fill:#e7f3ec;stroke:var(--ok);stroke-width:2.5}
+.jtree{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.jtree details{margin:2px 0 2px 16px}
+.jtree summary{cursor:pointer;font-weight:700;color:var(--pri)}
+.jtree ul{list-style:none;margin:0;padding:0}
+.jtree li{margin:2px 0 2px 34px}
+.jk{color:var(--pri);font-weight:700}
+.jv-str{color:#0b6b3a}.jv-num{color:#8a4b12}.jv-bool{color:#7b5ea7}.jv-null{color:#888}
+.jerr{background:#fdf1ef;border-left:4px solid var(--bad);border-radius:8px;padding:10px 12px;font-size:14px}
+.wtab input{border:1.5px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;width:95%;font-size:13px}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">⌂ Course Hub</a>
+  <span class="mid">Week 4 · Session 10 — Service-Oriented Architecture</span>
+  <span><a href="week3-session9.html">← Session 9</a> &nbsp; <span id="scoreChip">Quiz: 0/0</span> &nbsp; <a href="week4-session11.html">Session 11 →</a></span>
+</nav>
+<main>
+
+
+<!-- ============ WARM-UP ============ -->
+<section class="card warmup">
+  <h3>🔥 Warm-Up Polls <span class="note">(no wrong answers — vote, then we discuss)</span></h3>
+  <div class="poll" id="poll1">
+    <p><strong>Poll 1:</strong> You tapped "Pay" in a rideshare app this morning. How many separate companies' software services do you think touched that one tap?</p>
+    <button class="popt">Just one — the app</button><button class="popt">2–3</button><button class="popt">5–10</button><button class="popt">Dozens</button>
+    <div class="pollwhy">Dozens is closest. One tap fans out to the rideshare's own trip, pricing, and driver services, then to a payment processor, a card network, a fraud-scoring service, a mapping provider, a push-notification service, and an SMS gateway — each a separate program, often at a separate company, cooperating over APIs. Modern apps are <strong>federations of services</strong>, not single programs. That architecture has a name, and it's today's whole topic: SOA.</div>
+  </div>
+  <div class="poll" id="poll2">
+    <p><strong>Poll 2:</strong> A web <em>page</em> and a web <em>service</em> both live at URLs. What's the real difference?</p>
+    <button class="popt">No difference — same thing</button><button class="popt">Pages are for humans; services are for programs</button><button class="popt">Services are just faster pages</button><button class="popt">Pages are the newer technology</button>
+    <div class="pollwhy">Pages return HTML meant for human eyeballs; services return structured data (usually JSON) meant for <strong>other software</strong>. The rule to remember: "web services ≠ web pages." When your weather app shows 91°F, no human-readable page was involved — the app called a service and got <code>{"temp": 91}</code>. Today you'll build and call services yourself, right inside this page.</div>
+  </div>
+  <div class="poll" id="poll3">
+    <p><strong>Poll 3:</strong> Your bank's mobile app, website, and 4,000 ATMs all show the same balance within seconds. Most likely because…</p>
+    <button class="popt">Each keeps its own copy of the balance</button><button class="popt">Employees update them all by hand</button><button class="popt">All three call one shared "account service"</button><button class="popt">Clever caching magic</button>
+    <div class="pollwhy">One authoritative <strong>account service</strong>, consumed by every front end, is the standard design. Write the balance logic once, expose it as a service, and reuse it everywhere — that's the "discoverable, reusable service" idea at the heart of SOA. The alternative (each front end with its own copy of the logic) is how banks end up showing three different balances and making the evening news.</div>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 1 ============ -->
+<section class="segment">
+  <h2><span class="segno">1</span> What SOA Is: Services, Contracts &amp; Loose Coupling</h2>
+  <div class="card">
+    <h3>The big idea: build applications the way cities build utilities</h3>
+    <p><strong>Service-Oriented Architecture (SOA)</strong> is an architectural style in which an application is assembled from <strong>discoverable, reusable services</strong> — self-contained programs, each responsible for one business capability, that communicate over a network through <strong>well-defined interfaces</strong>. A service might "look up inventory," "charge a card," or "send a receipt." The application you see (a web store, a mobile app) is a thin layer that <em>orchestrates</em> calls to those services, the way a new restaurant doesn't dig its own well or build its own power plant — it connects to water and electric services that already exist, through standardized meters and outlets.</p>
+    <p>Why does this matter enough to be a course objective? Three reasons stand out. <strong>Reuse:</strong> write the tax-calculation service once; every application in the company calls it, instead of five teams maintaining five slightly different (and slightly disagreeing) copies. <strong>Interoperability:</strong> because services talk over standard protocols (HTTP) using standard formats (JSON/XML), a Java service can serve a Python app, a C# app, and an iPhone app simultaneously — language and platform stop mattering at the boundary. <strong>Independent evolution:</strong> each service can be upgraded, rewritten, scaled, or even relocated to another cloud, and as long as its interface behaves the same, nothing that depends on it needs to change.</p>
+    <p>That interface has a name you should use precisely: the <strong>contract</strong> — the published agreement about what requests a service accepts and what responses it returns. Everything behind the contract is a <strong>black box</strong>: consumers know <em>what</em> the service does, never <em>how</em>. The moment a consumer reaches around the contract — say, by querying the service's database directly — the box isn't black anymore, and you've built the failure we demonstrate below.</p>
+    <h3 style="margin-top:22px">📡 Up close: MCP — the Model Context Protocol</h3>
+  <p>Function calling has an integration problem that this session's SOA history predicts perfectly. If every AI app describes tools in its own private format, then 5 AI clients × 20 tools means 100 pieces of bespoke glue — the exact N×M mess that made pre-SOA enterprises miserable. <strong>MCP (Model Context Protocol)</strong> is the open, vendor-neutral standard that fixes it: think <em>USB-C for AI tools</em>. One standard plug; any client, any tool.</p>
+  <p>The roles are simple. An <strong>MCP server</strong> is a small program that publishes capabilities: <strong>tools</strong> (functions the model may propose calling, with typed schemas — <code>get_inventory(store_id, isbn)</code>), <strong>resources</strong> (read-only data it can supply, like a store-hours document), and reusable <strong>prompts</strong>. An <strong>MCP client</strong> (a chat app, an IDE assistant, an agent) connects and asks, at runtime, <em>"what do you offer?"</em> — then calls what it discovers, over one standard JSON message format. That runtime question is <strong>discoverability</strong>, the service-registry dream SOA promised decades ago, finally shipping at scale. And the safety boundary you just learned does not move: the model still only <em>proposes</em> calls; the server runs under YOUR permissions with least-privilege scopes.</p>
+  <p>For Harbor Lane the payoff is concrete: build ONE MCP server exposing <code>get_inventory</code>, <code>create_order</code>, and <code>get_recommendations</code>, and every MCP-capable assistant — the staff chatbot, a developer's IDE agent, tomorrow's customer widget — can use those tools with zero new glue. Integrations grow N+M, not N×M.</p>
+  <p><strong>🔌 Sort the MCP roles</strong> — click a card, then the role it plays:</p>
+  <div class="matcher" id="mcpMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="mclient">The staff chatbot that connects and asks "what tools do you have?"</button>
+      <button class="mcard" data-match="mserver">Harbor Lane's small program publishing get_inventory and create_order</button>
+      <button class="mcard" data-match="mtool">get_inventory(store_id, isbn) — a typed function the model may propose calling</button>
+      <button class="mcard" data-match="mres">The read-only store-hours document the assistant can pull into context</button>
+      <button class="mcard" data-match="mclient">A developer's IDE assistant connecting to those same store capabilities</button>
+      <button class="mcard" data-match="mserver">The catalog team's process that answers each tool call with JSON results</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="mclient">MCP Client<small>connects &amp; discovers</small></button>
+      <button class="mzone" data-zone="mserver">MCP Server<small>publishes &amp; executes</small></button>
+      <button class="mzone" data-zone="mtool">Tool<small>callable function</small></button>
+      <button class="mzone" data-zone="mres">Resource<small>readable data</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+  <p class="note">Loose coupling test: Harbor Lane can rewrite the inventory system in a new language over the weekend — as long as the MCP server's published tool schemas stay honored, every connected client keeps working Monday. Same green flash, new decade.</p>
+  <p><strong>Common misconception:</strong> "SOA is a product you install," or "we have a website, so we have SOA." Neither. SOA is a set of design decisions — decompose by business capability, publish contracts, hide internals — and a website is one <em>consumer</em> of services, not evidence that services exist. A company can run a beautiful website on top of a single tangled program with zero reusable services (wait for Segment 3's monolith).</p>
+    <h3>Key vocabulary — flip each card</h3>
+    <div class="flipgrid">
+      <button class="flip"><h5>Service</h5><span class="hint">tap to flip</span><span class="back">A self-contained program exposing one business capability (e.g., "inventory lookup") over the network. It owns its own logic and data, and can be deployed and scaled by itself.</span></button>
+      <button class="flip"><h5>Contract / interface</h5><span class="hint">tap to flip</span><span class="back">The published rules of engagement: which requests the service accepts, which responses it returns, which errors it can raise. Consumers depend on the contract — never on the internals.</span></button>
+      <button class="flip"><h5>Black box</h5><span class="hint">tap to flip</span><span class="back">Consumers can't see (and mustn't care) how a service works inside — its language, database, or algorithms. Internals can be rebuilt entirely without consumers noticing, as long as the contract holds.</span></button>
+      <button class="flip"><h5>Loose coupling</h5><span class="hint">tap to flip</span><span class="back">Services depend on each other ONLY through contracts, so a change inside one doesn't force changes in others. The single most important property in this session — demo below.</span></button>
+      <button class="flip"><h5>Discoverability</h5><span class="hint">tap to flip</span><span class="back">Developers can FIND existing services (via a registry or API catalog) instead of rebuilding them. A service nobody can find gets rebuilt — killing the reuse benefit you paid for.</span></button>
+      <button class="flip"><h5>Interoperability</h5><span class="hint">tap to flip</span><span class="back">Standard protocols + standard data formats mean any language/platform can call any service. The Java ↔ Python ↔ Swift wall disappears at the service boundary.</span></button>
+    </div>
+    <h3>🧨 Interactive: Loose vs. Tight Coupling — break something on purpose</h3>
+    <p>Four Harbor Lane Books services. In <strong>tight</strong> mode they call each other's internals (shared database, embedded SQL). In <strong>loose</strong> mode they touch only each other's published API contracts (teal ports on the lines). Pick a mode, then press the wrench to change the Inventory service's internal database — and watch what happens to everyone else.</p>
+    <p>
+      <button class="btn small" id="modeTight">Tight coupling</button>
+      <button class="btn ghost small" id="modeLoose">Loose coupling</button>
+      <button class="btn small" id="chgInv" style="background:var(--amb);color:#3a2c05">🔧 Change the Inventory service</button>
+    </p>
+    <div class="svgwrap">
+      <svg id="coupleSvg" class="tight" viewBox="0 0 640 312" role="img" aria-label="Four service boxes connected by lines; changing one service shows breakage rippling in tight mode or contracts holding in loose mode">
+        <line class="link" x1="115" y1="94" x2="115" y2="192"/>
+        <line class="link" x1="196" y1="224" x2="448" y2="88"/>
+        <line class="link" x1="196" y1="224" x2="448" y2="224"/>
+        <line class="link" x1="196" y1="62" x2="448" y2="62"/>
+        <circle class="contract" cx="115" cy="143" r="9"/>
+        <circle class="contract" cx="322" cy="156" r="9"/>
+        <circle class="contract" cx="322" cy="224" r="9"/>
+        <circle class="contract" cx="322" cy="62" r="9"/>
+        <g class="svcbox" id="svcStore"><rect class="box" x="40" y="30" width="156" height="64" rx="10"/><text x="118" y="57" text-anchor="middle">🛒 Web Store</text><text class="sub" x="118" y="77" text-anchor="middle">browse + checkout</text></g>
+        <g class="svcbox" id="svcPay"><rect class="box" x="448" y="30" width="156" height="64" rx="10"/><text x="526" y="57" text-anchor="middle">💳 Payments</text><text class="sub" x="526" y="77" text-anchor="middle">charge + refund</text></g>
+        <g class="svcbox" id="svcInv"><rect class="box" x="40" y="192" width="156" height="64" rx="10"/><text x="118" y="219" text-anchor="middle">📦 Inventory</text><text class="sub" x="118" y="239" text-anchor="middle">stock per store</text></g>
+        <g class="svcbox" id="svcShip"><rect class="box" x="448" y="192" width="156" height="64" rx="10"/><text x="526" y="219" text-anchor="middle">🚚 Shipping</text><text class="sub" x="526" y="239" text-anchor="middle">pick + deliver</text></g>
+        <text id="coupleLabel" class="mode" x="320" y="298" text-anchor="middle">TIGHT coupling: services reach into each other's databases and internals</text>
+      </svg>
+    </div>
+    <p id="coupleMsg" style="font-weight:600;min-height:24px">Choose a mode, then press the 🔧 wrench.</p>
+    <p class="note">Run it in BOTH modes before moving on. The dollars-and-cents translation: tight coupling turns a one-team change into a four-team emergency; loose coupling turns it into a non-event. When Session 12 asks which apps are hard to migrate, the answer will usually be "the tightly coupled ones."</p>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 2 ============ -->
+<section class="segment">
+  <h2><span class="segno">2</span> REST: Verbs, Resources, JSON — and Your Own /books API</h2>
+  <div class="card">
+    <h3>How services actually talk: RESTful web services</h3>
+    <p>Early SOA used heavyweight XML protocols (SOAP, WSDL) that required tooling just to say hello. The style that won the web is <strong>REST</strong> (REpresentational State Transfer), which reuses what HTTP already does. Three rules carry most of the weight. <strong>Rule 1 — resources are nouns with URLs:</strong> every <em>thing</em> gets an address: <code>/books</code> is the collection, <code>/books/2</code> is one book. Paths name things, never actions — <code>/getBook</code> and <code>/books/deleteAll</code> are REST smells. <strong>Rule 2 — verbs come from HTTP:</strong> <code>GET</code> reads (safe — changes nothing, so it can be cached or retried freely), <code>POST</code> creates, <code>PUT</code> replaces/updates, <code>DELETE</code> removes. The same URL means different operations under different verbs. <strong>Rule 3 — representations travel as JSON:</strong> the service sends a <em>representation</em> of the resource, today almost always JSON — lightweight, human-readable, and parseable by every language.</p>
+    <p>Every response carries a <strong>status code</strong> — the service's one-glance verdict: <code>200 OK</code> (here's your data), <code>201 Created</code> (new resource made), <code>204 No Content</code> (done, nothing to send back — the polite answer to DELETE), <code>400 Bad Request</code> (your request was malformed), <code>404 Not Found</code> (no such resource), <code>500 Internal Server Error</code> (the service itself broke). Codes starting 2 = success, 4 = <em>your</em> fault, 5 = <em>their</em> fault — memorize that split; it's half of API debugging.</p>
+    <p>One more REST property explains why services scale so well: <strong>statelessness</strong>. Each request carries everything needed to answer it (identity token, parameters); the server keeps no memory of your previous request. That means <em>any</em> copy of the service behind a load balancer can answer <em>any</em> request — which is exactly what Session 3's load balancing and Session 11's autoscaling require. Stateful services scale like a conversation you can't hand off; stateless services scale like a ticket window anyone can staff.</p>
+    <p><strong>Common misconception:</strong> "an API call is just loading a hidden web page." No — there is no page. The consumer is software; the payload is data; the browser is optional. Your phone's weather widget, a POS terminal, and ChatGPT's mobile app are all REST consumers that never render HTML from those calls.</p>
+
+    <h3>🎮 Interactive: The /books REST Playground <span class="note">(a real, working fake API)</span></h3>
+    <p>This page implements a tiny bookstore API in JavaScript — an in-memory catalog that starts with 4 books. Fire requests with the buttons; the console below shows the request line, the status code, and the JSON response exactly as a real API would return them. <strong>The data persists while this page is open</strong> — POST a book, then GET the collection and you'll see it there.</p>
+    <div class="apibar">
+      <button class="btn small" id="btnGetAll">GET /books</button>
+      <button class="btn small" id="btnGet2">GET /books/2</button>
+      <button class="btn small" id="btnDel" style="background:var(--bad)">DELETE /books/3</button>
+    </div>
+    <div class="apiform">
+      <span class="flab">POST /books</span>
+      <input type="text" id="newTitle" placeholder="title">
+      <input type="text" id="newAuthor" placeholder="author">
+      <button class="btn small" id="btnPost" style="background:var(--ok)">Send POST</button>
+    </div>
+    <div class="apiform">
+      <span class="flab">PUT /books/2</span>
+      <input type="text" id="putTitle" placeholder="new title">
+      <input type="text" id="putAuthor" placeholder="new author">
+      <button class="btn small" id="btnPut" style="background:var(--amb);color:#3a2c05">Send PUT</button>
+    </div>
+    <div class="apiconsole" id="apiConsole"><div class="xchg"><div class="hdrline"># Console ready. Click a request button above — newest exchange appears at the top.</div></div></div>
+    <p class="note">Try this sequence and predict each status code before you click: GET /books → POST a book (with and without a title!) → GET /books → PUT /books/2 → GET /books/2 → DELETE /books/3 → DELETE /books/3 again. That last one is the classic 404 moment.</p>
+
+    <h3>🌳 Interactive: JSON Tree Explorer</h3>
+    <p>JSON looks dense until you see it as a tree. Edit the sample below (or paste any JSON) and parse it into a collapsible tree. Then break it on purpose — add a trailing comma or swap double quotes for single quotes — and read the error message. Real integration work is 50% reading other people's JSON.</p>
+    <textarea id="jsonIn" style="min-height:150px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px">{
+  "store": "Harbor Lane Books",
+  "founded": 1987,
+  "online": true,
+  "branches": [
+    { "city": "St. Petersburg", "staff": 24 },
+    { "city": "Sarasota", "staff": 18 },
+    { "city": "Key West", "staff": 9 }
+  ],
+  "api": { "version": "v1", "formats": ["json"] }
+}</textarea>
+    <p><button class="btn small" id="btnParse">Parse → tree</button></p>
+    <div class="jtree" id="jsonOut"><span class="note">Parsed tree appears here.</span></div>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 3 ============ -->
+<section class="segment">
+  <h2><span class="segno">3</span> Monolith → Microservices, Performance &amp; Governance</h2>
+  <div class="card">
+    <h3>From one big program to many small services</h3>
+    <p>A <strong>monolith</strong> is one program that does everything: signup, catalog, checkout, emails — one codebase, one database, one deployment. Monoliths aren't evil; they're simple, fast to build, and the right first architecture for most small teams. They hurt when they grow: a one-line fix to the receipt email requires redeploying the entire store; the checkout code can't scale without scaling everything; and a bug in the reviews feature can crash payments, because it's all one process. <strong>Microservices</strong> — the modern, fine-grained descendant of the SOA in this session — split the monolith along business capabilities into independently deployable services, each owning its own data. Amazon's store, Netflix, and Uber all made this journey, and each did it for the same three reasons: independent scaling, independent deployment, and team autonomy (a small team owns each service end-to-end).</p>
+    <p><strong>Web-service performance</strong> is the tax you pay: what was a nanosecond in-process function call becomes a millisecond-scale network hop, and a page that fans out to 30 services inherits the latency of the slowest. Architects fight back with <em>caching</em> (remember recent answers), <em>parallel calls</em> (ask independent services simultaneously), and <em>latency budgets</em> (each service gets a slice of the page's total allowance). <strong>Scaling services</strong> is the reward: because services are separate and stateless, the search service can run 40 copies on Black Friday while the refund service runs 2 — Session 3's load balancing and Session 11's autoscaling, applied per service.</p>
+    <p><strong>Governance</strong> is the adult supervision that keeps 40 services from becoming 40 tiny fiefdoms: a catalog/registry so services stay <em>discoverable</em>; naming and design standards so APIs feel consistent; an owner for every contract; and — critically — <strong>versioning</strong>. A published contract is a promise, so breaking changes ship as a new version (<code>/v2/books</code>) while <code>/v1</code> keeps working through a deprecation window. <strong>Misconception:</strong> "microservices are always better." A three-person startup that adopts 20 microservices buys Netflix's overhead without Netflix's problems — network failures, distributed debugging, and 20 deployment pipelines. Monolith-first, split when it hurts, is respectable engineering.</p>
+    <h3>🧩 Interactive: Split the Monolith</h3>
+    <p>Harbor Lane's web store is one big program today. Sort each feature into the microservice that should own it (click a feature, then a service zone):</p>
+    <div class="matcher" id="splitMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="idsvc">Log in with email + password</button>
+        <button class="mcard" data-match="cat">Search books by author or title</button>
+        <button class="mcard" data-match="pay">Charge a credit card at checkout</button>
+        <button class="mcard" data-match="notif">Email the customer a receipt</button>
+        <button class="mcard" data-match="idsvc">Reset a forgotten password</button>
+        <button class="mcard" data-match="cat">Serve a book's details (price, cover, stock badge)</button>
+        <button class="mcard" data-match="pay">Issue a refund for a returned book</button>
+        <button class="mcard" data-match="notif">Text "your order shipped" to the customer</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="idsvc">🪪 Identity service<small>accounts &amp; login</small></button>
+        <button class="mzone" data-zone="cat">📚 Catalog service<small>books &amp; search</small></button>
+        <button class="mzone" data-zone="pay">💳 Payment service<small>charges &amp; refunds</small></button>
+        <button class="mzone" data-zone="notif">📣 Notification service<small>email &amp; SMS</small></button>
+      </div>
+      <p class="mstatus">0/8 placed</p>
+    </div>
+    <p class="note">Notice the sorting rule you just used: group by <em>business capability</em>, not by technology ("all the database code together" is how monoliths are organized). Each of these four services could now be scaled, rewritten, or handed to a different team — independently.</p>
+  </div>
+</section>
+
+<!-- ============ AI SPOTLIGHT ============ -->
+<section class="card ai">
+  <h3>🧠 AI Concept of the Day · Function Calling &amp; Agents — SOA reborn</h3>
+  <p class="note" style="margin-top:-4px"><strong>AI concepts track:</strong> every session teaches one real AI concept through that day's cloud objective. Today, while mastering Objective 8 (SOA), you learn <em>function calling, tool use, and agents</em> — and discover that the hottest idea in AI is this session's architecture wearing a new name.</p>
+  <p>Strip away the magic and a large language model in the cloud is <strong>exactly what this session describes</strong>: a black-box web service behind a REST contract. You send <code>POST /v1/messages</code> with a JSON body and an API key; you get back a status code, JSON, and a token count for the metered bill — the same HTTPS + JSON + status-code literacy you just built in the /books playground. The provider can swap GPUs, retrain, or move data centers, and your code never knows — that's the black box and the contract doing their jobs. Every SOA property maps one-to-one: <em>interoperability</em>, <em>reuse</em> (thousands of apps share one model service), <em>measured service</em> (per-token billing), <em>statelessness</em> (each request carries the whole conversation — hence context windows).</p>
+  <p><strong>Function calling (tool use)</strong> runs the arrow the other way. In your request you <em>describe</em> your services to the model — name, purpose, parameters: "here is <code>get_inventory(store_id, isbn)</code>, here is <code>create_order(...)</code>." When a customer asks "is Manatee Summer in stock at store 4?", the model replies not with prose but with a structured JSON call: <code>get_inventory(store=4, isbn=…)</code>. Read that carefully: the model <strong>emits a request and stops</strong>. It executes nothing. YOUR application receives the JSON, validates it against the tool's schema, decides whether to run it, performs the real REST request with its own credentials, and returns the JSON result for the model to read — only then does the model write the human answer. One question, six steps; you'll sort them below.</p>
+  <p>Repeat that loop — reason → call a tool → observe the result → repeat until done — and you have an <strong>agent</strong>. Squint and you'll recognize it: a program composing discoverable, reusable services through published contracts. That is <em>service composition</em> — pure SOA thinking with a natural-language planner on top. Even discoverability is back: <strong>MCP (Model Context Protocol)</strong> is an emerging standard interface that lets any AI client discover and call any tool server — the modern echo of SOA's service-registry dream. And loose coupling matters identically: swap the inventory service's internals over the weekend, honor the contract, and Monday's agent keeps working without a line of prompt or code changing.</p>
+  <p><strong>Common misconception:</strong> "the AI executes code and takes actions itself." It never does — it only <em>proposes</em> structured calls; execution, credentials, and permissions live in your application, and that boundary is exactly where safety lives. Give an agent least-privilege tools (read-only lookups, capped quantities) and "the AI dropped our database" becomes a call your code would refuse to run. When Harbor Lane's owner asks for "AI recommendations," your answer will be an AI service calling your catalog and order services — three sessions of this course stacked together.</p>
+  <p><strong>🧩 Sort it — the anatomy of ONE tool call.</strong> A customer asks Harbor Lane's chatbot, "Does store 4 have ISBN 9780316769488?" Six things happen, in strict order. Click a card, then the step where it belongs:</p>
+  <div class="matcher" id="toolCallMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="s3">App validates the call against the tool schema</button>
+      <button class="mcard" data-match="s6">Model writes the human answer using the result</button>
+      <button class="mcard" data-match="s1">App sends the model the user's question + a list of available tools</button>
+      <button class="mcard" data-match="s5">App returns the JSON result to the model</button>
+      <button class="mcard" data-match="s2">Model replies with JSON: get_inventory(store=4, isbn=…)</button>
+      <button class="mcard" data-match="s4">App executes the real REST request against the inventory service</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="s1">Step 1<small>the setup</small></button>
+      <button class="mzone" data-zone="s2">Step 2<small>the model's move</small></button>
+      <button class="mzone" data-zone="s3">Step 3<small>the guardrail</small></button>
+      <button class="mzone" data-zone="s4">Step 4<small>the real work</small></button>
+      <button class="mzone" data-zone="s5">Step 5<small>report back</small></button>
+      <button class="mzone" data-zone="s6">Step 6<small>the human reply</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+  <p class="note">Notice who does what: the model appears only at steps 1–2 and 5–6, as a reader and writer of JSON. Validation and execution — steps 3–4 — run in YOUR code, under YOUR permissions. That boundary is the entire safety story.</p>
+  <p><strong>Explore the anatomy of one AI API call</strong> (a representative, simplified exchange):</p>
+  <div class="tabs" id="aiTabs">
+    <div class="tabrow">
+      <button class="tabbtn on" data-t="a1">1 · The request</button>
+      <button class="tabbtn" data-t="a2">2 · The auth</button>
+      <button class="tabbtn" data-t="a3">3 · The response</button>
+      <button class="tabbtn" data-t="a4">4 · The bill</button>
+    </div>
+    <div class="tabpane on" data-p="a1"><pre style="white-space:pre-wrap;font-size:13px;margin:0">POST /v1/messages HTTP/1.1
+Host: api.example-ai.com
+Content-Type: application/json
+
+{ "model": "example-model-4",
+  "messages": [ {"role": "user",
+    "content": "Recommend a beach read like Manatee Summer"} ] }</pre><p class="note" style="margin-top:8px">A plain REST call: verb POST, resource /v1/messages (note the version in the path — governance!), JSON body. Nothing here a bookstore API doesn't also have.</p></div>
+    <div class="tabpane" data-p="a2"><pre style="white-space:pre-wrap;font-size:13px;margin:0">Authorization: Bearer sk-EXAMPLE-KEY-1234</pre><p class="note" style="margin-top:8px">The API key identifies the calling account — identity for programs (Session 4's ideas, applied to services). Keys get stolen from public GitHub repos daily; treat them like passwords, rotate them, and never hard-code them.</p></div>
+    <div class="tabpane" data-p="a3"><pre style="white-space:pre-wrap;font-size:13px;margin:0">HTTP/1.1 200 OK
+Content-Type: application/json
+
+{ "content": [ {"type": "text",
+    "text": "Try 'Gulf Coast Gardening'— wait, for a NOVEL,
+     try 'The Lighthouse Keeper's Daughter'..."} ],
+  "stop_reason": "end_turn" }</pre><p class="note" style="margin-top:8px">Status code + JSON representation — identical shape to your /books playground responses. Your app parses this exactly like any other service reply.</p></div>
+    <div class="tabpane" data-p="a4"><pre style="white-space:pre-wrap;font-size:13px;margin:0">"usage": { "input_tokens": 19, "output_tokens": 42 }</pre><p class="note" style="margin-top:8px">Measured service, per token instead of per gigabyte — Session 1's metering characteristic, alive in 2026. Multiply tokens × price and you have the FinOps problem Session 11 covers tomorrow.</p></div>
+  </div>
+</section>
+
+<!-- ============ LEARN IT WITH AI ============ -->
+<section class="card ai">
+  <h3>🎓 Learn Objective 8 with AI (SOA)</h3>
+  <p><strong>Objective 8: Define and describe Service-Oriented Architecture.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor. Log every drill in your AI Use Log.</p>
+  <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you, not the other way around:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for my cloud computing course (today's session:
+Service-Oriented Architecture). Topics: web
+services vs. web pages, loose coupling and contracts, service reuse,
+interoperability, and REST (resources as nouns, GET/POST/PUT/DELETE verb
+semantics, JSON, status codes). Ask me ONE question at a time, easy to
+hard, 10 questions total. After each of my answers, tell me exactly what I
+got right or wrong before asking the next one. Finish with a summary of my
+weak spots and which of those topics I should restudy.</pre></div>
+  <p><strong>Drill 2 · Design-review roleplay</strong> — a strict senior architect audits the 5 endpoints you drafted in Lab B:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a strict senior software architect reviewing my REST API design for
+Harbor Lane Books, my cloud course capstone (course topic: Service-Oriented
+Architecture and REST). Below are my 5 endpoints (Method | Path | Request
+body | Success status | Error status). Audit them against REST conventions:
+plural nouns for resources, no verbs in paths, correct verb semantics,
+correct status codes, versioning. Reveal ONE issue at a time — name the
+problem and why it matters, then wait for my corrected endpoint and tell me
+if my fix is right or wrong before revealing the next issue. Cap the review
+at 5 findings. If the design is clean, say so — then ask the two hardest
+questions a review board would still raise.
+
+MY 5 ENDPOINTS:
+(paste your API design sheet from Lab B here)</pre></div>
+  <p><strong>Drill 3 · Quiz master</strong> — unlimited SOA practice in this course's exact quiz style:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Quiz me with workplace story problems about Service-Oriented Architecture
+and REST (topics: web services vs. web pages, loose coupling, contracts,
+verb semantics, JSON, status codes) — the style where a named
+character faces a realistic situation and I pick from options A–D. Mix two
+kinds: "spot the REST violation" (a verb in the path, a state-changing GET,
+a wrong status code) and "pick the right verb and status code" for a given
+operation. One question at a time. After I answer, explain why EVERY option
+is right or wrong, then ask the next. 8 questions, track my score, get
+harder as I improve.</pre></div>
+  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify the tutor:</strong> AI tutors occasionally misstate REST rules or invent status codes. Cross-check one claim it made against the /books playground in Segment 2 (fire the request and read the real code) or this session's definitions above, and note in your log whether it held up.</span></label>
+  <p class="note">The design-review drill is the highest-value one this week: it hardens the exact API sheet you submit for Checkpoint 10. Free tier is plenty.</p>
+</section>
+
+<!-- ============ LABS ============ -->
+<h2>🔬 Hands-On Labs</h2>
+
+<section class="card lab">
+  <p class="labno">LAB A · IN-PAGE SIMULATOR · ~25 MIN</p>
+  <h3>REST Playground Challenge</h3>
+  <p>Use the <strong>/books playground</strong> in Segment 2. Do each task for real, then type what the console showed you — the page checks your answers:</p>
+  <label class="step"><input type="checkbox" data-step="a1"><span>Click <strong>GET /books</strong> and read the full collection. What status code did it return?</span></label>
+  <div class="checkfield">→ Status code: <input type="number" id="labA1"> <button class="btn small" onclick="checkA(1)">Check</button> <span class="fb" id="fbA1"></span></div>
+  <label class="step"><input type="checkbox" data-step="a2"><span><strong>POST</strong> a new book (any title/author you like), then GET /books to confirm it's really in the collection. What status code confirmed the creation?</span></label>
+  <div class="checkfield">→ Status code: <input type="number" id="labA2"> <button class="btn small" onclick="checkA(2)">Check</button> <span class="fb" id="fbA2"></span></div>
+  <label class="step"><input type="checkbox" data-step="a3"><span>Click <strong>DELETE /books/3</strong> twice in a row. The first click returns 204. What does the SECOND click return, and why?</span></label>
+  <div class="checkfield">→ Second status code: <input type="number" id="labA3"> <button class="btn small" onclick="checkA(3)">Check</button> <span class="fb" id="fbA3"></span></div>
+  <label class="step"><input type="checkbox" data-step="a4"><span>You need to correct the author's name on book 2 (the whole record is being replaced). Which HTTP verb is the RESTful choice? Try it in the playground, then verify with GET /books/2.</span></label>
+  <div class="checkfield">→ Verb: <input type="text" id="labA4" placeholder="e.g., GET"> <button class="btn small" onclick="checkA(4)">Check</button> <span class="fb" id="fbA4"></span></div>
+  <label class="step"><input type="checkbox" data-step="a5"><span>In the JSON Tree Explorer, parse the sample document. How many items are in the <code>branches</code> array? Then break the JSON on purpose (add a trailing comma) and read the error before fixing it.</span></label>
+  <div class="checkfield">→ Items in branches: <input type="number" id="labA5"> <button class="btn small" onclick="checkA(5)">Check</button> <span class="fb" id="fbA5"></span></div>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB B · FREE AI CHATBOT · ~15 MIN · 🆓 ChatGPT / Gemini / Claude / Copilot (any free tier)</p>
+  <h3>AI as Junior API Designer — You Are the Reviewer</h3>
+  <p>Open any free AI chatbot and paste this prompt:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>I'm designing a REST API for Harbor Lane Books, a 12-store Florida bookstore
+chain launching a cloud web store. Propose exactly 5 REST endpoints covering:
+(1) list all books, (2) fetch one book, (3) create a new order,
+(4) check an order's status, (5) cancel an order.
+For each endpoint give: HTTP method | URL path | one-line purpose |
+success status code | most likely error status code.
+Follow REST conventions strictly: plural nouns for resources, no verbs in
+paths, correct verb semantics. Present the result as a table, then list any
+design decisions you had to make.</pre></div>
+  <label class="step"><input type="checkbox" data-step="b1"><span>Run the prompt and get the 5-endpoint table.</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — the model only <em>proposes</em> calls:</strong> in the same chat, paste: <em>"You have one tool: get_inventory(store_id, isbn). A customer asks whether store 4 has ISBN 9780316769488. Reply ONLY with the JSON tool call you would emit."</em> Compare its JSON to the /books playground's conventions — field names, types, quoting — and note any schema drift (invented fields? renamed parameters?). Log the exchange in your AI Use Log with one sentence on what this proves: the model emitted a <em>request</em>, and nothing executed — because execution belongs to YOUR code, not the model.</span></label>
+  <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> grade every endpoint against Segment 2's three REST rules. Check specifically: Are paths nouns (<code>/orders/17</code>, never <code>/cancelOrder</code>)? Is cancel done with DELETE or a status-update PUT — and did the AI justify the choice? Are the status codes right (201 for created order, 404 for missing order)? Find <strong>at least one thing to challenge or improve</strong> — ask the AI to defend it and see if you agree.</span></label>
+  <label class="step"><input type="checkbox" data-step="b3"><span>Record the prompt, the AI's table, and your correction in your <strong>AI Use Log</strong> (required for the capstone) — note what you verified and what you changed.</span></label>
+  <p class="note">⚖️ Course rule reminder: AI is your junior analyst, not your ghostwriter. The endpoint table you submit in the capstone must be YOUR reviewed version, with the AI's contribution disclosed in the log.</p>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB C · REAL FREE TOOLS · ~20 MIN · 🆓 jsonplaceholder.typicode.com + restcountries.com + browser DevTools (no accounts)</p>
+  <h3>Call Real Public APIs From Your Browser</h3>
+  <p>Time to leave the sandbox. These two free, public, no-key APIs answer millions of practice requests a day. Record what you see in the worksheet table below (it saves as you type).</p>
+  <label class="step"><input type="checkbox" data-step="c1"><span><strong>Address bar as API client:</strong> browse to <code>https://jsonplaceholder.typicode.com/users/3</code>. You get JSON, not a page — you just made a GET request. Note the "name" field. (Firefox pretty-prints JSON automatically; Chrome shows raw text.)</span></label>
+  <label class="step"><input type="checkbox" data-step="c2"><span><strong>Query a collection:</strong> browse to <code>https://jsonplaceholder.typicode.com/posts?userId=3</code> and count the posts returned (count the "id" fields).</span></label>
+  <label class="step"><input type="checkbox" data-step="c3"><span><strong>Earn a 404:</strong> browse to <code>https://jsonplaceholder.typicode.com/users/999</code>. Open DevTools (F12) → Network tab → refresh → click the request and read the real status code in the headers panel.</span></label>
+  <label class="step"><input type="checkbox" data-step="c4"><span><strong>POST from DevTools:</strong> on that same tab, open DevTools → Console, paste the fetch below, press Enter, and read the status and the JSON response (it assigns your new post id 101):</span></label>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>fetch('https://jsonplaceholder.typicode.com/posts', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ title: 'CEN4086 was here',
+                         body: 'REST lab, Session 10', userId: 3 })
+}).then(r => { console.log('status:', r.status); return r.json(); })
+  .then(data => console.log(data));</pre></div>
+  <label class="step"><input type="checkbox" data-step="c5"><span><strong>A different provider, same rules:</strong> browse to <code>https://restcountries.com/v3.1/name/japan?fields=name,capital,population</code> — a completely unrelated organization's API, instantly usable because REST+JSON is a shared contract style. Note the capital.</span></label>
+  <label class="step"><input type="checkbox" data-step="c6"><span><strong>Discuss with a neighbor:</strong> jsonplaceholder returned 201 for your POST, but if you GET /posts again, your post isn't there — it <em>simulates</em> writes. Compare with the in-page /books playground, which really kept your POST for the session. What would a production API need that neither of these has? (Auth! Persistence! Rate limits!)</span></label>
+  <table class="simple wtab">
+    <tr><th>Request</th><th>Status code</th><th>One field you found</th><th>Its value</th></tr>
+    <tr><td>GET /users/3</td><td><input type="text" data-persist="w1s"></td><td><input type="text" data-persist="w1f" placeholder="name"></td><td><input type="text" data-persist="w1v"></td></tr>
+    <tr><td>GET /posts?userId=3</td><td><input type="text" data-persist="w2s"></td><td><input type="text" data-persist="w2f" placeholder="how many posts?"></td><td><input type="text" data-persist="w2v"></td></tr>
+    <tr><td>GET /users/999</td><td><input type="text" data-persist="w3s"></td><td><input type="text" data-persist="w3f" placeholder="(what came back?)"></td><td><input type="text" data-persist="w3v"></td></tr>
+    <tr><td>POST /posts (fetch)</td><td><input type="text" data-persist="w4s"></td><td><input type="text" data-persist="w4f" placeholder="id"></td><td><input type="text" data-persist="w4v"></td></tr>
+    <tr><td>GET restcountries /name/japan</td><td><input type="text" data-persist="w5s"></td><td><input type="text" data-persist="w5f" placeholder="capital"></td><td><input type="text" data-persist="w5v"></td></tr>
+  </table>
+</section>
+
+<!-- ============ STORY QUIZ ============ -->
+<h2>📝 Session Quiz — Story Problems</h2>
+<p>Eleven workplace scenarios — the last three test today's AI concept. Pick the best answer; every question explains all four options after you answer. Counts toward the syllabus "Exercises/Quizzes" grade (30%).</p>
+<section class="quiz" id="quiz1">
+
+  <div class="q" data-a="1">
+    <h4>Q1 · <em>Three balances, one bank</em></h4>
+    <p class="stem">Amara is lead architect at Suncoast Credit Union. The mobile app, the website, and the ATM network each contain their own code for computing a member's available balance, each reading the core database directly. Last month a rules change (holds on deposited checks) was updated in two of the three codebases — members saw different balances on the app and the ATM for nine days, and the regulator noticed. The CIO asks Amara for the architectural fix, not another patch. What should she propose?</p>
+    <button class="opt">A. Rewrite all three front ends in the same programming language so the logic stays in sync</button>
+    <button class="opt">B. Build one balance service with a published contract, and have the app, website, and ATMs all call it</button>
+    <button class="opt">C. Give each front end its own replica of the core database</button>
+    <button class="opt">D. Freeze all future changes to balance rules</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ This is SOA's reuse argument in one story: put the business capability in ONE discoverable, reusable service, and every consumer gets the same answer by construction. A rules change now ships once, behind the contract. ✘ A misdiagnoses the problem — the three copies disagreed because they were <em>copies</em>, not because of language differences; three same-language copies still drift. ✘ C makes it worse: now the data can disagree too, not just the logic. ✘ D is surrender — hold rules change because regulations change; an architecture that can't absorb change is the actual defect Amara was hired to fix.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q2 · <em>"We already have a website"</em></h4>
+    <p class="stem">Trevor, a project manager at Gulfway Insurance, is confused by the new partner-integration project. "Our quote page is already online," he says. "Why are we spending $200K to build a 'quote service'? Partners can just look at the page." The integration lead needs to explain the difference in one sentence. Which sentence is correct?</p>
+    <button class="opt">A. There is no real difference — a service is just a faster web page</button>
+    <button class="opt">B. Web pages are legacy technology; services replace them entirely</button>
+    <button class="opt">C. Pages are for programs to read; services are for humans to read</button>
+    <button class="opt">D. The page returns human-readable HTML; a service returns machine-readable data that partner software can call and parse automatically</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Today's "web services ≠ web pages" distinction exactly: same HTTP underneath, different audience. Partner software can't reliably "look at" a styled HTML page — layouts change, parsing breaks. A service returns stable, structured JSON under a contract, so a partner's system can request 4,000 quotes an hour unattended. ✘ A — a service isn't a page at all; there's no rendering, and its value is the contract, not speed. ✘ B — pages and services coexist; humans still need pages (this course is one). ✘ C states the distinction backwards — a memorable trap when it appears on the final.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q3 · <em>The invisible database swap</em></h4>
+    <p class="stem">Nadia's team at PortStream Logistics migrated their container-tracking service's internals from SQL Server to a NoSQL document store over a weekend — a total rewrite of the data layer. Monday morning, the 14 partner companies that call the tracking API noticed nothing; not one changed a line of code. Which SOA property made this non-event possible?</p>
+    <button class="opt">A. Loose coupling — partners depend only on the service's published contract, which didn't change</button>
+    <button class="opt">B. Tight coupling — partners were tightly integrated with the new database</button>
+    <button class="opt">C. Vertical scaling — the new database runs on a bigger server</button>
+    <button class="opt">D. Multi-tenancy — all partners share one database</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ The tracking service is a black box; partners hold only its contract (paths, verbs, JSON shapes). Since the contract held, the internal revolution was invisible — precisely the coupling demo you ran in Segment 1, in loose mode. ✘ B is the opposite: tightly coupled partners (say, querying SQL Server directly) would ALL have broken Monday morning — that's the red-ripple animation. ✘ C confuses an infrastructure decision with an architectural property; server size has nothing to do with why partners were unaffected. ✘ D describes many customers sharing one system instance (Session 2's SaaS idea) — irrelevant to whether internal changes leak through an interface.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q4 · <em>The price correction</em></h4>
+    <p class="stem">Diego maintains the API integration between Harbor Lane's new web store and its price database. A supplier reprices book #7 from $24.95 to $21.95, and Diego must push the corrected record through the store's REST API. His junior teammate suggests four different requests. Which one is RESTfully correct?</p>
+    <button class="opt">A. GET /books/7?price=21.95 — quick and cacheable</button>
+    <button class="opt">B. POST /updateBookPrice with the book id in the body</button>
+    <button class="opt">C. PUT /books/7 with the full corrected book record as a JSON body</button>
+    <button class="opt">D. DELETE /books/7, then POST the book again with the new price</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Updating an existing, addressable resource is PUT's exact job: the URL names the noun (/books/7), the verb says "replace with this representation," and repeating the request is harmless (idempotent). ✘ A abuses GET — GET must be <em>safe</em> (no side effects); caches, prefetchers, and crawlers issue GETs freely, so a state-changing GET means a web crawler could silently reprice your catalog. ✘ B puts a verb in the path — the classic REST smell; the operation belongs in the HTTP method, not the URL. ✘ D "works" but destroys history, breaks any references during the gap, may change the id, and turns one atomic update into two failure-prone steps.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q5 · <em>Reading the morning logs</em></h4>
+    <p class="stem">Lena supports the mobile app at TidePool Fitness. This morning's API log shows three entries: (1) <code>POST /memberships → 201</code> at 6:02, (2) <code>GET /members/88231 → 404</code> at 6:14, (3) <code>POST /payments → 500</code> at 6:20. Her manager asks for a one-line triage of each. Which triage is correct?</p>
+    <button class="opt">A. 1 succeeded (new membership created); 2 is a client-side problem (no such member — likely a bad id); 3 is a server-side failure in the payment service that the team must investigate</button>
+    <button class="opt">B. All three are errors — anything that isn't 200 is a failure</button>
+    <button class="opt">C. 1 failed (201 means "partially created"); 2 and 3 are both the client's fault</button>
+    <button class="opt">D. 2 means the member's session expired; 3 means the customer's card was declined</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ The status-code families tell the story at a glance: 2xx = success (201 specifically = "created," the right answer to a POST that makes a resource); 4xx = the <em>requester's</em> problem (404 = that member id doesn't exist); 5xx = the <em>service's</em> problem (500 = it crashed processing a valid-looking request — Lena's team owns that bug). ✘ B is the beginner trap — 201 and 204 are successes; a log full of 2xx codes is a healthy morning. ✘ C inverts 201's meaning and wrongly blames the client for a 500. ✘ D invents specifics the codes don't carry: expired auth is typically 401, and a declined card is a business outcome usually returned as 402 or a 200/422 with details — not a bare 500.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q6 · <em>The login that wouldn't scale</em></h4>
+    <p class="stem">FitTrack's web service stores each logged-in user's session data in the memory of whichever server handled the login. It worked fine on one server. Now autoscaling runs 2–10 servers behind a load balancer, and users get randomly logged out whenever the balancer routes their next request to a different server. The team must fix this permanently while KEEPING autoscaling. What's the right architectural move?</p>
+    <button class="opt">A. Turn off autoscaling and go back to one big server</button>
+    <button class="opt">B. Have users log in again every few minutes and call it a security feature</button>
+    <button class="opt">C. Configure "sticky sessions" so each user is pinned to one server forever</button>
+    <button class="opt">D. Make the service stateless: move session data out of server memory into a shared cache or signed token, so ANY server can handle ANY request</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ This is statelessness, the REST property that unlocks horizontal scaling: when every request carries or can retrieve its own context, all servers are interchangeable, and the load balancer and autoscaler can do their jobs freely. ✘ A "fixes" the symptom by abandoning elasticity — back to the scale-up ceiling and single point of failure from Session 1. ✘ B punishes users for an architecture bug; nobody accepts being logged out mid-checkout as "security." ✘ C genuinely reduces the symptom (and exists as a real LB feature), but it fights the architecture: pinned users overload some servers, scale-IN kills their sessions anyway, and one server's crash logs out everyone pinned to it. It's a crutch, not the fix.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q7 · <em>Twelve microservices, three engineers</em></h4>
+    <p class="stem">Jae's three-person startup hasn't launched yet, but an advisor insists they split their simple booking app into 12 microservices "because that's how Netflix does it." Building the split consumes six weeks: 12 deployment pipelines, service discovery, and debugging requests across the network. Meanwhile a competitor launches. What should Jae have done, according to sound architecture practice?</p>
+    <button class="opt">A. Split into even more services — 12 was too few to get the benefits</button>
+    <button class="opt">B. Start with a well-structured monolith and split out services later, when team size or scaling pain actually demands it</button>
+    <button class="opt">C. Microservices were right — Netflix's architecture is correct for every company</button>
+    <button class="opt">D. Skip architecture decisions entirely; structure never matters at any size</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ "Monolith-first" is mainstream engineering advice: a small team gets simplicity, one deploy, in-process calls, and easy debugging — and a <em>well-structured</em> monolith (clean internal module boundaries) splits gracefully later, when independent scaling or multiple teams justify the overhead. ✘ A doubles down on the cost side: every added service adds a network hop, a pipeline, and a failure mode, while a 3-person pre-launch team enjoys none of the benefits. ✘ C is cargo-culting — Netflix has thousands of engineers and planet-scale traffic; copying their solution without their problems buys their overhead for free. ✘ D overcorrects into nihilism: structure matters enormously — the lesson is matching the architecture to the team and the moment.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q8 · <em>The field that fed the POS</em></h4>
+    <p class="stem">Harbor Lane's API team must rename the <code>qty</code> field to <code>quantity_available</code> and drop a deprecated <code>warehouse_code</code> field from the inventory API's responses. Twelve store POS systems and two book-distributor partners consume this API in production; some can't update their software for months. Marisol, the API owner, must ship the improvement WITHOUT breaking anyone. What does proper API governance say she should do?</p>
+    <button class="opt">A. Change the fields in place on Friday night — consumers will adapt over the weekend</button>
+    <button class="opt">B. Email all consumers asking them to update their code the same day she deploys</button>
+    <button class="opt">C. Publish the new shape as /v2 of the API, keep /v1 running unchanged through an announced deprecation window, and migrate consumers on their own schedules</button>
+    <button class="opt">D. Never change the API in any way, forever</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Versioning is governance's answer to the contract paradox: a published contract is a promise, yet APIs must evolve. Running /v1 and /v2 side by side honors the promise while shipping progress; the deprecation window (with dates, notices, and usage monitoring) gives the slow-moving POS vendors a humane path off /v1. ✘ A is a breaking change in production — Saturday morning, 12 stores can't sell books; the red-ripple animation, live. ✘ B still breaks everyone who can't move that day — coordination-by-email is not an architecture. ✘ D freezes the product to avoid governance work; contracts should be stable, not embalmed. The skill is changing safely, not never changing.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q9 · <em>"It'll delete our database"</em> 🧠 AI concept</h4>
+    <p class="stem">Palmside Hardware plans an AI assistant that answers stock questions and drafts reorders through two tools the dev team will expose: <code>get_inventory(store_id, sku)</code> (read-only) and <code>create_reorder(sku, qty ≤ 50)</code>. At the kickoff, operations manager Gustavo objects: "I've read about these AIs going rogue. What happens the day it decides to delete our database?" What is the architecturally accurate answer?</p>
+    <button class="opt">A. Nothing can prevent it — once an AI is connected, it can run any command it invents</button>
+    <button class="opt">B. The vendor's terms of service legally forbid the model from misbehaving, and that is protection enough</button>
+    <button class="opt">C. The model never executes anything: it only emits structured JSON call requests; Palmside's own application validates each one against the tool schema and executes it under the app's credentials — so with least-privilege tools (read-only lookups, capped reorders, no delete operation exposed), "delete the database" isn't a risk, it's a request nothing will run</button>
+    <button class="opt">D. Set the model's temperature to zero so it can't think of destructive ideas</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ The execution boundary is the whole safety story: the model proposes, your code disposes. A tool call is just data — JSON arriving over HTTPS — until YOUR application validates it and chooses to act, using permissions YOU granted. Expose only least-privilege tools and the worst a "rogue" model can do is propose a call that fails validation. ✘ A describes a model wired straight to a root shell — precisely the architecture function calling exists to avoid; no serious design hands a model raw execution. ✘ B outsources a technical boundary to a legal document: contracts compensate after harm; schemas and permissions prevent it. ✘ D misunderstands temperature — it tunes sampling randomness in generated text, not permissions; a temperature-zero model can still emit a destructive call, and a properly validated app still wouldn't run it.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q10 · <em>The weekend swap nobody noticed</em> 🧠 AI concept</h4>
+    <p class="stem">Kingfisher Outdoor Gear runs an AI support agent that answers "is it in stock?" questions through one tool: <code>get_inventory(store_id, sku)</code>, backed by an aging inventory service. Over the weekend the platform team replaces that service entirely — new language, new database, new hosting — but keeps the same path, parameters, and JSON response shape. Monday, the agent answers perfectly; nobody touched a prompt, a tool description, or a line of agent code. Why did the agent survive?</p>
+    <button class="opt">A. Loose coupling: the agent depends only on the tool's contract (name, parameters, response shape), never on the service's internals — the contract held, so the total rewrite was invisible, exactly like Segment 1's coupling demo in loose mode</button>
+    <button class="opt">B. The model memorized the old service's answers during training, so it no longer needed the tool</button>
+    <button class="opt">C. Luck — agents randomly survive some infrastructure changes and break on others</button>
+    <button class="opt">D. The model detected the change and retrained itself on the new service overnight</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ An agent is a service consumer, so SOA's rules govern it: it holds a contract (the tool schema) and treats everything behind it as a black box. Because the request and response shapes were honored, the swap changed nothing the agent could observe — the green-flash contract animation, replayed with an AI as the consumer. This is also why tool schemas deserve the same governance as any API: version them, deprecate with windows, never break silently. ✘ B — the agent calls live inventory precisely because training data can't contain today's stock counts; memorization is impossible here and would defeat the tool's purpose. ✘ C — nothing was chance; survival was engineered by keeping the contract stable. ✘ D — deployed models don't retrain themselves; training is the rare, expensive offline phase from Session 1, not a Sunday-night reflex.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q11 · <em>One hundred pieces of glue</em> 🧠 AI concept</h4>
+    <p class="stem">Harbor Lane's developer Priya wired the staff chatbot to the inventory API with custom integration code. Now Maya wants the same tools available to a second AI assistant inside the developers' IDE, plus two new tools (orders, recommendations) — and a partner bookstore asked how they'd connect their own assistant someday. Priya groans: "Every client-tool pairing is its own custom glue." What does adopting MCP actually change?</p>
+    <button class="opt">A. Nothing structural — MCP is just another AI model that answers questions itself</button>
+    <button class="opt">B. It standardizes the interface: Harbor Lane runs one MCP server publishing its tools once, and any MCP-capable client — chatbot, IDE agent, partner assistant — discovers and calls them at runtime; integration work grows additively (N+M), not multiplicatively (N×M)</button>
+    <button class="opt">C. It removes the need for permissions and validation, since MCP traffic is inherently trusted</button>
+    <button class="opt">D. It solves the problem by requiring all of Harbor Lane's services to move onto a single vendor's cloud</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ MCP is a protocol, not a product: publish each tool once behind a standard interface and every compliant client can discover ("what do you offer?") and call it — the N×M glue problem collapses to N+M, which is the same economic argument that justified SOA and web-service standards in this session. ✘ A — MCP is plumbing between clients and tools; it contains no model and answers nothing itself. ✘ C — the safety boundary is unchanged: the model proposes, the server executes under Harbor Lane's credentials, and least-privilege scopes plus schema validation remain Priya's job; a standard pipe is not automatic trust. ✘ D — MCP is open and vendor-neutral; it decouples clients from tools precisely so nobody is forced into one vendor — the opposite of lock-in.</div>
+  </div>
+
+  <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+</section>
+
+<!-- ============ DISCUSSION ============ -->
+<section class="card disc">
+  <h3>💬 Discussion Forum Prompts <span class="note">(syllabus: Discussion Forums = 15%)</span></h3>
+  <p><strong>Prompt 1:</strong> The industry spent a decade splitting monoliths into microservices — and several famous teams have publicly merged services back together. Take a position: for a 40-developer company, is "microservices by default" wisdom or fashion? Use loose coupling, performance overhead, and governance costs from today. Reply to two classmates who took the other side.</p>
+  <p><strong>Prompt 2:</strong> Find one real public API you'd want for a hobby project (weather, transit, games, sports, music — its docs page is enough). Post: its base URL, two example resources, which verbs it supports, and ONE thing its designers did well or badly against today's REST rules. No two students may feature the same API — claim yours early.</p>
+</section>
+
+<!-- ============ CAPSTONE ============ -->
+<section class="card capstone">
+  <h3>🏗️ Capstone · Harbor Lane Books — Checkpoint 10 of 12: The API Design Sheet</h3>
+  <p>Deliverable 4 (due Session 12, with your final presentation) opens with the <strong>SOA/API layer</strong>: the owner wants the web store, the 12 POS systems, and the future AI recommender to stop sharing spreadsheets and start sharing services. Full brief and D4 rubric: <a href="project.html"><strong>open the Project Brief →</strong></a></p>
+  <p><strong>Due before Session 11 (individual project):</strong></p>
+  <label class="step"><input type="checkbox" data-step="cap1"><span>Draft your <strong>API design sheet: exactly 5 endpoints</strong> for Harbor Lane's store platform in a table: Method | Path | Request body (if any) | Success status | Error status | Owning service. Cover at least: books, inventory-by-store, and orders. Start from your Lab B table — but the submitted sheet must be your reviewed, corrected version.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap2"><span>Write one paragraph titled <strong>"Why the POS and the web store won't break each other,"</strong> using loose coupling and contracts to justify your design to a non-technical owner.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap3"><span>Update your <strong>AI Use Log</strong> with Lab B's entry: prompt used, what the AI proposed, what you verified and corrected.</span></label>
+</section>
+
+<!-- ============ EXIT TICKET ============ -->
+<section class="card exit">
+  <h3>🎟️ Exit Ticket</h3>
+  <p>Tap each light until it matches your confidence: 🔴 lost · 🟡 shaky · 🟢 got it</p>
+  <div class="exitrow"><button class="light" data-exit="e1">⚪</button><span>I can define SOA and explain services, contracts, black boxes, and discoverability.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e2">⚪</button><span>I can use REST verbs and status codes correctly and explain what makes an API RESTful.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e3">⚪</button><span>I can argue the business value of loose coupling — and when a monolith is still the right call.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e4">⚪</button><span>🧠 AI concept: I can explain function calling, the agent loop, and MCP — and why they're service-oriented architecture reborn.</span></div>
+  <p style="margin-top:10px"><strong>Muddiest point</strong> — one thing still fuzzy (instructor reads these at the start of Session 11):</p>
+  <textarea data-persist="muddy" placeholder="The thing I'm least sure about is…"></textarea>
+</section>
+
+<footer>
+  <div class="card" style="background:#f0eee6">
+    <strong>📚 Before Session 11:</strong> preview <strong>Session 11 (Managing the Cloud — monitoring, scaling, cost control)</strong> by skimming its opening segment; finish your API design sheet (Capstone Checkpoint 10); post to both discussion prompts. Next session you'll run a live ops dashboard and get paged with three incidents — today's stateless-scaling idea becomes your survival tool.
+  </div>
+  <div class="footer-nav">
+    <a class="btn ghost" href="week3-session9.html">← Session 9: DR &amp; Business Continuity</a>
+    <span><a class="btn ghost" href="index.html">⌂ Course Hub</a> <button class="btn ghost small" onclick="resetPage()">Reset my progress on this page</button></span>
+    <a class="btn" href="week4-session11.html">Session 11: Managing the Cloud →</a>
+  </div>
+</footer>
+
+</main>
+<script>
+/* ===== CEN4086 core framework (copy verbatim into every session file) ===== */
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'page');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+function resetPage(){try{localStorage.removeItem(PKEY)}catch(e){};location.reload()}
+
+/* flips */
+document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));
+/* tabs */
+document.querySelectorAll('.tabs').forEach(t=>{
+  t.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>{
+    t.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('on'));
+    t.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');t.querySelector('.tabpane[data-p="'+b.dataset.t+'"]').classList.add('on');
+  }));
+});
+/* polls */
+document.querySelectorAll('.poll').forEach((p,pi)=>{
+  const key='poll:'+(p.id||pi);
+  p.querySelectorAll('.popt').forEach((o,oi)=>o.addEventListener('click',()=>{
+    if(p.classList.contains('done'))return;
+    o.classList.add('sel');p.classList.add('done');save(key,oi);
+  }));
+  if(S[key]!=null){p.classList.add('done');const o=p.querySelectorAll('.popt')[S[key]];if(o)o.classList.add('sel');}
+});
+/* quiz engine */
+function updateQuiz(qz){
+  const qs=[...qz.querySelectorAll('.q')];
+  const done=qs.filter(q=>q.classList.contains('done'));
+  const right=qs.filter(q=>q.classList.contains('gotit')).length;
+  const res=qz.querySelector('.qresult');
+  if(res){res.querySelector('.bar span').style.width=(done.length?Math.round(100*right/qs.length):0)+'%';
+    res.querySelector('.scoreline').textContent='Score: '+right+' / '+qs.length+(done.length===qs.length?(right===qs.length?' — perfect! 🎉':' — review the explanations above.'):' ('+(qs.length-done.length)+' remaining)');}
+  updateChip();
+}
+function updateChip(){
+  let r=0,t=0;
+  document.querySelectorAll('.quiz').forEach(qz=>qz.querySelectorAll('.q').forEach(q=>{t++;if(q.classList.contains('gotit'))r++;}));
+  const c=document.getElementById('scoreChip');if(c)c.textContent='Quiz: '+r+'/'+t;
+}
+document.querySelectorAll('.quiz').forEach((qz,qzi)=>{
+  const qid=qz.id||('qz'+qzi);
+  qz.querySelectorAll('.q').forEach((q,i)=>{
+    const a=+q.dataset.a,opts=[...q.querySelectorAll('.opt')];
+    const key=qid+':q'+i;
+    function answer(j,fresh){
+      q.classList.add('done');if(j===a)q.classList.add('gotit');
+      opts.forEach(o=>o.disabled=true);
+      opts[a].classList.add('right');if(j!==a)opts[j].classList.add('wrong');
+      if(fresh)save(key,j);
+    }
+    opts.forEach((o,j)=>o.addEventListener('click',()=>{if(!q.classList.contains('done')){answer(j,true);updateQuiz(qz);}}));
+    if(S[key]!=null)answer(S[key],false);
+  });
+  updateQuiz(qz);
+});
+/* matcher engine */
+document.querySelectorAll('.matcher').forEach((m,mi)=>{
+  const key='match:'+(m.id||mi);let sel=null,done=0;
+  const cards=[...m.querySelectorAll('.mcard')],st=m.querySelector('.mstatus');
+  function stat(){st.textContent=done+'/'+cards.length+' placed'+(done===cards.length?' — all correct! 🎉':'');}
+  cards.forEach((c,ci)=>{c.addEventListener('click',()=>{
+    if(c.classList.contains('ok'))return;
+    cards.forEach(x=>x.classList.remove('sel'));c.classList.add('sel');sel=c;
+  });});
+  m.querySelectorAll('.mzone').forEach(z=>z.addEventListener('click',()=>{
+    if(!sel)return;
+    if(sel.dataset.match===z.dataset.zone){
+      sel.classList.remove('sel');sel.classList.add('ok');done++;stat();
+      const solved=(S[key]||[]);solved.push(cards.indexOf(sel));save(key,solved);sel=null;
+    }else{sel.classList.add('no');setTimeout(()=>sel&&sel.classList.remove('no'),400);}
+  }));
+  (S[key]||[]).forEach(ci=>{if(cards[ci]&&!cards[ci].classList.contains('ok')){cards[ci].classList.add('ok');done++;}});
+  stat();
+});
+/* lab step checkboxes */
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+/* persisted inputs/textareas */
+document.querySelectorAll('[data-persist]').forEach(el=>{
+  const key='p:'+el.dataset.persist;
+  if(S[key]!=null)el.value=S[key];
+  el.addEventListener('input',()=>save(key,el.value));
+});
+/* exit ticket lights */
+const LIGHTS=['⚪','🔴','🟡','🟢'];
+document.querySelectorAll('.light').forEach(b=>{
+  const key='exit:'+b.dataset.exit;let i=S[key]||0;b.textContent=LIGHTS[i];
+  b.addEventListener('click',()=>{i=(i+1)%4;b.textContent=LIGHTS[i];save(key,i);});
+});
+/* copy prompt */
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+
+/* ===== Session 10 custom interactives ===== */
+/* ---- REST /books playground ---- */
+let BOOKS=[
+  {id:1,title:'Gulf Coast Gardening',author:'M. Alvarez',price:24.95},
+  {id:2,title:'The Lighthouse Keeper’s Daughter',author:'R. Chen',price:16.99},
+  {id:3,title:'Florida Noir',author:'D. Okafor',price:12.50},
+  {id:4,title:'Manatee Summer',author:'K. Brooks',price:9.99}
+];
+let NEXT_ID=5;
+const CON=document.getElementById('apiConsole');
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function jfmt(o){return JSON.stringify(o,null,2)}
+function logx(method,path,status,stext,body,extraHdr,note){
+  const d=document.createElement('div');d.className='xchg';
+  let h='<div class="reqline">→ '+method+' '+path+' HTTP/1.1</div>';
+  h+='<div class="stline '+(status<400?'st2':'st4')+'">← HTTP/1.1 '+status+' '+stext+'</div>';
+  if(extraHdr)h+='<div class="hdrline">← '+esc(extraHdr)+'</div>';
+  if(body!=null)h+='<pre>'+esc(jfmt(body))+'</pre>';
+  else h+='<pre>(no response body'+(note?' — '+note:'')+')</pre>';
+  d.innerHTML=h;
+  CON.prepend(d);
+  while(CON.children.length>7)CON.removeChild(CON.lastChild);
+}
+document.getElementById('btnGetAll').addEventListener('click',()=>{
+  logx('GET','/books',200,'OK',BOOKS);
+});
+document.getElementById('btnGet2').addEventListener('click',()=>{
+  const b=BOOKS.find(x=>x.id===2);
+  if(b)logx('GET','/books/2',200,'OK',b);
+  else logx('GET','/books/2',404,'Not Found',{error:'book 2 not found'});
+});
+document.getElementById('btnPost').addEventListener('click',()=>{
+  const t=document.getElementById('newTitle').value.trim();
+  const a=document.getElementById('newAuthor').value.trim();
+  if(!t||!a){logx('POST','/books',400,'Bad Request',{error:'title and author are required'});return;}
+  const nb={id:NEXT_ID++,title:t,author:a,price:19.99};
+  BOOKS.push(nb);
+  logx('POST','/books',201,'Created',nb,'Location: /books/'+nb.id);
+  document.getElementById('newTitle').value='';document.getElementById('newAuthor').value='';
+});
+document.getElementById('btnPut').addEventListener('click',()=>{
+  const t=document.getElementById('putTitle').value.trim();
+  const a=document.getElementById('putAuthor').value.trim();
+  if(!t||!a){logx('PUT','/books/2',400,'Bad Request',{error:'PUT replaces the whole resource — send BOTH title and author (partial updates would use PATCH)'});return;}
+  const b=BOOKS.find(x=>x.id===2);
+  b.title=t;b.author=a;
+  logx('PUT','/books/2',200,'OK',b);
+});
+document.getElementById('btnDel').addEventListener('click',()=>{
+  const i=BOOKS.findIndex(x=>x.id===3);
+  if(i>=0){BOOKS.splice(i,1);logx('DELETE','/books/3',204,'No Content',null,null,'that is what 204 means: success, nothing to say');}
+  else logx('DELETE','/books/3',404,'Not Found',{error:'book 3 not found — it was already deleted'});
+});
+
+/* ---- coupling animation ---- */
+const CSVG=document.getElementById('coupleSvg');
+let cmode='tight',canim=false;
+function setMode(m){
+  cmode=m;
+  CSVG.classList.toggle('tight',m==='tight');
+  document.getElementById('modeTight').className='btn small'+(m==='tight'?'':' ghost');
+  document.getElementById('modeLoose').className='btn small'+(m==='loose'?'':' ghost');
+  document.getElementById('coupleLabel').textContent=m==='tight'
+    ?'TIGHT coupling: services reach into each other’s databases and internals'
+    :'LOOSE coupling: services touch only published API contracts (the teal ports)';
+  document.getElementById('coupleMsg').textContent=m==='tight'
+    ?'Tight mode armed. Press the 🔧 wrench and watch the blast radius.'
+    :'Loose mode armed. Press the 🔧 wrench and watch the contracts hold.';
+}
+document.getElementById('modeTight').addEventListener('click',()=>setMode('tight'));
+document.getElementById('modeLoose').addEventListener('click',()=>setMode('loose'));
+document.getElementById('chgInv').addEventListener('click',()=>{
+  if(canim)return;canim=true;
+  const g=id=>document.getElementById(id);
+  const msg=document.getElementById('coupleMsg');
+  if(cmode==='tight'){
+    g('svcInv').classList.add('hit');
+    msg.innerHTML='💥 <strong>Inventory changed its database schema.</strong> Watch the breakage ripple…';
+    setTimeout(()=>g('svcStore').classList.add('hit'),500);
+    setTimeout(()=>g('svcPay').classList.add('hit'),1000);
+    setTimeout(()=>g('svcShip').classList.add('hit'),1500);
+    setTimeout(()=>{msg.innerHTML='💥 Web Store’s embedded SQL broke → Payments’ stock check broke → Shipping’s pick list broke. Four teams, one emergency redeploy, on a Friday. <em>That is the price of tight coupling.</em>';},1700);
+    setTimeout(()=>{['svcInv','svcStore','svcPay','svcShip'].forEach(i=>g(i).classList.remove('hit'));canim=false;},4600);
+  }else{
+    g('svcInv').classList.add('safe');
+    document.querySelectorAll('#coupleSvg .contract').forEach((c,i)=>setTimeout(()=>c.classList.add('flash'),350+i*180));
+    msg.innerHTML='✅ Inventory rebuilt its internals — new database, new code. Its API still answers <code>GET /inventory/{sku} → {sku, qty}</code>. The contracts flash green: <strong>honored</strong>. Nobody else changes a single line.';
+    setTimeout(()=>{g('svcInv').classList.remove('safe');document.querySelectorAll('#coupleSvg .contract').forEach(c=>c.classList.remove('flash'));canim=false;},4000);
+  }
+});
+setMode('tight');
+
+/* ---- JSON tree explorer ---- */
+function typedVal(v){
+  if(v===null)return '<span class="jv-null">null</span>';
+  switch(typeof v){
+    case 'string':return '<span class="jv-str">"'+esc(v)+'"</span>';
+    case 'number':return '<span class="jv-num">'+v+'</span>';
+    case 'boolean':return '<span class="jv-bool">'+v+'</span>';
+    default:return esc(String(v));
+  }
+}
+function buildTree(v,label){
+  if(Array.isArray(v)){
+    let inner=v.map((item,i)=>buildTree(item,'['+i+']')).join('');
+    return '<details open><summary><span class="jk">'+esc(label)+'</span> [array · '+v.length+' item'+(v.length===1?'':'s')+']</summary><ul>'+inner+'</ul></details>';
+  }
+  if(v!==null&&typeof v==='object'){
+    const keys=Object.keys(v);
+    let inner=keys.map(k=>buildTree(v[k],k)).join('');
+    return '<details open><summary><span class="jk">'+esc(label)+'</span> {object · '+keys.length+' key'+(keys.length===1?'':'s')+'}</summary><ul>'+inner+'</ul></details>';
+  }
+  return '<li><span class="jk">'+esc(label)+':</span> '+typedVal(v)+'</li>';
+}
+document.getElementById('btnParse').addEventListener('click',()=>{
+  const out=document.getElementById('jsonOut');
+  try{
+    const o=JSON.parse(document.getElementById('jsonIn').value);
+    out.innerHTML=buildTree(o,'root');
+  }catch(e){
+    out.innerHTML='<div class="jerr">😅 Not valid JSON yet — the parser says: <em>'+esc(e.message)+'</em>.<br>Usual suspects: a trailing comma after the last item, single quotes instead of double quotes, or an unquoted key. Fix it and parse again — every API developer sees this message weekly.</div>';
+  }
+});
+
+/* ---- Lab A checks ---- */
+function checkA(i){
+  const el=document.getElementById('labA'+i),fb=document.getElementById('fbA'+i);
+  let ok=false,msg='';
+  if(i===1){const v=+el.value;ok=(v===200);msg=ok?'✔ Right — 200 OK: a successful read of the collection.':'✘ Click GET /books and read the status line in the console. Reads that succeed return 2xx.';}
+  if(i===2){const v=+el.value;ok=(v===201);msg=ok?'✔ Correct — 201 Created, plus a Location header pointing at the new resource.':'✘ Not 200! Creation has its own success code. POST a book (with both fields) and read the status line.';}
+  if(i===3){const v=+el.value;ok=(v===404);msg=ok?'✔ Yes — 404 Not Found: book 3 no longer exists, so the second DELETE has nothing to remove.':'✘ Delete book 3 twice and read the SECOND status. Once a resource is gone, requests that name it can’t find it…';}
+  if(i===4){const v=el.value.trim().toUpperCase();ok=(v==='PUT');msg=ok?'✔ PUT — replace the resource at a known URL with a new representation. (PATCH exists for partial edits.)':'✘ Think: the resource already exists at /books/2 and you’re replacing its representation. Which verb did Segment 2 assign to that?';}
+  if(i===5){const v=+el.value;ok=(v===3);msg=ok?'✔ Three branch objects — St. Petersburg, Sarasota, Key West.':'✘ Parse the sample and expand the branches node; count its [array] items.';}
+  fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Week 2 · Session 4 — Identity as a Service (IDaaS)</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--wk:#e0a437}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--wk);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+.topnav .mid{font-weight:700}
+#scoreChip{background:var(--pri);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:700}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#2b2a6e 100%);color:#fff;border-radius:16px;padding:28px 26px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:30px;line-height:1.25}
+.hero .sub{margin:0 0 12px;opacity:.9;font-size:16.5px}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:var(--ink)}
+.hero .chip{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .chip.obj{background:var(--amb);border-color:var(--amb);color:#3a2c05}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
+h3{font-size:18px;margin:20px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.warmup{border-top:6px solid var(--amb)}
+.card.ai{border-top:6px solid var(--vio);background:linear-gradient(180deg,#f7f3fc,#fff 90px)}
+.card.disc{border-top:6px solid var(--acc)}
+.card.capstone{border-top:6px solid var(--pri);background:linear-gradient(180deg,#f0f0fa,#fff 90px)}
+.card.exit{border-top:6px solid var(--bad)}
+.segment{position:relative}
+.segno{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--wk);color:#fff;font-weight:800;font-size:15px;margin-right:8px}
+.agenda{width:100%;border-collapse:collapse;font-size:14px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.agenda td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.15)}
+.agenda tr:last-child td{border-bottom:none}
+.bdg{display:inline-block;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
+.b-lec{background:#c9d4f5;color:#22307a}.b-int{background:#ffe3a3;color:#6b4d05}.b-lab{background:#bfe6e0;color:#0b5450}.b-quiz{background:#f3c9c2;color:#7a2417}.b-brk{background:#e4e4e4;color:#555}.b-cap{background:#ddd3f0;color:#432c73}
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.flip{border:1.5px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
+.flip h5{margin:0;font-size:15px;color:var(--pri)}
+.flip .back{display:none;margin-top:8px;font-size:14px;color:var(--ink)}
+.flip.open{background:#eef4f4;border-color:var(--acc)}
+.flip.open .back{display:block}
+.flip .hint{font-size:12px;color:var(--mut)}
+.tabs .tabrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:-1px}
+.tabbtn{border:1px solid var(--line);border-bottom:none;background:#eceadf;border-radius:10px 10px 0 0;padding:8px 16px;cursor:pointer;font:inherit;font-weight:600;font-size:14px}
+.tabbtn.on{background:#fff;color:var(--pri)}
+.tabpane{display:none;border:1px solid var(--line);border-radius:0 12px 12px 12px;background:#fff;padding:16px 18px}
+.tabpane.on{display:block}
+.matcher{margin:14px 0}
+.mcards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.mcard{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.mcard.sel{outline:3px solid var(--amb);border-color:var(--amb)}
+.mcard.ok{background:#e7f3ec;border-color:var(--ok);color:#28583b;cursor:default}
+.mcard.ok::after{content:" ✓"}
+.mcard.no{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.mzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.mzone{border:2px dashed var(--acc);border-radius:12px;background:#f4faf9;padding:12px;cursor:pointer;font:inherit;text-align:center;font-weight:700;color:var(--acc)}
+.mzone small{display:block;font-weight:400;color:var(--mut);margin-top:4px}
+.mstatus{margin-top:10px;font-weight:700;color:var(--pri)}
+.lab{border-left:6px solid var(--acc)}
+.lab .labno{color:var(--acc);font-weight:800;letter-spacing:.5px;font-size:13px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--acc);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.quiz .q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.quiz .q h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
+.stem{margin:6px 0 10px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fbfaf7;cursor:pointer;font:inherit;font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--pri)}
+.opt:disabled{cursor:default;opacity:.85}
+.opt.right{background:#e7f3ec;border-color:var(--ok);opacity:1;font-weight:600}
+.opt.wrong{background:#f8e9e7;border-color:var(--bad);opacity:1}
+.expl{display:none;margin-top:10px;padding:12px 14px;background:#f4f6fb;border-left:4px solid var(--pri);border-radius:8px;font-size:14.5px}
+.q.done .expl{display:block}
+.qresult{margin-top:16px}
+.bar{height:12px;background:#e8e4da;border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .4s}
+.scoreline{font-weight:700;margin:6px 0 0}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.small{padding:5px 12px;font-size:13px}
+.kpis{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.kpi{flex:1;min-width:130px;background:#f4f6fb;border-radius:10px;padding:10px 14px;text-align:center}
+.kpi b{display:block;font-size:22px;color:var(--pri);line-height:1.2}
+.kpi small{color:var(--mut)}
+.poll .popt{display:inline-block;margin:4px 6px 4px 0;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;cursor:pointer;font:inherit;font-size:14px}
+.poll .popt.sel{background:var(--amb);border-color:var(--amb);font-weight:700}
+.pollwhy{display:none;margin-top:8px;padding:10px 12px;background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;font-size:14px}
+.poll.done .pollwhy{display:block}
+.stackrow{display:flex;align-items:center;gap:10px;margin:3px 0}
+.stackrow .lay{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;background:#fbfaf7;transition:all .3s}
+.stackrow .who{width:96px;text-align:center;font-size:12px;font-weight:800;border-radius:8px;padding:4px}
+.who.you{background:#f3c9c2;color:#7a2417}
+.who.prov{background:#bfe6e0;color:#0b5450}
+input[type=range]{width:100%;accent-color:var(--pri)}
+.svgwrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;overflow-x:auto;text-align:center}
+.note{font-size:13.5px;color:var(--mut)}
+.serverfarm{display:flex;flex-wrap:wrap;gap:5px;min-height:40px;margin:8px 0}
+.srv{width:34px;height:40px;border-radius:6px;background:linear-gradient(180deg,#3f3d99,#2b2a6e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px}
+.srv.big{width:64px;height:56px;font-size:26px}
+.checkfield{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.checkfield input[type=number],.checkfield input[type=text]{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;width:110px}
+.fb{font-weight:700;font-size:14px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;min-height:70px}
+.exitrow{display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap}
+.light{font-size:20px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;cursor:pointer}
+.footer-nav{display:flex;justify-content:space-between;margin-top:30px;gap:10px;flex-wrap:wrap}
+table.simple{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+table.simple th{background:#f0eee6;text-align:left}
+table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+<style>
+/* ===== Session 4 additions ===== */
+.ssoA path,.ssoA line{stroke:#c9cede;stroke-width:2.5;fill:none;opacity:.45;transition:all .3s}
+.ssoA polygon{fill:#c9cede;opacity:.45;transition:all .3s}
+.ssoA text{fill:#9aa0b0;font-size:11.5px;font-weight:700}
+.ssoA.live path,.ssoA.live line{stroke:var(--pri);opacity:1;stroke-width:3.5}
+.ssoA.live polygon{fill:var(--pri);opacity:1}
+.ssoA.live text{fill:var(--pri)}
+.ssoB rect{fill:#fbfaf7;stroke:#c9cede;stroke-width:2;transition:all .3s}
+.ssoB text{fill:#1d2433;font-size:13px;font-weight:700}
+.ssoB.live rect{fill:#eef0fb;stroke:var(--pri);stroke-width:3}
+.ssocap{min-height:70px;background:#f4f6fb;border-left:4px solid var(--pri);border-radius:8px;padding:10px 14px;font-size:14.5px;margin-top:10px}
+.provgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:10px 0}
+.provcol{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fbfaf7}
+.provcol h5{margin:0 0 6px;font-size:13.5px;color:var(--pri)}
+.acc{display:block;padding:4px 9px;border-radius:6px;margin:3px 0;font-size:13.5px;background:#e7f3ec;color:#28583b}
+.acc.gone{background:#ececec;color:#888;text-decoration:line-through}
+.acc.warn{background:#fbeae7;color:#8a2e20;font-weight:700}
+.stageline{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.stagechip{border:1.5px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13px;font-weight:700;background:#fff;color:var(--mut);cursor:pointer;font-family:inherit}
+.stagechip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+.bigin{border:1.5px solid var(--line);border-radius:10px;padding:9px 12px;font:inherit;width:100%;max-width:360px}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">⌂ Course Hub</a>
+  <span class="mid">Week 2 · Session 4 — Identity as a Service (IDaaS)</span>
+  <span><span id="scoreChip">Quiz: 0/0</span> &nbsp; <a href="week1-session3.html">← Session 3</a> · <a href="week2-session5.html">Session 5 →</a></span>
+</nav>
+<main>
+
+
+<!-- ============ WARM-UP ============ -->
+<section class="card warmup">
+  <h3>🔥 Warm-Up Polls <span class="note">(no wrong answers — vote, then we discuss)</span></h3>
+  <div class="poll" id="poll1">
+    <p><strong>Poll 1:</strong> Counting honestly — streaming, shopping, school, games, that forum from 2019 — how many online accounts do you think you own?</p>
+    <button class="popt">Under 25</button><button class="popt">25–75</button><button class="popt">75–150</button><button class="popt">150+ and rising</button>
+    <div class="pollwhy">Password-manager vendors who can actually count report the average user holds well over 100 accounts — and studies keep finding that most people reuse a handful of passwords across them. That's not laziness; no human can memorize 100 unique strong secrets. It's a <strong>design failure</strong>: every app demanding its own credentials doesn't scale. Today's session is the industry's answer — move identity itself into the cloud (IDaaS) so you authenticate once, well, instead of a hundred times, badly.</div>
+  </div>
+  <div class="poll" id="poll2">
+    <p><strong>Poll 2:</strong> You click "Sign in with Google" on a brand-new recipe site. Who actually checked your password?</p>
+    <button class="popt">The recipe site</button><button class="popt">Google only</button><button class="popt">Both of them</button><button class="popt">Neither — it's cached somewhere</button>
+    <div class="pollwhy"><strong>Google only.</strong> The recipe site never sees your password — it receives a cryptographically signed token from Google saying "this person is who they claim." That's <em>federated identity</em>, and you've been using it for years without the vocabulary. By the end of today you'll be able to draw exactly what happened in the two seconds after you clicked that button — it's the SSO flow in Segment 1.</div>
+  </div>
+  <div class="poll" id="poll3">
+    <p><strong>Poll 3:</strong> An employee is terminated at 4 p.m. Friday. In real audits, when is their LAST account typically found still active?</p>
+    <button class="popt">Same hour</button><button class="popt">Next business day</button><button class="popt">Within a week</button><button class="popt">Months later — if anyone ever checks</button>
+    <div class="pollwhy">Auditors will tell you: <strong>months later</strong> is the depressingly common finding. Email gets disabled Monday, but the POS login, the VPN token, the third-party portal invited to a personal address? Those become <em>orphaned accounts</em> — active credentials with no living owner, one of the most common audit findings and a classic breach entry point. Segment 3's lifecycle simulator shows exactly how it happens and how automated deprovisioning kills every door with one event.</div>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 1 ============ -->
+<section class="segment">
+  <h2><span class="segno">1</span> The Identity Problem &amp; How SSO Works</h2>
+  <div class="card">
+    <h3>One employee, twenty-three passwords</h3>
+    <p><strong>Identity management</strong> is the set of processes and technology an organization uses to answer two questions for every system, every second: <em>who is this user?</em> (authentication) and <em>what are they allowed to do?</em> (authorization). Before cloud identity, every application answered those questions alone. Picture Harbor Lane Books' 240 employees: a store associate touches the POS register, email, the scheduling app, the HR portal, and the inventory system — five separate username/password databases, five places to forget a password, five databases a thief could steal. Multiply by 240 people and the costs get very real: <strong>password fatigue</strong> drives reuse, so one phished credential unlocks many systems; industry surveys consistently attribute somewhere between a fifth and half of all help-desk tickets to password resets, at tens of dollars of staff time each; and when someone quits, IT must <em>remember</em> every system that ever knew them. This is the core challenge that <strong>Identity as a Service</strong> exists to solve: move the "who are you?" function out of every individual app and into one professionally run cloud service.</p>
+    <h3>Single sign-on (SSO), defined</h3>
+    <p><strong>SSO</strong> means a user authenticates <em>once</em> to a trusted <strong>identity provider (IdP)</strong>, and every connected application (each a <em>service provider</em>) accepts the IdP's cryptographically signed token instead of running its own login. Why it matters: users juggle one strong credential instead of dozens; security teams get one choke point to enforce MFA, lockouts, and instant revocation; and the apps themselves <em>stop storing passwords entirely</em>, which shrinks the attack surface dramatically. You already live this: log into your university portal once, and email, the LMS, and the library all open without new logins.</p>
+    <p><strong>Common misconception:</strong> "SSO means one password to lose — that's weaker!" In practice it's the opposite: SSO concentrates defense where it's strongest. The IdP does MFA, anomaly detection, and a one-click kill switch; the alternative is 23 weak passwords scattered across 23 amateur login systems. The honest trade-off is different: if the IdP goes <em>down</em>, many doors stick at once — which is why Objective 5 says <em>appraise</em> IDaaS solutions: uptime SLA and outage history are evaluation criteria, not fine print.</p>
+    <h3>🎬 Interactive: The SSO Flow, Step by Step</h3>
+    <p>Meet <strong>Maya</strong>, Harbor Lane's new events coordinator, on her first Monday. Use <strong>Next ▸</strong> and <strong>◀ Prev</strong> to walk the login flow — watch which arrow lights up and read what's really happening:</p>
+    <div class="svgwrap">
+    <svg viewBox="0 0 750 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Single sign-on flow diagram: Maya's browser, the CloudGate identity provider, and three applications">
+      <g class="ssoB" id="bUser"><rect x="18" y="128" width="118" height="70" rx="12"/><text x="77" y="158" text-anchor="middle">👩 Maya</text><text x="77" y="178" text-anchor="middle" style="font-size:11px;fill:#5c6474">her browser</text></g>
+      <g class="ssoB" id="bIdp"><rect x="300" y="128" width="150" height="70" rx="12"/><text x="375" y="158" text-anchor="middle">🛡️ CloudGate</text><text x="375" y="178" text-anchor="middle" style="font-size:11px;fill:#5c6474">identity provider (IdP)</text></g>
+      <g class="ssoB" id="bApp1"><rect x="590" y="24" width="142" height="58" rx="12"/><text x="661" y="50" text-anchor="middle">📧 HarborMail</text><text x="661" y="68" text-anchor="middle" style="font-size:11px;fill:#5c6474">app 1</text></g>
+      <g class="ssoB" id="bApp2"><rect x="590" y="134" width="142" height="58" rx="12"/><text x="661" y="160" text-anchor="middle">💵 PayrollPro</text><text x="661" y="178" text-anchor="middle" style="font-size:11px;fill:#5c6474">app 2</text></g>
+      <g class="ssoB" id="bApp3"><rect x="590" y="244" width="142" height="58" rx="12"/><text x="661" y="270" text-anchor="middle">📅 ShiftBoard</text><text x="661" y="288" text-anchor="middle" style="font-size:11px;fill:#5c6474">app 3</text></g>
+      <g class="ssoA" id="ar1"><path d="M136 132 C 300 36, 460 26, 586 42"/><polygon points="588,43 574,38 577,49"/><text x="270" y="44">1 · “open HarborMail”</text></g>
+      <g class="ssoA" id="ar2"><path d="M592 74 C 510 100, 468 112, 454 126"/><polygon points="452,128 462,117 466,125"/><text x="478" y="99">2 · redirect</text></g>
+      <g class="ssoA" id="ar3"><path d="M140 146 L 296 146"/><polygon points="298,146 286,141 286,151"/><text x="164" y="139">3 · login + MFA</text></g>
+      <g class="ssoA" id="ar4"><path d="M296 182 L 140 182"/><polygon points="138,182 150,177 150,187"/><text x="162" y="200">4 · signed token</text></g>
+      <g class="ssoA" id="ar5"><path d="M136 142 C 320 76, 470 56, 586 58"/><polygon points="588,58 575,54 576,64"/><text x="290" y="88">5 · token → in!</text></g>
+      <g class="ssoA" id="ar6"><path d="M136 204 C 330 244, 470 202, 586 170"/><polygon points="588,169 575,168 578,178"/><text x="292" y="234">6 · silent token, no login</text></g>
+      <g class="ssoA" id="ar7"><path d="M136 214 C 320 302, 470 292, 586 274"/><polygon points="588,273 575,269 576,279"/><text x="292" y="302">7 · …and every other app</text></g>
+    </svg>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">
+      <button class="btn ghost small" id="ssoPrev">◀ Prev</button>
+      <button class="btn small" id="ssoNext">Next ▸</button>
+      <span class="note" id="ssoPos">Step 0 of 7</span>
+    </div>
+    <div class="ssocap" id="ssoCap"></div>
+    <p class="note">Count carefully as you click: across three apps, how many times did Maya type a password? You'll need that number in Lab A.</p>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 2 ============ -->
+<section class="segment">
+  <h2><span class="segno">2</span> Federation, OpenID Connect &amp; Multi-Factor Authentication</h2>
+  <div class="card">
+    <h3>Federated identity: trust that crosses company lines</h3>
+    <p>SSO inside one company is powerful; <strong>federated identity management</strong> extends it <em>across organizations</em>. Federation means independent domains agree to trust each other's identity assertions: Harbor Lane's payroll is processed by a completely separate company, but employees reach the payroll site using Harbor Lane's own IdP — the payroll firm honors CloudGate's signed tokens and never stores a single Harbor Lane password. Consumer-scale federation is the "Sign in with Google / Apple" button from Poll 2: the recipe site outsources its entire login problem to an IdP with a thousand-person security team.</p>
+    <p>Three protocol names you must be able to place: <strong>SAML</strong> is the older XML-based enterprise federation standard (still everywhere in corporate apps). <strong>OAuth 2.0</strong> is a protocol for <em>delegated authorization</em> — "this app may read my calendar" — not for proving who you are. <strong>OpenID Connect (OIDC)</strong> adds the identity layer on top of OAuth 2.0 and is the modern descendant of the original OpenID standard; it's what actually powers "Sign in with Google" today. <strong>Common misconception:</strong> "OAuth logs you in." By itself it doesn't — OAuth grants an app access to resources; OIDC is what asserts <em>who you are</em>. Interviewers love that distinction.</p>
+    <h3>Multi-factor authentication: know · have · are</h3>
+    <p>Passwords are <em>something you know</em> — and the knowable can be phished, guessed, or bought in bulk from a breach dump. <strong>MFA</strong> requires proof from <em>different categories</em>: something you <strong>know</strong> (password, PIN), something you <strong>have</strong> (a phone with an authenticator app, a hardware security key), something you <strong>are</strong> (fingerprint, face). Real two-factor means two <em>different</em> categories — password + PIN is still just two "knows," one category, one phishing email away from gone. Microsoft's much-quoted research finding is that MFA blocks the overwhelming majority (~99%) of <em>automated</em> account-compromise attacks. The factor ladder matters too: <strong>SMS codes</strong> are the weakest "have" (SIM-swap attacks steal your number), <strong>TOTP app codes</strong> are stronger, and <strong>FIDO2 security keys / passkeys</strong> are strongest because they're <em>origin-bound</em>: a fake login page on the wrong domain simply gets no answer, so real-time phishing relays fail.</p>
+    <p><strong>Sort the factors</strong> — click a card, then the category it proves:</p>
+    <div class="matcher" id="mfaMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="know">Password</button>
+        <button class="mcard" data-match="have">6-digit code from a TOTP authenticator app</button>
+        <button class="mcard" data-match="are">Fingerprint scan</button>
+        <button class="mcard" data-match="have">USB hardware security key you tap</button>
+        <button class="mcard" data-match="know">Answer to “your first pet's name”</button>
+        <button class="mcard" data-match="have">Code texted to your phone by SMS</button>
+        <button class="mcard" data-match="are">Face scan to unlock</button>
+        <button class="mcard" data-match="know">4-digit PIN</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="know">🧠 Something you KNOW<small>secrets in your head — phishable</small></button>
+        <button class="mzone" data-zone="have">🔑 Something you HAVE<small>a physical thing — stealable, but locally</small></button>
+        <button class="mzone" data-zone="are">🫆 Something you ARE<small>biometrics — convenient, not rotatable</small></button>
+      </div>
+      <p class="mstatus">0/8 placed</p>
+    </div>
+    <p class="note">Note the trap cards: the TOTP <em>code</em> looks like a "know," but it proves possession of the enrolled device — it's a "have." And the SMS code is a "have" too, just the weakest one: it really proves control of a phone <em>number</em>, which SIM-swap fraud can steal from a carrier store without ever touching your phone.</p>
+    <h3>🧮 Interactive: Why passwords alone lose — the entropy demo</h3>
+    <p>Entropy measures how many guesses an attacker needs. Formula: <em>length × log₂(pool)</em>, where the pool is how many characters could appear in each position. Type any candidate password (not a real one you use!) and watch:</p>
+    <input class="bigin" id="pwIn" type="text" value="harbor2026" autocomplete="off" spellcheck="false" aria-label="Candidate password to analyze">
+    <div class="kpis">
+      <div class="kpi"><b id="kPool">36</b><small>character pool</small></div>
+      <div class="kpi"><b id="kBits">51.7</b><small>entropy (bits)</small></div>
+      <div class="kpi"><b id="kOn">—</b><small>online attack · 100 guesses/sec</small></div>
+      <div class="kpi"><b id="kOff">—</b><small>offline GPU rig · 10 billion/sec</small></div>
+    </div>
+    <div class="bar" style="height:14px"><span id="pwBar"></span></div>
+    <p class="note" id="pwVerdict"></p>
+    <p class="note">🔒 <strong>Privacy:</strong> this demo is pure in-page JavaScript — nothing you type leaves this page. (Skeptical? Good, that's the right instinct: open DevTools ▸ Network and watch — zero requests.) ⚠️ The math assumes <em>random</em> characters; humans pick patterns, so <code>Harbor2026!</code> is far weaker than its bits suggest — dictionary-plus-rules attacks try "word + year + !" early. Two honest lessons: <strong>length beats complexity theater</strong>, and past ~80 bits the password stops being the weak point — phishing is. That's why MFA, not a 30-character password, is the real answer.</p>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 3 ============ -->
+<section class="segment">
+  <h2><span class="segno">3</span> The Account Lifecycle &amp; the IDaaS Market</h2>
+  <div class="card">
+    <h3>Provisioning &amp; deprovisioning: joiner, mover, leaver</h3>
+    <p><strong>Provisioning</strong> is creating accounts and granting entitlements when someone joins or changes roles; <strong>deprovisioning</strong> is revoking everything when they leave. Identity professionals call the lifecycle <strong>JML — joiner, mover, leaver</strong> — and it's where identity programs quietly succeed or fail. Joiners are self-correcting: a new hire without email <em>complains</em>, loudly, until access appears. Leavers are the opposite: nobody complains about an account that should be dead but isn't. Those are <strong>orphaned accounts</strong> — live credentials with no living owner — and they are among the most common findings in real security audits, because ex-employee credentials are a classic breach entry point. Movers cause the subtle failure: promotions <em>add</em> access but old rights rarely get <em>removed</em>, so ten-year employees accumulate the permissions of every job they've ever held (<strong>privilege creep</strong>).</p>
+    <p>The IDaaS fix is to make the HR system the <em>system of record</em>: HR marks a person hired, promoted, or terminated, and connectors fan that single event out to every application — accounts created from a role template in minutes, entitlement bundles swapped on role change, and every door locked at once on termination. <strong>Misconception:</strong> "deprovisioning = delete the account." Best practice is <em>disable immediately, delete later</em> — you preserve files, mail, and audit trails while killing access instantly.</p>
+    <h3>🚪 Interactive: One Career, Two Universes</h3>
+    <p>Follow Maya's whole employment story twice — once with manual IT tickets, once with automated IDaaS provisioning. Click a mode, then step through the four stages. Watch the right-hand column for the horror story:</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+      <button class="btn small" id="pmManual">🐢 Manual IT tickets</button>
+      <button class="btn ghost small" id="pmAuto">⚡ Automated IDaaS</button>
+    </div>
+    <div class="stageline">
+      <button class="stagechip on" data-st="0">1 · Hired</button>
+      <button class="stagechip" data-st="1">2 · Promoted</button>
+      <button class="stagechip" data-st="2">3 · Resigns</button>
+      <button class="stagechip" data-st="3">4 · The audit</button>
+    </div>
+    <p style="margin:6px 0;font-weight:700" id="provTitle"></p>
+    <div class="provgrid">
+      <div class="provcol"><h5>🟢 ACTIVE ACCESS</h5><div id="provOn"></div></div>
+      <div class="provcol"><h5>🔻 REVOKED / ⚠️ PROBLEMS</h5><div id="provOff"></div></div>
+    </div>
+    <p class="note" id="provNote"></p>
+    <h3>The IDaaS market — and how to appraise it</h3>
+    <p><strong>IDaaS</strong> is the identity function delivered as SaaS: a cloud directory, SSO, MFA, provisioning connectors, and reporting, sold per user per month. Objective 5 says <em>appraise</em>, so here is your evaluation checklist: protocol support (SAML <em>and</em> OIDC), size of the pre-built app catalog, HR-system connectors for JML automation, MFA options including phishing-resistant factors, uptime SLA and outage history, admin/reporting quality, and per-user price at your headcount. Meet the market:</p>
+    <div class="tabs" id="idpTabs">
+      <div class="tabrow">
+        <button class="tabbtn on" data-t="v1">Okta</button>
+        <button class="tabbtn" data-t="v2">Microsoft Entra ID</button>
+        <button class="tabbtn" data-t="v3">Google Cloud Identity</button>
+        <button class="tabbtn" data-t="v4">Auth0 / others</button>
+      </div>
+      <div class="tabpane on" data-p="v1"><strong>Okta</strong> — the best-known independent IDaaS: huge pre-integrated app catalog (thousands of SaaS apps), strong JML workflow automation, vendor-neutral (plays equally well with Google or Microsoft shops). Priced per user/month, which a 240-employee retailer must budget line by line. Appraisal note: independence is the selling point — and, after publicized incidents, so is scrutinizing any vendor's breach transparency.</div>
+      <div class="tabpane" data-p="v2"><strong>Microsoft Entra ID</strong> (the renamed Azure Active Directory) — the default gravity well for organizations already on Microsoft 365: identity is bundled into licenses many businesses own anyway, with deep Windows/Office integration and conditional-access policies (the risk-based rules in today's AI concept section). Appraisal note: superb value <em>if</em> you live in Microsoft's world; less neutral outside it.</div>
+      <div class="tabpane" data-p="v3"><strong>Google Cloud Identity</strong> — identity from the Google Workspace side: if Harbor Lane ran Gmail/Docs, every employee already has a Google-managed identity that can SSO into third-party apps via SAML/OIDC. Free tier exists; premium adds device management. Appraisal note: same story as Microsoft — strongest when it's the suite you already pay for.</div>
+      <div class="tabpane" data-p="v4"><strong>Auth0</strong> (owned by Okta) — developer-focused: login-as-an-API for the apps <em>you build</em>, with a generous free tier students can try. Also in the market: Ping Identity, JumpCloud, Cisco Duo (MFA-centric). Appraisal note: "workforce identity" (employees → apps, today's topic) and "customer identity" (your app's users) are different products — Harbor Lane needs both eventually: workforce IDaaS now, customer login for the web store in Week 4.</div>
+    </div>
+    <h3>Mobile identity management</h3>
+    <p>Identity management's last frontier is mobile, and the phone has become <em>both</em> the biggest identity risk and the strongest identity anchor. Risk: a lost, unlocked phone holds your email — the master key to every "reset my password" flow. Anchor: that same device is your "something you have" — push-approval MFA, TOTP apps, and passkeys all live there, and companies use <strong>MDM (mobile device management)</strong> to require screen locks and remotely wipe corporate data from lost devices. <strong>Misconception worth killing:</strong> "Face ID uploads my face to the company." No — device biometrics match against a template stored in the phone's secure hardware; what leaves the device is only a cryptographic "yes, it's really them." Your face never crosses the network. That design — biometric unlocks a local private key — is exactly how passkeys make phishing-proof login feel like a glance.</p>
+  </div>
+</section>
+
+<!-- ============ AI SPOTLIGHT ============ -->
+<section class="card ai">
+  <h3>🧠 AI Concept of the Day · Deepfakes vs. MFA — when AI attacks (and defends) identity</h3>
+  <p class="note" style="margin-top:-4px"><strong>AI concepts track:</strong> every session teaches one real AI concept through that day's cloud objective. Today, while appraising IDaaS for Objective 5, you learn how generative AI broke the oldest authentication assumption — being recognized — and how the same technology now guards the login from the other side.</p>
+  <p><strong>The concept:</strong> for a century, "prove who you are" quietly leaned on <em>recognition</em> — a colleague knows your voice, a manager knows your face on a video call. Generative AI just broke that assumption. A <strong>deepfake</strong> is synthetic media produced by a model trained to imitate a specific real person, and the entry price has collapsed: current voice-cloning models need only <em>seconds</em> of sampled audio (a voicemail greeting, one TikTok) to produce a clone that fools family members, and face-generation models can animate a convincing video head from a handful of photos. Notice precisely what broke: not cryptography, not passwords — the <em>"something you are" factor as judged by humans</em>. A human ear on a phone line was never a verification protocol; it just used to be expensive to fool, and now it costs almost nothing.</p>
+  <p><strong>The countermeasures come in two layers.</strong> First, <strong>liveness detection</strong> tries to prove a live human is present, not a replay or a render: <em>challenge-response</em> ("turn your head left," "read this random phrase" — a pre-rendered fake can't comply instantly), <em>depth sensing</em> (Face ID projects thousands of infrared dots to map 3-D facial structure; a flat screen has none), and artifact analysis hunting for the statistical fingerprints synthesis leaves behind. Second — and this is where IDaaS earns its subscription — AI plays <strong>defense</strong> through <strong>behavioral anomaly detection</strong>: the platform learns each user's normal (login hours, devices, geography, even <em>typing cadence</em>) and challenges whatever deviates — the famous <em>impossible travel</em> rule, a payroll page opened at 3 AM, a password typed in a stranger's rhythm. Security teams call this the emerging fourth factor: <strong>something you do</strong>. Behavior is continuous and hard to imitate at length, unlike a face on a screen. Even the humble CAPTCHA is caught in this arms race: AI now solves classic squiggly-letter tests <em>better than humans do</em>, so bot-vs-human proof has shifted toward invisible, risk-based checks (mouse paths, device fingerprints, interaction history) that only surface a puzzle when risk runs high.</p>
+  <p><strong>The misconception to kill: "biometrics can't be faked."</strong> A biometric is not a secret — your face is public and your voice is recorded every time you leave a voicemail. It's a <em>measurement</em>, and measurements can be synthesized. What actually holds is narrower: a biometric checked <em>locally, with liveness detection, unlocking a cryptographic key</em> (exactly how passkeys work — Segment 3) stays strong, because an attacker needs your physical presence, not your likeness. A biometric judged by a human over a remote channel — a voice on a phone, a face in a video call — has been demoted to a <em>vibe</em>, and vibes now spoof at scale. That's why the real answer to deepfakes is procedural: out-of-band verification and step-up MFA for any request that moves money or credentials.</p>
+  <p>Identity is now an AI-versus-AI battlefield, and both sides matter for Objective 5. <strong>On defense</strong>, IDaaS platforms run machine-learning models on every single login: device fingerprint, network, geography, time of day, and typing cadence get compressed into a <em>risk score</em>. Low risk — Maya, usual laptop, usual store, Tuesday morning — sails through. Medium risk triggers a <em>step-up</em>: prove a second factor before continuing. High risk gets blocked outright, like the famous <strong>impossible travel</strong> pattern: a login from Tampa followed forty minutes later by the "same user" from another continent — no airplane explains that, but a stolen password does. This adaptive, risk-based authentication is why modern MFA doesn't have to nag you every five minutes: the model spends friction only where risk lives.</p>
+  <p><strong>On offense</strong>, attackers use AI to write flawless phishing pages, run credential-stuffing bots that solve CAPTCHAs, and — the new frontier — clone voices and faces. In a widely reported 2024 Hong Kong case, an employee wired roughly US$25 million after a video call with what turned out to be deepfaked colleagues. Moral for your capstone: any factor an AI can <em>imitate</em> (a voice on the phone, a face on a video call) is weakening; factors bound to cryptography and origin (security keys, passkeys) are not imitable at a distance. High-stakes requests deserve out-of-band verification — call back on a known number.</p>
+  <p><strong>⚔️ Sort the battlefield — is AI the attacker or the defender here?</strong> Click a card, then a zone:</p>
+  <div class="matcher" id="atkDefMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="atk">A cloned voice calls payroll asking to change the owner's direct deposit</button>
+      <button class="mcard" data-match="def">Login flagged: the same account active in Miami and Warsaw 20 minutes apart</button>
+      <button class="mcard" data-match="atk">A phishing email personalized from the target's own public posts, written in the boss's style</button>
+      <button class="mcard" data-match="def">A typing-rhythm check quietly confirms it's really Rosa before payroll opens</button>
+      <button class="mcard" data-match="atk">A bot farm solves classic squiggly-letter CAPTCHAs faster than humans can</button>
+      <button class="mcard" data-match="def">A risk model sees a never-before-seen device at 3 AM and demands step-up MFA</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="atk">🗡️ AI as attacker<small>generative models imitating trusted humans</small></button>
+      <button class="mzone" data-zone="def">🛡️ AI as defender<small>models spotting what doesn't fit the pattern</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+  <p><strong>🕵️ Your turn — be the risk engine.</strong> Classify each login event the way an adaptive-auth model would:</p>
+  <div class="matcher" id="riskMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="allow">Maya · her usual laptop · store Wi-Fi she uses every shift · Tue 9:04 AM</button>
+      <button class="mcard" data-match="allow">Store manager · same tablet as always · same city · lunchtime</button>
+      <button class="mcard" data-match="step">Correct password · brand-new phone never seen before · same city</button>
+      <button class="mcard" data-match="step">Usual device · first-ever attempt to open the payroll-admin area</button>
+      <button class="mcard" data-match="block">Correct password from an overseas IP · 40 min after a Tampa login (impossible travel)</button>
+      <button class="mcard" data-match="block">Attempt #41 in an hour · same few passwords sprayed across many accounts</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="allow">✅ Allow<small>everything matches history</small></button>
+      <button class="mzone" data-zone="step">🔐 Step-up MFA<small>something changed — ask for more proof</small></button>
+      <button class="mzone" data-zone="block">⛔ Block<small>physically impossible or an attack pattern</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+</section>
+
+<!-- ============ LEARN IT WITH AI ============ -->
+<section class="card ai">
+  <h3>🎓 Learn Objective 5 with AI — personal tutor drills</h3>
+  <p><strong>Objective 5: Evaluate challenges related to ID management and appraise IDaaS solutions.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor. Log every drill in your AI Use Log.</p>
+  <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you across the whole identity toolkit:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for my cloud computing course. Topic: Session 4 —
+Identity as a Service (IDaaS). Cover: the identity
+management challenge, single sign-on, federated identity, OpenID/OIDC,
+multi-factor authentication (know/have/are), and account provisioning and
+deprovisioning. Ask me ONE question at a time, easy to hard, 10 questions
+total. After each of my answers, tell me exactly what I got right or wrong
+before asking the next one. Finish with a summary of my weak spots and
+which of those topics I should restudy first.</pre></div>
+  <p><strong>Drill 2 · Incident roleplay</strong> — the AI plays the phishing victim; you play the responder:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Roleplay a security incident with me. You play Dana, a bookstore employee
+who just typed her password into a pixel-perfect FAKE login page linked
+from a phishing email. I play the IT responder. Stay in character for
+4 exchanges (ONE message per turn, under 120 words, wait for my reply)
+while I interview you about what happened. Then I will walk through, step
+by step, exactly what would have been different if the company had SSO
+plus MFA — including why a phishing-resistant factor (security key or
+passkey) beats an SMS code. After my walkthrough, break character and
+critique it as an identity-security expert: what I got right, what I missed or
+misstated, and one question I should have asked you but didn't.</pre></div>
+  <p><strong>Drill 3 · Quiz master</strong> — identity story problems, including vendor claims to appraise:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Quiz me with workplace story problems about identity management and IDaaS
+(Session 4 topics from my cloud computing course): SSO, federation, MFA
+factor categories, provisioning/deprovisioning, and orphaned accounts. Make at
+least 2 of the questions an APPRAISAL: a fictional IDaaS vendor makes a
+marketing claim ("we make phishing impossible", "five-nines uptime,
+guaranteed forever") and I must judge how credible it is and what to
+check. Named characters, realistic situations, options A–D. ONE question
+at a time; after I answer, explain why EVERY option is right or wrong,
+then ask the next. 6 questions, track my score, get harder as I improve.</pre></div>
+  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify the tutor:</strong> AI tutors regularly scramble identity vocabulary — OAuth vs. OpenID Connect and "SMS is a fine second factor" are favorite stumbles. Cross-check one claim it made against this session's definitions and interactives in Segment 2 above, and note in your log whether it held up.</span></label>
+  <p class="note">Same pattern as every session: the AI drills the objective, you verify the AI. Objective 5 is midterm material (exam at the start of Week 3) — every drill you run tonight is studying, and it's already logged.</p>
+</section>
+
+<!-- ============ LABS ============ -->
+<h2>🔬 Hands-On Labs</h2>
+
+<section class="card lab">
+  <p class="labno">LAB A · IN-PAGE SIMULATOR · ~25 MIN</p>
+  <h3>SSO, Lifecycle &amp; Entropy Challenge</h3>
+  <p>Use the three interactives above to answer these. Type your answers and check them — the page tells you if you're right:</p>
+  <label class="step"><input type="checkbox" data-step="a1"><span>Step through <strong>all 7 steps</strong> of the SSO animator. Across all three apps, how many times did Maya type her password?</span></label>
+  <div class="checkfield">→ Password entries: <input type="number" id="labA1"> <button class="btn small" onclick="checkA(1)">Check</button> <span class="fb" id="fbA1"></span></div>
+  <label class="step"><input type="checkbox" data-step="a2"><span>Entropy demo: type <code>harbor2026</code> exactly (all lowercase). Record the entropy in bits (round to the nearest whole number if you like).</span></label>
+  <div class="checkfield">→ Entropy (bits): <input type="number" step="0.1" id="labA2"> <button class="btn small" onclick="checkA(2)">Check</button> <span class="fb" id="fbA2"></span></div>
+  <label class="step"><input type="checkbox" data-step="a3"><span>Using ONLY lowercase letters, find the <strong>shortest length</strong> that reaches at least <strong>60 bits</strong>. (Try <code>aaaaaaaaaaaa</code>, then add letters.)</span></label>
+  <div class="checkfield">→ Shortest all-lowercase length ≥ 60 bits: <input type="number" id="labA3"> <button class="btn small" onclick="checkA(3)">Check</button> <span class="fb" id="fbA3"></span></div>
+  <label class="step"><input type="checkbox" data-step="a4"><span>Lifecycle simulator: switch to <strong>🐢 Manual</strong> mode and go to stage <strong>4 · The audit</strong>. How many ⚠️ orphaned/lingering access items do the auditors find?</span></label>
+  <div class="checkfield">→ Orphaned items found: <input type="number" id="labA4"> <button class="btn small" onclick="checkA(4)">Check</button> <span class="fb" id="fbA4"></span></div>
+  <label class="step"><input type="checkbox" data-step="a5"><span>In your notebook, one sentence: why do "mover" failures (privilege creep) show up in audits <em>years</em> before anyone notices them in daily work? Discuss with a neighbor.</span></label>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB B · FREE AI CHATBOT · ~15 MIN · 🆓 ChatGPT / Gemini / Claude / Copilot (any free tier)</p>
+  <h3>The MFA Rollout FAQ — with an AI Junior Analyst</h3>
+  <p>Harbor Lane is rolling out SSO + MFA next month, and 240 employees — many part-time, many not technical — will have questions. Open any free AI chatbot and paste:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>You are helping the IT director of Harbor Lane Books, a 12-store bookstore
+chain (240 employees, many part-time, high turnover). Next month we roll out
+single sign-on plus multi-factor authentication. Draft a one-page FAQ for
+skeptical employees that answers, in plain friendly language:
+1) Why is ONE login for everything safer, not riskier?
+2) What exactly do I do on the first morning?
+3) What happens if I lose my phone?
+4) If I install the authenticator app on my personal phone, can the company
+   see my photos, texts, or location?
+5) Why is an authenticator app better than getting codes by text message?
+Keep it under 400 words, warm in tone, and translate any jargon you use.</pre></div>
+  <p><strong>What to look for:</strong> a good answer explains the IdP "kill switch" logic for Q1, backup codes or help-desk re-enrollment for Q3, that a TOTP app only stores a secret seed and reads nothing else for Q4, and SIM-swap risk for Q5.</p>
+  <label class="step"><input type="checkbox" data-step="b1"><span>Run the prompt and read the FAQ critically. Would a 19-year-old part-time bookseller actually understand Q4's answer?</span></label>
+  <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> fact-check its Q5 claim against Segment 2 of this session. The correct reason is SIM-swap/interception risk — if the AI said something vague ("texts are less encrypted") or wrong, write the correction. AI assistants also love recommending SMS as a "backup factor" without flagging its weakness — did yours?</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — verify before you comply:</strong> with the AI's help, draft a 3-rule "verify before you comply" protocol for Harbor Lane covering any phone/video request that moves money, credentials, or gift cards (think: call back on a number already on file; urgency is never a bypass; payment changes need a second approver). Then stress-test it — ask the AI: <em>"You are a scammer with a perfect voice clone of the owner. How would you still get around these three rules?"</em> — and tighten the ONE rule its best attack exposed. Paste the before/after rule into your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="b3"><span>Add the prompt, the one claim you verified, and any correction to your <strong>AI Use Log</strong> (required for the capstone).</span></label>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB C · REAL FREE TOOLS · ~20 MIN · 🆓 your own accounts + any free authenticator app</p>
+  <h3>Federation Safari + Enable Real MFA</h3>
+  <p><strong>Part 1 — Count federation in the wild.</strong> Visit the login pages of five sites/apps you actually use (streaming, shopping, gaming, school, social). Record what you find:</p>
+  <table class="simple">
+    <tr><th>Site / app</th><th>“Sign in with…” offered? Which IdPs? MFA available?</th></tr>
+    <tr><td><input type="text" data-persist="fedS1" placeholder="e.g., Spotify" style="border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;width:95%"></td><td><input type="text" data-persist="fedF1" placeholder="e.g., Google + Apple + Facebook; MFA: yes (TOTP)" style="border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;width:95%"></td></tr>
+    <tr><td><input type="text" data-persist="fedS2" style="border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;width:95%"></td><td><input type="text" data-persist="fedF2" style="border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;width:95%"></td></tr>
+    <tr><td><input type="text" data-persist="fedS3" style="border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;width:95%"></td><td><input type="text" data-persist="fedF3" style="border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;width:95%"></td></tr>
+    <tr><td><input type="text" data-persist="fedS4" style="border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;width:95%"></td><td><input type="text" data-persist="fedF4" style="border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;width:95%"></td></tr>
+    <tr><td><input type="text" data-persist="fedS5" style="border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;width:95%"></td><td><input type="text" data-persist="fedF5" style="border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit;width:95%"></td></tr>
+  </table>
+  <label class="step"><input type="checkbox" data-step="c1"><span>Fill all five rows. Tally: how many of your five offer federated login? Which IdP appeared most — that's the consumer identity market ranking itself for you.</span></label>
+  <p><strong>Part 2 — Enable MFA on one REAL personal account</strong> (your choice: email is highest-value — protect it first). Free authenticator apps: Google Authenticator, Microsoft Authenticator, or Aegis (Android, open source). No credit card, ever.</p>
+  <label class="step"><input type="checkbox" data-step="c2"><span>In the account's security settings, find "Two-factor authentication" / "2-Step Verification" and choose the <strong>authenticator app</strong> option (not SMS) if offered. Scan the QR code with your app.</span></label>
+  <label class="step"><input type="checkbox" data-step="c3"><span>Save the <strong>backup codes</strong> somewhere that is not that same phone (write them down; store offline). This is your lose-my-phone answer from Lab B.</span></label>
+  <label class="step"><input type="checkbox" data-step="c4"><span>Log out, log back in, and experience the flow you'll be rolling out to 240 booksellers. In your notebook: one sentence on the friction, one on the payoff.</span></label>
+  <p class="note">⚖️ Do this on your <strong>own personal</strong> account only — never enroll MFA on someone else's account, and never disable MFA you didn't enable.</p>
+</section>
+
+<!-- ============ STORY QUIZ ============ -->
+<h2>📝 Session Quiz — Story Problems</h2>
+<p>Ten workplace scenarios — the last two test today's AI concept. Pick the best answer; every question explains all four options after you answer. Counts toward the syllabus "Exercises/Quizzes" grade (30%).</p>
+<section class="quiz" id="quiz1">
+
+  <div class="q" data-a="2">
+    <h4>Q1 · <em>Reset o'clock</em></h4>
+    <p class="stem">Priya runs the help desk at Bayside Credit Union: 900 staff, 27 applications, each with its own login. Last quarter 31% of her 4,800 tickets were password resets, and the bank estimates $30 of staff time per reset. The new CIO proposes an IDaaS platform with single sign-on, and the board asks Priya to name the PRIMARY operational benefit. What should she say?</p>
+    <button class="opt">A. SSO eliminates the need for authentication entirely, so login problems disappear</button>
+    <button class="opt">B. All 27 applications will finally share one central password database that her team maintains</button>
+    <button class="opt">C. Staff keep one strong credential and policy is enforced at one point — reset volume collapses, and MFA, lockout, and revocation happen in a single place instead of 27</button>
+    <button class="opt">D. The bank will never be phished again</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Twenty-seven credential sets become one: the ~1,500 quarterly resets (≈$45,000 of staff time) shrink toward a fraction, and every security control — MFA, lockout thresholds, the termination kill switch — is enforced once at the IdP rather than replicated 27 times, badly. That's the operational case in one sentence. ✘ A — SSO relocates authentication to the IdP; users absolutely still authenticate, just once and under stronger controls. ✘ B is backwards and dangerous: the whole point is that apps <em>stop</em> keeping password databases and accept signed tokens instead. One giant shared password database would be a bigger prize for attackers, not a benefit. ✘ D oversells: phishing pressure drops (fewer credentials, central anomaly detection), but no control eliminates phishing — promising that to a board destroys credibility at the first incident.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q2 · <em>The charter partner</em></h4>
+    <p class="stem">Gulf Coast Charters books fishing trips through BookingHarbor, a portal run by a completely separate company. The contract says Gulf Coast's 85 employees must reach BookingHarbor using their existing Gulf Coast logins, and BookingHarbor may never store a Gulf Coast password. BookingHarbor's engineer shrugs: "Standard setup, we do it weekly." What is being described?</p>
+    <button class="opt">A. Federated identity — BookingHarbor is configured to trust signed identity assertions from Gulf Coast's identity provider</button>
+    <button class="opt">B. Multi-tenancy — the two companies agree to share one user database</button>
+    <button class="opt">C. Password vaulting — BookingHarbor keeps an encrypted copy of each Gulf Coast password</button>
+    <button class="opt">D. Deprovisioning — BookingHarbor deletes each account after every booking</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Trust that crosses organizational lines is the definition of federation: Gulf Coast's IdP authenticates its own people and issues signed tokens (via SAML or OIDC); BookingHarbor verifies the signature and lets them in — no Gulf Coast password ever exists on BookingHarbor's side, exactly as the contract demands. ✘ B — multi-tenancy is one provider serving many customers on shared infrastructure (Session 2); sharing a user database between two companies is neither multi-tenancy nor a good idea. ✘ C — vaulting stored passwords is precisely what the contract forbids; federation exists so partners never need your secrets. ✘ D — deprovisioning is revoking access when people <em>leave</em>; deleting accounts after each booking would force constant re-provisioning and has nothing to do with how login trust works.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q3 · <em>The two-factor audit</em></h4>
+    <p class="stem">Security auditor Nakia is reviewing authentication schemes proposed for Suncoast Dental's four systems. The office manager insists all four are "two-factor because there are two steps." Scheme 1: password + security question. Scheme 2: password + 4-digit PIN. Scheme 3: fingerprint + face scan. Scheme 4: password + a 6-digit code from an authenticator app on the employee's enrolled phone. Which scheme should Nakia certify as TRUE two-factor authentication?</p>
+    <button class="opt">A. Scheme 1 — password + security question</button>
+    <button class="opt">B. Scheme 2 — password + PIN</button>
+    <button class="opt">C. Scheme 3 — fingerprint + face scan</button>
+    <button class="opt">D. Scheme 4 — password + authenticator-app code</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ True MFA requires factors from <em>different categories</em>. Scheme 4 combines something you KNOW (password) with something you HAVE (the TOTP code proves possession of the enrolled phone) — two categories, so one phishing email or one stolen phone alone isn't enough. ✘ A is two KNOWs: a security question is just a second, usually weaker, password ("first pet's name" is often on Instagram). ✘ B is also two KNOWs — both live in the victim's head and both fall to the same phishing page. ✘ C is two AREs: sounds exotic, but both factors are the same category; a scenario that defeats device biometrics tends to defeat both, and biometrics can't be rotated after compromise. Two steps ≠ two factors — the category math is what Nakia is paid to check.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q4 · <em>The ghost of Region 4</em></h4>
+    <p class="stem">Whitfield Insurance terminated regional manager Dale in March. By August, a competitor was mysteriously undercutting Whitfield's renewal quotes in Region 4. Forensics found the answer: Dale's CRM account pulled 1,200 customer records in July — from his home IP. His email was disabled the day he left, but the CRM "wasn't on the termination checklist," and nobody owned the checklist anyway. What was the ROOT failure?</p>
+    <button class="opt">A. Password entropy — Dale's CRM password was too short</button>
+    <button class="opt">B. Deprovisioning — no automated leaver process tied to HR meant a non-checklist app survived as an orphaned account</button>
+    <button class="opt">C. Missing SSO — Dale simply had too many passwords to remember</button>
+    <button class="opt">D. An expired TLS certificate on the CRM</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ This is the orphaned-account horror story from Segment 3, beat for beat: leavers don't complain about access they shouldn't have, manual checklists always miss something, and five months later the miss is exfiltrating customer data. The fix is structural — HR's termination event automatically fans out to every connected app, with periodic access reviews to catch strays. ✘ A — entropy is irrelevant; Dale used his own valid, active credential. A 40-character password that should have been revoked is still a breach. ✘ C — SSO would have <em>helped</em> (one kill switch), but the root failure is the missing leaver process; SSO with no deprovisioning discipline still leaves direct-login accounts alive. ✘ D — TLS protects data in transit from eavesdroppers; it neither knows nor cares that the authenticated user was fired in March.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q5 · <em>The weekend project</em></h4>
+    <p class="stem">Harbor Lane's only sysadmin, Owen, pushes back on the consultants: "IDaaS at $6 per user per month is about $17,000 a year for our 240 people. I can build a login system in a weekend — a password table and a form." The owner asks you for the STRONGEST argument in the IDaaS column. Which is it?</p>
+    <button class="opt">A. IDaaS transfers all security responsibility to the vendor, so Harbor Lane can stop thinking about identity</button>
+    <button class="opt">B. In-house systems are always cheaper over the long run</button>
+    <button class="opt">C. Identity is a specialist, high-stakes function: $17k/yr buys SSO, MFA, HR-driven provisioning connectors, anomaly detection, and an uptime SLA — a stack one generalist cannot build, patch, and monitor alone</button>
+    <button class="opt">D. IDaaS products work perfectly with zero configuration</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Owen's weekend project delivers a password table — none of the rest: no MFA, no federation to their SaaS apps, no JML automation, no 24/7 monitoring, and its security patches arrive only when Owen isn't fixing a POS terminal in Sarasota. $17k/yr against one breach or one Owen-shaped single point of failure is the whole argument. ✘ A misstates shared responsibility: Harbor Lane still owns role design, access policy, MFA rules, and offboarding discipline — the vendor runs the machinery, not the decisions. ✘ B — "always cheaper" ignores Owen's loaded hours, breach exposure, and opportunity cost; sometimes in-house wins, but never on "always." ✘ D — connectors, role bundles, and policies are genuine configuration work; pretending otherwise sets the project up to fail in week one.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q6 · <em>The perfect fake</em></h4>
+    <p class="stem">A phishing email steers Harbor Lane staff to <code>harbormail.example-support.net</code> — a pixel-perfect proxy of the real login page that instantly relays whatever victims type to the genuine site: password AND the 6-digit authenticator code. Three employees fell for it and their accounts were taken over within seconds. Accountant Renata also clicked, also "logged in" — but the attackers got nothing usable. She signs in with a FIDO2 hardware security key. Why did her account survive?</p>
+    <button class="opt">A. The key's cryptographic response is bound to the genuine site's origin — on the fake domain it produces nothing the attacker can replay anywhere</button>
+    <button class="opt">B. Her password was longer than her coworkers' passwords</button>
+    <button class="opt">C. Hardware keys automatically rotate the password every 30 seconds</button>
+    <button class="opt">D. The phishing proxy happened to crash on her older browser</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Origin binding is the superpower: a FIDO2 key signs a challenge that includes the domain it's talking to. On <code>example-support.net</code> the signature is for the wrong origin — worthless at the real site — so a real-time relay has nothing to relay. This is why security keys and passkeys are called <em>phishing-resistant</em> while TOTP is merely phishing-<em>slowing</em> (her coworkers' 30-second codes were relayed comfortably inside their validity window). ✘ B — length is irrelevant here; the proxy captured passwords perfectly at any length. ✘ C — nothing rotates passwords; that garbles TOTP's mechanism, and TOTP demonstrably fell to this attack anyway. ✘ D — luck is not a control, and incident reports that credit luck get rewritten by the next incident.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q7 · <em>One button, no password</em></h4>
+    <p class="stem">Jonah's two-person startup adds a "Sign in with Google" button to their book-club app specifically so they never have to store passwords. His cofounder panics during the demo: "Wait — so Google sends us the user's password and we check it?" What ACTUALLY happens when a user clicks that button?</p>
+    <button class="opt">A. Google transmits a hashed copy of the password, which Jonah's app verifies locally</button>
+    <button class="opt">B. Via OpenID Connect, the app receives a signed identity token asserting who the user is — the password is checked only by Google and never leaves it</button>
+    <button class="opt">C. The app automatically receives full access to the user's Gmail and Drive</button>
+    <button class="opt">D. The account is created with no verification of any kind</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ This is OIDC — the identity layer on OAuth 2.0 from Segment 2. Google authenticates the user (password, MFA, risk checks), then hands the app a signed ID token: "this is jane@…, verified just now." Jonah's app validates the signature and trusts it — federation in one click, zero passwords stored. ✘ A — no provider ships password hashes to third parties; that would make every small app a leak point for Google credentials, the exact disease federation cures. ✘ C — classic scope confusion: proving identity grants NO resource access; reading Gmail or Drive requires separate OAuth scopes the user must explicitly approve on a consent screen. ✘ D — verification absolutely happened, just at Google, which does it better than a two-person startup ever could.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q8 · <em>Sixty elves for December</em></h4>
+    <p class="stem">Harbor Lane hires 60 seasonal associates every November for the holiday rush. Last year onboarding took IT two full weeks of account tickets — and in January, an internal review found 19 seasonal accounts still active, one of which had processed a suspicious refund on December 26th. Four proposals are on the table for this year. As the consultant, which do you endorse?</p>
+    <button class="opt">A. Create one shared "seasonal2026" login that all 60 temps use</button>
+    <button class="opt">B. Clone the store manager's account as a template for each temp — fastest setup</button>
+    <button class="opt">C. Keep manual creation but add a laminated spreadsheet checklist for January deletions</button>
+    <button class="opt">D. HR-driven automated provisioning: a "Seasonal associate" role package grants exactly the needed access on the HR start date and auto-revokes on the HR end date</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Automated JML with role-based packages solves both stated failures: 60 accounts materialize from HR records in minutes (no two-week ticket queue), and expiry dates make January cleanup a non-event — access dies because the HR record says so, not because someone remembered. The suspicious-refund investigation also becomes possible: every action maps to a named person. ✘ A destroys accountability — with one shared login, the December 26th refund belongs to "everyone and no one," and you can't cut off one bad actor without locking out 59 others. ✘ B is privilege creep as a policy: temps inherit manager rights (refund overrides, payroll views) they must never have. ✘ C is the current failure mode with lamination; checklists owned by "whoever remembers" produced the 19 ghosts in the first place.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q9 · <em>The voice on line two</em> 🧠 AI concept</h4>
+    <p class="stem">Friday, 4:52 PM. Harbor Lane bookkeeper Nadia answers a call. It is unmistakably the owner's voice — his cadence, his little cough, the nickname only he uses for her — and caller ID shows his cell number. "A rare-book estate deal closes at 5:30. Wire the $18,000 deposit to this new account, and keep it quiet until Monday." Nadia went through this session's training. Which control ACTUALLY defeats this attack?</p>
+    <button class="opt">A. Caller ID verification — the phone network already confirmed it was his number</button>
+    <button class="opt">B. Voice recognition — she has known his voice for six years and it matched perfectly</button>
+    <button class="opt">C. Out-of-band verification with a step-up rule: hang up, call the owner back on the number already saved in her contacts, and require the standing second-channel approval for any payment change — no exceptions for urgency</button>
+    <button class="opt">D. Quizzing the caller on a personal detail, like the name of his dog</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ The attack lives entirely inside one inbound channel. Out-of-band verification exits that channel: Nadia originates a NEW call to a number she already trusts — which the attacker can't intercept — and a second-approver rule means even a flawless impersonation of one person isn't enough. The urgency and secrecy ("by 5:30," "keep it quiet") are social-engineering pressure designed to prevent exactly that callback. ✘ A — caller ID is trivially spoofable; it asserts a number, never a person. ✘ B is the trap this session exists to spring: her ear IS the attack surface — seconds of sampled audio built that voice, and recognition by humans was never a protocol. ✘ D is thin comfort: the dog's name is on Instagram, and interactive voice clones answer follow-up questions live. Personal trivia is research for the attacker, not authentication.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q10 · <em>Blocked at 2:14 AM</em> 🧠 AI concept</h4>
+    <p class="stem">Sunday, 2:14 AM: Harbor Lane's IDaaS console blocks a login to store manager Bree's account even though the password AND the TOTP code were both correct. The event log reads: "Active session in Tampa since 1:58 AM; this attempt from an IP 5,100 miles away at 2:14 AM. Password typed 40% slower than stored rhythm profile. First login ever attempted on this account between 1 and 5 AM." Monday morning the owner asks what the platform actually saw. The accurate answer:</p>
+    <button class="opt">A. The attacker mistyped the password, which tripped the failed-attempt lockout counter</button>
+    <button class="opt">B. Behavioral anomaly detection: impossible travel across two live sessions, a typing cadence off Bree's profile, and an unprecedented login hour — "something you do" signals that stolen credentials cannot reproduce</button>
+    <button class="opt">C. The IDaaS platform blocks all weekend logins by default policy</button>
+    <button class="opt">D. Bree's laptop antivirus reported malware, so the identity platform froze the account</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Every logged detail is a behavioral signal, not a credential check: no aircraft covers 5,100 miles in 16 minutes (impossible travel), typing rhythm is a behavior biometric the thief never studied, and login-hour history is a learned pattern. Both classic factors PASSED — "know" and "have" were stolen intact — and the "something you do" layer is what caught the theft. That defense is precisely why behavioral analytics belongs on your Objective 5 appraisal checklist when comparing IDaaS vendors. ✘ A contradicts the log: the password was correct, so no failure counter was involved. ✘ C — no mainstream IDaaS ships a weekend ban, and the block reason cites anomalies, not a calendar. ✘ D invents an integration the event log never mentions; endpoint antivirus is a separate control plane from login risk scoring.</div>
+  </div>
+
+  <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+</section>
+
+<!-- ============ DISCUSSION ============ -->
+<section class="card disc">
+  <h3>💬 Discussion Forum Prompts <span class="note">(syllabus: Discussion Forums = 15%)</span></h3>
+  <p><strong>Prompt 1:</strong> "SSO is a single point of failure — one outage or one compromised IdP and EVERYTHING is down or breached." Argue both sides in a paragraph each: why the concern is legitimate, and why security teams overwhelmingly choose SSO anyway (how do IDaaS vendors and their customers mitigate the risk?). End with your verdict for Harbor Lane. Reply to two classmates.</p>
+  <p><strong>Prompt 2:</strong> A bank proposes voiceprint verification for phone-based password resets: "My voice is my password." Given what you learned about AI voice cloning in today's AI concept section, attack or defend this design in two paragraphs, and propose the reset flow you would build instead. Concepts, not vibes.</p>
+</section>
+
+<!-- ============ CAPSTONE ============ -->
+<section class="card capstone">
+  <h3>🏗️ Capstone · Harbor Lane Books — Checkpoint 4 of 12</h3>
+  <p>Your client has 240 employees, 12 stores, high seasonal turnover, and — as of your Week 1 audit — no identity strategy beyond "the manager knows the passwords." This session's slice is the <strong>identity third of Deliverable D2</strong> (D2, the full Identity + Data + Collaboration plan, is due at the end of Week 2 — Session 6). Full brief and rubric: <a href="project.html"><strong>open the Project Brief →</strong></a></p>
+  <p><strong>Due before Session 5 (individual):</strong></p>
+  <label class="step"><input type="checkbox" data-step="cap1"><span><strong>IDaaS recommendation:</strong> pick a product direction (independent IDaaS vs. suite-bundled identity) and justify it against at least 3 appraisal criteria from Segment 3 (protocols, app catalog, HR connectors, MFA options, SLA, price at 240 users).</span></label>
+  <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Provisioning policy:</strong> a JML table for three roles (store associate, store manager, HQ finance): for each lifecycle event, which systems are granted/revoked and the deadline in hours. Seasonal staff get auto-expiry — you saw why in Q8.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap3"><span><strong>MFA policy:</strong> which factor(s) you'll require, what you'll allow as backup, the lost-phone recovery flow, and one sentence on why you did or didn't allow SMS.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap4"><span>Record all AI assistance in your <strong>AI Use Log</strong> (prompts + what you verified or corrected).</span></label>
+</section>
+
+<!-- ============ EXIT TICKET ============ -->
+<section class="card exit">
+  <h3>🎟️ Exit Ticket</h3>
+  <p>Tap each light until it matches your confidence: 🔴 lost · 🟡 shaky · 🟢 got it</p>
+  <div class="exitrow"><button class="light" data-exit="e1">⚪</button><span>I can walk someone through an SSO login flow step by step (user → app → IdP → token → apps).</span></div>
+  <div class="exitrow"><button class="light" data-exit="e2">⚪</button><span>I can classify any factor as know / have / are and spot fake two-factor schemes.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e3">⚪</button><span>I can write a provisioning/deprovisioning policy that prevents orphaned accounts and privilege creep.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e4">⚪</button><span>🧠 AI concept: I can explain how deepfakes attack authentication and how AI-driven anomaly detection defends it.</span></div>
+  <p style="margin-top:10px"><strong>Muddiest point</strong> — one thing still fuzzy (instructor reads these at the start of Session 5):</p>
+  <textarea data-persist="muddy" placeholder="The thing I'm least sure about is…"></textarea>
+</section>
+
+<footer>
+  <div class="card" style="background:#f0eee6">
+    <strong>📚 Before Session 5:</strong> preview <strong>Session 5 (Data Storage in the Cloud)</strong> by skimming its opening segment; finish Lab C (MFA enabled on one real account — we'll ask for a show of hands); post to both discussion prompts; complete Capstone Checkpoint 4. Reminder: <strong>Deliverable D2 is due at the end of Session 6</strong>, and the midterm is at the start of Week 3.
+  </div>
+  <div class="footer-nav">
+    <a class="btn ghost" href="index.html">⌂ Course Hub</a>
+    <span><button class="btn ghost small" onclick="resetPage()">Reset my progress on this page</button></span>
+    <span><a class="btn ghost" href="week1-session3.html">← Session 3</a> <a class="btn" href="week2-session5.html">Session 5: Data Storage →</a></span>
+  </div>
+</footer>
+</main>
+<script>
+/* ===== CEN4086 core framework (copy verbatim into every session file) ===== */
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'page');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+function resetPage(){try{localStorage.removeItem(PKEY)}catch(e){};location.reload()}
+
+/* flips */
+document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));
+/* tabs */
+document.querySelectorAll('.tabs').forEach(t=>{
+  t.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>{
+    t.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('on'));
+    t.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');t.querySelector('.tabpane[data-p="'+b.dataset.t+'"]').classList.add('on');
+  }));
+});
+/* polls */
+document.querySelectorAll('.poll').forEach((p,pi)=>{
+  const key='poll:'+(p.id||pi);
+  p.querySelectorAll('.popt').forEach((o,oi)=>o.addEventListener('click',()=>{
+    if(p.classList.contains('done'))return;
+    o.classList.add('sel');p.classList.add('done');save(key,oi);
+  }));
+  if(S[key]!=null){p.classList.add('done');const o=p.querySelectorAll('.popt')[S[key]];if(o)o.classList.add('sel');}
+});
+/* quiz engine */
+function updateQuiz(qz){
+  const qs=[...qz.querySelectorAll('.q')];
+  const done=qs.filter(q=>q.classList.contains('done'));
+  const right=qs.filter(q=>q.classList.contains('gotit')).length;
+  const res=qz.querySelector('.qresult');
+  if(res){res.querySelector('.bar span').style.width=(done.length?Math.round(100*right/qs.length):0)+'%';
+    res.querySelector('.scoreline').textContent='Score: '+right+' / '+qs.length+(done.length===qs.length?(right===qs.length?' — perfect! 🎉':' — review the explanations above.'):' ('+(qs.length-done.length)+' remaining)');}
+  updateChip();
+}
+function updateChip(){
+  let r=0,t=0;
+  document.querySelectorAll('.quiz').forEach(qz=>qz.querySelectorAll('.q').forEach(q=>{t++;if(q.classList.contains('gotit'))r++;}));
+  const c=document.getElementById('scoreChip');if(c)c.textContent='Quiz: '+r+'/'+t;
+}
+document.querySelectorAll('.quiz').forEach((qz,qzi)=>{
+  const qid=qz.id||('qz'+qzi);
+  qz.querySelectorAll('.q').forEach((q,i)=>{
+    const a=+q.dataset.a,opts=[...q.querySelectorAll('.opt')];
+    const key=qid+':q'+i;
+    function answer(j,fresh){
+      q.classList.add('done');if(j===a)q.classList.add('gotit');
+      opts.forEach(o=>o.disabled=true);
+      opts[a].classList.add('right');if(j!==a)opts[j].classList.add('wrong');
+      if(fresh)save(key,j);
+    }
+    opts.forEach((o,j)=>o.addEventListener('click',()=>{if(!q.classList.contains('done')){answer(j,true);updateQuiz(qz);}}));
+    if(S[key]!=null)answer(S[key],false);
+  });
+  updateQuiz(qz);
+});
+/* matcher engine */
+document.querySelectorAll('.matcher').forEach((m,mi)=>{
+  const key='match:'+(m.id||mi);let sel=null,done=0;
+  const cards=[...m.querySelectorAll('.mcard')],st=m.querySelector('.mstatus');
+  function stat(){st.textContent=done+'/'+cards.length+' placed'+(done===cards.length?' — all correct! 🎉':'');}
+  cards.forEach((c,ci)=>{c.addEventListener('click',()=>{
+    if(c.classList.contains('ok'))return;
+    cards.forEach(x=>x.classList.remove('sel'));c.classList.add('sel');sel=c;
+  });});
+  m.querySelectorAll('.mzone').forEach(z=>z.addEventListener('click',()=>{
+    if(!sel)return;
+    if(sel.dataset.match===z.dataset.zone){
+      sel.classList.remove('sel');sel.classList.add('ok');done++;stat();
+      const solved=(S[key]||[]);solved.push(cards.indexOf(sel));save(key,solved);sel=null;
+    }else{sel.classList.add('no');setTimeout(()=>sel&&sel.classList.remove('no'),400);}
+  }));
+  (S[key]||[]).forEach(ci=>{if(cards[ci]&&!cards[ci].classList.contains('ok')){cards[ci].classList.add('ok');done++;}});
+  stat();
+});
+/* lab step checkboxes */
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+/* persisted inputs/textareas */
+document.querySelectorAll('[data-persist]').forEach(el=>{
+  const key='p:'+el.dataset.persist;
+  if(S[key]!=null)el.value=S[key];
+  el.addEventListener('input',()=>save(key,el.value));
+});
+/* exit ticket lights */
+const LIGHTS=['⚪','🔴','🟡','🟢'];
+document.querySelectorAll('.light').forEach(b=>{
+  const key='exit:'+b.dataset.exit;let i=S[key]||0;b.textContent=LIGHTS[i];
+  b.addEventListener('click',()=>{i=(i+1)%4;b.textContent=LIGHTS[i];save(key,i);});
+});
+/* copy prompt */
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+
+/* ===== Session 4 custom interactives ===== */
+/* SSO step-through animator */
+const SSO_STEPS=[
+ {arr:[],box:[],cap:'Meet Maya, Harbor Lane’s new events coordinator: three cloud apps, one identity provider (IdP). No arrows lit yet — it’s 8:59 AM and nothing has happened. Click Next ▸ to start her Monday.'},
+ {arr:['ar1'],box:['bUser','bApp1'],cap:'STEP 1 — Maya opens HarborMail. The app has no idea who she is — and notice what it does NOT do: it shows no password form of its own. HarborMail doesn’t store passwords at all.'},
+ {arr:['ar2'],box:['bApp1','bIdp'],cap:'STEP 2 — HarborMail redirects her browser to the identity provider it trusts (CloudGate): “Don’t tell ME who you are — go tell the IdP.” Every connected app makes the same move.'},
+ {arr:['ar3'],box:['bUser','bIdp'],cap:'STEP 3 — Maya authenticates ONCE, at the IdP only: password + an MFA push to her phone. This is the single place in the whole company where her password exists — one door to defend, defended well.'},
+ {arr:['ar4'],box:['bIdp','bUser'],cap:'STEP 4 — CloudGate hands her browser a signed, expiring token: “This is Maya, verified at 9:02, valid for this session.” Think of a tamper-evident wristband from the one bouncer who actually checked ID.'},
+ {arr:['ar5'],box:['bUser','bApp1'],cap:'STEP 5 — Her browser presents the token to HarborMail, which checks the IdP’s signature and lets her in. HarborMail never saw a password — it saw proof that the IdP did.'},
+ {arr:['ar6'],box:['bUser','bIdp','bApp2'],cap:'STEP 6 — 10:15 AM: Maya opens PayrollPro. Same redirect to CloudGate — but the IdP already has her live session, so it issues a fresh token instantly. No login screen. To Maya it feels like magic; to security it’s one controlled gate.'},
+ {arr:['ar7'],box:['bUser','bIdp','bApp3'],cap:'STEP 7 — ShiftBoard, and every other connected app, all day: one authentication, many doors — that is single sign-on. The bonus nobody advertises: disable Maya at the IdP and EVERY door locks at once. Remember that for Segment 3.'}
+];
+let ssoI=0;
+function ssoPaint(){
+  document.querySelectorAll('.ssoA').forEach(g=>g.classList.remove('live'));
+  document.querySelectorAll('.ssoB').forEach(g=>g.classList.remove('live'));
+  const s=SSO_STEPS[ssoI];
+  s.arr.forEach(id=>{const e=document.getElementById(id);if(e)e.classList.add('live');});
+  s.box.forEach(id=>{const e=document.getElementById(id);if(e)e.classList.add('live');});
+  document.getElementById('ssoCap').textContent=s.cap;
+  document.getElementById('ssoPos').textContent='Step '+ssoI+' of '+(SSO_STEPS.length-1);
+  document.getElementById('ssoPrev').disabled=(ssoI===0);
+  document.getElementById('ssoNext').disabled=(ssoI===SSO_STEPS.length-1);
+}
+document.getElementById('ssoNext').addEventListener('click',()=>{if(ssoI<SSO_STEPS.length-1){ssoI++;ssoPaint();}});
+document.getElementById('ssoPrev').addEventListener('click',()=>{if(ssoI>0){ssoI--;ssoPaint();}});
+ssoPaint();
+
+/* provisioning lifecycle: manual vs automated */
+const PROV={
+ titles:['Day 1 — Maya is hired: sales associate, Store #7','Year 2 — Maya is promoted: store manager','Year 3 — Maya resigns, Friday 4:00 PM','Six months later — the auditors arrive'],
+ manual:[
+  {on:['Email — created day 4 (the ticket sat in a queue; Maya was idle her whole first morning)','POS register login — day 6','Staff Wi-Fi — day 1 (shared password taped inside the break room)'],off:[],warn:['HR-portal request lost; a coworker “lends” Maya a login — a policy violation on day one'],note:'Manual provisioning: four systems, four tickets, three different admins. Time-to-productive: about a week.'},
+  {on:['Everything from stage 1, plus:','Inventory admin — 9 days after the promotion','Payroll approvals — granted after two reminder emails','Scheduling admin'],off:[],warn:['Nobody removed the associate-only rights she no longer needs — privilege creep begins'],note:'Role changes are where manual processes quietly fail: adds eventually happen (people complain when access is MISSING), removals almost never do (nobody complains about extra access).'},
+  {on:['POS login — STILL ACTIVE (store manager assumed “that’s IT’s job”)','VPN token — never collected','Marketing Dropbox — she was invited via personal email; IT can’t even see this one'],off:['Email — disabled Monday morning, 2.5 days later'],warn:['Three access paths just walked out the door with Maya'],note:'Deprovisioning by memory: whatever IT remembers gets disabled. The rest becomes orphaned.'},
+  {on:[],off:['Email'],warn:['AUDIT FINDING · Maya’s POS account was used two weeks ago — a “helpful” shift lead has been reusing it','AUDIT FINDING · her VPN token still works; the auditors dial in with it during the exit briefing','AUDIT FINDING · the Dropbox share is still syncing price lists to her personal laptop'],note:'The orphaned-account horror story — and the single most common identity audit finding in the real world. Ex-employee credentials are a classic breach entry point (see Quiz Q4).'}
+ ],
+ idaas:[
+  {on:['Email, POS, Wi-Fi certificate, HR portal — ALL provisioned at 8:00 AM from the HR record','Access package applied: “Sales associate — Store #7” (role-based)'],off:[],warn:[],note:'HR marks Maya active → the IDaaS connector creates every account from her ROLE template. Time-to-productive: her first coffee.'},
+  {on:['Role flips to “Store manager — Store #7”: inventory admin, payroll approvals, scheduling admin granted in one event'],off:['Associate-only entitlements — automatically removed with the role change'],warn:[],note:'Mover events swap entitlement bundles. No privilege creep: access mirrors the role, not the person’s history.'},
+  {on:[],off:['Email · POS · VPN · HR portal · Wi-Fi cert · connected Dropbox — ALL disabled at 4:07 PM by the HR termination event'],warn:[],note:'One termination event fans out to every connected app — the SSO “kill switch” from Segment 1. Short token lifetimes mean even already-open sessions die within minutes. Accounts are disabled now, deleted later, so files and audit trails survive.'},
+  {on:[],off:['(nothing left to find — revocation logged 7 minutes after HR’s entry)'],warn:[],note:'Audit result: zero orphaned accounts, full JML evidence trail. The auditors leave early. Nobody has ever been happier to be boring.'}
+ ]
+};
+let provMode='manual',provStage=0;
+function provPaint(){
+  const d=PROV[provMode][provStage];
+  document.getElementById('provTitle').textContent=PROV.titles[provStage];
+  document.getElementById('provOn').innerHTML=d.on.length?d.on.map(x=>'<span class="acc">'+x+'</span>').join(''):'<span class="note">— none —</span>';
+  document.getElementById('provOff').innerHTML=(d.off.map(x=>'<span class="acc gone">'+x+'</span>').join('')+d.warn.map(x=>'<span class="acc warn">⚠️ '+x+'</span>').join(''))||'<span class="note">— nothing revoked, no problems… yet —</span>';
+  document.getElementById('provNote').textContent=d.note;
+  document.getElementById('pmManual').classList.toggle('ghost',provMode!=='manual');
+  document.getElementById('pmAuto').classList.toggle('ghost',provMode!=='idaas');
+  document.querySelectorAll('.stagechip').forEach(c=>c.classList.toggle('on',+c.dataset.st===provStage));
+}
+document.getElementById('pmManual').addEventListener('click',()=>{provMode='manual';provPaint();});
+document.getElementById('pmAuto').addEventListener('click',()=>{provMode='idaas';provPaint();});
+document.querySelectorAll('.stagechip').forEach(c=>c.addEventListener('click',()=>{provStage=+c.dataset.st;provPaint();}));
+provPaint();
+
+/* password entropy demo (pure client-side; nothing leaves the page) */
+const pwIn=document.getElementById('pwIn');
+function htime(sec){
+  if(sec<1)return'< 1 second';
+  const steps=[60,60,24,365,1000,1000,1000],names=['seconds','minutes','hours','days','years','thousand years','million years','billion years'];
+  let v=sec,i=0;
+  while(i<steps.length&&v>=steps[i]){v/=steps[i];i++;}
+  if(i===names.length-1&&v>=1000)return'longer than the age of the universe';
+  return Math.round(v).toLocaleString('en-US')+' '+names[i];
+}
+function pwPaint(){
+  const v=pwIn.value;
+  let pool=0;
+  if(/[a-z]/.test(v))pool+=26;
+  if(/[A-Z]/.test(v))pool+=26;
+  if(/[0-9]/.test(v))pool+=10;
+  if(/[^a-zA-Z0-9]/.test(v))pool+=33;
+  const bits=v.length&&pool?v.length*Math.log2(pool):0;
+  document.getElementById('kPool').textContent=pool;
+  document.getElementById('kBits').textContent=bits?bits.toFixed(1):'0';
+  document.getElementById('kOn').textContent=bits?htime(Math.pow(2,bits)/100):'—';
+  document.getElementById('kOff').textContent=bits?htime(Math.pow(2,bits)/1e10):'—';
+  document.getElementById('pwBar').style.width=Math.min(100,bits)+'%';
+  let verdict;
+  if(!bits)verdict='Type something to analyze it. (Not a password you actually use!)';
+  else if(bits<28)verdict='🔓 Trivial — an offline rig chews through this before you finish reading this sentence.';
+  else if(bits<40)verdict='🔓 Weak — fine for a luggage tag, not for payroll.';
+  else if(bits<60)verdict='🟡 Fair — survives online guessing, falls to a determined offline attack. Notice the two attack speeds differ by a factor of 100 million.';
+  else if(bits<80)verdict='🟢 Strong — offline attacks get expensive here. Length did most of the work.';
+  else verdict='🟢 Excellent — beyond ~80 bits the password is no longer the weak point. Phishing is. That’s why MFA (Segment 2) matters more than password heroics.';
+  document.getElementById('pwVerdict').textContent=verdict;
+}
+pwIn.addEventListener('input',pwPaint);
+pwPaint();
+
+/* Lab A checks */
+function checkA(i){
+  const val=+document.getElementById('labA'+i).value,fb=document.getElementById('fbA'+i);
+  let ok=false,msg='';
+  if(i===1){ok=(val===1);msg=ok?'✔ Exactly once — at the IdP in step 3. Every app after that received tokens, never passwords.':'✘ Step through all 7 steps again and count PASSWORD prompts (token handoffs don’t count).';}
+  if(i===2){ok=(val>=51&&val<=52);msg=ok?'✔ Right: lowercase+digits = pool of 36, so 10 × log₂36 ≈ 51.7 bits.':'✘ Type harbor2026 exactly — all lowercase, no symbols — and read the bits KPI (≈51.7).';}
+  if(i===3){ok=(val===13);msg=ok?'✔ Yes: 12 lowercase ≈ 56.4 bits, 13 ≈ 61.1 bits. Each lowercase letter adds ~4.7 bits — length is the cheapest entropy there is.':'✘ Not yet. Each lowercase character adds ~4.7 bits; find the smallest n with 4.7 × n ≥ 60.';}
+  if(i===4){ok=(val===3);msg=ok?'✔ Three ghosts: the POS login, the VPN token, and the invisible Dropbox share — three doors nobody locked.':'✘ Switch to 🐢 Manual mode, click stage “4 · The audit,” and count the ⚠️ AUDIT FINDING rows.';}
+  fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
+}
+</script>
+</body>
+</html>

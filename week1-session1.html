@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Week 1 · Session 1 — Introducing Cloud Computing</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--wk:#0f8b8d}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--wk);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+.topnav .mid{font-weight:700}
+#scoreChip{background:var(--pri);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:700}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#2b2a6e 100%);color:#fff;border-radius:16px;padding:28px 26px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:30px;line-height:1.25}
+.hero .sub{margin:0 0 12px;opacity:.9;font-size:16.5px}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:var(--ink)}
+.hero .chip{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .chip.obj{background:var(--amb);border-color:var(--amb);color:#3a2c05}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
+h3{font-size:18px;margin:20px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.warmup{border-top:6px solid var(--amb)}
+.card.ai{border-top:6px solid var(--vio);background:linear-gradient(180deg,#f7f3fc,#fff 90px)}
+.card.disc{border-top:6px solid var(--acc)}
+.card.capstone{border-top:6px solid var(--pri);background:linear-gradient(180deg,#f0f0fa,#fff 90px)}
+.card.exit{border-top:6px solid var(--bad)}
+.segment{position:relative}
+.segno{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--wk);color:#fff;font-weight:800;font-size:15px;margin-right:8px}
+.agenda{width:100%;border-collapse:collapse;font-size:14px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.agenda td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.15)}
+.agenda tr:last-child td{border-bottom:none}
+.bdg{display:inline-block;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
+.b-lec{background:#c9d4f5;color:#22307a}.b-int{background:#ffe3a3;color:#6b4d05}.b-lab{background:#bfe6e0;color:#0b5450}.b-quiz{background:#f3c9c2;color:#7a2417}.b-brk{background:#e4e4e4;color:#555}.b-cap{background:#ddd3f0;color:#432c73}
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.flip{border:1.5px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
+.flip h5{margin:0;font-size:15px;color:var(--pri)}
+.flip .back{display:none;margin-top:8px;font-size:14px;color:var(--ink)}
+.flip.open{background:#eef4f4;border-color:var(--acc)}
+.flip.open .back{display:block}
+.flip .hint{font-size:12px;color:var(--mut)}
+.tabs .tabrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:-1px}
+.tabbtn{border:1px solid var(--line);border-bottom:none;background:#eceadf;border-radius:10px 10px 0 0;padding:8px 16px;cursor:pointer;font:inherit;font-weight:600;font-size:14px}
+.tabbtn.on{background:#fff;color:var(--pri)}
+.tabpane{display:none;border:1px solid var(--line);border-radius:0 12px 12px 12px;background:#fff;padding:16px 18px}
+.tabpane.on{display:block}
+.matcher{margin:14px 0}
+.mcards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.mcard{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.mcard.sel{outline:3px solid var(--amb);border-color:var(--amb)}
+.mcard.ok{background:#e7f3ec;border-color:var(--ok);color:#28583b;cursor:default}
+.mcard.ok::after{content:" ✓"}
+.mcard.no{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.mzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.mzone{border:2px dashed var(--acc);border-radius:12px;background:#f4faf9;padding:12px;cursor:pointer;font:inherit;text-align:center;font-weight:700;color:var(--acc)}
+.mzone small{display:block;font-weight:400;color:var(--mut);margin-top:4px}
+.mstatus{margin-top:10px;font-weight:700;color:var(--pri)}
+.lab{border-left:6px solid var(--acc)}
+.lab .labno{color:var(--acc);font-weight:800;letter-spacing:.5px;font-size:13px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--acc);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.quiz .q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.quiz .q h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
+.stem{margin:6px 0 10px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fbfaf7;cursor:pointer;font:inherit;font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--pri)}
+.opt:disabled{cursor:default;opacity:.85}
+.opt.right{background:#e7f3ec;border-color:var(--ok);opacity:1;font-weight:600}
+.opt.wrong{background:#f8e9e7;border-color:var(--bad);opacity:1}
+.expl{display:none;margin-top:10px;padding:12px 14px;background:#f4f6fb;border-left:4px solid var(--pri);border-radius:8px;font-size:14.5px}
+.q.done .expl{display:block}
+.qresult{margin-top:16px}
+.bar{height:12px;background:#e8e4da;border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .4s}
+.scoreline{font-weight:700;margin:6px 0 0}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.small{padding:5px 12px;font-size:13px}
+.kpis{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.kpi{flex:1;min-width:130px;background:#f4f6fb;border-radius:10px;padding:10px 14px;text-align:center}
+.kpi b{display:block;font-size:22px;color:var(--pri);line-height:1.2}
+.kpi small{color:var(--mut)}
+.poll .popt{display:inline-block;margin:4px 6px 4px 0;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;cursor:pointer;font:inherit;font-size:14px}
+.poll .popt.sel{background:var(--amb);border-color:var(--amb);font-weight:700}
+.pollwhy{display:none;margin-top:8px;padding:10px 12px;background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;font-size:14px}
+.poll.done .pollwhy{display:block}
+.stackrow{display:flex;align-items:center;gap:10px;margin:3px 0}
+.stackrow .lay{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;background:#fbfaf7;transition:all .3s}
+.stackrow .who{width:96px;text-align:center;font-size:12px;font-weight:800;border-radius:8px;padding:4px}
+.who.you{background:#f3c9c2;color:#7a2417}
+.who.prov{background:#bfe6e0;color:#0b5450}
+input[type=range]{width:100%;accent-color:var(--pri)}
+.svgwrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;overflow-x:auto;text-align:center}
+.note{font-size:13.5px;color:var(--mut)}
+.serverfarm{display:flex;flex-wrap:wrap;gap:5px;min-height:40px;margin:8px 0}
+.srv{width:34px;height:40px;border-radius:6px;background:linear-gradient(180deg,#3f3d99,#2b2a6e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px}
+.srv.big{width:64px;height:56px;font-size:26px}
+.checkfield{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.checkfield input[type=number],.checkfield input[type=text]{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;width:110px}
+.fb{font-weight:700;font-size:14px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;min-height:70px}
+.exitrow{display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap}
+.light{font-size:20px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;cursor:pointer}
+.footer-nav{display:flex;justify-content:space-between;margin-top:30px;gap:10px;flex-wrap:wrap}
+table.simple{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+table.simple th{background:#f0eee6;text-align:left}
+table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">⌂ Course Hub</a>
+  <span class="mid">Week 1 · Session 1 — Introducing Cloud Computing</span>
+  <span><span id="scoreChip">Quiz: 0/0</span> &nbsp; <a href="week1-session2.html">Session 2 →</a></span>
+</nav>
+<main>
+
+
+<!-- ============ WARM-UP + PRE-TEST ============ -->
+<section class="card warmup">
+  <h3>🔥 Warm-Up Polls <span class="note">(no wrong answers — vote, then we discuss)</span></h3>
+  <div class="poll" id="poll1">
+    <p><strong>Poll 1:</strong> How many cloud services did you personally use before 9 AM today?</p>
+    <button class="popt">0–2</button><button class="popt">3–5</button><button class="popt">6–10</button><button class="popt">Honestly, I have no idea</button>
+    <div class="pollwhy">Most students guess low. If you checked your phone, you likely hit 10+ before breakfast: weather (cloud API), messages (cloud sync), photos (cloud backup), music (cloud streaming), email (SaaS), maps (cloud compute + data). "I have no idea" is the most honest answer — the cloud is designed to be invisible. Today we make it visible.</div>
+  </div>
+  <div class="poll" id="poll2">
+    <p><strong>Poll 2:</strong> Your company's server room floods. With a traditional setup, how long until you're selling products online again?</p>
+    <button class="popt">Hours</button><button class="popt">Days</button><button class="popt">Weeks</button><button class="popt">Possibly never</button>
+    <div class="pollwhy">Industry surveys put small-business recovery from total on-premises hardware loss at days-to-weeks — and a meaningful share never fully recover their data. Hold that thought: in Week 3 you'll build a disaster recovery plan where the honest answer becomes "minutes to hours." That difference is a core cloud advantage.</div>
+  </div>
+  <div class="poll" id="poll3">
+    <p><strong>Poll 3:</strong> Which statement about AI tools like ChatGPT is TRUE?</p>
+    <button class="popt">They run on your device</button><button class="popt">They are cloud services</button><button class="popt">They run on the Wi-Fi router</button><button class="popt">Nobody knows where they run</button>
+    <div class="pollwhy">Every mainstream AI chatbot is a <strong>cloud service</strong>: your prompt travels over the internet to GPU servers in a data center, and the answer streams back. AI is this course's running example, because it's the most demanding cloud workload ever built — and you already use it.</div>
+  </div>
+
+  <h3 style="margin-top:24px">📊 Pre-Test — Where are you starting from?</h3>
+  <p>Answer without help. This is the syllabus <strong>pre-test</strong>: it is not graded for correctness, but you <strong>must record your score</strong> — you'll retake a mirrored version as the post-test in Session 12 to measure your growth.</p>
+  <section class="quiz" id="pretest">
+    <div class="q" data-a="2">
+      <h4>P1 · Definition</h4>
+      <p class="stem">Which phrase best captures what "cloud computing" means?</p>
+      <button class="opt">A. Any software that runs in a web browser</button>
+      <button class="opt">B. Storing files on someone else's laptop</button>
+      <button class="opt">C. On-demand, pay-per-use computing resources delivered over a network</button>
+      <button class="opt">D. Wireless networking technology</button>
+      <div class="expl"><strong>Answer: C.</strong> Cloud computing = computing resources (servers, storage, software) delivered on demand over a network, typically pay-per-use. ✘ A is too narrow — clouds also serve mobile apps and backend systems. ✘ B misses the professional data-center reality. ✘ D confuses the network with what's delivered over it.</div>
+    </div>
+    <div class="q" data-a="0">
+      <h4>P2 · Service models</h4>
+      <p class="stem">Gmail, used through your browser, is the classic example of which model?</p>
+      <button class="opt">A. SaaS — Software as a Service</button>
+      <button class="opt">B. PaaS — Platform as a Service</button>
+      <button class="opt">C. IaaS — Infrastructure as a Service</button>
+      <button class="opt">D. DBaaS — Database as a Service</button>
+      <div class="expl"><strong>Answer: A.</strong> You consume finished software; the provider manages everything underneath. ✘ B is for developers deploying their own code. ✘ C rents raw servers/storage. ✘ D serves databases to applications, not email to end users. Full detail in Session 2.</div>
+    </div>
+    <div class="q" data-a="1">
+      <h4>P3 · IaaS</h4>
+      <p class="stem">A team rents virtual machines by the hour and installs whatever OS and software they want. Which model is this?</p>
+      <button class="opt">A. SaaS</button>
+      <button class="opt">B. IaaS</button>
+      <button class="opt">C. PaaS</button>
+      <button class="opt">D. FaaS</button>
+      <div class="expl"><strong>Answer: B.</strong> Renting raw compute/storage/network and managing the OS yourself is Infrastructure as a Service. ✘ A/C hand you higher-level finished layers. ✘ D (Functions) runs single snippets of code without any server management at all. Session 3 goes deep here.</div>
+    </div>
+    <div class="q" data-a="3">
+      <h4>P4 · Identity</h4>
+      <p class="stem">"Sign in once, access many applications without re-entering a password" describes:</p>
+      <button class="opt">A. Multi-factor authentication</button>
+      <button class="opt">B. A password manager</button>
+      <button class="opt">C. Encryption at rest</button>
+      <button class="opt">D. Single sign-on (SSO)</button>
+      <div class="expl"><strong>Answer: D.</strong> SSO authenticates you once with an identity provider that vouches for you to other apps. ✘ A adds extra proof factors, it doesn't reduce logins. ✘ B stores many passwords — you still log in to each app. ✘ C protects stored data, unrelated to login flow. Session 4 covers this.</div>
+    </div>
+    <div class="q" data-a="2">
+      <h4>P5 · Virtualization</h4>
+      <p class="stem">Virtualization lets one physical server:</p>
+      <button class="opt">A. Run faster than its hardware allows</button>
+      <button class="opt">B. Work without electricity</button>
+      <button class="opt">C. Run multiple isolated "virtual machines" at once</button>
+      <button class="opt">D. Avoid all security threats</button>
+      <div class="expl"><strong>Answer: C.</strong> A hypervisor slices one physical machine into isolated virtual machines, each with its own OS. ✘ A — virtualization adds slight overhead, it can't exceed hardware. ✘ B is nonsense (checking you're awake). ✘ D — VMs still get attacked; isolation helps but isn't immunity. Session 7 is all about this.</div>
+    </div>
+    <div class="q" data-a="0">
+      <h4>P6 · Disaster recovery</h4>
+      <p class="stem">RTO (Recovery Time Objective) answers which question?</p>
+      <button class="opt">A. How quickly must we be running again after a failure?</button>
+      <button class="opt">B. How much money do we spend on servers?</button>
+      <button class="opt">C. How many users can the system support?</button>
+      <button class="opt">D. How often should passwords change?</button>
+      <div class="expl"><strong>Answer: A.</strong> RTO is the maximum acceptable downtime. Its sibling RPO is the maximum acceptable data loss measured in time. ✘ B is budgeting, ✘ C is capacity planning, ✘ D is security policy. Session 9 makes you set real RTO/RPO targets.</div>
+    </div>
+    <div class="q" data-a="1">
+      <h4>P7 · SOA</h4>
+      <p class="stem">In service-oriented architecture, applications are built by:</p>
+      <button class="opt">A. Writing one large program that does everything</button>
+      <button class="opt">B. Combining small, reusable services that talk over the network</button>
+      <button class="opt">C. Avoiding the internet entirely</button>
+      <button class="opt">D. Using only one programming language</button>
+      <div class="expl"><strong>Answer: B.</strong> SOA composes loosely coupled, reusable services (today usually REST/JSON web services). ✘ A describes the monolith SOA reacts against. ✘ C — SOA lives on networks. ✘ D — interoperability regardless of language is a headline SOA benefit. Session 10 covers it.</div>
+    </div>
+    <div class="q" data-a="2">
+      <h4>P8 · Economics</h4>
+      <p class="stem">Moving from buying servers to renting cloud capacity mainly converts:</p>
+      <button class="opt">A. Profit into loss</button>
+      <button class="opt">B. Software into hardware</button>
+      <button class="opt">C. Capital expenses (CapEx) into operating expenses (OpEx)</button>
+      <button class="opt">D. Data into applications</button>
+      <div class="expl"><strong>Answer: C.</strong> Big upfront hardware purchases (CapEx) become monthly pay-per-use bills (OpEx) — a core business advantage covered today. ✘ A — often the opposite. ✘ B/D are category confusions. Watch for this in today's Segment 1.</div>
+    </div>
+    <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+  </section>
+  <p class="note">📝 <strong>Write your pre-test score here AND in your notebook:</strong> you'll need it in Session 12. <input type="text" id="pretestRecord" data-persist="pretestRecord" placeholder="e.g., 5/8" style="border:1.5px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit;width:90px"></p>
+</section>
+
+<!-- ============ SEGMENT 1 ============ -->
+<section class="segment">
+  <h2><span class="segno">1</span> What "Cloud" Really Means</h2>
+  <div class="card">
+    <h3>From Web 2.0 to the Cloud</h3>
+    <p>In the early web (call it Web 1.0), pages were read-only brochures: a company published, you read. <strong>Web 2.0</strong> changed the direction of data — users began <em>writing</em> to the web: posting, uploading, commenting, collaborating. Think of the difference between reading a restaurant's homepage and posting a review with photos. That shift created a problem: if millions of users generate content and expect instant access from any device, who supplies all the servers, storage, and bandwidth? No single company could predict demand well enough to buy the right amount of hardware. The answer became the <strong>cloud</strong>: massive shared data centers whose resources are rented out on demand, over the internet, and billed like a utility.</p>
+    <p>The key insight is that the cloud is an <strong>abstraction</strong>. When you flip a light switch, you don't know (or care) which power plant made your electricity. When you save a photo "to the cloud," you don't know which physical disk in which building holds it — and that's the point. You interact with a simple interface (a URL, an app, an API) while a provider manages racks of real hardware, cooling, power, staff, and security behind the curtain. You trade <em>control of hardware</em> for <em>freedom from hardware</em>.</p>
+    <h3>The five traits that make something "cloud"</h3>
+    <p>Not every remote server is a cloud. Click each card — these five characteristics (the NIST definition — the industry’s standard test) are the test you'll apply all course long:</p>
+    <div class="flipgrid">
+      <button class="flip"><h5>1 · On-demand self-service</h5><span class="hint">tap to flip</span><span class="back">You provision resources yourself — click a button, get a server in minutes. No purchase orders, no waiting for an IT technician. Contrast: ordering a physical server takes weeks.</span></button>
+      <button class="flip"><h5>2 · Broad network access</h5><span class="hint">tap to flip</span><span class="back">Services are reachable over standard networks from phones, laptops, and other servers. If it only works from one wired terminal in one building, it's not cloud.</span></button>
+      <button class="flip"><h5>3 · Resource pooling</h5><span class="hint">tap to flip</span><span class="back">The provider's hardware serves many customers at once (multi-tenancy). Your VM and a stranger's VM may share the same physical host — isolated by virtualization. Pooling is why prices are low.</span></button>
+      <button class="flip"><h5>4 · Rapid elasticity</h5><span class="hint">tap to flip</span><span class="back">Capacity stretches and shrinks with demand — sometimes automatically. To the customer, resources appear unlimited. You'll simulate this yourself in Lab A today.</span></button>
+      <button class="flip"><h5>5 · Measured service</h5><span class="hint">tap to flip</span><span class="back">Usage is metered like electricity: per hour, per gigabyte, per request. You pay for what you use — which is wonderful, until an unmonitored bill surprises you (Session 11 covers cost control).</span></button>
+    </div>
+    <h3>Advantages vs. disadvantages — you sort them</h3>
+    <p>Objective 1 asks you to weigh both sides. Click a statement, then click the bucket it belongs in:</p>
+    <div class="matcher" id="advMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="adv">No huge upfront hardware purchase (CapEx → OpEx)</button>
+        <button class="mcard" data-match="dis">Useless without a reliable internet connection</button>
+        <button class="mcard" data-match="adv">Scale up for a big day, scale down after</button>
+        <button class="mcard" data-match="dis">Vendor lock-in: switching providers can be costly</button>
+        <button class="mcard" data-match="adv">Provider handles patching, hardware failures, physical security</button>
+        <button class="mcard" data-match="dis">Your data lives in someone else's data center (compliance/trust)</button>
+        <button class="mcard" data-match="adv">Access from anywhere, on any device</button>
+        <button class="mcard" data-match="dis">Pay-per-use bills can spiral without monitoring</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="adv">✅ Advantage<small>helps the business</small></button>
+        <button class="mzone" data-zone="dis">⚠️ Disadvantage / risk<small>must be managed</small></button>
+      </div>
+      <p class="mstatus">0/8 placed</p>
+    </div>
+    <p class="note">Notice: every "disadvantage" is <em>manageable</em> — offline strategies, exit plans, encryption, budgets. Cloud architects don't deny the risks; they design around them. That's your job in the capstone.</p>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 2 ============ -->
+<section class="segment">
+  <h2><span class="segno">2</span> Deployment Models &amp; Service Models</h2>
+  <div class="card">
+    <h3>Four deployment models — <em>where</em> the cloud lives and <em>who</em> shares it</h3>
+    <p>A <strong>public cloud</strong> (AWS, Microsoft Azure, Google Cloud) rents shared infrastructure to anyone with a credit card — maximum pooling, minimum cost, fastest start. A <strong>private cloud</strong> dedicates cloud-style infrastructure to a single organization, on-premises or hosted, trading cost for control — chosen when regulation or secrecy demands it. A <strong>community cloud</strong> is shared by organizations with common needs — five hospitals sharing a HIPAA-compliant platform split costs while meeting shared rules. A <strong>hybrid cloud</strong> combines them: keep sensitive systems private, burst everyday workloads to the public cloud. Most real enterprises today end up hybrid — remember that for the capstone.</p>
+    <p>Test yourself — match each client scenario to the deployment model you'd recommend:</p>
+    <div class="matcher" id="depMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="pub">Two-person startup launching an app next month, tiny budget</button>
+        <button class="mcard" data-match="pri">Defense contractor processing classified workloads</button>
+        <button class="mcard" data-match="com">Five regional hospitals sharing one HIPAA-compliant records platform</button>
+        <button class="mcard" data-match="hyb">Retailer: steady in-store systems + massive Black Friday web spikes</button>
+        <button class="mcard" data-match="com">State universities pooling one research-computing platform with shared grant rules</button>
+        <button class="mcard" data-match="hyb">Law firm: strict client-file residency rules + a public marketing site</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="pub">Public<small>shared, rented, cheap</small></button>
+        <button class="mzone" data-zone="pri">Private<small>one org, full control</small></button>
+        <button class="mzone" data-zone="com">Community<small>allied orgs, shared rules</small></button>
+        <button class="mzone" data-zone="hyb">Hybrid<small>mix, best of both</small></button>
+      </div>
+      <p class="mstatus">0/6 placed</p>
+    </div>
+    <h3>Three service models — <em>how much</em> of the stack you rent</h3>
+    <p>Every computing system is a stack of layers: hardware at the bottom, your data and users at the top. The three service models differ only in <strong>where the line sits</strong> between what <span class="who you" style="padding:2px 8px">YOU manage</span> and what the <span class="who prov" style="padding:2px 8px">PROVIDER manages</span>. Click each model and watch the line move:</p>
+    <div style="margin:12px 0">
+      <button class="btn ghost small stackbtn" data-model="onprem">On-Premises</button>
+      <button class="btn ghost small stackbtn" data-model="iaas">IaaS</button>
+      <button class="btn ghost small stackbtn" data-model="paas">PaaS</button>
+      <button class="btn ghost small stackbtn" data-model="saas">SaaS</button>
+      <span class="note" id="stackCaption" style="margin-left:8px">← pick a model</span>
+    </div>
+    <div id="stackViz"></div>
+    <p class="note" style="margin-top:10px">Rule of thumb: <strong>IaaS</strong> = rent the computer (you install everything above the hypervisor). <strong>PaaS</strong> = rent the platform (you bring only code + data). <strong>SaaS</strong> = rent the finished software (you bring only your data and users). The syllabus devotes Sessions 2–3 to these — today you just need the shape.</p>
+    <h3>Beyond the big three: Anything-as-a-Service (XaaS)</h3>
+    <p>One more foundation before the labs: "anything as a service." The industry now offers nearly everything as a metered service — browse the tabs:</p>
+    <div class="tabs" id="xaasTabs">
+      <div class="tabrow">
+        <button class="tabbtn on" data-t="x1">IDaaS</button>
+        <button class="tabbtn" data-t="x2">STaaS</button>
+        <button class="tabbtn" data-t="x3">DBaaS</button>
+        <button class="tabbtn" data-t="x4">DRaaS</button>
+        <button class="tabbtn" data-t="x5">FaaS</button>
+        <button class="tabbtn" data-t="x6">AIaaS</button>
+      </div>
+      <div class="tabpane on" data-p="x1"><strong>Identity as a Service.</strong> Outsourced login, single sign-on, and multi-factor authentication (Okta, Microsoft Entra ID). Instead of every app storing its own passwords, one identity service vouches for users everywhere. Entire Session 4 topic — and a capstone deliverable.</div>
+      <div class="tabpane" data-p="x2"><strong>Storage as a Service.</strong> Durable, metered storage over the internet (Amazon S3, Google Cloud Storage, Dropbox). Pay per gigabyte-month; the provider worries about failed disks — they keep multiple copies automatically. Session 5 topic.</div>
+      <div class="tabpane" data-p="x3"><strong>Database as a Service.</strong> A managed database (backups, patching, replication handled) that your app connects to — e.g., Amazon RDS, MongoDB Atlas free tier. You design tables; you never SSH into the database server.</div>
+      <div class="tabpane" data-p="x4"><strong>Disaster Recovery as a Service.</strong> Your systems continuously replicate to a provider's cloud; when your building floods, you fail over and run from their copy. Session 9 shows why RTO/RPO targets decide what tier you buy.</div>
+      <div class="tabpane" data-p="x5"><strong>Functions as a Service (serverless).</strong> Upload a single function; the provider runs it on demand, billing per invocation — no servers visible at all (AWS Lambda, Cloudflare Workers free tier). The logical endpoint of the abstraction story.</div>
+      <div class="tabpane" data-p="x6"><strong>AI as a Service.</strong> The newest arrival: rent intelligence by the token. Chatbots (ChatGPT, Gemini, Claude) are AI-SaaS; their APIs are AI-PaaS for developers; the GPU fleets underneath are IaaS. One product, all three models — today's AI Spotlight unpacks this.</div>
+    </div>
+  </div>
+</section>
+<!-- ============ SEGMENT 3 ============ -->
+<section class="segment">
+  <h2><span class="segno">3</span> Scalability, Virtualization &amp; Grid Computing</h2>
+  <div class="card">
+    <h3>Scalability: up vs. out</h3>
+    <p>When traffic grows, you have two moves. <strong>Scale up (vertical)</strong>: replace your server with a bigger one — simple, but there's a ceiling (the biggest machine money buys) and a single point of failure. <strong>Scale out (horizontal)</strong>: add more copies of a smaller server behind a <em>load balancer</em> that spreads requests across them — nearly unlimited, and one dead server barely matters. The cloud's superpower is <strong>elasticity</strong>: scaling <em>automatically, in both directions</em>, so capacity tracks demand hour by hour. A pizza shop analogy: scale up = buy one giant oven; scale out = add more regular ovens and a person routing orders; elasticity = ovens appear at dinner rush and vanish at midnight, and you pay per oven-hour.</p>
+    <h3>🎛️ Interactive: The Scalability Simulator</h3>
+    <p>You run <strong>TicketBlitz</strong>, a concert-ticket site. Each small server handles <strong>500 requests/min</strong> and costs <strong>$40/month</strong>; a load balancer adds <strong>$18/month</strong>. Big single servers cost more per unit of capacity at the top end. Drag the traffic slider; compare strategies:</p>
+    <p><strong>Incoming traffic:</strong> <span id="traffVal" style="font-weight:800;color:var(--pri)">1,000</span> requests/min</p>
+    <input type="range" id="traffic" min="500" max="12000" step="250" value="1000">
+    <div class="kpis">
+      <div class="kpi"><b id="kOut">$98</b><small>Scale OUT monthly cost</small></div>
+      <div class="kpi"><b id="kOutN">2</b><small>small servers (+LB)</small></div>
+      <div class="kpi"><b id="kUp">$90</b><small>Scale UP monthly cost</small></div>
+      <div class="kpi"><b id="kUpN">M</b><small>single server size</small></div>
+      <div class="kpi"><b id="kVerdict">—</b><small>verdict at this load</small></div>
+    </div>
+    <p style="margin:4px 0 2px"><strong>Scale-out fleet:</strong></p>
+    <div class="serverfarm" id="farmOut"></div>
+    <p style="margin:4px 0 2px"><strong>Scale-up machine:</strong></p>
+    <div class="serverfarm" id="farmUp"></div>
+    <p class="note" id="simNote">Slide the traffic and watch both strategies react. Notice where scale-up hits its ceiling.</p>
+    <h3>Virtualization &amp; grid computing — two ideas that made the cloud possible</h3>
+    <p><strong>Virtualization</strong> (preview of Session 7): software called a <em>hypervisor</em> lets one physical server host many isolated <em>virtual machines</em>. Before virtualization, the average corporate server ran at 5–15% utilization — racks of expensive machines mostly idling. Virtualization lets providers pack many customers' VMs onto shared hardware safely. It is the engine behind resource pooling; without it, cloud economics collapse.</p>
+    <p><strong>Grid computing</strong>: chop one enormous job into pieces and run the pieces on many machines at once. Famous example: SETI@home borrowed millions of idle home PCs to analyze radio-telescope data. The grid mindset — "many cheap machines beat one giant machine" — became the cloud's scale-out philosophy. But coordination isn't free: splitting work, shipping data, and merging results adds overhead, so doubling machines never quite halves the time.</p>
+    <h3>🧪 Interactive: Grid Computing Visualizer</h3>
+    <p>A climate model needs <strong>3,200 core-hours</strong> of computation. Drag to add worker nodes and watch runtime, speedup, and efficiency (each added node costs ~2% coordination overhead):</p>
+    <p><strong>Worker nodes:</strong> <span id="gridN" style="font-weight:800;color:var(--pri)">1</span></p>
+    <input type="range" id="gridSlider" min="1" max="64" step="1" value="1">
+    <div class="kpis">
+      <div class="kpi"><b id="gTime">3,200 h</b><small>wall-clock runtime</small></div>
+      <div class="kpi"><b id="gSpeed">1.0×</b><small>speedup</small></div>
+      <div class="kpi"><b id="gEff">100%</b><small>efficiency per node</small></div>
+    </div>
+    <div class="bar" style="height:18px"><span id="gBar" style="width:100%"></span></div>
+    <p class="note" id="gNote">At 1 node the job takes 3,200 hours ≈ 133 days. Find the point where adding nodes stops being worth it.</p>
+  </div>
+</section>
+
+<!-- ============ AI SPOTLIGHT ============ -->
+<section class="card ai">
+  <h3>🧠 AI Concept of the Day · Training vs. Inference — and why the cloud is where AI lives</h3>
+  <p class="note" style="margin-top:-4px"><strong>AI concepts track:</strong> every session teaches one real AI concept through that day's cloud objective. Today, while mastering Objective 1, you learn what an AI model actually <em>is</em> — and why its two lives (training and inference) are both cloud stories.</p>
+  <p>This course weaves AI through every session for a simple reason: <strong>modern AI is the most extreme cloud workload ever created</strong>, and it exercises every concept in this course. Training a large language model consumes thousands of GPU servers for months — that's <strong>IaaS</strong> at maximum scale. Serving the model to millions of chat users requires load balancing, autoscaling, and global data centers — that's <strong>elasticity</strong>. Developers who call a model through an API are consuming a <strong>platform service</strong>, and the chatbot your aunt uses to write birthday poems is pure <strong>SaaS</strong>. And the "grid computing" idea you met in Segment 3 — splitting huge jobs across machines — is the direct ancestor of today's GPU training clusters.</p>
+  <p>The connection runs both ways — the cloud also increasingly runs <em>on</em> AI: providers use machine learning to predict demand, place workloads, detect attacks, and cool data centers. By Session 12 you'll have seen AI as a SaaS product, a PaaS building block, an IaaS consumer, an identity threat, a storage pattern (vector databases), a security tool, and a migration assistant.</p>
+  <h3>The concept: a model is <em>learned</em>, then <em>served</em></h3>
+  <p>An AI model is <strong>not a database of stored answers</strong> — that's the single most common misconception. A model is millions to billions of numeric <strong>parameters</strong> whose values were <em>learned</em> from data. It has two completely different lives:</p>
+  <p><strong>1 · Training</strong> — the model is built. Enormous datasets are pushed through the network again and again while an algorithm nudges the parameters toward better predictions. For a large language model this means <em>thousands of GPUs running in parallel for weeks</em> — a direct descendant of the grid computing you met in Segment 3, and the most extreme burst-IaaS workload on Earth. It happens rarely and costs a fortune up front.</p>
+  <p><strong>2 · Inference</strong> — the finished model is used. Your prompt goes in, flows once through the learned parameters, and an answer comes out in seconds. Inference is small per request but happens <em>billions of times a day</em>, which is why it needs load balancing and elasticity — and it's billed by the <strong>token</strong> (a chunk of text, roughly ¾ of an English word). Pay-per-token is the purest example you'll ever see of the cloud's <em>measured service</em> trait applied to intelligence itself. One more consequence of generating (not retrieving): ask the same question twice and you'll usually get <em>different wording</em> — the model samples fresh each time. You'll prove this yourself in Lab B.</p>
+  <p><strong>Sort the scenario — training or inference?</strong></p>
+  <div class="matcher" id="trainInfMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="train">3,000 GPUs run for six weeks over a trillion words of text</button>
+      <button class="mcard" data-match="inf">Your prompt "write a haiku about Florida" is answered in 2 seconds</button>
+      <button class="mcard" data-match="inf">The monthly bill is metered per million tokens of chat</button>
+      <button class="mcard" data-match="train">A $40M compute bill lands before the product even launches</button>
+      <button class="mcard" data-match="inf">Autoscaling adds servers at lunchtime when chat traffic spikes</button>
+      <button class="mcard" data-match="train">An algorithm adjusts billions of parameters against a dataset overnight</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="train">🏗️ Training<small>the model is being built</small></button>
+      <button class="mzone" data-zone="inf">⚡ Inference<small>the model is being used</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+  <p><strong>Your turn — classify these AI products by service model:</strong></p>
+  <div class="matcher" id="aiMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="saas">An accountant uses a web chatbot to draft client emails</button>
+      <button class="mcard" data-match="paas">Developers call a hosted speech-to-text API from their app</button>
+      <button class="mcard" data-match="iaas">A research lab rents 8 GPU servers by the hour to train a model</button>
+      <button class="mcard" data-match="saas">A student uses AI writing suggestions inside Google Docs</button>
+      <button class="mcard" data-match="paas">A startup deploys its chatbot onto a managed model-hosting platform that autoscales</button>
+      <button class="mcard" data-match="iaas">A film studio leases a bare-metal GPU cluster for rendering + AI upscaling</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="saas">SaaS<small>finished software</small></button>
+      <button class="mzone" data-zone="paas">PaaS<small>building blocks for devs</small></button>
+      <button class="mzone" data-zone="iaas">IaaS<small>raw rented hardware</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+</section>
+
+<!-- ============ LEARN IT WITH AI ============ -->
+<section class="card ai">
+  <h3>🎓 Learn Objective 1 with AI — personal tutor drills</h3>
+  <p><strong>Objective 1: Understand the abstract nature and advantages/disadvantages of cloud computing.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor. Log every drill in your AI Use Log.</p>
+  <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you, not the other way around:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for my cloud computing course. Topic: what makes something "cloud" — the five
+essential characteristics, the four deployment models, and the three service
+models. Ask me ONE question at a time, easy to hard, 10 questions total.
+After each of my answers, tell me exactly what I got right or wrong before
+asking the next one. Finish with a summary of my weak spots and which topics to review on my session page.</pre></div>
+  <p><strong>Drill 2 · Devil's advocate</strong> — masters advantages vs. disadvantages by making you defend both:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Debate me. Take the position that a 20-person company should NOT move to
+the cloud; I'll argue it should. Rebut me seriously using real cloud
+disadvantages (connectivity dependence, lock-in, runaway bills, compliance).
+After 4 exchanges, we switch sides. At the end, give a fair verdict listing
+the 3 strongest points on each side. Keep each turn under 120 words.</pre></div>
+  <p><strong>Drill 3 · Quiz master</strong> — unlimited extra practice in this course's exact quiz style:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Quiz me with workplace story problems about cloud computing basics
+(characteristics, deployment models, advantages/disadvantages) — the style
+where a named character faces a realistic situation and I pick from options
+A–D. One question at a time. After I answer, explain why EVERY option is
+right or wrong, then ask the next. 5 questions, track my score, get harder
+as I improve.</pre></div>
+  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify the tutor:</strong> AI tutors occasionally misstate definitions or invent details. Cross-check one claim it made against the flip cards and definitions above, and note in your log whether it held up.</span></label>
+  <p class="note">These drills work for every session — you'll find a "Learn it with AI" block tuned to each course objective on every session page. Free tier is plenty.</p>
+</section>
+
+<!-- ============ LABS ============ -->
+<h2>🔬 Hands-On Labs</h2>
+
+<section class="card lab">
+  <p class="labno">LAB A · IN-PAGE SIMULATOR · ~25 MIN</p>
+  <h3>The TicketBlitz Capacity Challenge</h3>
+  <p>Use the <strong>Scalability Simulator</strong> in Segment 3 to answer these. Type your answers and check them — the page tells you if you're right:</p>
+  <label class="step"><input type="checkbox" data-step="a1"><span>Set traffic to <strong>3,000 req/min</strong>. Record the scale-OUT monthly cost.</span></label>
+  <div class="checkfield">→ Scale-out cost at 3,000 req/min: $<input type="number" id="labA1"> <button class="btn small" onclick="checkA(1)">Check</button> <span class="fb" id="fbA1"></span></div>
+  <label class="step"><input type="checkbox" data-step="a2"><span>Keep sliding until the scale-UP strategy <strong>cannot serve the load at any price</strong>. Record the lowest traffic level where scale-up fails.</span></label>
+  <div class="checkfield">→ Scale-up fails at (req/min): <input type="number" id="labA2"> <button class="btn small" onclick="checkA(2)">Check</button> <span class="fb" id="fbA2"></span></div>
+  <label class="step"><input type="checkbox" data-step="a3"><span>A concert drops Friday 8 PM: traffic spikes from 1,000 → 10,000 req/min for 3 hours, then returns. In one sentence in your notebook: why does elasticity beat both fixed strategies here? Discuss with a neighbor.</span></label>
+  <label class="step"><input type="checkbox" data-step="a4"><span>Grid visualizer: find the node count where efficiency first drops below <strong>50%</strong>.</span></label>
+  <div class="checkfield">→ Nodes where efficiency &lt; 50%: <input type="number" id="labA4"> <button class="btn small" onclick="checkA(4)">Check</button> <span class="fb" id="fbA4"></span></div>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB B · FREE AI CHATBOT · ~10 MIN · 🆓 ChatGPT / Gemini / Claude / Copilot (any free tier)</p>
+  <h3>Cloud Inventory of Your Life — with an AI Junior Analyst</h3>
+  <p>Open any free AI chatbot and paste this prompt:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>I'm a student in a cloud computing course. Interview me briefly about the apps
+I used today (ask me 3 quick questions), then produce a table of 10 cloud
+services I likely consumed, with columns: Service | What it does for me |
+Service model (SaaS/PaaS/IaaS) | Deployment model (public/private/hybrid) |
+One thing that could go wrong if it went offline.
+Be specific to MY answers, not generic.</pre></div>
+  <label class="step"><input type="checkbox" data-step="b1"><span>Run the interview and get your 10-row table.</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — generation, not retrieval:</strong> in two separate fresh chats, ask the exact same question: <em>"Explain resource pooling in exactly 2 sentences."</em> Compare word-for-word. The answers differ because inference <em>generates</em> each reply fresh from learned parameters (sampling) — it doesn't fetch a stored answer. Paste both versions side-by-side in your AI Use Log with one sentence on what this proves.</span></label>
+  <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> pick any 3 rows and check the service-model label against the flip-card definitions in Segment 1. AI assistants confidently mislabel PaaS vs SaaS — find at least one row you'd challenge or refine, and note why.</span></label>
+  <label class="step"><input type="checkbox" data-step="b3"><span>Start your <strong>AI Use Log</strong> (required for the capstone): a doc where you record every AI prompt you use for this course + what you verified or corrected. First entry: this lab.</span></label>
+  <p class="note">⚖️ Course rule: AI is your junior analyst, not your ghostwriter. You may use it to draft, brainstorm, and explain — you must verify its claims and disclose its use in your AI Use Log. Undisclosed AI work = academic integrity violation per the syllabus.</p>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB C · REAL FREE TOOLS · ~15 MIN · 🆓 diagrams.net (no account) + github.com (free account)</p>
+  <h3>Your First Architecture Diagram + Course Toolkit Setup</h3>
+  <p><strong>Part 1 — diagrams.net (drawing cloud architectures):</strong></p>
+  <label class="step"><input type="checkbox" data-step="c1"><span>Open <strong>app.diagrams.net</strong> in a browser → "Decide later" for storage → blank diagram. No signup needed.</span></label>
+  <label class="step"><input type="checkbox" data-step="c2"><span>Search the shape panel for "cloud". Draw: a <em>Users</em> box → arrow → <em>Load Balancer</em> → arrows → three <em>Web Server</em> boxes → arrow → one <em>Database</em>. Label it "TicketBlitz — scale-out architecture".</span></label>
+  <label class="step"><input type="checkbox" data-step="c3"><span>File → Export as → PNG. Save it — this exact diagram style is required in every capstone deliverable.</span></label>
+  <p><strong>Part 2 — GitHub (you'll deploy to GitHub Pages in Session 2):</strong></p>
+  <label class="step"><input type="checkbox" data-step="c4"><span>Create a free account at <strong>github.com</strong> (use your student email). Free tier — no card, ever.</span></label>
+  <label class="step"><input type="checkbox" data-step="c5"><span>Create a new <strong>public</strong> repository named exactly <code>cen4086-cloud</code>, check "Add a README".</span></label>
+  <label class="step"><input type="checkbox" data-step="c6"><span>Edit the README in the browser: add your name, one sentence on what you hope to build with the cloud, and upload your PNG diagram (Add file → Upload). Commit. You've just used SaaS (GitHub's web editor) backed by IaaS (their servers) — meta!</span></label>
+</section>
+<!-- ============ STORY QUIZ ============ -->
+<h2>📝 Session Quiz — Story Problems</h2>
+<p>Ten workplace scenarios — the last two test today's AI concept. Pick the best answer; every question explains all four options after you answer. Counts toward the syllabus "Exercises/Quizzes" grade (30%).</p>
+<section class="quiz" id="quiz1">
+
+  <div class="q" data-a="2">
+    <h4>Q1 · <em>The flooded closet</em></h4>
+    <p class="stem">Rosa owns a 14-person accounting firm in Tampa. Client files live on one server in a hallway closet; her nephew backs it up to a USB drive "most Fridays." A pipe bursts in July — server and drive are soaked, and it's the middle of tax-extension season. Which cloud characteristic would have MOST directly prevented Rosa's data loss?</p>
+    <button class="opt">A. Rapid elasticity — capacity grows with demand</button>
+    <button class="opt">B. Measured service — pay only for what you use</button>
+    <button class="opt">C. Resource pooling in provider data centers with redundant, geographically separate copies</button>
+    <button class="opt">D. On-demand self-service — provision without IT staff</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Rosa's core failure is that all copies of the data shared one room. Cloud storage keeps redundant copies across devices — and, configured properly, across regions — inside professionally managed data centers, so one burst pipe destroys nothing. ✘ A (elasticity) addresses <em>capacity swings</em>, not data survival; her firm's load is steady. ✘ B (metering) is a billing property — it changes what she pays, not whether data survives. ✘ D (self-service) would help her provision quickly <em>after</em> the disaster, but by then the files are already gone; it prevents delay, not loss.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q2 · <em>The CFO's spreadsheet</em></h4>
+    <p class="stem">Devon, CFO of a startup, must choose between buying $180,000 of servers (replaced every 4 years) or renting equivalent cloud capacity for about $4,200/month. The board asks: "Beyond the totals, what's the fundamental FINANCIAL difference?" What should Devon say?</p>
+    <button class="opt">A. Cloud is always cheaper over any time period</button>
+    <button class="opt">B. Buying is a capital expense committed upfront; cloud converts it to an operating expense that scales with actual use and can stop anytime</button>
+    <button class="opt">C. Cloud eliminates all IT costs including staff</button>
+    <button class="opt">D. Owning hardware is always the better long-term investment</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ This is the CapEx→OpEx shift: cash isn't locked into depreciating hardware sized for a guess about year-4 demand; spend tracks reality and can be turned off. ✘ A is false — do the math: $4,200 × 48 months = $201,600 &gt; $180,000. Steady, predictable, fully utilized workloads can favor owning; the cloud wins on flexibility and avoided risk, not automatically on totals. ✘ C — someone still configures, secures, and monitors cloud systems; staff costs shift, not vanish. ✘ D ignores demand uncertainty, hardware refresh cycles, and the utilization problem (most owned servers idle).</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q3 · <em>The hospital alliance</em></h4>
+    <p class="stem">Five independent rural hospitals want to share one electronic-records platform. All face identical HIPAA obligations; none can afford a private build alone; public multi-tenant SaaS makes their compliance officers nervous about co-tenants. Which deployment model fits BEST?</p>
+    <button class="opt">A. Community cloud — infrastructure shared by organizations with common regulatory needs</button>
+    <button class="opt">B. Pure public cloud — cheapest option wins</button>
+    <button class="opt">C. Five separate private clouds, one per hospital</button>
+    <button class="opt">D. No cloud — paper records are safest</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ This is the classic community-cloud case: allied organizations, shared compliance regime, shared cost — controls tailored to their common rules without each paying private-cloud prices. ✘ B ignores the stated compliance concern about arbitrary co-tenants (public cloud CAN be HIPAA-compliant, but the scenario says their officers require a narrower trust boundary). ✘ C quintuples cost and defeats the purpose of sharing — exactly what "none can afford alone" rules out. ✘ D trades manageable digital risk for fire, loss, illegibility, and zero disaster recovery — paper is not "safe," it's just differently fragile.</div>
+    </div>
+
+  <div class="q" data-a="3">
+    <h4>Q4 · <em>Launch day at NoodleNow</em></h4>
+    <p class="stem">Priya's food-delivery app normally serves 2,000 requests/min on 4 servers. A viral TikTok sends 40,000 requests/min for six hours; by midnight traffic is normal again. Her cloud platform automatically grew to 80 servers and shrank back, billing her for exactly the hours used. Which characteristic did Priya just experience?</p>
+    <button class="opt">A. Broad network access</button>
+    <button class="opt">B. Virtualization</button>
+    <button class="opt">C. Grid computing</button>
+    <button class="opt">D. Rapid elasticity with measured service</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Capacity stretched 20× automatically and contracted when demand fell (elasticity), and billing followed actual usage (measured service) — the pair that makes viral moments survivable without owning 80 idle servers year-round. ✘ A (network access from many devices) was present but isn't what saved her — it didn't change capacity. ✘ B is the underlying <em>enabler</em> (VMs spin up fast because they're virtual), but the characteristic Priya experienced is the scaling behavior, not the hypervisor mechanics. ✘ C — grid computing splits ONE huge computation across machines; Priya had millions of small independent requests, the opposite shape of workload.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q5 · <em>The dead zone</em></h4>
+    <p class="stem">Marcus manages building inspectors who work in rural areas with no cell coverage. A vendor pitches moving ALL inspection software and forms to a cloud-only SaaS. Marcus hesitates. Which cloud DISADVANTAGE is he right to worry about, and what's the standard mitigation?</p>
+    <button class="opt">A. Vendor lock-in — mitigated by never signing contracts</button>
+    <button class="opt">B. Dependence on connectivity — mitigated by an offline-capable app that syncs when coverage returns</button>
+    <button class="opt">C. High capital costs — mitigated by buying more servers</button>
+    <button class="opt">D. Multi-tenancy — mitigated by banning other customers</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Cloud services presume a network path; inspectors in dead zones would be unable to work. The standard pattern is offline-first design: the app stores work locally and synchronizes when connectivity returns — a deliberate architecture choice Marcus should demand from the vendor. ✘ A is a real cloud risk but not THIS scenario's problem, and "never sign contracts" isn't a mitigation, it's avoidance. ✘ C reverses the economics — cloud reduces capital costs; buying servers wouldn't give inspectors connectivity in the field anyway. ✘ D — multi-tenancy is how public clouds work at all; a customer can't "ban" co-tenants, and co-tenants aren't why an app fails offline.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q6 · <em>Twelve sleepy servers</em></h4>
+    <p class="stem">An audit of Bayfront Logistics finds 12 physical servers averaging 8% CPU utilization, each running one application "so they can't interfere with each other." The data center is out of rack space and the CIO wants to add three more apps. What should the infrastructure team propose FIRST?</p>
+    <button class="opt">A. Buy three more physical servers and expand the data center</button>
+    <button class="opt">B. Delete three old applications to make room</button>
+    <button class="opt">C. Virtualize: consolidate the 12 apps as isolated VMs on 2–3 physical hosts, freeing capacity for the new apps</button>
+    <button class="opt">D. Overclock the existing servers for more speed</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ 8% utilization is the classic pre-virtualization disease. A hypervisor preserves the isolation they wanted ("can't interfere") while packing many VMs per host — typical consolidation frees 70–85% of hardware, solving the rack-space problem with room for the three new apps. ✘ A spends money to make the waste bigger. ✘ B destroys business function to work around an infrastructure inefficiency — backwards. ✘ D — speed isn't the constraint (they're at 8%!); overclocking adds heat, risk, and zero rack space. This is Session 7's entire topic; you'll run this consolidation in a simulator.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q7 · <em>The protein puzzle</em></h4>
+    <p class="stem">A university lab must evaluate 50 million candidate molecules against one protein model. Each evaluation is independent and takes ~2 seconds on a standard core. On the lab's single 64-core server the job needs about 18 days, but the conference deadline is in 3 days. Which approach fits the problem's SHAPE best?</p>
+    <button class="opt">A. Grid-style distribution: split the batch across hundreds of cloud machines working in parallel, then merge results</button>
+    <button class="opt">B. Scale up: buy one much faster single server</button>
+    <button class="opt">C. Convert the software to SaaS</button>
+    <button class="opt">D. Compress the molecule files to make computation faster</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Fifty million <em>independent</em> tasks is the perfectly parallel workload grid computing was born for: 600 cloud cores ≈ under 2 days, 1,200 cores ≈ under a day — rented only for the run. This is exactly how modern research (and AI training data prep) uses the cloud. ✘ B — even a server 6× faster (barely buildable) still needs ~3 days with zero margin, and it costs vastly more than renting burst capacity. ✘ C confuses a delivery model with a computation strategy — SaaS-ifying the tool doesn't make the math finish sooner. ✘ D — the bottleneck is compute time per evaluation, not file size; compression saves disk, not CPU-seconds.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q8 · <em>The cautious bank</em></h4>
+    <p class="stem">Coastal Bank &amp; Trust wants a modern public website with seasonal marketing campaigns (spiky traffic), but regulators and internal policy require the core-banking ledger to remain on infrastructure the bank exclusively controls. The CTO wants ONE coherent strategy, not two disconnected worlds. What should she choose?</p>
+    <button class="opt">A. Pure public cloud for everything — regulators will adapt eventually</button>
+    <button class="opt">B. Pure private cloud for everything, including the marketing site</button>
+    <button class="opt">C. Community cloud shared with other banks</button>
+    <button class="opt">D. Hybrid cloud: ledger on private infrastructure, public-facing spiky workloads on public cloud, connected securely</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Hybrid is purpose-built for this split: each workload goes where its requirements point — control for the regulated ledger, elasticity and low cost for the spiky marketing site — with secure networking making them one system. ✘ A bets the banking license on regulators "adapting"; compliance isn't optional. ✘ B forces the bank to buy peak capacity for marketing spikes that public cloud rents by the hour — maximum cost for the least sensitive workload. ✘ C — community clouds serve <em>shared</em> needs among allied orgs; a marketing site isn't a shared regulatory workload, and competitors don't co-own ledgers. Coastal Bank returns as a story problem in Sessions 8 and 12.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q9 · <em>The token-shaped bill</em> 🧠 AI concept</h4>
+    <p class="stem">Tanvi's startup added an AI chat helper to its website using a big provider's model. The first invoice arrives priced per <em>million tokens</em> processed. Her CFO is baffled: "Why can't we just buy the software once like we did with our accounting package?" Which explanation is correct?</p>
+    <button class="opt">A. The vendor is overcharging; AI software normally sells as a one-time license</button>
+    <button class="opt">B. AI answers are produced by inference — computation the provider runs per request — so it's billed like a metered utility (the cloud's measured-service trait), with tokens as the meter unit</button>
+    <button class="opt">C. Tokens are a cryptocurrency the provider requires for payment</button>
+    <button class="opt">D. The bill is metered because the model must be retrained for every question asked</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Every reply consumes real GPU compute at request time (inference). The provider meters that work in tokens — text chunks of roughly ¾ of a word — exactly how the cloud meters storage in GB and VMs in hours. It's Objective 1's "measured service" applied to intelligence. ✘ A — a one-time license can't work economically: the seller pays compute costs every single time Tanvi's customers chat. ✘ C — "token" here is a text unit, not currency; unrelated to crypto. ✘ D — retraining is the rare, expensive <em>training</em> phase; answering questions never retrains the model. Confusing the two phases is the classic mistake this session warns against.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q10 · <em>The do-it-yourself LLM</em> 🧠 AI concept</h4>
+    <p class="stem">The CEO of Harborview Analytics announces: "Cloud AI fees are a waste. Buy us one top-of-the-line server and we'll train our own ChatGPT-class model in the office." As lead engineer, what's the accurate response?</p>
+    <button class="opt">A. Agree — training is the light phase of AI; one good server handles it over a weekend</button>
+    <button class="opt">B. Agree, but budget for two servers for redundancy</button>
+    <button class="opt">C. Explain that frontier-scale training runs on thousands of coordinated GPUs — grid-style parallel computing rented as burst cloud capacity — so one server would take decades; renting inference from an existing model (or renting a training fleet briefly) fits their size</button>
+    <button class="opt">D. Refuse because training AI models is illegal without a government license</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Training is the heavyweight phase: it parallelizes one colossal job across thousands of GPUs for weeks — the direct descendant of today's grid computing segment, and precisely the burst workload the cloud exists to rent. A single machine is off by a factor of thousands. The pragmatic path for a small firm is consuming inference as a service, or renting a modest training fleet for a small custom model. ✘ A/B invert the phases — inference is the light per-request work; training is the mountain, and two servers instead of one dents nothing. ✘ D — no such general licensing law exists; the obstacle is compute scale and cost, not legality.</div>
+  </div>
+
+  <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+</section>
+
+<!-- ============ DISCUSSION ============ -->
+<section class="card disc">
+  <h3>💬 Discussion Forum Prompts <span class="note">(syllabus: Discussion Forums = 15%)</span></h3>
+  <p><strong>Prompt 1:</strong> "The cloud is just someone else's computer" is a popular sticker. After today, argue BOTH sides in one paragraph each: in what sense is it true, and what does the sticker dangerously ignore? Reply to two classmates.</p>
+  <p><strong>Prompt 2:</strong> Name one organization that you believe should NOT move a specific workload to the public cloud. Defend it with concepts from today (deployment models, disadvantages, compliance) — not vibes.</p>
+</section>
+
+<!-- ============ CAPSTONE ============ -->
+<section class="card capstone">
+  <h3>🏗️ Capstone Kickoff · Harbor Lane Books — Checkpoint 1 of 12</h3>
+  <p>You are now a cloud consultant. Your client: <strong>Harbor Lane Books</strong>, a 12-store Florida bookstore chain (240 employees) running everything from one aging server closet. Their web store crashes during every author-event sale; there is no disaster recovery plan; the owner wants AI-powered book recommendations and to "never buy another server." Full brief, deliverable schedule, and grading rubrics: <a href="project.html"><strong>open the Project Brief →</strong></a></p>
+  <p><strong>Due before Session 2 (individual project — this is YOUR client):</strong></p>
+  <label class="step"><input type="checkbox" data-step="cap1"><span>Read the full Harbor Lane brief in <a href="project.html">project.html</a> and create your project doc in Google Docs.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap2"><span>List Harbor Lane's <strong>5 biggest pain points</strong>; for each, note which cloud characteristic or model (from today) addresses it — a 5-row table: Pain point | Evidence from brief | Cloud concept that helps.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap3"><span>Create your AI Use Log doc and record any AI help you used today (with what you verified).</span></label>
+</section>
+
+<!-- ============ EXIT TICKET ============ -->
+<section class="card exit">
+  <h3>🎟️ Exit Ticket</h3>
+  <p>Tap each light until it matches your confidence: 🔴 lost · 🟡 shaky · 🟢 got it</p>
+  <div class="exitrow"><button class="light" data-exit="e1">⚪</button><span>I can explain the five characteristics that make something "cloud."</span></div>
+  <div class="exitrow"><button class="light" data-exit="e2">⚪</button><span>I can recommend public / private / community / hybrid for a scenario and justify it.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e3">⚪</button><span>I can weigh cloud advantages against its real disadvantages.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e4">⚪</button><span>🧠 AI concept: I can explain training vs. inference and why AI is billed like a utility.</span></div>
+  <p style="margin-top:10px"><strong>Muddiest point</strong> — one thing still fuzzy (instructor reads these at the start of Session 2):</p>
+  <textarea data-persist="muddy" placeholder="The thing I'm least sure about is…"></textarea>
+</section>
+
+<footer>
+  <div class="card" style="background:#f0eee6">
+    <strong>📚 Before Session 2:</strong> preview <strong>Session 2 (SaaS &amp; PaaS)</strong> by skimming its opening segment; finish Lab C parts you didn't complete (GitHub account is required next session — we deploy a real site to GitHub Pages); post to both discussion prompts; complete Capstone Checkpoint 1.
+  </div>
+  <div class="footer-nav">
+    <a class="btn ghost" href="index.html">⌂ Course Hub</a>
+    <span><button class="btn ghost small" onclick="resetPage()">Reset my progress on this page</button></span>
+    <a class="btn" href="week1-session2.html">Session 2: SaaS &amp; PaaS →</a>
+  </div>
+</footer>
+
+</main>
+<script>
+/* ===== CEN4086 core framework (copy verbatim into every session file) ===== */
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'page');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+function resetPage(){try{localStorage.removeItem(PKEY)}catch(e){};location.reload()}
+
+/* flips */
+document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));
+/* tabs */
+document.querySelectorAll('.tabs').forEach(t=>{
+  t.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>{
+    t.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('on'));
+    t.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');t.querySelector('.tabpane[data-p="'+b.dataset.t+'"]').classList.add('on');
+  }));
+});
+/* polls */
+document.querySelectorAll('.poll').forEach((p,pi)=>{
+  const key='poll:'+(p.id||pi);
+  p.querySelectorAll('.popt').forEach((o,oi)=>o.addEventListener('click',()=>{
+    if(p.classList.contains('done'))return;
+    o.classList.add('sel');p.classList.add('done');save(key,oi);
+  }));
+  if(S[key]!=null){p.classList.add('done');const o=p.querySelectorAll('.popt')[S[key]];if(o)o.classList.add('sel');}
+});
+/* quiz engine */
+function updateQuiz(qz){
+  const qs=[...qz.querySelectorAll('.q')];
+  const done=qs.filter(q=>q.classList.contains('done'));
+  const right=qs.filter(q=>q.classList.contains('gotit')).length;
+  const res=qz.querySelector('.qresult');
+  if(res){res.querySelector('.bar span').style.width=(done.length?Math.round(100*right/qs.length):0)+'%';
+    res.querySelector('.scoreline').textContent='Score: '+right+' / '+qs.length+(done.length===qs.length?(right===qs.length?' — perfect! 🎉':' — review the explanations above.'):' ('+(qs.length-done.length)+' remaining)');}
+  updateChip();
+}
+function updateChip(){
+  let r=0,t=0;
+  document.querySelectorAll('.quiz').forEach(qz=>qz.querySelectorAll('.q').forEach(q=>{t++;if(q.classList.contains('gotit'))r++;}));
+  const c=document.getElementById('scoreChip');if(c)c.textContent='Quiz: '+r+'/'+t;
+}
+document.querySelectorAll('.quiz').forEach((qz,qzi)=>{
+  const qid=qz.id||('qz'+qzi);
+  qz.querySelectorAll('.q').forEach((q,i)=>{
+    const a=+q.dataset.a,opts=[...q.querySelectorAll('.opt')];
+    const key=qid+':q'+i;
+    function answer(j,fresh){
+      q.classList.add('done');if(j===a)q.classList.add('gotit');
+      opts.forEach(o=>o.disabled=true);
+      opts[a].classList.add('right');if(j!==a)opts[j].classList.add('wrong');
+      if(fresh)save(key,j);
+    }
+    opts.forEach((o,j)=>o.addEventListener('click',()=>{if(!q.classList.contains('done')){answer(j,true);updateQuiz(qz);}}));
+    if(S[key]!=null)answer(S[key],false);
+  });
+  updateQuiz(qz);
+});
+/* matcher engine */
+document.querySelectorAll('.matcher').forEach((m,mi)=>{
+  const key='match:'+(m.id||mi);let sel=null,done=0;
+  const cards=[...m.querySelectorAll('.mcard')],st=m.querySelector('.mstatus');
+  function stat(){st.textContent=done+'/'+cards.length+' placed'+(done===cards.length?' — all correct! 🎉':'');}
+  cards.forEach((c,ci)=>{c.addEventListener('click',()=>{
+    if(c.classList.contains('ok'))return;
+    cards.forEach(x=>x.classList.remove('sel'));c.classList.add('sel');sel=c;
+  });});
+  m.querySelectorAll('.mzone').forEach(z=>z.addEventListener('click',()=>{
+    if(!sel)return;
+    if(sel.dataset.match===z.dataset.zone){
+      sel.classList.remove('sel');sel.classList.add('ok');done++;stat();
+      const solved=(S[key]||[]);solved.push(cards.indexOf(sel));save(key,solved);sel=null;
+    }else{sel.classList.add('no');setTimeout(()=>sel&&sel.classList.remove('no'),400);}
+  }));
+  (S[key]||[]).forEach(ci=>{if(cards[ci]&&!cards[ci].classList.contains('ok')){cards[ci].classList.add('ok');done++;}});
+  stat();
+});
+/* lab step checkboxes */
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+/* persisted inputs/textareas */
+document.querySelectorAll('[data-persist]').forEach(el=>{
+  const key='p:'+el.dataset.persist;
+  if(S[key]!=null)el.value=S[key];
+  el.addEventListener('input',()=>save(key,el.value));
+});
+/* exit ticket lights */
+const LIGHTS=['⚪','🔴','🟡','🟢'];
+document.querySelectorAll('.light').forEach(b=>{
+  const key='exit:'+b.dataset.exit;let i=S[key]||0;b.textContent=LIGHTS[i];
+  b.addEventListener('click',()=>{i=(i+1)%4;b.textContent=LIGHTS[i];save(key,i);});
+});
+/* copy prompt */
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+
+/* ===== Session 1 custom interactives ===== */
+/* stack painter */
+const LAYERS=['Data & access','Applications','Runtime','Middleware','Operating system','Virtualization','Servers','Storage','Networking'];
+const MODELS={
+  onprem:{cut:9,cap:'On-premises: YOU manage every layer — and buy the hardware.'},
+  iaas:{cut:5,cap:'IaaS: provider runs the physical + virtualization layers; you manage the OS upward. Example: Amazon EC2, Azure VMs.'},
+  paas:{cut:1,cap:'PaaS: you bring code and data; provider runs the whole platform. Example: Heroku-style platforms, Google App Engine, GitHub Pages.'},
+  saas:{cut:0,cap:'SaaS: provider manages everything — you manage only your data, users, and settings. Example: Gmail, Salesforce.'}
+};
+const sv=document.getElementById('stackViz');
+function paintStack(model){
+  const m=MODELS[model];if(!m)return;
+  sv.innerHTML=LAYERS.map((l,i)=>{
+    const you=i<m.cut;
+    return '<div class="stackrow"><div class="lay" style="'+(you?'background:#fdf1ef;border-color:#e5b3ab':'background:#eef7f6;border-color:#a9d8d2')+'">'+l+'</div><div class="who '+(you?'you':'prov')+'">'+(you?'YOU':'PROVIDER')+'</div></div>';
+  }).join('');
+  document.getElementById('stackCaption').textContent=m.cap;
+  document.querySelectorAll('.stackbtn').forEach(b=>b.classList.toggle('ghost',b.dataset.model!==model));
+  save('stackModel',model);
+}
+document.querySelectorAll('.stackbtn').forEach(b=>b.addEventListener('click',()=>paintStack(b.dataset.model)));
+paintStack(S['stackModel']||'onprem');
+
+/* scalability simulator */
+const UP_TIERS=[[1000,90,'M'],[2000,180,'L'],[4000,400,'XL'],[8000,900,'XXL']];
+const tr=document.getElementById('traffic');
+function fmt(n){return n.toLocaleString('en-US')}
+function simScale(){
+  const t=+tr.value;
+  document.getElementById('traffVal').textContent=fmt(t);
+  const n=Math.ceil(t/500),out=n*40+18;
+  document.getElementById('kOut').textContent='$'+fmt(out);
+  document.getElementById('kOutN').textContent=n;
+  const farm=document.getElementById('farmOut');
+  farm.innerHTML='<div class="srv" title="load balancer" style="background:linear-gradient(180deg,#0f8b8d,#0a6365)">LB</div>'+Array(Math.min(n,40)).fill('<div class="srv">🖥</div>').join('')+(n>40?'<div style="align-self:center;font-weight:700">+'+(n-40)+' more</div>':'');
+  const tier=UP_TIERS.find(x=>x[0]>=t);
+  const up=document.getElementById('kUp'),upN=document.getElementById('kUpN'),fu=document.getElementById('farmUp'),v=document.getElementById('kVerdict');
+  if(tier){up.textContent='$'+fmt(tier[1]);upN.textContent=tier[2];
+    fu.innerHTML='<div class="srv big">🖥</div>';
+    v.textContent=tier[1]<out?'UP cheaper':'OUT cheaper';
+    document.getElementById('simNote').textContent=tier[1]<out?'At low loads one machine is simpler AND cheaper. Keep sliding…':'Scale-out now wins on price — and it also survives a single server failing. Keep going to find scale-up’s ceiling.';
+  }else{up.textContent='—';upN.textContent='NONE';fu.innerHTML='<div class="srv big" style="background:#c04f43">✖</div>';
+    v.textContent='UP impossible';
+    document.getElementById('simNote').textContent='No single machine in our catalog can serve '+fmt(t)+' req/min. This is the scale-up ceiling: beyond it, scaling OUT is the only option. (Lab A, question 2!)';
+  }
+}
+tr.addEventListener('input',simScale);simScale();
+
+/* grid visualizer */
+const gs=document.getElementById('gridSlider');
+function simGrid(){
+  const n=+gs.value,base=3200;
+  const time=base/n*(1+0.02*(n-1));
+  const speed=base/time,eff=speed/n*100;
+  document.getElementById('gridN').textContent=n;
+  document.getElementById('gTime').textContent=(time>=100?Math.round(time):time.toFixed(1)).toLocaleString('en-US')+' h';
+  document.getElementById('gSpeed').textContent=speed.toFixed(1)+'×';
+  document.getElementById('gEff').textContent=Math.round(eff)+'%';
+  document.getElementById('gBar').style.width=Math.max(2,100*time/base)+'%';
+  document.getElementById('gNote').textContent=eff>75?'Great efficiency — nearly every node-hour you pay for does useful work.':(eff>50?'Overhead is growing: coordination eats '+(100-Math.round(eff))+'% of what you pay for.':'Past the sweet spot: more than half of every node-hour is wasted on coordination. More machines ≠ free speed.');
+}
+gs.addEventListener('input',simGrid);simGrid();
+
+/* Lab A checks */
+function checkA(i){
+  const val=+document.getElementById('labA'+i).value,fb=document.getElementById('fbA'+i);
+  let ok=false,msg='';
+  if(i===1){ok=(val===258);msg=ok?'✔ Correct: 6 servers × $40 + $18 LB = $258.':'✘ Not yet. Set the slider to exactly 3,000 and read the scale-OUT cost. Hint: 6 small servers + the load balancer.';}
+  if(i===2){ok=(val>8000&&val<=8250);msg=ok?'✔ Right: above 8,000 req/min no single machine exists — the first failing slider stop is 8,250.':'✘ Slide until the scale-up machine shows ✖. The ceiling is the largest machine’s capacity (8,000); first failing traffic level is 8,250.';}
+  if(i===4){ok=(val>=50&&val<=53);msg=ok?'✔ Yes — around 50–53 nodes efficiency dips under 50%: overhead 1+0.02(n−1) ≥ speedup gain.':'✘ Drag the node slider and watch the efficiency KPI; find where it first reads 49%.';}
+  fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
+}
+</script>
+</body>
+</html>

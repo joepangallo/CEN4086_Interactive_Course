@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Capstone Project — Harbor Lane Books</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--pri);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,#7b5ea7,#3f3d99);color:#fff;border-radius:16px;padding:30px 28px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:29px}
+.hero .sub{opacity:.92;margin:0 0 10px}
+.chip{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:#fff}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--pri)}
+h3{font-size:18px;margin:18px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.d1{border-top:6px solid #0f8b8d}.card.d2{border-top:6px solid #e0a437}.card.d3{border-top:6px solid #b3543f}.card.d4{border-top:6px solid #7b5ea7}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--acc);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.btn{display:inline-block;background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.note{font-size:13.5px;color:var(--mut)}
+.due{display:inline-block;background:var(--bad);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800;letter-spacing:.4px}
+.pts{display:inline-block;background:var(--pri);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800}
+ul.tight li{margin:6px 0}
+.warn{background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">⌂ Course Hub</a>
+  <span style="font-weight:700">Capstone Project — Harbor Lane Books</span>
+  <a href="week1-session1.html">Session 1 →</a>
+</nav>
+<main>
+
+<header class="hero">
+  <h1>🏗️ Capstone: Harbor Lane Books</h1>
+  <p class="sub">You are the cloud consultant. Four weeks, four deliverables, one client who never wants to buy a server again.</p>
+  <div>
+    <span class="chip">Individual project</span><span class="chip">4 deliverables · one per week</span><span class="chip">Free tools only</span><span class="chip">AI allowed — with an AI Use Log</span><span class="chip">Final presentation in Session 12</span>
+  </div>
+</header>
+
+<h2>The client brief</h2>
+<div class="card">
+  <p><strong>Harbor Lane Books</strong> is a beloved 12-store bookstore chain across Florida's Gulf Coast: 240 employees, ~$18M annual revenue, and a loyal events program that brings bestselling authors to its flagship Sarasota store every month. The founder's daughter, <strong>Maya Delgado</strong>, just took over as CEO. Her first week included a server outage that killed online sales for 9 hours — during a signed-edition launch that had 20,000 fans refreshing the page.</p>
+  <p>Everything runs from a converted supply closet at the flagship store, maintained by a two-person IT team: <strong>Ray</strong> (25 years with the company, deeply skeptical of "renting computers from strangers") and <strong>Tasha</strong> (hired last year, quietly updating her résumé every time the AC in the closet fails). There is no disaster recovery plan. Hurricane season is four months away.</p>
+  <p>Maya's mandate to you: <em>"Get us to the cloud safely. I want the site to survive our own success, I want my staff working from anywhere, I want AI helping customers find their next favorite book — and I never want to buy another server. Show me the plan, the costs, and the risks. Convince Ray."</em></p>
+  <h3>Current infrastructure (the closet)</h3>
+  <table>
+    <tr><th>System</th><th>Runs on</th><th>Age</th><th>Notes</th></tr>
+    <tr><td>Web store (WooCommerce-style)</td><td>Windows Server, IIS + MySQL, single box</td><td>7 yrs</td><td>Crashes under event traffic; nightly backup to USB drive on Ray's desk</td></tr>
+    <tr><td>Point-of-sale database</td><td>Second Windows Server, SQL Server Express</td><td>5 yrs</td><td>All 12 stores connect over VPN; slows at 5 PM daily</td></tr>
+    <tr><td>File share ("The Vault")</td><td>Same box as POS</td><td>5 yrs</td><td>2.1 TB: contracts, HR files, 15 years of event photos</td></tr>
+    <tr><td>Email + calendars</td><td>On-prem Exchange</td><td>9 yrs</td><td>Ray is the only person who knows how it works</td></tr>
+    <tr><td>Inventory sync jobs</td><td>Scheduled scripts on the POS box</td><td>varies</td><td>Break silently; discovered when shelves are wrong</td></tr>
+    <tr><td>Staff logins</td><td>Local Active Directory</td><td>9 yrs</td><td>One shared password per store for the POS terminals (!)</td></tr>
+    <tr><td>Wish list: AI recommendations</td><td>—</td><td>—</td><td>Maya wants "customers who liked X…" on the site + an AI assistant for staff</td></tr>
+  </table>
+  <p class="note">Constraints: budget-conscious (show costs monthly); PCI-DSS applies to card payments; HR files are confidential; Ray must be won over with evidence, not buzzwords.</p>
+</div>
+
+<h2>Ground rules</h2>
+<div class="card">
+  <ul class="tight">
+    <li><strong>Individual project.</strong> You own every deliverable end-to-end, all four weeks, and you present solo in Session 12. Discussing ideas with classmates is encouraged; the analysis, writing, and diagrams must be yours.</li>
+    <li><strong>Free tools only</strong> — Google Docs/Sheets/Slides (deliverables), diagrams.net (architecture diagrams), GitHub (optional artifact hosting), free-tier AI chatbots. If a step ever asks for a credit card, stop: you've wandered off the assignment.</li>
+    <li><strong>Use the course vocabulary.</strong> Each deliverable must correctly use at least three named concepts from that week's session pages (e.g., “rapid elasticity,” “warm standby,” “loose coupling”) — the session pages are your complete reference.</li>
+    <li><strong>AI is your junior analyst, not your ghostwriter.</strong> You may use free AI chatbots to brainstorm, draft, and explain. Every deliverable must include your <strong>AI Use Log</strong>: date · tool · what you asked · what it got wrong or you verified · what you kept. Undisclosed AI use is an academic-integrity violation per the syllabus. An empty log is fine <em>if it's true</em>.</li>
+    <li><strong>Recommendations need reasons.</strong> "Use AWS" earns nothing; "object storage for the photo archive because it's accessed rarely and scales cheaply (Session 5's storage tiers)" earns full marks. Provider-neutral answers are welcome.</li>
+  </ul>
+  <div class="warn">💡 <strong>The AI junior-analyst starter prompt</strong> (adapt each week):</div>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>I'm a cloud consultant; you are my junior analyst. My client is a 12-store
+bookstore chain (240 staff) moving off one on-prem server closet. This week I'm
+working on: [DELIVERABLE TOPIC]. Draft [SECTION] for my review. Be specific,
+budget-conscious, and flag every assumption you make so I can verify it.
+I will fact-check you against my course materials.</pre></div>
+</div>
+
+<h2>Deliverables &amp; rubrics</h2>
+
+<div class="card d1">
+  <h3>D1 · Cloud Adoption Proposal <span class="due">DUE END OF WEEK 1 · SESSION 3</span> <span class="pts">25 pts</span></h3>
+  <p>Google Doc, 3–5 pages + one diagrams.net architecture diagram (exported PNG).</p>
+  <label class="step"><input type="checkbox" data-step="d1a"><span>Pain-point table: Harbor Lane's 5 biggest problems, evidence from the brief, and the cloud concept that addresses each (Session 1 checkpoint).</span></label>
+  <label class="step"><input type="checkbox" data-step="d1b"><span>Deployment-model recommendation (public/private/community/hybrid) with justification against at least two alternatives.</span></label>
+  <label class="step"><input type="checkbox" data-step="d1c"><span>SaaS stack: email, docs, CRM picks with a 3-year cost table from the Session 2 calculator method.</span></label>
+  <label class="step"><input type="checkbox" data-step="d1d"><span>One PaaS candidate (what would you build/deploy on a platform, and why).</span></label>
+  <label class="step"><input type="checkbox" data-step="d1e"><span>IaaS section: provider choice + instance sizing for the web store (Session 3 VM-builder reasoning), with a second provider quote for comparison.</span></label>
+  <label class="step"><input type="checkbox" data-step="d1f"><span>Target architecture diagram + 1-paragraph "letter to Ray" translating the plan into his language.</span></label>
+  <label class="step"><input type="checkbox" data-step="d1g"><span>AI Use Log appended.</span></label>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Correct use of Week 1 concepts (traits, models, SaaS/PaaS/IaaS distinctions)</td><td>10</td></tr>
+    <tr><td>Costs are real, sourced, and arithmetic checks out</td><td>6</td></tr>
+    <tr><td>Diagram is readable and matches the text</td><td>4</td></tr>
+    <tr><td>Persuasiveness &amp; clarity (would Maya sign? would Ray nod?)</td><td>3</td></tr>
+    <tr><td>AI Use Log honest and specific</td><td>2</td></tr>
+  </table>
+</div>
+
+<div class="card d2">
+  <h3>D2 · Identity, Data &amp; Collaboration Plan <span class="due">DUE END OF WEEK 2 · SESSION 6</span> <span class="pts">25 pts</span></h3>
+  <p>Google Doc, 3–5 pages + updated diagram.</p>
+  <label class="step"><input type="checkbox" data-step="d2a"><span>IDaaS recommendation: SSO + MFA rollout for 240 employees; kill the shared POS passwords; provisioning/deprovisioning policy (the "Tasha quits" test: what dies, and when?).</span></label>
+  <label class="step"><input type="checkbox" data-step="d2b"><span>Storage architecture: what goes to object vs block vs file storage; hot/cool/archive tiering for 2.1 TB of "The Vault" with monthly cost estimate (Session 5 simulator method).</span></label>
+  <label class="step"><input type="checkbox" data-step="d2c"><span>Backup policy: 3-2-1 rule applied; USB-drive-on-desk retired with honors.</span></label>
+  <label class="step"><input type="checkbox" data-step="d2d"><span>Collaboration stack: chat, meetings, docs, scheduling — free/low-cost picks with a sync-vs-async usage guideline for 12 stores.</span></label>
+  <label class="step"><input type="checkbox" data-step="d2e"><span>Data classification mini-register: 6+ data types (HR files, card data, photos…) with sensitivity + storage decision. Note PCI/HR handling.</span></label>
+  <label class="step"><input type="checkbox" data-step="d2f"><span>AI Use Log appended.</span></label>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>IDaaS plan (SSO/MFA/lifecycle) is complete and appraises at least two options</td><td>8</td></tr>
+    <tr><td>Storage plan differentiates block/object/file + tiers correctly with costs</td><td>8</td></tr>
+    <tr><td>Collaboration stack fits a 12-store retail workforce</td><td>5</td></tr>
+    <tr><td>Classification register sound (PCI &amp; HR handled)</td><td>2</td></tr>
+    <tr><td>Diagram updated + AI Use Log</td><td>2</td></tr>
+  </table>
+</div>
+
+<div class="card d3">
+  <h3>D3 · Virtualization, Security &amp; DR Plan <span class="due">DUE END OF WEEK 3 · SESSION 9</span> <span class="pts">25 pts</span></h3>
+  <p>Google Doc, 4–6 pages.</p>
+  <label class="step"><input type="checkbox" data-step="d3a"><span>Virtualization plan: consolidate/replace the closet servers (Session 7 simulator evidence: before/after utilization, host count, savings); VM vs container choice for the inventory-sync jobs.</span></label>
+  <label class="step"><input type="checkbox" data-step="d3b"><span>Shared-responsibility matrix for your chosen services (who patches what, IaaS vs PaaS vs SaaS columns).</span></label>
+  <label class="step"><input type="checkbox" data-step="d3c"><span>Top-5 security controls with the threat each answers (from Session 8's threat→control work); staff phishing-awareness note.</span></label>
+  <label class="step"><input type="checkbox" data-step="d3d"><span>DR plan: RTO + RPO per system (web store, POS, files, email) with the DR tier each implies (backup-restore / pilot light / warm standby / multi-site) and why; hurricane tabletop scenario 1-pager.</span></label>
+  <label class="step"><input type="checkbox" data-step="d3e"><span>SLA targets: availability level per system, downtime math shown (Session 9 SLA widget method).</span></label>
+  <label class="step"><input type="checkbox" data-step="d3f"><span>AI Use Log appended.</span></label>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Virtualization plan quantified (consolidation math shown)</td><td>7</td></tr>
+    <tr><td>Responsibility matrix + controls map to real threats</td><td>7</td></tr>
+    <tr><td>RTO/RPO targets are per-system, justified, and drive the DR tier chosen</td><td>8</td></tr>
+    <tr><td>SLA math correct + AI Use Log</td><td>3</td></tr>
+  </table>
+</div>
+
+<div class="card d4">
+  <h3>D4 · API Design, Operations &amp; Migration Roadmap + Final Presentation <span class="due">DUE SESSION 12</span> <span class="pts">25 pts</span></h3>
+  <p>Google Doc (4–6 pages) + Google Slides (10–12 slides, presented live).</p>
+  <label class="step"><input type="checkbox" data-step="d4a"><span>API design sheet: 5 REST endpoints for Harbor Lane's store platform (method, path, purpose, sample JSON) — include one endpoint that serves the AI recommendation feature (Session 10).</span></label>
+  <label class="step"><input type="checkbox" data-step="d4b"><span>AI feature plan — written in the course's AI vocabulary: how "customers who liked X" works (embeddings/vector search or RAG per Session 5), the provider's service model and inference cost in tokens (Session 1), how the store API exposes it (function calling / an endpoint, Session 10), the fallback when the model API is down (Session 9), and what stays human (Session 12).</span></label>
+  <label class="step"><input type="checkbox" data-step="d4c"><span>Operations plan: 5 monitored metrics with alert thresholds, on-call reality for a 2-person IT team, monthly cost-review ritual (Session 11).</span></label>
+  <label class="step"><input type="checkbox" data-step="d4d"><span>Migration roadmap: every system from the closet table classified by the 6 Rs, sequenced into 3 waves with dependencies (identity first!), rollback thinking for cutover weekend (Session 12).</span></label>
+  <label class="step"><input type="checkbox" data-step="d4e"><span>Change management: the "Convince Ray" section — training plan and what Ray's new job looks like.</span></label>
+  <label class="step"><input type="checkbox" data-step="d4f"><span>Final presentation delivered; complete AI Use Log for the whole project appended.</span></label>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>API design follows REST conventions; AI endpoint sensible</td><td>6</td></tr>
+    <tr><td>Migration roadmap: 6-Rs classification + wave dependencies sound</td><td>8</td></tr>
+    <tr><td>Operations plan realistic for a small team</td><td>4</td></tr>
+    <tr><td>Presentation: clear story, confident delivery, questions handled</td><td>5</td></tr>
+    <tr><td>Cumulative AI Use Log complete</td><td>2</td></tr>
+  </table>
+</div>
+
+<h2>Checkpoint schedule</h2>
+<div class="card">
+  <table>
+    <tr><th>Session</th><th>In-class capstone checkpoint (bottom of each session page)</th><th>Feeds</th></tr>
+    <tr><td>1</td><td>Project doc created · 5 pain points table · AI Use Log started</td><td>D1</td></tr>
+    <tr><td>2</td><td>SaaS stack + PaaS candidate + cost table</td><td>D1</td></tr>
+    <tr><td>3</td><td><strong>D1 due</strong> · IaaS sizing finalized</td><td>D1</td></tr>
+    <tr><td>4</td><td>IDaaS pick + provisioning policy draft</td><td>D2</td></tr>
+    <tr><td>5</td><td>Storage architecture + backup policy draft</td><td>D2</td></tr>
+    <tr><td>6</td><td><strong>D2 due</strong> · collaboration stack + midterm status check</td><td>D2</td></tr>
+    <tr><td>7</td><td>Consolidation plan with simulator evidence</td><td>D3</td></tr>
+    <tr><td>8</td><td>Responsibility matrix + top-5 controls</td><td>D3</td></tr>
+    <tr><td>9</td><td><strong>D3 due</strong> · RTO/RPO table + hurricane tabletop</td><td>D3</td></tr>
+    <tr><td>10</td><td>API design sheet (5 endpoints)</td><td>D4</td></tr>
+    <tr><td>11</td><td>Ops runbook + monitoring plan</td><td>D4</td></tr>
+    <tr><td>12</td><td><strong>D4 due · final presentations</strong> 🎓</td><td>D4</td></tr>
+  </table>
+  <p class="note">Grading fit: deliverables and checkpoints feed the syllabus categories "Exercises (In-Class/Homework/Quizzes) 30%" and "Review Question Sets 20%" at the instructor's allocation; the Session 12 presentation may double as a final-exam component at instructor discretion.</p>
+</div>
+
+<h2>Presentation day (Session 12)</h2>
+<div class="card">
+  <ul class="tight">
+    <li><strong>6 minutes + 2 minutes Q&amp;A</strong> per student. Audience roleplay: instructor is Maya; a volunteer classmate plays Ray and asks one skeptical question.</li>
+    <li>Slides must include: the before/after architecture diagrams, one costs slide (monthly, honest), the RTO/RPO table, the 3-wave migration timeline, and one "what could still go wrong" slide — consultants who hide risks get follow-up questions.</li>
+    <li>Rehearse with your AI junior analyst: paste your outline and ask it to grill you with the five hardest questions Maya or Ray could ask. Log it.</li>
+  </ul>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin-top:26px;flex-wrap:wrap;gap:10px">
+  <a class="btn ghost" href="index.html">⌂ Course Hub</a>
+  <a class="btn" href="week1-session1.html">Start Session 1 →</a>
+</div>
+
+</main>
+<script>
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'page');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+</script>
+</body>
+</html>

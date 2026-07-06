@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Week 4 · Session 12 — Migrating to the Cloud + Final Review</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--wk:#7b5ea7}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--wk);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+.topnav .mid{font-weight:700}
+#scoreChip{background:var(--pri);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:700}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#2b2a6e 100%);color:#fff;border-radius:16px;padding:28px 26px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:30px;line-height:1.25}
+.hero .sub{margin:0 0 12px;opacity:.9;font-size:16.5px}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:var(--ink)}
+.hero .chip{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .chip.obj{background:var(--amb);border-color:var(--amb);color:#3a2c05}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
+h3{font-size:18px;margin:20px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.warmup{border-top:6px solid var(--amb)}
+.card.ai{border-top:6px solid var(--vio);background:linear-gradient(180deg,#f7f3fc,#fff 90px)}
+.card.disc{border-top:6px solid var(--acc)}
+.card.capstone{border-top:6px solid var(--pri);background:linear-gradient(180deg,#f0f0fa,#fff 90px)}
+.card.exit{border-top:6px solid var(--bad)}
+.segment{position:relative}
+.segno{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--wk);color:#fff;font-weight:800;font-size:15px;margin-right:8px}
+.agenda{width:100%;border-collapse:collapse;font-size:14px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.agenda td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.15)}
+.agenda tr:last-child td{border-bottom:none}
+.bdg{display:inline-block;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
+.b-lec{background:#c9d4f5;color:#22307a}.b-int{background:#ffe3a3;color:#6b4d05}.b-lab{background:#bfe6e0;color:#0b5450}.b-quiz{background:#f3c9c2;color:#7a2417}.b-brk{background:#e4e4e4;color:#555}.b-cap{background:#ddd3f0;color:#432c73}
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.flip{border:1.5px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
+.flip h5{margin:0;font-size:15px;color:var(--pri)}
+.flip .back{display:none;margin-top:8px;font-size:14px;color:var(--ink)}
+.flip.open{background:#eef4f4;border-color:var(--acc)}
+.flip.open .back{display:block}
+.flip .hint{font-size:12px;color:var(--mut)}
+.tabs .tabrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:-1px}
+.tabbtn{border:1px solid var(--line);border-bottom:none;background:#eceadf;border-radius:10px 10px 0 0;padding:8px 16px;cursor:pointer;font:inherit;font-weight:600;font-size:14px}
+.tabbtn.on{background:#fff;color:var(--pri)}
+.tabpane{display:none;border:1px solid var(--line);border-radius:0 12px 12px 12px;background:#fff;padding:16px 18px}
+.tabpane.on{display:block}
+.matcher{margin:14px 0}
+.mcards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.mcard{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.mcard.sel{outline:3px solid var(--amb);border-color:var(--amb)}
+.mcard.ok{background:#e7f3ec;border-color:var(--ok);color:#28583b;cursor:default}
+.mcard.ok::after{content:" ✓"}
+.mcard.no{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.mzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.mzone{border:2px dashed var(--acc);border-radius:12px;background:#f4faf9;padding:12px;cursor:pointer;font:inherit;text-align:center;font-weight:700;color:var(--acc)}
+.mzone small{display:block;font-weight:400;color:var(--mut);margin-top:4px}
+.mstatus{margin-top:10px;font-weight:700;color:var(--pri)}
+.lab{border-left:6px solid var(--acc)}
+.lab .labno{color:var(--acc);font-weight:800;letter-spacing:.5px;font-size:13px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--acc);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.quiz .q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.quiz .q h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
+.stem{margin:6px 0 10px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fbfaf7;cursor:pointer;font:inherit;font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--pri)}
+.opt:disabled{cursor:default;opacity:.85}
+.opt.right{background:#e7f3ec;border-color:var(--ok);opacity:1;font-weight:600}
+.opt.wrong{background:#f8e9e7;border-color:var(--bad);opacity:1}
+.expl{display:none;margin-top:10px;padding:12px 14px;background:#f4f6fb;border-left:4px solid var(--pri);border-radius:8px;font-size:14.5px}
+.q.done .expl{display:block}
+.qresult{margin-top:16px}
+.bar{height:12px;background:#e8e4da;border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .4s}
+.scoreline{font-weight:700;margin:6px 0 0}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.small{padding:5px 12px;font-size:13px}
+.kpis{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.kpi{flex:1;min-width:130px;background:#f4f6fb;border-radius:10px;padding:10px 14px;text-align:center}
+.kpi b{display:block;font-size:22px;color:var(--pri);line-height:1.2}
+.kpi small{color:var(--mut)}
+.poll .popt{display:inline-block;margin:4px 6px 4px 0;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;cursor:pointer;font:inherit;font-size:14px}
+.poll .popt.sel{background:var(--amb);border-color:var(--amb);font-weight:700}
+.pollwhy{display:none;margin-top:8px;padding:10px 12px;background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;font-size:14px}
+.poll.done .pollwhy{display:block}
+.stackrow{display:flex;align-items:center;gap:10px;margin:3px 0}
+.stackrow .lay{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;background:#fbfaf7;transition:all .3s}
+.stackrow .who{width:96px;text-align:center;font-size:12px;font-weight:800;border-radius:8px;padding:4px}
+.who.you{background:#f3c9c2;color:#7a2417}
+.who.prov{background:#bfe6e0;color:#0b5450}
+input[type=range]{width:100%;accent-color:var(--pri)}
+.svgwrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;overflow-x:auto;text-align:center}
+.note{font-size:13.5px;color:var(--mut)}
+.serverfarm{display:flex;flex-wrap:wrap;gap:5px;min-height:40px;margin:8px 0}
+.srv{width:34px;height:40px;border-radius:6px;background:linear-gradient(180deg,#3f3d99,#2b2a6e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px}
+.srv.big{width:64px;height:56px;font-size:26px}
+.checkfield{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.checkfield input[type=number],.checkfield input[type=text]{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;width:110px}
+.fb{font-weight:700;font-size:14px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;min-height:70px}
+.exitrow{display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap}
+.light{font-size:20px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;cursor:pointer}
+.footer-nav{display:flex;justify-content:space-between;margin-top:30px;gap:10px;flex-wrap:wrap}
+table.simple{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+table.simple th{background:#f0eee6;text-align:left}
+table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+<style>
+/* ===== Session 12 additions ===== */
+.wavegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:10px;margin:10px 0}
+.wavecard{border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:10px 12px}
+.wavecard h5{margin:0 0 2px;font-size:14px;color:var(--pri)}
+.wavecard .wnote{font-size:12px;color:var(--mut);display:block;min-height:32px}
+.wbtn{border:1.5px solid var(--line);background:#fbfaf7;border-radius:8px;padding:4px 12px;cursor:pointer;font:inherit;font-weight:700;font-size:13px;margin:6px 6px 0 0}
+.wbtn.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.planfb{margin-top:10px;font-size:14.5px;display:none;border-radius:8px;padding:12px 14px;border-left:4px solid var(--pri);background:#f4f6fb}
+.planfb.show{display:block}
+.planfb ul{margin:6px 0 0;padding-left:20px}
+.planfb .viol{color:var(--bad);font-weight:600}
+.planfb.goodplan{background:#e7f3ec;border-left-color:var(--ok)}
+.cutrow{display:flex;gap:10px;align-items:center;background:#fbfaf7;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:5px 0}
+.cutrow select{border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;font:inherit}
+.cutrow.rightpos{background:#e7f3ec;border-color:var(--ok)}
+.cutrow.wrongpos{background:#f8e9e7;border-color:var(--bad)}
+.riskrow{display:flex;gap:10px;align-items:center;margin:8px 0;flex-wrap:wrap}
+.riskrow label{font-weight:700;font-size:13.5px;min-width:150px}
+.riskrow select{flex:1;min-width:250px;border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;font-size:14px}
+.riskmeter{height:16px;background:#e8e4da;border-radius:99px;overflow:hidden;margin:10px 0 4px}
+.riskmeter span{display:block;height:100%;width:20%;background:var(--ok);transition:width .4s,background .4s}
+.growth{background:#f4f6fb;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:12px}
+.growth .gmsg{font-weight:700;margin-top:8px;color:var(--pri)}
+.growth input[type=number]{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;width:80px}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">⌂ Course Hub</a>
+  <span class="mid">Week 4 · Session 12 — Migration + Final Review + Post-Test</span>
+  <span><a href="week4-session11.html">← Session 11</a> &nbsp; <span id="scoreChip">Quiz: 0/0</span> &nbsp; <a href="index.html">Finish → Course Hub</a></span>
+</nav>
+<main>
+
+
+<!-- ============ WARM-UP ============ -->
+<section class="card warmup">
+  <h3>🔥 Warm-Up Polls <span class="note">(no wrong answers — vote, then we discuss)</span></h3>
+  <div class="poll" id="poll1">
+    <p><strong>Poll 1:</strong> A company announces "we're moving to the cloud!" In real migrations, what usually moves FIRST?</p>
+    <button class="popt">The gnarliest legacy system — hardest first</button><button class="popt">Low-risk, low-dependency apps — an easy win to learn on</button><button class="popt">Everything at once, one big weekend</button><button class="popt">Nothing — eighteen months of meetings</button>
+    <div class="pollwhy">Low-risk first is the professional pattern (though "eighteen months of meetings" got knowing laughs for a reason). Early waves are chosen to be <em>survivable</em>: the team learns the provider's tools, builds runbooks, and makes its rookie mistakes on the file share — not on the POS database. Hardest-first sounds brave and fails publicly; big-bang weekends are how migrations end up in case studies with the word "cautionary." Today's wave planner makes you sequence this yourself.</div>
+  </div>
+  <div class="poll" id="poll2">
+    <p><strong>Poll 2:</strong> What share of cloud migrations run over budget or over schedule, per industry surveys?</p>
+    <button class="popt">About 10%</button><button class="popt">About 25%</button><button class="popt">Half or more</button><button class="popt">Basically all of them</button>
+    <div class="pollwhy">Surveys repeatedly land at <strong>half or more</strong> exceeding budget or timeline. The overruns rarely come from the technology — they come from what today's session spends its time on: undiscovered dependencies, unprotected data, untrained staff, and missing success criteria. In other words, the boring planning steps ARE the work. Your wave planner and cutover checklist today are the antidotes in miniature.</div>
+  </div>
+  <div class="poll" id="poll3">
+    <p><strong>Poll 3:</strong> The post-test happens today — the same eight concepts you faced cold in Session 1. How do you feel?</p>
+    <button class="popt">Same person, same guesses</button><button class="popt">Noticeably stronger</button><button class="popt">Secretly a cloud architect now</button><button class="popt">Ask me after the post-test</button>
+    <div class="pollwhy">All answers accepted — but the data will speak this afternoon. In Session 1 you recorded a pre-test score before you knew IaaS from a hole in the ground. Today's post-test mirrors those same eight concepts with fresh scenarios, and the syllabus counts completing the comparison (post-test = 5%). Most students gain 3+ points; whatever your delta, the comparison box will tell you exactly which concepts moved. Find that pre-test score now if you haven't.</div>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 1 ============ -->
+<section class="segment">
+  <h2><span class="segno">1</span> Why &amp; What to Migrate: Drivers, Requirements &amp; the 6 Rs</h2>
+  <div class="card">
+    <h3>Business drivers: why companies finally move</h3>
+    <p>Today's session opens where every real migration opens — not with technology, but with <strong>business drivers</strong>. The recurring five: <em>stop buying hardware</em> (CapEx→OpEx — Harbor Lane's owner said it word for word: "never buy another server"); <em>scale for peaks</em> (the author-event crashes); <em>get disaster recovery</em> that a server closet can never offer; <em>reach staff and customers anywhere</em>; and <em>unlock capabilities</em> — like AI recommendations — that only exist as cloud services. From drivers flow <strong>goals and requirements</strong>: measurable statements ("checkout p95 under 800 ms during author events," "RPO 15 minutes for orders") that later become your <strong>success criteria</strong>. The blunt truth: a migration without written success criteria cannot succeed or fail — it can only <em>end</em>, which is how projects drift for years. You also inventory <strong>application characteristics</strong>: age, vendor support, dependencies, data gravity, latency sensitivity, compliance constraints. A stateless web app with a modern stack migrates in a weekend; a latency-critical app hard-wired to a fax card does not.</p>
+    <h3>The 6 Rs — the modern packaging of migration planning</h3>
+    <p>Classic migration planning walks through migration components, requirements, and application analysis; the industry compressed those same decisions into a famous checklist — the <strong>6 Rs</strong>. For every application you choose exactly one disposition. <strong>Rehost</strong> ("lift and shift"): move the VM as-is — fastest, least benefit, fine under deadline. <strong>Replatform</strong> ("lift, tinker, and shift"): small upgrades on the way — e.g., swap the hand-patched MySQL box for a managed database. <strong>Refactor</strong>: re-architect for cloud-native (microservices, autoscaling — your Session 10 skills) — most expensive, most payoff, reserved for apps where the business case is strong. <strong>Repurchase</strong>: drop the custom app and buy SaaS (goodbye home-grown CRM, hello subscription). <strong>Retire</strong>: the audit reveals nobody uses it — deleting is the cheapest migration of all (typically 10–20% of a portfolio!). <strong>Retain</strong>: keep on-prem for now — compliance, latency, or a pending contract says "not yet." <strong>Misconception:</strong> the 6 Rs are not a maturity ladder where Refactor is "best." The best R is the one whose cost matches the app's value — refactoring the cafeteria-menu app is malpractice.</p>
+    <h3>🗂️ Interactive: The 6-Rs Sorter — disposition eight real apps</h3>
+    <p>You're running Harbor Lane's application-portfolio review. Click an app card, then the R it deserves:</p>
+    <div class="matcher" id="rsMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="rehost">Standard web store on 2 Windows VMs — no changes wanted, deadline in 6 weeks</button>
+        <button class="mcard" data-match="replat">MySQL on a hand-patched VM — move it onto a managed database service, minor connection-string changes</button>
+        <button class="mcard" data-match="refac">Monolithic order system — rebuild as microservices with autoscaling for author-event spikes</button>
+        <button class="mcard" data-match="repur">Home-grown CRM from 2011 — a $30/seat SaaS product does everything it does, better</button>
+        <button class="mcard" data-match="retire">Intranet "cafeteria menu" site — server logs show zero visits since 2022</button>
+        <button class="mcard" data-match="retain">Latency-critical in-store POS database — must stay local until store network upgrades land next year</button>
+        <button class="mcard" data-match="retire">Fax-relay server used by one process that legal is eliminating next quarter</button>
+        <button class="mcard" data-match="retain">2009 payroll add-on — compliance hold requires it on-prem for 2 more years, works fine, few users</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="rehost">Rehost<small>lift &amp; shift, as-is</small></button>
+        <button class="mzone" data-zone="replat">Replatform<small>lift, tinker &amp; shift</small></button>
+        <button class="mzone" data-zone="refac">Refactor<small>re-architect cloud-native</small></button>
+        <button class="mzone" data-zone="repur">Repurchase<small>drop it, buy SaaS</small></button>
+        <button class="mzone" data-zone="retire">Retire<small>turn it off forever</small></button>
+        <button class="mzone" data-zone="retain">Retain<small>keep on-prem (for now)</small></button>
+      </div>
+      <p class="mstatus">0/8 placed</p>
+    </div>
+    <p class="note">Score the pattern: two apps RETIRED and two RETAINED — a third of the portfolio never migrates at all. Real portfolio reviews look like this, which is why "move everything" is never the plan.</p>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 2 ============ -->
+<section class="segment">
+  <h2><span class="segno">2</span> Planning the Move: Waves, Data Protection, Lock-In &amp; Budget</h2>
+  <div class="card">
+    <h3>Waves, dependencies &amp; protecting the data</h3>
+    <p>Migrations ship in <strong>waves</strong> — small groups of applications moved together on a schedule — because dependencies impose an order. The iron rule: <strong>a system must migrate after the things it depends on</strong>. Identity moves early (everything logs in through it — Session 4); shared databases move before the apps that read them; the AI recommender moves last because it feeds on the web store's order stream. Wave 1 is deliberately low-risk (Poll 1): the team earns its scars on the file share. Meanwhile the most important part of today's playbook — <strong>protecting existing data</strong> — sets the safety rules: take a <em>verified</em> backup before anything moves; migrate a <em>copy</em> while the source keeps running (parallel run); <em>validate</em> the copy with row counts and checksums; and keep the old system intact until success criteria pass — the rollback path is the data you didn't touch. Teams skip these steps exactly once.</p>
+    <h3>Vendors, lock-in &amp; the budget</h3>
+    <p><strong>Vendor selection</strong> weighs services, pricing, region availability, compliance certifications, and support tiers — but the subtler question is <strong>vendor lock-in</strong>, and it's a <em>gradient you choose</em>, not a trap that happens to you. Every proprietary service you adopt (a provider-exclusive database, serverless framework, or event bus) buys real velocity today and raises the exit toll tomorrow; egress fees make moving large data out expensive; and multi-year commitments discount the bill while binding you contractually. Lock-in isn't sin — it's a price. Professionals <em>measure</em> it (the risk meter below), document an exit path, and take proprietary value with open eyes. On <strong>budget</strong>: migration costs run <em>double</em> for a while (old and new running in parallel), plus training, consulting, and data transfer. <strong>Reserved instances</strong> — committing 1–3 years for ~30–60% discounts — are powerful but belong at the <em>end</em> of the story: commit only after months of steady-state metrics tell you what you actually need. Reserving on day-one guesses is how you pay a discount price for the wrong servers.</p>
+    <h3>🌊 Interactive: The Migration Wave Planner</h3>
+    <p>Assign each of Harbor Lane's 8 systems to Wave 1, 2, or 3, then validate. The planner knows the dependencies — it will name every violation, or praise a clean plan. (Multiple valid plans exist.)</p>
+    <div class="wavegrid" id="waveGrid"></div>
+    <p style="margin-top:10px"><button class="btn" id="btnPlan">✅ Validate my wave plan</button></p>
+    <div class="planfb" id="planFb"></div>
+    <h3>🔒 Interactive: The Vendor Lock-In Risk Meter</h3>
+    <p>Configure Harbor Lane's five biggest architecture choices and watch the exit-toll gauge move. There's no "perfect" score — the point is knowing the price of each convenience:</p>
+    <div class="riskrow"><label>Compute style</label><select class="lockin"><option value="1">Plain VMs + containers — runnable anywhere</option><option value="2" selected>Managed Kubernetes — portable with some work</option><option value="4">Provider-proprietary serverless everywhere</option></select></div>
+    <div class="riskrow"><label>Database</label><select class="lockin"><option value="1">Managed open-source engine (PostgreSQL/MySQL)</option><option value="2" selected>Open-source core + one proprietary analytics DB</option><option value="4">Provider-proprietary database at the heart of everything</option></select></div>
+    <div class="riskrow"><label>Data &amp; egress plan</label><select class="lockin"><option value="1">Quarterly export drills; second copy outside provider</option><option value="2" selected>Could export, but never actually tried</option><option value="4">No export plan; 40 TB and growing; egress unbudgeted</option></select></div>
+    <div class="riskrow"><label>Integration style</label><select class="lockin"><option value="1">Open standards only: REST, SQL, S3-compatible APIs</option><option value="2" selected>A few proprietary services behind our own wrapper layer</option><option value="4">Deep native use of proprietary event bus, ML &amp; workflow services</option></select></div>
+    <div class="riskrow"><label>Contract</label><select class="lockin"><option value="1">On-demand month-to-month — pay more, leave anytime</option><option value="2" selected>1-year reserved on proven steady workloads</option><option value="4">3-year all-in commitment signed on day one</option></select></div>
+    <div class="riskmeter"><span id="riskBar"></span></div>
+    <p style="font-weight:800" id="riskScore">—</p>
+    <p class="note" id="riskAdvice">—</p>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 3 ============ -->
+<section class="segment">
+  <h2><span class="segno">3</span> Cutover Day, Training, Governance &amp; Cloud Bursting</h2>
+  <div class="card">
+    <h3>The weekend everything switches — and the people it happens to</h3>
+    <p><strong>Cutover</strong> is the choreographed window when traffic moves from old to new: announce a maintenance window and freeze changes; take one final verified backup; run the last data sync; <em>validate</em> the copy (row counts, checksums); repoint DNS; smoke-test the live system; watch dashboards through the first peaks (Session 11 skills on duty); and hold the <strong>rollback window</strong> open — the old servers stay untouched until success criteria pass. Decommissioning on day one is the classic irreversible mistake; the old system is your parachute, and you don't sell the parachute mid-jump. Notice what's absent from that list: heroics. A good cutover is boring by design — every step rehearsed, every step's <em>undo</em> known in advance.</p>
+    <p>Every serious migration plan devotes real attention to what technologists undervalue: <strong>training and change management</strong>. On Monday, 240 Harbor Lane employees meet new email, new logins, new POS reports. Untrained staff don't file tickets — they quietly revert: personal Dropbox accounts, spreadsheets emailed around, the old workflow resurrected in the shadows, and suddenly your migration "succeeded" while the business runs outside it. The countermeasures are managerial, not technical: train BEFORE cutover, name a champion per store, publish a who-to-call sheet, and measure adoption as a success criterion. <strong>Post-migration governance</strong> keeps the new world orderly — who may create resources, mandatory tagging, budget alerts (Session 11's guardrails) — because cloud sprawl is CapEx waste reincarnated as OpEx. Finally, <strong>cloud bursting</strong>: a hybrid pattern where baseline load runs on your steady infrastructure and overflow "bursts" to public cloud during spikes. For Harbor Lane's author events, bursting is the architectural punchline the owner has been waiting for since the Session 1 crash story.</p>
+    <h3>📋 Interactive: Cutover Day — put the runbook in order</h3>
+    <p>Saturday, 11 PM. The web-store cutover runbook got shuffled in the war-room chaos. Number the steps 1–8, then check. (Think: freeze → preserve → move → verify → switch → confirm → watch → keep the parachute.)</p>
+    <div id="cutList"></div>
+    <p style="margin-top:10px"><button class="btn" id="btnCut">✅ Check my runbook order</button></p>
+    <div class="planfb" id="cutFb"></div>
+  </div>
+</section>
+
+<!-- ============ AI SPOTLIGHT ============ -->
+<section class="card ai">
+  <h3>🧠 AI Concept of the Day · Adopting AI — it's a migration, run it like one</h3>
+  <p class="note" style="margin-top:-4px"><strong>AI concepts track:</strong> every session teaches one real AI concept through that day's cloud objective. Today, in the finale, while applying this session's migration playbook (Objective 8), you learn the track's last concept: <em>responsible AI adoption</em> — build vs. buy, governance, and the human in the loop.</p>
+  <p>The final AI concept is the one executives get wrong most expensively: <strong>adopting AI is a migration project</strong>, and the playbook you just learned applies verbatim. Write <strong>success criteria before choosing tools</strong> ("recommendations lift average basket 5%," not "we need AI"). <strong>Protect existing data</strong> — with a new question attached: what may leave the building at all? Customer PII, card numbers, and unreleased financials don't get pasted into a vendor's model any more than they get copied to a stranger's USB drive. <strong>Avoid lock-in</strong> with Segment 2's own moves: an abstraction layer so the model vendor can be swapped, exportable prompts and data, a second-source model actually tested. Roll out <strong>pilot → measure → scale in waves</strong>, never big-bang. And <strong>train the people and redesign the roles</strong> — Ray doesn't need a demo, he needs to co-design the workflow he'll operate, because staff who get AI imposed on them do what untrained migration users do: quietly revert.</p>
+  <p><strong>Build vs. buy is a spectrum</strong> — 6-R thinking, reapplied. At Harbor Lane's size (240 people): <strong>consume AI-SaaS</strong> for commodity needs (support tooling with AI already inside — the Repurchase move); <strong>call a rented model's API and ground it in your own data with RAG</strong> (retrieval-augmented generation — the model reads your catalog and policies at question time) for the recommender, the replatform-shaped middle where most small-business value lives; <strong>fine-tune</strong> a rented model only when a measured pilot proves grounding isn't enough; and <strong>never train a model from scratch</strong> — that's a thousands-of-GPUs frontier-lab project (Session 1's math), not a bookstore's. The best R is still the one whose cost matches the app's value.</p>
+  <p><strong>Governance is the cutover checklist for AI</strong> — the minimum kit has four parts. An <strong>acceptable-use policy</strong>: which data may be shared with which tools, written and trained, not implied. <strong>Human-review tiers by stakes</strong>: AI drafts a shelf-talker unsupervised; a human approves anything touching money, law, or a customer's record; refunds and hiring never ship on AI say-so alone. An <strong>AI use log</strong> — literally the practice you've kept all course, promoted to company policy: who used what, for what, verified how. And an <strong>incident path</strong> for the day an AI answer causes harm: who is told, what gets rolled back, what the postmortem records.</p>
+  <p><strong>Common misconception:</strong> "adopting AI = picking the smartest model." Model choice is a fraction of the outcome. Adoption succeeds or fails on <strong>data readiness</strong> (is the catalog clean? are the policies written anywhere a model could read them?), <strong>process fit</strong>, and <strong>people</strong> — exactly the variables that decided every migration in this session. Sort the practices below like the steering committee you now are:</p>
+  <div class="matcher" id="adoptMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="good">Pilot with 5 staff and a success metric before rollout</button>
+      <button class="mcard" data-match="flag">Paste customer credit-card data into a public chatbot to test it</button>
+      <button class="mcard" data-match="good">Abstraction layer so the model vendor can be swapped</button>
+      <button class="mcard" data-match="flag">No policy on which decisions need human sign-off</button>
+      <button class="mcard" data-match="good">Ray co-designs the AI workflow he'll operate</button>
+      <button class="mcard" data-match="flag">Buy the biggest model for every task, skip the cost review</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="good">✅ Good adoption practice<small>migration discipline, applied to AI</small></button>
+      <button class="mzone" data-zone="flag">🚩 Red flag<small>a data, governance, or cost failure incoming</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+  <p>Migration season is where AI assistants earn their keep — and where unsupervised trust gets expensive. On the valuable side: paste a 2009 batch script into a chatbot and get a plain-English explanation of what it does before you decide its R (archaeology that used to take days); draft the staff-training FAQ, the maintenance-window announcement, and the cutover checklist from your plan in minutes; generate first-pass 6-R recommendations for a 40-app inventory. On the dangerous side, the same three habits this course has drilled all month: AI <strong>invents plausible specifics</strong> — a migration command with a flag that doesn't exist fails at 2 AM Saturday with the store offline, so every generated script runs in staging first; AI must <strong>never receive regulated data</strong> — customer records and payment exports don't get pasted into a free chatbot to "clean up" (that's a data-protection violation wearing a convenience costume); and AI <strong>smooths over uncertainty</strong> — its confident migration plan will omit the dependency it couldn't know about, which is why YOUR wave planner run, not the AI's, is the deliverable. The verification habit — trust, then verify, then log it — is the single most employable skill this course taught, and it's why your AI Use Log is graded.</p>
+  <p>Today AI plays one more role: <strong>rehearsal partner</strong>. In Lab B you'll hand a chatbot your executive summary and make it play Marguerite, Harbor Lane's skeptical owner, grilling you before this afternoon's real presentation. Cheap, infinitely patient, and merciless — the perfect sparring dummy.</p>
+  <p><strong>Quick sort — green-light or red-flag each AI use during a migration:</strong></p>
+  <div class="matcher" id="aiMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="green">Ask AI to explain what a legacy .bat file does before dispositioning the app</button>
+      <button class="mcard" data-match="red">Paste the customer credit-card export into a chatbot to "clean up the formatting"</button>
+      <button class="mcard" data-match="green">Have AI draft the staff-training FAQ, then route it to the POS lead for review</button>
+      <button class="mcard" data-match="red">Run an AI-generated database migration script directly against production</button>
+      <button class="mcard" data-match="green">Use AI to rehearse your presentation Q&amp;A as a skeptical owner</button>
+      <button class="mcard" data-match="red">Let AI invent the performance numbers for the final deck because "they're probably close"</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="green">🟢 Green light<small>with verification + AI Use Log entry</small></button>
+      <button class="mzone" data-zone="red">🔴 Red flag<small>data protection / integrity / safety violation</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+</section>
+
+<!-- ============ LEARN IT WITH AI ============ -->
+<section class="card ai">
+  <h3>🎓 Learn Objective 8 with AI + Final Exam Coach</h3>
+  <p><strong>Objective 8: Define and describe Service-Oriented Architecture</strong> — applied today to migration — plus a coach for everything else. Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills. Drill 3 is your final-exam preparation: the final lands at the end of this week and covers everything in Sessions 1–12. Log every drill in your AI Use Log.</p>
+  <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you, not the other way around:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for my cloud computing course (today's session:
+Migrating to the Cloud). Topics: the
+components of a migration plan (requirements, data protection, success
+criteria), vendor lock-in, cloud bursting, training and change management,
+and the 6 Rs (rehost, replatform, refactor, repurchase, retire, retain).
+Ask me ONE question at a time, easy to hard, 10 questions total. After each
+of my answers, tell me exactly what I got right or wrong before asking the
+next one. Finish with a summary of my weak spots and which of those topics
+I should restudy.</pre></div>
+  <p><strong>Drill 2 · Red-team your migration plan</strong> — the AI hunts for holes in your actual Deliverable 4 wave plan:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Red-team my cloud migration plan (course capstone; topic: cloud migration
+planning — waves, dependencies, data protection). Below is my 3-wave plan
+for Harbor Lane Books, a
+12-store bookstore chain (systems include identity/SSO, inventory database,
+web store, POS reporting, email, file share, HR portal, and a new AI
+recommender). Hunt specifically for: dependencies migrating in the wrong
+order, systems going live before what they rely on, and missing rollback or
+data-protection thinking (verified backups, validation, success criteria).
+Reveal ONE finding at a time — name the flaw and its realistic consequence,
+then wait for my fix and tell me whether it truly resolves the problem
+before revealing the next. Cap the review at 5 findings. If the plan
+survives, name the two riskiest assumptions I am still making.
+
+MY 3-WAVE PLAN:
+(paste your validated wave plan from Deliverable 4 here)</pre></div>
+  <p><strong>Drill 3 · FINAL EXAM COACH</strong> — the whole course, weighted toward your weak spots:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Be my final exam coach for a cloud computing course (12 sessions covering
+cloud fundamentals through migration). Quiz me across ALL EIGHT course
+objectives — cloud fundamentals, SaaS, PaaS, IaaS, IDaaS,
+storage/collaboration, virtualization, and SOA — with workplace story
+problems where a named
+character faces a realistic situation and I pick from options A–D. One
+question at a time. After each answer, tell me exactly why every option is
+right or wrong before asking the next. 12 questions total, weighted toward
+the objectives I get wrong. End with a per-objective readiness report
+(ready / shaky / reread) and a study plan pointing me to which of my
+course's 12 session pages to review before the exam.</pre></div>
+  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion — the Final Exam Coach if you only have time for one — and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify the tutor:</strong> AI coaches occasionally mislabel a 6-R call or misquote a definition. Cross-check one claim from your session against the Final Review explanations below or this session's definitions and interactives above, and note in your log whether it held up.</span></label>
+  <p class="note">This card is final-exam prep: the final exam lands at the end of Week 4 and covers everything in Sessions 1–12. Rerun the Final Exam Coach until the readiness report shows all eight objectives ready — unlimited free practice in the exam's exact style.</p>
+</section>
+
+<!-- ============ LABS ============ -->
+<h2>🔬 Hands-On Labs</h2>
+
+<section class="card lab">
+  <p class="labno">LAB A · IN-PAGE SIMULATOR · ~20 MIN</p>
+  <h3>The Migration War-Room</h3>
+  <p>Complete all three Segment interactives — 6-Rs sorter (8/8), a validated wave plan, and a correct cutover runbook — then answer:</p>
+  <label class="step"><input type="checkbox" data-step="a1"><span>6-Rs sorter finished at 8/8. How many of Harbor Lane's eight apps ended up RETIRED?</span></label>
+  <div class="checkfield">→ Retired apps: <input type="number" id="labA1"> <button class="btn small" onclick="checkA(1)">Check</button> <span class="fb" id="fbA1"></span></div>
+  <label class="step"><input type="checkbox" data-step="a2"><span>Wave planner validated with zero violations. Which system did the planner force into Wave 1 no matter what?</span></label>
+  <div class="checkfield">→ System: <input type="text" id="labA2" placeholder="name it"> <button class="btn small" onclick="checkA(2)">Check</button> <span class="fb" id="fbA2"></span></div>
+  <label class="step"><input type="checkbox" data-step="a3"><span>Cutover runbook checked at 8/8. What step number is "Switch DNS / repoint traffic"?</span></label>
+  <div class="checkfield">→ Step #: <input type="number" id="labA3"> <button class="btn small" onclick="checkA(3)">Check</button> <span class="fb" id="fbA3"></span></div>
+  <div class="checkfield">→ And "Verify data integrity (row counts / checksums)" is step #: <input type="number" id="labA4"> <button class="btn small" onclick="checkA(4)">Check</button> <span class="fb" id="fbA4"></span></div>
+  <label class="step"><input type="checkbox" data-step="a4"><span>In your notebook: one sentence on why decommissioning the old servers is NOT part of cutover night. (Hint: parachute.)</span></label>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB B · FREE AI CHATBOT · ~15 MIN · 🆓 ChatGPT / Gemini / Claude / Copilot (any free tier)</p>
+  <h3>Rehearse Against the Owner — AI as Sparring Partner</h3>
+  <p>Your D4 presentation is in ~90 minutes. Paste this prompt, then your executive summary:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>You are Marguerite Harlow, the skeptical 61-year-old owner of Harbor Lane
+Books, a 12-store Florida bookstore chain (240 employees). I'm the consultant
+about to present my cloud migration proposal to you. I'll paste my
+executive summary below. Ask me the FIVE toughest questions an owner like you
+would ask — ONE at a time, waiting for my typed answer before the next —
+covering: (1) total cost vs. today, (2) risk of the cutover weekend,
+(3) staff retraining across 12 stores, (4) vendor lock-in ("are we trapped?"),
+and (5) what happens if the AI book recommendations flop.
+After my five answers, grade each 1–10 with one specific improvement tip.
+Stay in character. Be tough but fair.
+
+EXECUTIVE SUMMARY:
+(paste yours here)</pre></div>
+  <label class="step"><input type="checkbox" data-step="b1"><span>Run the full 5-question rehearsal, answering out of your actual D4 material — no improvising numbers you don't have.</span></label>
+  <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> did "Marguerite" cite any cost or claim that isn't in YOUR deliverable? Check one of its numeric assertions against your D4 budget table — if the AI invented a figure, note the hallucination and correct your answer for the real presentation.</span></label>
+  <label class="step"><input type="checkbox" data-step="b3"><span>Log the rehearsal in your <strong>AI Use Log</strong> (final entry!): prompt, weakest answer identified, what you changed in the deck because of it.</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — draft Harbor Lane's AI acceptable-use policy, then red-team it:</strong> in a fresh chat, have the AI help you draft a 5-point policy covering (1) data that may / may never be shared with AI tools, (2) human sign-off tiers by stakes, (3) every AI use logged, (4) fallback when the AI is down or wrong, (5) review cadence. Then red-team your own draft: ask <em>"Which of these five points could an employee honestly misread, and how?"</em> — tighten the weakest wording, and log the before/after sentence in your AI Use Log. Ten minutes, two governance artifacts, and a strong appendix for D4.</span></label>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB C · REAL FREE TOOLS · ~10 MIN · 🆓 Google Slides (free account) + diagrams.net</p>
+  <h3>Final Deck Polish + Presentation Checklist</h3>
+  <p>Deliverable 4 presents in the last block today. Run this checklist against your Google Slides deck:</p>
+  <label class="step"><input type="checkbox" data-step="c1"><span><strong>10-slide shape:</strong> title/your name → pain points (from Checkpoint 1!) → proposed architecture diagram (diagrams.net export) → service models chosen &amp; why → identity + security plan → DR plan with RTO/RPO → API/SOA design (Checkpoint 10) → ops + cost plan (Checkpoint 11) → migration waves + cutover plan (today) → the ask &amp; next steps.</span></label>
+  <label class="step"><input type="checkbox" data-step="c2"><span><strong>Every number sourced:</strong> each cost or metric traces to a deliverable table — nothing invented (Marguerite will ask).</span></label>
+  <label class="step"><input type="checkbox" data-step="c3"><span><strong>Timing:</strong> rehearse once at full speed — 8 minutes max, you present solo, one slide per section.</span></label>
+  <label class="step"><input type="checkbox" data-step="c4"><span><strong>Resilience for presenters:</strong> File → Download → PDF as your backup copy on a USB stick or local disk. (You are presenting a cloud proposal — do not be the presenter taken down by a Wi-Fi outage. RTO for your own deck: 30 seconds.)</span></label>
+  <label class="step"><input type="checkbox" data-step="c5"><span><strong>AI Use Log attached</strong> to the submission — complete, honest, final.</span></label>
+</section>
+
+<!-- ============ STORY QUIZ ============ -->
+<h2>📝 Session Quiz — Migration Story Problems</h2>
+<p>Ten scenarios from today's session — the last two test today's AI concept. Pick the best answer; every question explains all four options. Counts toward the syllabus "Exercises/Quizzes" grade (30%).</p>
+<section class="quiz" id="quiz1">
+
+  <div class="q" data-a="1">
+    <h4>Q1 · <em>Two apps, two Rs</em></h4>
+    <p class="stem">Kellan is dispositioning two systems at Palmetto Insurance. App one: a stable claims-intake web app — the team will copy its VM to the cloud unchanged, same OS, same code, live by Friday. App two: the policy database — moving it too, but swapping the self-managed SQL install for the provider's managed database service (automatic backups and patching), with minor connection changes. Which 6-R labels apply, in order?</p>
+    <button class="opt">A. Refactor, then Repurchase</button>
+    <button class="opt">B. Rehost (lift &amp; shift), then Replatform (lift, tinker &amp; shift)</button>
+    <button class="opt">C. Retain, then Retire</button>
+    <button class="opt">D. Both are Rehost — anything that moves is a rehost</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ App one is the definitional rehost: same bits, new building — fastest path, least transformation. App two crosses the line into replatform: the app survives, but one component is upgraded to a managed service on the way ("tinker"). ✘ A — refactor means re-architecting the application itself (new design, not a copied VM), and repurchase means abandoning the app for SaaS; neither happened. ✘ C — retain keeps a system on-prem and retire deletes it; both apps are actively moving. ✘ D collapses the framework's most useful distinction: the moment you swap a component for a managed equivalent, you've bought different risk, cost, and benefit — which is exactly why the two labels exist.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q2 · <em>The audit's gift</em></h4>
+    <p class="stem">Preparing Brightwater Dental's migration inventory, Suki discovers "ReferralTrack," an internally built app still running on its own server. Access logs show 4 logins in 2 years — all from one employee who retired in 2024. The vendor of record is Suki's own IT department; the data it holds was duplicated into the practice-management SaaS years ago. Migrating it would cost roughly $6,000 in labor. What does the 6-R framework say?</p>
+    <button class="opt">A. Rehost it — it's small, so just lift and shift</button>
+    <button class="opt">B. Refactor it into microservices to modernize it properly</button>
+    <button class="opt">C. Retain it on-prem indefinitely, just in case</button>
+    <button class="opt">D. Retire it: archive its data, document the decision, shut it down — the cheapest migration is the one you don't do</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Zero active users, a retired sole user, data already duplicated elsewhere: ReferralTrack is portfolio dead weight, and retirement (with a data archive and a written decision record, in case an auditor asks) converts a $6,000 migration line into $0 plus recovered server capacity. Portfolio reviews routinely find 10–20% of apps in exactly this state. ✘ A spends real money faithfully preserving something nobody uses — waste, professionally executed. ✘ B is the same mistake at maximum price: refactoring is reserved for apps whose future value justifies it. ✘ C pays power, patching, and risk forever to avoid a decision; "just in case" is what the archived data is for.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q3 · <em>The night before</em></h4>
+    <p class="stem">Tomorrow at 6 AM, Rakesh's team cuts the inventory system of Cypress Auto Parts over to the cloud. Tonight's checklist debate: one engineer argues the pre-migration backup is redundant "because the cloud copy IS the backup," and suggests skipping validation to save two hours. Per today's data-protection guidance, what must Rakesh insist on?</p>
+    <button class="opt">A. A verified backup of the source BEFORE migration, integrity validation (row counts/checksums) of the migrated copy, and the old system preserved as rollback until success criteria pass</button>
+    <button class="opt">B. Skip the backup — the migration copy makes it redundant</button>
+    <button class="opt">C. Migrate first, validate later in the week if time permits</button>
+    <button class="opt">D. Delete the source data immediately after copying to avoid confusion about which copy is live</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ The three non-negotiables of protecting existing data: a verified backup taken while the source is still healthy (your state BEFORE anything could corrupt it), validation that the copy is complete and correct (row counts and checksums catch silent truncation), and the untouched old system as the rollback parachute. ✘ B confuses the migrating copy with a backup — if the migration process itself corrupts data, the "backup" carries the corruption. ✘ C runs production on unvalidated data all week; problems discovered Thursday have been compounding since Monday. ✘ D destroys the rollback path at the moment of maximum risk — the single most irreversible mistake in today's playbook. Confusion about the live copy is solved by the cutover plan, not by deletion.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q4 · <em>The golden handcuffs</em></h4>
+    <p class="stem">Verra Logistics built its routing platform entirely on one provider's proprietary services: their exclusive event bus, their proprietary NoSQL database, their serverless framework. Development was fast. Three years later the provider raises prices 40%, and Verra's CTO discovers a competing cloud quote that would halve their bill — but engineering estimates 18 months and $2M to port the codebase, plus six-figure egress fees to move 200 TB out. What concept does this illustrate, and what was the sound approach at build time?</p>
+    <button class="opt">A. A billing error — proprietary services can't affect portability</button>
+    <button class="opt">B. Bad luck that no design choice could have influenced</button>
+    <button class="opt">C. Vendor lock-in as a chosen gradient — proprietary services bought real speed, but the exit toll should have been priced in: isolate proprietary dependencies behind your own interfaces, keep data exportable, and revisit the trade at each contract renewal</button>
+    <button class="opt">D. Proof that companies should never use any proprietary cloud service</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ This is lock-in economics stated honestly: Verra's velocity was genuinely purchased by those proprietary services — and so was the $2M exit toll and the egress bill. The professional posture isn't abstinence; it's pricing the exit while you still have leverage: wrap proprietary APIs behind your own interfaces (Session 10's loose coupling, again), rehearse data export, and negotiate with a credible walk-away option. ✘ A — the invoice is accurate; portability was traded away in the architecture, not the billing system. ✘ B — every one of those dependencies was a design decision; "luck" is what unexamined decisions get renamed to. ✘ D overcorrects: for many workloads the proprietary service IS the right call — knowingly.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q5 · <em>The eager commitment</em></h4>
+    <p class="stem">Day one of Meridian Media's migration, the CFO sees the pricing page: 3-year reserved instances cost 55% less than on-demand. "Lock in everything now," she says, "why would we pay full price?" The cloud architect, Ines, urges waiting 4–6 months. Who's right, and why?</p>
+    <button class="opt">A. The CFO — discounts this large should always be taken immediately</button>
+    <button class="opt">B. Ines — reserve only after steady-state usage data shows what Meridian actually needs; day-one workloads are guesses, and reserving the wrong sizes locks in 3 years of paying for mis-sized capacity</button>
+    <button class="opt">C. Neither — reserved instances are a scam and on-demand is always optimal</button>
+    <button class="opt">D. The CFO, but for 3 years on the LARGEST instances available, to be safe</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Reserved pricing rewards <em>predictability you can prove</em>. During migration, instance types get resized (remember Session 11's 6%-utilized database?), apps get replatformed, and some get retired — day-one reservations freeze those guesses at 2026 prices for 3 years. The playbook: run on-demand, let monitoring reveal the stable baseline, then reserve THAT baseline and keep spiky remainder on-demand — the discount without the handcuffs. ✘ A treats a discount as free money; a 55% discount on the wrong servers is a 45% overpayment with a contract. ✘ C — for proven-stable workloads, reservations are excellent economics, not a scam. ✘ D reserves the mistake in its maximum size — over-provisioning with a loyalty oath.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q6 · <em>Eleven quiet months</em></h4>
+    <p class="stem">Harbor Lane's web store runs comfortably on its baseline infrastructure 11 months of the year. But four times annually, author-event ticket drops multiply traffic 15× for six hours — the exact spikes that crashed the old server closet. The architecture team wants baseline costs to stay flat while spikes are absorbed automatically by temporary public-cloud capacity that vanishes afterward. What is this pattern called?</p>
+    <button class="opt">A. Cloud bursting — a hybrid pattern where overflow demand spills to public cloud capacity that's provisioned for the spike and released after</button>
+    <button class="opt">B. Cold standby — a duplicate site that's powered off until a disaster</button>
+    <button class="opt">C. Vertical scaling — resizing the main server for event days</button>
+    <button class="opt">D. Grid computing — splitting one large computation across many machines</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Cloud bursting is today's hybrid finale: steady base load on owned/steady infrastructure, elastic overflow rented for the peak — Harbor Lane pays for 15× capacity roughly 24 hours a year instead of 8,760. It's the direct architectural answer to the Session 1 crash story. ✘ B is a disaster-recovery posture (Session 9): standby replaces a FAILED site; bursting supplements a HEALTHY one that's merely overwhelmed. ✘ C hits the scale-up ceiling — no single resize absorbs 15×, and you'd pay for the big box year-round or eat a resize outage per event. ✘ D solves a different shape entirely: one huge computation chopped into pieces, not millions of small customer requests arriving at once.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q7 · <em>The migration that "worked"</em></h4>
+    <p class="stem">Six weeks after Coquina Resorts' flawless technical migration — zero data loss, dashboards green — the CIO finds reservations staff at three properties running the old workflow through personal Dropbox accounts and emailed spreadsheets, because "the new system is confusing and nobody showed us." Bookings data is now fragmenting outside the migrated platform. What did the migration plan fail to include, per today's playbook?</p>
+    <button class="opt">A. Faster servers — staff would have adopted a quicker system</button>
+    <button class="opt">B. Stricter firewall rules to block Dropbox at the office</button>
+    <button class="opt">C. A longer cutover weekend with more engineers</button>
+    <button class="opt">D. Training and change management: pre-cutover training, per-property champions, a support path, and adoption measured as a success criterion</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ This is the people-side failure today's session warns about: untrained users don't file tickets, they route around the system — and shadow IT (personal Dropbox holding guest data!) is now a security and compliance incident on top of an adoption one. Training before cutover, local champions, a visible help path, and adoption metrics belong in the plan with the same weight as backups. ✘ A misreads "confusing" as "slow" — speed doesn't teach workflows. ✘ B attacks the symptom; blocked from Dropbox, staff will find USB sticks — the unmet need remains. ✘ C polishes the part that already succeeded; no amount of cutover-weekend engineering teaches a reservations clerk the new screen on Monday.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q8 · <em>Define "done" before you jump</em></h4>
+    <p class="stem">At the go/no-go meeting for Sandpiper Outfitters' store migration, the project sponsor asks, "How will we know Sunday whether to keep the new system or roll back?" The room offers four answers. Per today's success-criteria guidance, which one should the sponsor accept?</p>
+    <button class="opt">A. "We'll know it when we see it — the team has good instincts"</button>
+    <button class="opt">B. "If nobody complains loudly by Sunday night, we're done"</button>
+    <button class="opt">C. "Measured criteria agreed NOW: error rate under 0.5%, checkout p95 under 800 ms, order-completion rate within 2% of baseline, POS sync confirmed at all stores by 14:00 Sunday — any miss triggers the documented rollback"</button>
+    <button class="opt">D. "The migration is done when the old servers are powered off"</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Success criteria must be measurable, agreed in advance, and wired to a rollback trigger — that's what converts Sunday from an argument into a checklist. Every threshold traces to a business requirement, and the rollback decision becomes automatic rather than political (nobody wants to be the person who "killed the migration" on vibes at 11 PM). ✘ A is unfalsifiable — instincts at hour 30 of a cutover weekend are noise. ✘ B measures complaint volume, which lags real damage (Session 11: customers-as-monitoring), and silence overnight proves nothing. ✘ D inverts the safety model: powering off the old system is the LAST step, gated by criteria like C — done right, it happens days later, after the parachute is provably unneeded.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q9 · <em>The 240-person question</em> 🧠 AI concept</h4>
+    <p class="stem">Cypress Trading Co. — a 240-person Gulf Coast retailer, remarkably like a certain bookstore chain — wants an AI assistant that answers product and policy questions using the company's own catalog and return rules. Four proposals land on CEO Adaora's desk. Applying the same cost-matches-value judgment as the 6 Rs, which should she pick?</p>
+    <button class="opt">A. Train their own model from scratch on rented GPUs — "owning the model" is the only way to be safe</button>
+    <button class="opt">B. Buy every employee the biggest frontier-model subscription and skip the pilot — the smartest model solves everything</button>
+    <button class="opt">C. Rent a model through its API and ground it in Cypress's own catalog and policies via RAG, behind a thin abstraction layer so the vendor can be swapped — piloted with one team against a written success metric before any wider rollout</button>
+    <button class="opt">D. Freeze all AI adoption for five years until the technology "settles down"</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ This is the build-vs-buy sweet spot for a 240-person firm: the expensive engine is rented (like renting IaaS instead of pouring a data-center slab), the differentiating ingredient — Cypress's own data — stays theirs via RAG, the abstraction layer prices the exit (lock-in as a chosen gradient), and pilot-with-criteria is today's wave discipline in miniature. ✘ A is Refactor-priced thinking for a Replatform-sized problem: frontier-scale training runs on thousands of GPUs for weeks (Session 1), and "owning" a home-trained model buys a retailer risk, not safety. ✘ B is today's misconception incarnate — maximum spend, zero right-sizing, no success criteria, and the biggest model still can't answer from a catalog it has never been shown. ✘ D is Retain-everything as a reflex: a legitimate R for one system, but as a blanket strategy it simply gifts five years to competitors.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q10 · <em>The refund the robot approved</em> 🧠 AI concept</h4>
+    <p class="stem">Meadowlark Home Goods launched an AI customer-service assistant with a written acceptable-use policy and a company AI use log. In week three, the assistant confidently told a customer that a final-sale clearance item qualified for a full refund plus return shipping; the reply went straight to the customer, who screenshotted it. Meadowlark honored it — and 38 more like it before anyone noticed. Per today's governance minimum, which safeguard was missing?</p>
+    <button class="opt">A. A smarter model that never makes mistakes</button>
+    <button class="opt">B. Human-review tiers by stakes: replies that commit money (refunds!) must route through human sign-off before reaching the customer, while low-stakes drafts flow freely — plus an incident path so mistake #1 triggers review instead of compounding into #39</button>
+    <button class="opt">C. A ban on customers taking screenshots of chat conversations</button>
+    <button class="opt">D. Shutting the assistant down permanently — AI can never touch customer service</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Meadowlark had two of the four governance minimums (policy, log) and lacked the two that would have contained this: review tiers matched to stakes — an answer that commits company money is high-stakes by definition and needed a human gate before send — and an incident path, whose absence is why one bad refund quietly became thirty-nine identical ones. Governance doesn't promise the model never errs; it ensures errors meet a human before they meet money. ✘ A chases a model that doesn't exist — every model has an error rate, which is precisely WHY tiered review exists. ✘ C attacks the evidence, not the error: the promise was binding and wrong whether or not it was captured. ✘ D overcorrects a routing failure into abstinence — the assistant handled low-stakes questions fine; the flaw was which answers required sign-off, not whether AI may exist.</div>
+  </div>
+
+  <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+</section>
+
+<!-- ============ FINAL REVIEW ============ -->
+<h2>🎓 Final Review — The Whole Course in 12 Stories</h2>
+<p>One story problem per major topic, Sessions 1–11. This is your final-exam rehearsal: the exam (per syllabus, covering everything in Sessions 1–12) draws on exactly these concepts. Treat every explanation as a study card.</p>
+<section class="quiz" id="finalreview">
+
+  <div class="q" data-a="2">
+    <h4>R1 · <em>Sessions 1 — the evening rush</em></h4>
+    <p class="stem">Anh's yoga-class app serves 800 users most of the day, but every evening from 6–8 PM demand triples as classes book up. Her cloud platform adds capacity automatically each evening, removes it by 9 PM, and her bill shows charges only for the extra instance-hours actually used. Which PAIR of cloud characteristics is Anh directly experiencing?</p>
+    <button class="opt">A. Broad network access + resource pooling</button>
+    <button class="opt">B. On-demand self-service + multi-tenancy</button>
+    <button class="opt">C. Rapid elasticity + measured service</button>
+    <button class="opt">D. Virtualization + grid computing</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Capacity that stretches and shrinks with demand — automatically, in both directions — is rapid elasticity; billing that tracks the exact instance-hours consumed is measured service. Together they're why Anh never buys hardware for a 2-hour daily peak. ✘ A: both are true of almost any cloud app (reachable over networks, sharing pooled hardware) but neither describes the <em>evening scaling behavior</em> in the story. ✘ B: self-service is about provisioning without human intermediaries — nothing here required Anh to act at all; multi-tenancy is sharing, not scaling. ✘ D: virtualization is the enabling technology underneath, and grid computing splits one big job across machines — neither is the customer-visible characteristic being described.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>R2 · <em>Session 2 — the overnight upgrade</em></h4>
+    <p class="stem">Verdant CRM runs one codebase serving 9,000 customer companies. Tuesday night Verdant ships a new reporting feature; Wednesday morning every customer has it, no installs anywhere. A confused customer asks their account manager: "When did your people install the upgrade on OUR server?" What's the accurate answer?</p>
+    <button class="opt">A. "Never — Verdant is multi-tenant SaaS: all 9,000 customers share one centrally-run application (with isolated data), so upgrading it once upgrades everyone"</button>
+    <button class="opt">B. "Technicians remotely updated each customer's server overnight, one by one"</button>
+    <button class="opt">C. "The upgrade is on your machines — it installed itself from a USB image"</button>
+    <button class="opt">D. "Each customer runs their own copy; yours happened to update first"</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Multi-tenancy is THE SaaS economic engine from Session 2: one application instance, one upgrade, 9,000 beneficiaries — with tenant data logically isolated (the apartment-building model: shared building, locked units). It's why SaaS vendors ship features weekly while on-prem software shipped yearly. ✘ B describes the old managed-hosting world — 9,000 overnight manual updates is exactly the cost multi-tenancy eliminated. ✘ C is fiction with a security-incident flavor; SaaS requires no customer-side installation at all. ✘ D describes single-tenant deployment, which reintroduces per-customer upgrade lag — the opposite of "everyone woke up upgraded simultaneously."</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>R3 · <em>Session 3 — the Tuesday casualty</em></h4>
+    <p class="stem">Tomás runs Reef Supply's store on three identical rented virtual machines. During Tuesday's promotion, VM #2 hardware-fails outright — yet no customer notices anything: requests keep flowing to VMs 1 and 3 until a replacement boots. Which component made the failure invisible, and which service model is Tomás consuming?</p>
+    <button class="opt">A. A firewall, consuming SaaS</button>
+    <button class="opt">B. A load balancer distributing requests across the VMs, consuming IaaS</button>
+    <button class="opt">C. A hypervisor snapshot, consuming PaaS</button>
+    <button class="opt">D. A CDN, consuming DBaaS</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Session 3's pairing: the load balancer health-checks its pool, detects VM #2's death, and silently routes around it — fault tolerance as a side effect of scale-out design. Renting raw VMs where you manage the OS and app is Infrastructure as a Service. ✘ A: firewalls filter traffic for security; they don't distribute load or mask dead servers — and rented VMs aren't SaaS (nobody hands Tomás finished software). ✘ C: snapshots restore state later; they do nothing in the seconds a machine dies, and managing your own VMs is below PaaS's abstraction line. ✘ D: a CDN caches static content at the edge — it can hide some read traffic but doesn't reroute app requests among your VMs; DBaaS is unrelated entirely.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>R4 · <em>Session 4 — day one, day last</em></h4>
+    <p class="stem">At Osprey Financial, new analyst Dana had working access to all 14 business apps at 9:05 AM on day one — one login, one MFA prompt. Eight months later a contractor is terminated for cause, and by 9:06 AM every app, VPN, and mailbox is closed to them — one admin action. Which capability delivers BOTH experiences?</p>
+    <button class="opt">A. A strong password policy enforced quarterly</button>
+    <button class="opt">B. Full-disk encryption on company laptops</button>
+    <button class="opt">C. Giving every app its own separate account database</button>
+    <button class="opt">D. Centralized identity (IDaaS/SSO) with lifecycle provisioning — one identity granted role-based access everywhere, and revoked everywhere in one action</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Session 4's core: when one identity provider vouches for users to every app (SSO/federation), provisioning becomes "create one identity, assign a role" and deprovisioning becomes one revocation that closes 14 doors at 9:06. The termination case is the security argument: orphaned accounts are a top breach vector. ✘ A: password strength doesn't create accounts or close them — a strong password on a forgotten account is a strongly-guarded unlocked door. ✘ B protects data on stolen hardware; irrelevant to app access lifecycle. ✘ C is the disease this cures: 14 separate account stores mean day-one takes weeks and termination misses at least one system — guaranteed.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>R5 · <em>Session 5 — seven cold years</em></h4>
+    <p class="stem">Compliance requires Lagoon Grocers to keep 20 TB/year of store security-camera footage for seven years. Footage is written once, read essentially never (perhaps one clip pulled per quarter for an incident), and a retrieval delay of hours is acceptable. The current plan stores it all on the same premium block storage as the point-of-sale database, and the bill is climbing fast. What should the storage architect change?</p>
+    <button class="opt">A. Nothing — all data deserves the fastest storage available</button>
+    <button class="opt">B. Move the footage to archive-tier object storage with a lifecycle policy; keep premium block storage for the transactional database that actually needs it</button>
+    <button class="opt">C. Delete footage after 30 days to save money</button>
+    <button class="opt">D. Burn the footage to DVDs stored in each store's office</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Session 5's tiering logic: match the storage class to the access pattern. Write-once, read-almost-never, latency-tolerant data is the classic archive workload — object storage at archive tier costs a small fraction of premium block per GB, and a lifecycle rule automates the aging. The hot POS database keeps the expensive, low-latency block storage it genuinely needs. ✘ A pays sports-car prices to park in long-term storage — the exact waste pattern from Session 11's bill audit. ✘ C violates the seven-year compliance mandate; the fine dwarfs the savings. ✘ D reinvents 2003: unencrypted physical media, no durability, no auditability, and a per-store loss/theft surface — compliance officers have nightmares shaped like this option.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>R6 · <em>Session 6 — five time zones, zero decisions</em></h4>
+    <p class="stem">Nimbus Design's ten-person team spans five time zones. Every decision waits for the weekly all-hands call (6 AM for two members, 11 PM for one), where half the hour is status recaps; documents are emailed as attachments, and "final_v7_REAL.docx" chaos reigns. Which change would most directly fix BOTH the decision latency and the version chaos?</p>
+    <button class="opt">A. Add a second weekly all-hands call so decisions happen twice as often</button>
+    <button class="opt">B. Require everyone to relocate to one time zone</button>
+    <button class="opt">C. Shift to async-first collaboration: shared cloud documents (one live copy, comments, version history) for proposals and decisions, reserving synchronous calls for genuine discussion</button>
+    <button class="opt">D. Ban documents; make all decisions verbally to avoid version problems</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Session 6's sync-vs-async framework: status and proposals are async-shaped work — a shared cloud doc gives one authoritative copy (killing v7_REAL forever via version history), comment threads that advance across time zones while others sleep, and an audit trail of the decision. Calls shrink to what needs real-time back-and-forth. ✘ A doubles the pain: more 6 AM meetings, more recap theater, same attachment chaos. ✘ B "solves" geography by discarding the talent-anywhere advantage that made the team possible — and is simply not a software architecture. ✘ D trades version chaos for zero record: verbal decisions across five time zones means five memories of what was decided, and no history at all.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>R7 · <em>Session 7 — the suspicious attachment</em></h4>
+    <p class="stem">A client sends Meridian Forensics a suspicious executable to analyze. Analyst Petra wants to run it safely on her single workstation: fully isolated from her host OS and the network, with the ability to reset the environment to a pristine state in seconds after each detonation. Which Session 7 setup fits?</p>
+    <button class="opt">A. A Type 2 hypervisor VM on her workstation, network disabled, using snapshots to restore the clean state after each run</button>
+    <button class="opt">B. Run it directly on her workstation, but log out of email first</button>
+    <button class="opt">C. A blade server purchase — physical hardware is the only safe isolation</button>
+    <button class="opt">D. Rename the file to .txt so it can't execute</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ The Type 2 (hosted) hypervisor — VirtualBox-style, running atop her existing OS — is built for exactly this: a disposable guest OS whose isolation contains the malware, virtual networking switched off, and snapshots (Session 7's killer feature) rewinding to pristine in seconds. This is why security labs live in VMs. ✘ B is Russian roulette: logging out of email does nothing against ransomware encrypting the disk or malware installing persistence. ✘ C overshoots — physical isolation works but costs thousands, waits weeks, and can't "snapshot" hardware back to clean; the entire point of Session 7 is that virtualization made isolation cheap. ✘ D is folklore: renaming changes a label, not the payload, and one double-click undoes it.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>R8 · <em>Session 8 — the open bucket</em></h4>
+    <p class="stem">Tidewater Legal stored client files in a cloud object-storage bucket. A journalist discovers the bucket was configured for public access — anyone with the URL could read case files. Tidewater's managing partner drafts an angry letter demanding the cloud provider accept liability, noting "we pay them to keep our data secure." Under the shared responsibility model, how does this actually resolve?</p>
+    <button class="opt">A. The provider is fully liable — physical security failed</button>
+    <button class="opt">B. Nobody is responsible — cloud breaches are acts of nature</button>
+    <button class="opt">C. The provider is liable because encryption is always the provider's job</button>
+    <button class="opt">D. Tidewater is responsible: the provider secured the infrastructure (security OF the cloud), but access configuration and data classification are the customer's side of the line (security IN the cloud)</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Session 8's dividing line decides this in the provider's favor: the storage service performed exactly as configured — the configuration was the customer's act. Providers secure facilities, hardware, and the service platform; customers own identity, access policy, and data classification. Public-bucket leaks are consistently customer-side misconfigurations (which is why providers now add warnings and "block public access" defaults). ✘ A: physical security never failed — no one broke into a data center; they clicked a public URL. ✘ B: the responsibility model exists precisely so accountability is assignable, not mystical. ✘ C: providers offer encryption tools, but deciding what's sensitive and who may access it cannot be outsourced — that judgment IS the customer's data governance duty.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>R9 · <em>Session 9 — fifteen minutes, not fifteen hours</em></h4>
+    <p class="stem">Pelican Pay processes card transactions for 3,000 small merchants. The board sets targets: after any regional failure, service restored within <strong>15 minutes (RTO)</strong> with essentially <strong>zero transaction loss (RPO ≈ 0)</strong>. The CFO asks which DR architecture the targets force them to fund. What must the architect answer?</p>
+    <button class="opt">A. Nightly backup tapes restored to new servers after a failure (~24–48 h recovery)</button>
+    <button class="opt">B. Multi-site active-active: a second region running live with synchronously replicated data, absorbing traffic the moment the first fails</button>
+    <button class="opt">C. Pilot light: minimal core replicated, full environment built out over several hours when disaster hits</button>
+    <button class="opt">D. Whichever option is cheapest — DR spending is discretionary</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Session 9's ladder maps targets to tiers, and these targets sit at the top: RTO of minutes demands a second site already RUNNING (no build-out time exists inside 15 minutes), and RPO≈0 demands synchronous replication (every transaction lives in both regions before it's acknowledged). Active-active is expensive — and the targets, set by the board, are what justify it. ✘ A restores yesterday's data tomorrow: RTO measured in days, RPO in hours — three orders of magnitude off. ✘ C is honest mid-tier: hours of build-out violates the 15-minute RTO by design. ✘ D inverts the method: business impact sets targets, targets select architecture, architecture sets cost — "cheapest first" is how Session 1's flooded-closet stories begin.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>R10 · <em>Session 10 — the integration that kept breaking</em></h4>
+    <p class="stem">BayBooks' distributor integration breaks roughly monthly: the distributor's team keeps changing internal field names and database structures, and each change ripples into BayBooks' order system, which was built to read the distributor's raw exports directly. Both companies are tired of the 2 AM fixes. What arrangement would end the monthly breakage?</p>
+    <button class="opt">A. The distributor publishes a versioned REST API contract; BayBooks consumes only the contract, and internal changes stay invisible behind it (breaking changes ship as /v2 with a deprecation window)</button>
+    <button class="opt">B. BayBooks gets direct read access to the distributor's production database for "real-time truth"</button>
+    <button class="opt">C. Both companies agree to freeze all internal changes forever</button>
+    <button class="opt">D. Nightly emailed CSV exports, manually imported each morning</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Session 10's whole argument in one integration: a published contract makes the distributor's internals a black box — they can rename every column nightly, and as long as the API returns the promised JSON, BayBooks never notices (the loose-coupling animation's green flash). Versioning plus deprecation windows handles the day the contract itself must evolve. ✘ B is maximum tight coupling — every internal schema change now breaks BayBooks <em>immediately</em>, and a stray BayBooks query can degrade the distributor's production database. ✘ C embalms both businesses to avoid an architecture decision; the freeze breaks the first time either company must change. ✘ D adds a human to a machine problem: slower (daily), error-prone, and STILL breaks when the CSV's columns change — the coupling just moved into a spreadsheet.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>R11 · <em>Session 11 — green dashboard, red customers</em></h4>
+    <p class="stem">CoveCommerce autoscales purely on average CPU: add servers above 70%, remove below 30%. During Monday's 9 AM login surge, customers wait 4+ seconds at checkout for ten painful minutes — yet average CPU peaked at 62%, so no scaling occurred and no alert fired (the only alert is "CPU &gt; 85%"). The bottleneck turns out to be database connection queuing, which spikes latency long before CPU climbs. What should the ops team change?</p>
+    <button class="opt">A. Lower the CPU alert to 40% so it fires more often</button>
+    <button class="opt">B. Remove the autoscaler — automation clearly can't handle this workload</button>
+    <button class="opt">C. Alert and scale on what customers feel — p95 latency and request/queue depth — rather than CPU alone; CPU is a cause-metric that missed this symptom entirely</button>
+    <button class="opt">D. Tell customers 9 AM is a busy period and to shop later</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Session 11's monitoring hierarchy: user-facing symptoms (latency, errors) are the truth; resource metrics (CPU, memory) are one possible cause among several. Here the pain lived in queuing while CPU stayed comfortable — so both the alert and the scaling trigger were watching the wrong window. Scaling and paging on p95 latency (plus queue depth) catches every future bottleneck <em>whatever</em> its cause. ✘ A tunes the wrong metric harder — 40% CPU alerts fire constantly during healthy load (hello, alert fatigue) and would STILL have missed a 62%-CPU incident. ✘ B blames automation for its configuration; the autoscaler followed its rule perfectly — the rule was wrong. ✘ D translates to "our architecture is the customer's problem," which is how competitors get their 9 AM traffic.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>R12 · <em>The synthesis — Coastal Bank returns</em></h4>
+    <p class="stem">Coastal Bank &amp; Trust (from your Session 1 quiz!) finished its modernization: the regulated core ledger stayed on bank-controlled private infrastructure; the marketing site and mobile-app backends run in public cloud, scaling out for campaign spikes and shrinking after; capacity beyond baseline bursts automatically; the board's quarterly report celebrates "IT spend now tracking usage instead of hardware cycles." Which combination of course concepts is Coastal Bank living, all at once?</p>
+    <button class="opt">A. Pure public cloud, vertical scaling, and CapEx maximization</button>
+    <button class="opt">B. Community cloud, grid computing, and tape backup</button>
+    <button class="opt">C. Single-tenant SaaS, Type 2 virtualization, and static thresholds</button>
+    <button class="opt">D. Hybrid deployment, elastic scale-out with cloud bursting, and the CapEx→OpEx shift</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Three threads of the whole course braided together: <em>hybrid</em> (Session 1) puts each workload where its requirements point — control for the regulated ledger, elasticity for spiky public workloads; <em>scale-out + bursting</em> (Sessions 1, 3, 11, 12) absorbs campaign spikes with temporary capacity that vanishes afterward; and "spend tracking usage instead of hardware cycles" is the <em>CapEx→OpEx</em> sentence from your very first quiz, now spoken by a board. ✘ A: the ledger explicitly stayed private (not pure public), spikes were handled by more instances (not bigger ones), and the bank celebrated <em>reducing</em> capital lock-in. ✘ B: no allied-organization sharing, no split-one-computation workload, and nobody celebrated tape. ✘ C: name-drops three real concepts, none of which appear in the story. If D felt obvious — compare that feeling to Session 1. That's the course, measured.</div>
+  </div>
+
+  <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+</section>
+
+<section class="card">
+  <h3>🚦 Objective Self-Audit — all 8 course objectives</h3>
+  <p>The syllabus promised these eight. Tap each light honestly: 🔴 can't yet · 🟡 shaky · 🟢 could teach it. Anything not green tells you exactly what to review before the final exam.</p>
+  <div class="exitrow"><button class="light" data-exit="o1">⚪</button><span><strong>Obj 1:</strong> Explain the abstract nature and the advantages/disadvantages of cloud computing. <em>(S1)</em></span></div>
+  <div class="exitrow"><button class="light" data-exit="o2">⚪</button><span><strong>Obj 2:</strong> Define and describe SaaS, with examples and multi-tenancy. <em>(S2)</em></span></div>
+  <div class="exitrow"><button class="light" data-exit="o3">⚪</button><span><strong>Obj 3:</strong> Define and describe the PaaS model and when developers choose it. <em>(S2)</em></span></div>
+  <div class="exitrow"><button class="light" data-exit="o4">⚪</button><span><strong>Obj 4:</strong> Describe IaaS and identify solution providers (and size a VM sensibly). <em>(S3)</em></span></div>
+  <div class="exitrow"><button class="light" data-exit="o5">⚪</button><span><strong>Obj 5:</strong> Evaluate identity-management challenges and appraise IDaaS solutions (SSO, MFA, provisioning). <em>(S4)</em></span></div>
+  <div class="exitrow"><button class="light" data-exit="o6">⚪</button><span><strong>Obj 6:</strong> Differentiate cloud data-storage and collaboration solutions (tiers, block/object/file, sync vs async). <em>(S5–S6)</em></span></div>
+  <div class="exitrow"><button class="light" data-exit="o7">⚪</button><span><strong>Obj 7:</strong> Examine and evaluate virtualization solutions — including securing them, planning DR, and operating them. <em>(S7–S9, S11)</em></span></div>
+  <div class="exitrow"><button class="light" data-exit="o8">⚪</button><span><strong>Obj 8:</strong> Define and describe Service-Oriented Architecture — and apply it to operations and migration. <em>(S10–S12)</em></span></div>
+</section>
+
+<!-- ============ POST-TEST ============ -->
+<h2>📊 Post-Test — Prove the Growth</h2>
+<p>Eight questions mirroring the <strong>Session 1 pre-test</strong>: same eight concepts, brand-new scenarios. Answer without help — this measures YOU, not your notes. Then enter your pre-test score below for the official comparison (syllabus post-test = 5%, graded on completion and honest comparison, not on the score).</p>
+<section class="quiz" id="posttest">
+
+  <div class="q" data-a="1">
+    <h4>P1 · Definition</h4>
+    <p class="stem">A farmers' co-op debates two proposals: (a) rent a fixed physical server in a downtown data center on a 3-year lease, or (b) use a platform where they provision resources themselves in minutes, share pooled provider hardware, and get billed only for what they meter. A member asks: "Which one is actually <em>cloud computing</em>, and why?" The correct answer:</p>
+    <button class="opt">A. Both — anything off-premises is the cloud</button>
+    <button class="opt">B. Only (b): cloud means on-demand self-service, pooled resources, and metered pay-per-use delivered over a network — a fixed leased box has none of those</button>
+    <button class="opt">C. Only (a): real clouds require long-term contracts</button>
+    <button class="opt">D. Neither — cloud computing requires owning the hardware</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ The defining characteristics — on-demand self-service, resource pooling, elasticity, measured service, network delivery — are all present in (b) and all absent in (a): a leased fixed server is just someone else's closet with a contract. ✘ A is the Session 1 misconception ("remote = cloud") that the five-characteristics test exists to kill. ✘ C inverts reality — the cloud's signature is <em>no</em> long-term commitment required. ✘ D is backwards: cloud computing is precisely computing <em>without</em> owning hardware. Compare this to pre-test P1: same concept, and you now have a five-point checklist instead of a vibe.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>P2 · Service models</h4>
+    <p class="stem">Four things crossed Rina's desk today. Which one is the SaaS?</p>
+    <button class="opt">A. The 20 rented virtual machines her team installs Linux on</button>
+    <button class="opt">B. The managed platform where developers push code and it deploys automatically</button>
+    <button class="opt">C. The colocation rack the company rents in a data center</button>
+    <button class="opt">D. The payroll application HR uses entirely through a web browser on a monthly subscription</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Finished software, consumed through a browser, subscription-billed, zero customer-managed infrastructure — that's Software as a Service, end of test. ✘ A is IaaS: raw rented compute where you bring and manage the OS and everything above it. ✘ B is PaaS: a platform for <em>developers'</em> code — the customer brings applications, not just data. ✘ C isn't a cloud service model at all: colocation rents space, power, and cooling for hardware YOU own — the pre-cloud arrangement this course started by contrasting. (Pre-test P2 asked this with Gmail; if both felt easy, that objective is green.)</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>P3 · IaaS</h4>
+    <p class="stem">An indie game studio rents 20 GPU-equipped virtual machines by the hour for a rendering push. They chose the machine sizes, installed their preferred OS and drivers, configured everything above the hypervisor, and will release it all next month. Which model are they consuming?</p>
+    <button class="opt">A. IaaS — rented raw infrastructure; the customer manages OS and up</button>
+    <button class="opt">B. SaaS — it's software, and they're using it</button>
+    <button class="opt">C. PaaS — GPUs are a platform</button>
+    <button class="opt">D. On-premises — they control the OS, so it's on-prem</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Rented compute, customer-selected sizing, customer-managed OS/drivers, released when done, billed by the hour: Infrastructure as a Service, straight from the definition — and note the elastic exit (releasing it next month) that owning could never offer. ✘ B stretches "software" past usefulness: SaaS means consuming a <em>finished application</em>; these VMs arrived empty. ✘ C misreads the word "platform" — PaaS abstracts the OS away so developers only bring code; this studio hand-installed drivers, which is life BELOW the PaaS line. ✘ D confuses control with location: they administer the OS, but the hardware is rented, pooled, and metered in a provider's building — the definition of not-on-premises.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>P4 · Identity &amp; SSO</h4>
+    <p class="stem">At Bayfront Hospital, staff authenticate once each morning — one credential plus a code from their phone — and then move between the charting system, scheduling, email, and the pharmacy portal with no further logins. Behind the scenes, one system vouches for their identity to each application. What is this arrangement called?</p>
+    <button class="opt">A. A shared department password taped near the workstation</button>
+    <button class="opt">B. Encryption at rest</button>
+    <button class="opt">C. Single sign-on through a central identity provider (with MFA at the front door)</button>
+    <button class="opt">D. A password manager auto-filling four different passwords</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ One authentication event, one identity provider issuing trusted tokens to many applications — that's SSO, and the phone code is MFA strengthening the single front door (the door you fortify hardest because it now opens everything). ✘ A is an anti-pattern so notorious it appears in audit findings verbatim — shared credentials destroy accountability and survive employee departures. ✘ B protects stored data on disk; it has nothing to do with login flows. ✘ D is the subtle distractor (as it was on the pre-test): a password manager still performs a separate login to each app — four authentications, conveniently typed. SSO is ONE authentication, federated outward.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>P5 · Virtualization</h4>
+    <p class="stem">Corvid Analytics runs finance's regulated environment and HR's systems as fully isolated environments — separate OS instances, separate virtual disks and networks — on the SAME physical server, at the same time. When finance needs a risky upgrade, admins snapshot its environment first and roll back in minutes when the upgrade misbehaves. What technology makes all of this possible?</p>
+    <button class="opt">A. Overclocking the server</button>
+    <button class="opt">B. RAID disk striping</button>
+    <button class="opt">C. A stronger firewall</button>
+    <button class="opt">D. A hypervisor running multiple isolated virtual machines on one physical host</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Every clue is a hypervisor feature: multiple isolated OS instances sharing one physical machine (the consolidation economics from Session 7), per-VM virtual disks and networks, and snapshots enabling minute-scale rollback. This is also Session 1's "engine of resource pooling" — the technology the whole cloud stands on. ✘ A changes clock speed; it creates zero isolation and adds instability. ✘ B spreads data across disks for speed/redundancy — a storage layer trick, not environment isolation. ✘ C controls network traffic BETWEEN systems; it cannot make one server host two operating systems, and it has no snapshot-rollback concept. (Pre-test P5 asked what virtualization lets one server do — today you named the machinery.)</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>P6 · Disaster recovery</h4>
+    <p class="stem">After a ransomware tabletop exercise, Driftwood Outfitters' owner declares: "If we're hit, we MUST be selling again within two hours. And I can accept losing at most the last 15 minutes of orders — no more." Which pair of DR metrics did she just set, in order?</p>
+    <button class="opt">A. SLA = 2 hours; RTO = 15 minutes</button>
+    <button class="opt">B. RTO = 2 hours (max time to restore service); RPO = 15 minutes (max data loss, measured in time)</button>
+    <button class="opt">C. RPO = 2 hours; RTO = 15 minutes</button>
+    <button class="opt">D. MTBF = 2 hours; MTTR = 15 minutes</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ "Selling again within two hours" is Recovery Time Objective — the downtime clock; "lose at most 15 minutes of orders" is Recovery Point Objective — the data-loss window, which dictates backup/replication frequency (snapshots at least every 15 minutes, or continuous replication). These two numbers then SELECT the architecture tier and its price, as Session 9's slider lab demonstrated. ✘ A misuses SLA — that's a provider's contractual promise to you, not your internal recovery target. ✘ C swaps the definitions — the classic exam trap; anchor it as RTO=Time-to-restore, RPO=Point-of-last-good-data. ✘ D borrows hardware-reliability statistics (mean time between failures / to repair) that describe component behavior, not business recovery objectives.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>P7 · SOA</h4>
+    <p class="stem">Shorebird Tickets rebuilt its platform: catalog, cart, payment, and notification now run as independent programs, each owning its own data, each reachable only through a published JSON-over-HTTP interface, each deployable and scalable on its own. The mobile app and website are thin layers composing calls to these programs. What architecture is this?</p>
+    <button class="opt">A. Service-oriented architecture (realized as microservices) — independent, reusable services composed through published contracts</button>
+    <button class="opt">B. A monolith — it's all one company's code</button>
+    <button class="opt">C. Peer-to-peer file sharing</button>
+    <button class="opt">D. A mainframe batch architecture</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Every SOA marker from Session 10 is present: decomposition by business capability, black-box services behind published contracts (JSON over HTTP), independent deployment and scaling, and front ends as thin orchestrators. This is the pre-test question you answered on definition alone — now you've built the /books API and broken the coupling demo yourself. ✘ B: ownership isn't architecture — a monolith is ONE program/deployment, and this is explicitly many, independently shipped. ✘ C: P2P distributes files among equal nodes with no service contracts or business capabilities. ✘ D: mainframe batch processes queued jobs on a schedule; nothing here batches, and everything here is request/response over a network.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>P8 · Cloud economics</h4>
+    <p class="stem">Pier 9 Provisions historically spent $90,000 every four years on server hardware (plus maintenance contracts), sized for a peak that occurred two weeks a year. After migrating, the CFO's report shows: no more four-year hardware purchases; instead, monthly bills that rise in the two peak weeks and fall the rest of the year. Which financial transformation is the report describing?</p>
+    <button class="opt">A. Revenue growth through better marketing</button>
+    <button class="opt">B. Converting operating expenses into capital expenses</button>
+    <button class="opt">C. Converting capital expenses (CapEx) into usage-tracking operating expenses (OpEx)</button>
+    <button class="opt">D. Tax evasion</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ The $90K-every-four-years purchase was CapEx: cash locked into depreciating hardware sized for a two-week peak — meaning ~50 weeks of paying for idle capacity. The monthly usage-shaped bill is OpEx that breathes with the business. Note what the pre-test explanation warned and still holds: this shift wins on <em>flexibility and risk</em>, not automatically on totals — steady maxed-out workloads can still favor owning. ✘ A: nothing in the story concerns revenue; both columns are cost structure. ✘ B is the reverse direction — a trap that catches skimmers; read the arrows. ✘ D: restructuring WHERE money goes, transparently, on invoices, is accounting — the legal kind. Eight for eight concepts revisited: now run the comparison below.</div>
+  </div>
+
+  <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+</section>
+
+<section class="card" id="growthCard">
+  <h3>📈 Pre-Test vs. Post-Test — Your Growth, Measured</h3>
+  <div class="growth">
+    <p style="margin:0 0 6px"><strong>Step 1:</strong> Your Session 1 pre-test score (0–8): <input type="number" id="preScore" min="0" max="8" data-persist="preScore" placeholder="?"> / 8 <span class="note">(you recorded it on the Session 1 page and in your notebook)</span></p>
+    <p style="margin:0 0 6px"><strong>Step 2:</strong> Your post-test score (auto-tracked): <strong id="postScore">0 answered</strong></p>
+    <p style="margin:0"><strong>Step 3:</strong> <button class="btn small" id="btnGrowth">Compare my growth</button></p>
+    <p class="gmsg" id="growthMsg">Finish the 8 post-test questions and enter your pre-test score, then hit compare.</p>
+  </div>
+</section>
+
+<!-- ============ DISCUSSION ============ -->
+<section class="card disc">
+  <h3>💬 Discussion Forum Prompts <span class="note">(syllabus: Discussion Forums = 15% — final round)</span></h3>
+  <p><strong>Prompt 1:</strong> Now that you've seen the whole arc — abstraction to migration — name the ONE concept that most changed how you think about computing, and connect it to at least TWO different sessions. ("Nothing changed" is an acceptable thesis only if you defend it with the same rigor.) Reply to two classmates whose pick differs from yours.</p>
+  <p><strong>Prompt 2:</strong> Harbor Lane's owner, reading your final proposal, asks one last question: "Honestly — should we have just stayed on-prem?" Steelman the on-prem case first (three genuine arguments), then answer her using evidence from your own D1–D4 deliverables. The best answers acknowledge what the cloud costs, not just what it gives.</p>
+</section>
+
+<!-- ============ CAPSTONE — THE FINALE ============ -->
+<section class="card capstone">
+  <h3>🏗️ Capstone Finale · Harbor Lane Books — Checkpoint 12 of 12: DELIVERABLE 4 + FINAL PRESENTATION (DUE TODAY)</h3>
+  <p>Twelve sessions ago, Harbor Lane Books was a 12-store chain with a flooding-prone server closet, a web store that died at every author event, no DR plan, and an owner who dreamed of AI recommendations and swore to "never buy another server." Today you hand her the complete answer — and present it. Rubrics and submission details: <a href="project.html"><strong>open the Project Brief →</strong></a></p>
+  <h3 style="margin-top:14px">📦 Deliverable 4 — Migration Roadmap &amp; Full Proposal (submit before presentations)</h3>
+  <label class="step"><input type="checkbox" data-step="cap1"><span><strong>6-R disposition table</strong> for ALL Harbor Lane systems (web store, POS DB, file share, Exchange/email, plus anything you identified in D1) — one R per system, one-line justification each. Today's sorter is your template.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Wave plan (3 waves)</strong> with a dependency note per system — identity's position explained explicitly. Screenshot or reproduce your validated planner run.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap3"><span><strong>Cutover-day runbook</strong> for the web store: your 8 ordered steps + who owns each + the rollback trigger (success criteria, stated as numbers).</span></label>
+  <label class="step"><input type="checkbox" data-step="cap4"><span><strong>Budget &amp; commitment strategy:</strong> monthly steady-state estimate (from D1–D3 costing), parallel-run premium during migration, and your reserved-instance position (what you'd commit, and — critically — WHEN).</span></label>
+  <label class="step"><input type="checkbox" data-step="cap5"><span><strong>Lock-in assessment:</strong> your five risk-meter choices for Harbor Lane with the resulting score and a 3-sentence exit-path note.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap6"><span><strong>Training &amp; change plan:</strong> pre-cutover training schedule for 240 staff across 12 stores, per-store champion list, and one adoption metric you'll track as a success criterion.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap7"><span><strong>Assembled D4 document</strong> incorporating Checkpoint 10 (API design sheet) and Checkpoint 11 (ops runbook + monitoring plan) — the complete SOA / ops / migration story in one artifact.</span></label>
+  <h3 style="margin-top:14px">🎤 Final Presentation (last block today — 8 minutes + Q&amp;A)</h3>
+  <label class="step"><input type="checkbox" data-step="cap8"><span>Deck finalized per Lab C's 10-slide checklist, rehearsed once at full speed, PDF backup downloaded — you present solo.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap9"><span>Ready for owner-style questions (cost, cutover risk, retraining, lock-in, AI flop scenario) — you rehearsed them against "Marguerite" in Lab B.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap10"><span><strong>AI Use Log submitted</strong> with D4: every prompt, every verification, every correction, all four weeks. This is the integrity record the syllabus requires — and, honestly, the most professionally valuable document you're leaving with.</span></label>
+  <p class="note">Grading reminder from the brief: D4 weighs the migration roadmap's coherence with D1–D3 heavily — a wave plan that contradicts your own DR tiers or identity design costs more points than a missing slide ever will.</p>
+</section>
+
+<!-- ============ EXIT TICKET ============ -->
+<section class="card exit">
+  <h3>🎟️ Exit Ticket — the last one</h3>
+  <p>Tap each light until it matches your confidence: 🔴 lost · 🟡 shaky · 🟢 got it</p>
+  <div class="exitrow"><button class="light" data-exit="e1">⚪</button><span>I can disposition an application portfolio with the 6 Rs and defend each call.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e2">⚪</button><span>I can sequence migration waves around dependencies and write a cutover runbook with rollback criteria.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e3">⚪</button><span>I am ready for the final exam — and my post-test delta proves the semester happened.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e4">⚪</button><span>🧠 AI concept: I can plan a responsible AI adoption — build vs buy, governance, and human-in-the-loop — like a migration.</span></div>
+  <p style="margin-top:10px"><strong>Final muddiest point</strong> — the one thing you most want reviewed before the final exam:</p>
+  <textarea data-persist="muddy" placeholder="Before the final exam, I most need another pass at…"></textarea>
+</section>
+
+<footer>
+  <div class="card" style="background:#f0eee6">
+    <strong>🎓 Congratulations — you finished all 12 sessions of CEN4086!</strong> From "what is the cloud?" to presenting a full migration roadmap in four weeks. What remains: <strong>(1) the final exam</strong> per the syllabus schedule, covering everything in Sessions 1–12 — study from the Final Review's 12 explanations, your session quizzes, and every 🚦 light that isn't green; <strong>(2) your post-test comparison</strong> — make sure your pre vs. post scores are recorded in the growth box above and reported as the syllabus requires (post-test = 5%); <strong>(3) D4 + AI Use Log submitted</strong> if you haven't already. It has been a privilege consulting alongside you. Harbor Lane's owner would hire you — and that was the point all along.
+  </div>
+  <div class="footer-nav">
+    <a class="btn ghost" href="week4-session11.html">← Session 11: Managing the Cloud</a>
+    <span><a class="btn ghost" href="project.html">🏗️ Project Brief</a> <button class="btn ghost small" onclick="resetPage()">Reset my progress on this page</button></span>
+    <a class="btn" href="index.html">Finish → Course Hub</a>
+  </div>
+</footer>
+
+</main>
+<script>
+/* ===== CEN4086 core framework (copy verbatim into every session file) ===== */
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'page');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+function resetPage(){try{localStorage.removeItem(PKEY)}catch(e){};location.reload()}
+
+/* flips */
+document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));
+/* tabs */
+document.querySelectorAll('.tabs').forEach(t=>{
+  t.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>{
+    t.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('on'));
+    t.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');t.querySelector('.tabpane[data-p="'+b.dataset.t+'"]').classList.add('on');
+  }));
+});
+/* polls */
+document.querySelectorAll('.poll').forEach((p,pi)=>{
+  const key='poll:'+(p.id||pi);
+  p.querySelectorAll('.popt').forEach((o,oi)=>o.addEventListener('click',()=>{
+    if(p.classList.contains('done'))return;
+    o.classList.add('sel');p.classList.add('done');save(key,oi);
+  }));
+  if(S[key]!=null){p.classList.add('done');const o=p.querySelectorAll('.popt')[S[key]];if(o)o.classList.add('sel');}
+});
+/* quiz engine */
+function updateQuiz(qz){
+  const qs=[...qz.querySelectorAll('.q')];
+  const done=qs.filter(q=>q.classList.contains('done'));
+  const right=qs.filter(q=>q.classList.contains('gotit')).length;
+  const res=qz.querySelector('.qresult');
+  if(res){res.querySelector('.bar span').style.width=(done.length?Math.round(100*right/qs.length):0)+'%';
+    res.querySelector('.scoreline').textContent='Score: '+right+' / '+qs.length+(done.length===qs.length?(right===qs.length?' — perfect! 🎉':' — review the explanations above.'):' ('+(qs.length-done.length)+' remaining)');}
+  updateChip();
+}
+function updateChip(){
+  let r=0,t=0;
+  document.querySelectorAll('.quiz').forEach(qz=>qz.querySelectorAll('.q').forEach(q=>{t++;if(q.classList.contains('gotit'))r++;}));
+  const c=document.getElementById('scoreChip');if(c)c.textContent='Quiz: '+r+'/'+t;
+}
+document.querySelectorAll('.quiz').forEach((qz,qzi)=>{
+  const qid=qz.id||('qz'+qzi);
+  qz.querySelectorAll('.q').forEach((q,i)=>{
+    const a=+q.dataset.a,opts=[...q.querySelectorAll('.opt')];
+    const key=qid+':q'+i;
+    function answer(j,fresh){
+      q.classList.add('done');if(j===a)q.classList.add('gotit');
+      opts.forEach(o=>o.disabled=true);
+      opts[a].classList.add('right');if(j!==a)opts[j].classList.add('wrong');
+      if(fresh)save(key,j);
+    }
+    opts.forEach((o,j)=>o.addEventListener('click',()=>{if(!q.classList.contains('done')){answer(j,true);updateQuiz(qz);}}));
+    if(S[key]!=null)answer(S[key],false);
+  });
+  updateQuiz(qz);
+});
+/* matcher engine */
+document.querySelectorAll('.matcher').forEach((m,mi)=>{
+  const key='match:'+(m.id||mi);let sel=null,done=0;
+  const cards=[...m.querySelectorAll('.mcard')],st=m.querySelector('.mstatus');
+  function stat(){st.textContent=done+'/'+cards.length+' placed'+(done===cards.length?' — all correct! 🎉':'');}
+  cards.forEach((c,ci)=>{c.addEventListener('click',()=>{
+    if(c.classList.contains('ok'))return;
+    cards.forEach(x=>x.classList.remove('sel'));c.classList.add('sel');sel=c;
+  });});
+  m.querySelectorAll('.mzone').forEach(z=>z.addEventListener('click',()=>{
+    if(!sel)return;
+    if(sel.dataset.match===z.dataset.zone){
+      sel.classList.remove('sel');sel.classList.add('ok');done++;stat();
+      const solved=(S[key]||[]);solved.push(cards.indexOf(sel));save(key,solved);sel=null;
+    }else{sel.classList.add('no');setTimeout(()=>sel&&sel.classList.remove('no'),400);}
+  }));
+  (S[key]||[]).forEach(ci=>{if(cards[ci]&&!cards[ci].classList.contains('ok')){cards[ci].classList.add('ok');done++;}});
+  stat();
+});
+/* lab step checkboxes */
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+/* persisted inputs/textareas */
+document.querySelectorAll('[data-persist]').forEach(el=>{
+  const key='p:'+el.dataset.persist;
+  if(S[key]!=null)el.value=S[key];
+  el.addEventListener('input',()=>save(key,el.value));
+});
+/* exit ticket lights */
+const LIGHTS=['⚪','🔴','🟡','🟢'];
+document.querySelectorAll('.light').forEach(b=>{
+  const key='exit:'+b.dataset.exit;let i=S[key]||0;b.textContent=LIGHTS[i];
+  b.addEventListener('click',()=>{i=(i+1)%4;b.textContent=LIGHTS[i];save(key,i);});
+});
+/* copy prompt */
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+
+/* ===== Session 12 custom interactives ===== */
+/* ---- migration wave planner ---- */
+const APPS=[
+  {id:'idn',name:'🪪 Identity & SSO (IDaaS)',note:'Every other system logs in through it',dep:[]},
+  {id:'files',name:'🗂️ Staff file share → cloud storage',note:'Low risk, no dependencies — learning-wave material',dep:[]},
+  {id:'inv',name:'📦 Inventory database',note:'The web store and POS reporting read from it',dep:[]},
+  {id:'mail',name:'📧 Email & calendar (SaaS repurchase)',note:'Staff sign in via SSO',dep:['idn']},
+  {id:'store',name:'🛒 Web store',note:'Needs SSO accounts AND live inventory data',dep:['idn','inv']},
+  {id:'pos',name:'📈 POS reporting & analytics',note:'Reads the inventory database',dep:['inv']},
+  {id:'hr',name:'🧾 HR portal',note:'Staff sign in via SSO',dep:['idn']},
+  {id:'rec',name:'🤖 AI recommendation engine (new build)',note:'Consumes the web store’s order stream',dep:['store']}
+];
+let WAVES=S['waves']||{};
+const WG=document.getElementById('waveGrid');
+APPS.forEach(a=>{
+  const d=document.createElement('div');d.className='wavecard';
+  d.innerHTML='<h5>'+a.name+'</h5><span class="wnote">'+a.note+'</span><span class="wbtns"></span>';
+  const bt=d.querySelector('.wbtns');
+  [1,2,3].forEach(w=>{
+    const b=document.createElement('button');b.className='wbtn';b.type='button';b.textContent='Wave '+w;
+    b.addEventListener('click',()=>{WAVES[a.id]=w;save('waves',WAVES);paintWaves();});
+    bt.appendChild(b);
+  });
+  WG.appendChild(d);
+});
+function paintWaves(){
+  APPS.forEach((a,i)=>{
+    WG.children[i].querySelectorAll('.wbtn').forEach((b,j)=>b.classList.toggle('on',WAVES[a.id]===j+1));
+  });
+}
+paintWaves();
+document.getElementById('btnPlan').addEventListener('click',()=>{
+  const fb=document.getElementById('planFb');
+  const un=APPS.filter(a=>!WAVES[a.id]);
+  if(un.length){fb.className='planfb show';fb.innerHTML='<strong>Assign every system first</strong> — still unassigned: '+un.map(a=>a.name).join(', ')+'.';return;}
+  const probs=[];
+  if(WAVES['idn']!==1)probs.push('<li class="viol">🪪 Identity &amp; SSO must anchor <strong>Wave 1</strong> — every later system’s logins federate through it; migrate it later and already-migrated apps strand their users at the login screen.</li>');
+  APPS.forEach(a=>a.dep.forEach(dp=>{
+    if(WAVES[dp]>=WAVES[a.id]){
+      const dn=APPS.find(x=>x.id===dp).name;
+      probs.push('<li class="viol">⚠️ '+a.name+' (wave '+WAVES[a.id]+') depends on '+dn+' (wave '+WAVES[dp]+') — the dependency must land in an <strong>earlier</strong> wave, or it goes live pointing at a system that isn’t there yet.</li>');
+    }
+  }));
+  if(probs.length){
+    fb.className='planfb show';
+    fb.innerHTML='<strong>'+probs.length+' dependency problem'+(probs.length>1?'s':'')+' found:</strong><ul>'+probs.join('')+'</ul><p style="margin:6px 0 0">Fix the order and validate again — this is exactly the review a migration steering committee performs.</p>';
+  }else{
+    const counts=[1,2,3].map(w=>APPS.filter(a=>WAVES[a.id]===w).length);
+    let bal='Wave sizes: '+counts.join(' / ')+'.';
+    if(counts[0]>4)bal+=' Wave 1 is carrying a lot for the “learning wave” — consider deferring one low-risk item.';
+    else bal+=' Sensible pacing: a survivable learning wave, the store mid-flight, the finale earned.';
+    fb.className='planfb show goodplan';
+    fb.innerHTML='<strong>✅ Valid plan — every dependency respected!</strong> '+bal+' Notice what the constraints forced: identity and inventory early, the web store only after BOTH, and the AI recommender dead last (it feeds on the store’s order stream). Capture this plan for Deliverable 4.';
+  }
+});
+
+/* ---- vendor lock-in risk meter ---- */
+function risk(){
+  let sc=0;document.querySelectorAll('.lockin').forEach(s=>sc+=+s.value);
+  const bar=document.getElementById('riskBar');
+  const pct=Math.round((sc-5)/15*100);
+  bar.style.width=Math.max(6,pct)+'%';
+  let band,color,adv;
+  if(sc<=8){band='LOW — highly portable';color='var(--ok)';
+    adv='Mostly open standards and short commitments: you could change providers with effort, not agony. You pay for that freedom in convenience and sometimes raw price — managed proprietary services often out-engineer what you can run yourself. Keep the export drills honest and this posture is gold.';}
+  else if(sc<=13){band='MODERATE — the pragmatic middle';color='var(--amb)';
+    adv='Proprietary value where it clearly wins, wrapped or exportable elsewhere. Document an exit path for each proprietary dependency, rehearse a data export yearly, and re-examine at every contract renewal — drift toward lock-in is always silent.';}
+  else{band='HIGH — deep lock-in';color='var(--bad)';
+    adv='You have traded tomorrow’s leverage for today’s velocity — sometimes rightly! But price the exit NOW: egress fees at your data volume, rewrite costs for each proprietary service, contract end dates. If this provider raised prices 40% next year, what is your walk-away story? If none exists, negotiate one while you still have leverage.';}
+  bar.style.background=color;
+  document.getElementById('riskScore').textContent='Lock-in risk: '+sc+' / 20 — '+band;
+  document.getElementById('riskAdvice').textContent=adv+' (Remember: lock-in is a price, not a sin — the failure is not choosing proprietary services, it is not KNOWING what they cost to leave.)';
+}
+document.querySelectorAll('.lockin').forEach(s=>s.addEventListener('change',risk));
+risk();
+
+/* ---- cutover-day checklist game ---- */
+const CUT=[
+  'Announce the maintenance window and freeze all changes to the old system',
+  'Take a final verified backup of the old system',
+  'Run the final data sync to the cloud environment',
+  'Verify data integrity — row counts and checksums match the source',
+  'Switch DNS / repoint traffic to the cloud environment',
+  'Run smoke tests on the live cloud system (browse, buy, refund)',
+  'Monitor dashboards closely through the first peak hours',
+  'Hold the rollback window open until success criteria pass — decommission the old servers only days later'
+];
+const ORDER=[4,6,1,7,3,0,5,2];
+let CUTSEL=S['cutsel']||{};
+const CL=document.getElementById('cutList');
+ORDER.forEach(ci=>{
+  const row=document.createElement('div');row.className='cutrow';
+  const sel=document.createElement('select');
+  let opts='<option value="0">–</option>';
+  for(let n=1;n<=8;n++)opts+='<option value="'+n+'"'+(CUTSEL[ci]===n?' selected':'')+'>'+n+'</option>';
+  sel.innerHTML=opts;
+  sel.setAttribute('aria-label','position for step: '+CUT[ci]);
+  sel.addEventListener('change',()=>{CUTSEL[ci]=+sel.value;save('cutsel',CUTSEL);});
+  const span=document.createElement('span');span.textContent=CUT[ci];
+  row.appendChild(sel);row.appendChild(span);
+  CL.appendChild(row);
+});
+document.getElementById('btnCut').addEventListener('click',()=>{
+  const rows=[...CL.children],fb=document.getElementById('cutFb');
+  let right=0,dup=false;const used={};
+  rows.forEach((row,ri)=>{
+    const ci=ORDER[ri],v=CUTSEL[ci]||0;
+    if(v){if(used[v])dup=true;used[v]=1;}
+    const okv=(v===ci+1);
+    row.className='cutrow '+(okv?'rightpos':'wrongpos');
+    if(okv)right++;
+  });
+  let html='<strong>'+right+'/8 in the right position'+(right===8?' — flawless cutover! 🎉':'')+'</strong>';
+  if(dup)html+=' <span class="viol">(You used at least one position twice — every step needs a unique slot.)</span>';
+  if(right<8){
+    html+='<br>Correct order:<ol style="margin:6px 0 0;padding-left:20px">'+CUT.map(s=>'<li>'+s+'</li>').join('')+'</ol><p style="margin:6px 0 0">The logic: <em>freeze</em> so data stops changing → <em>preserve</em> (backup) → <em>move</em> (final sync) → <em>verify</em> BEFORE anyone switches → <em>switch</em> (DNS) → <em>confirm</em> (smoke tests) → <em>watch</em> (dashboards) → <em>keep the parachute</em> (rollback window; decommission much later).</p>';
+  }else{
+    html+='<p style="margin:6px 0 0">You just wrote the professional runbook: freeze → preserve → move → verify → switch → confirm → watch → keep the parachute. Reproduce it (with owners per step) in Deliverable 4.</p>';
+  }
+  fb.className='planfb show'+(right===8?' goodplan':'');
+  fb.innerHTML=html;
+});
+
+/* ---- pre-test vs post-test growth comparison ---- */
+function growth(showMsg){
+  const qs=[...document.querySelectorAll('#posttest .q')];
+  const done=qs.filter(q=>q.classList.contains('done')).length;
+  const right=qs.filter(q=>q.classList.contains('gotit')).length;
+  document.getElementById('postScore').textContent=(done===qs.length)?(right+' / 8'):(done+' of 8 answered');
+  if(!showMsg)return;
+  const out=document.getElementById('growthMsg');
+  if(done<qs.length){out.textContent='Answer all 8 post-test questions first — '+(qs.length-done)+' to go.';return;}
+  const raw=(document.getElementById('preScore').value||'').trim();
+  const pre=raw===''?NaN:+raw;
+  if(isNaN(pre)||pre<0||pre>8){out.textContent='Enter your Session 1 pre-test score (0–8) to unlock the comparison.';return;}
+  const d=right-pre;
+  if(d>0)out.textContent='📈 +'+d+' point'+(d>1?'s':'')+': from '+pre+'/8 to '+right+'/8. That delta is a semester of concepts made visible — record BOTH numbers for the syllabus post-test (5%). The questions that flipped from wrong to right are your proven growth; any still missed have explanations above that are precision final-exam prep.';
+  else if(d===0&&right===8)out.textContent='🏆 8/8 then, 8/8 now. The pre-test measured recognition; today you can BUILD these systems. Your real delta lives in the labs, the deliverables, and the D4 you present in an hour.';
+  else if(d===0)out.textContent='➡️ '+pre+'/8 → '+right+'/8 — same score, almost certainly not the same answers. Compare WHICH questions you missed each time: different misses means real movement. Review those explanations before the final exam.';
+  else out.textContent='📉 '+pre+'/8 → '+right+'/8. Hour four of the last session is a brutal time to test — and the syllabus grades the post-test on completion and honest comparison, not the delta. Reread the explanations you missed (targeted exam prep), and remember: D1–D4 are the stronger evidence of what you can do now.';
+}
+document.getElementById('btnGrowth').addEventListener('click',()=>growth(true));
+document.getElementById('posttest').addEventListener('click',()=>setTimeout(()=>growth(false),80));
+document.getElementById('preScore').addEventListener('input',()=>growth(false));
+growth(false);
+
+/* ---- Lab A checks ---- */
+function checkA(i){
+  const el=document.getElementById('labA'+i),fb=document.getElementById('fbA'+i);
+  let ok=false,msg='';
+  if(i===1){const v=+el.value;ok=(v===2);msg=ok?'✔ Two — the dead intranet site and the doomed fax relay. Retiring 2 of 8 (25%) matches real portfolio audits.':'✘ Recount the sorter: which cards landed in the Retire zone? (Nobody-uses-it and about-to-be-eliminated both qualify.)';}
+  if(i===2){const v=el.value.trim().toLowerCase();ok=v.includes('ident')||v.includes('sso');msg=ok?'✔ Identity & SSO — everything else logs in through it, so it anchors Wave 1 by necessity, not preference.':'✘ Which system does EVERY other system depend on for logins? The validator names it whenever it is placed anywhere but Wave 1.';}
+  if(i===3){const v=+el.value;ok=(v===5);msg=ok?'✔ Step 5 — and only AFTER verification (step 4). Switching before verifying is how corrupted data goes live.':'✘ Check your validated runbook: freeze, preserve, move, verify… THEN switch. Count again.';}
+  if(i===4){const v=+el.value;ok=(v===4);msg=ok?'✔ Step 4 — verify BEFORE the switch. Row counts and checksums are cheap; discovering missing orders after DNS flips is not.':'✘ Where must verification sit so that bad data never receives live traffic? It must come after the final sync and before DNS.';}
+  fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
+}
+</script>
+</body>
+</html>

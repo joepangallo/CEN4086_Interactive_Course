@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Week 2 · Session 5 — Data Storage in the Cloud</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--wk:#e0a437}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--wk);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+.topnav .mid{font-weight:700}
+#scoreChip{background:var(--pri);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:700}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#2b2a6e 100%);color:#fff;border-radius:16px;padding:28px 26px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:30px;line-height:1.25}
+.hero .sub{margin:0 0 12px;opacity:.9;font-size:16.5px}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:var(--ink)}
+.hero .chip{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .chip.obj{background:var(--amb);border-color:var(--amb);color:#3a2c05}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
+h3{font-size:18px;margin:20px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.warmup{border-top:6px solid var(--amb)}
+.card.ai{border-top:6px solid var(--vio);background:linear-gradient(180deg,#f7f3fc,#fff 90px)}
+.card.disc{border-top:6px solid var(--acc)}
+.card.capstone{border-top:6px solid var(--pri);background:linear-gradient(180deg,#f0f0fa,#fff 90px)}
+.card.exit{border-top:6px solid var(--bad)}
+.segment{position:relative}
+.segno{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--wk);color:#fff;font-weight:800;font-size:15px;margin-right:8px}
+.agenda{width:100%;border-collapse:collapse;font-size:14px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.agenda td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.15)}
+.agenda tr:last-child td{border-bottom:none}
+.bdg{display:inline-block;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
+.b-lec{background:#c9d4f5;color:#22307a}.b-int{background:#ffe3a3;color:#6b4d05}.b-lab{background:#bfe6e0;color:#0b5450}.b-quiz{background:#f3c9c2;color:#7a2417}.b-brk{background:#e4e4e4;color:#555}.b-cap{background:#ddd3f0;color:#432c73}
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.flip{border:1.5px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
+.flip h5{margin:0;font-size:15px;color:var(--pri)}
+.flip .back{display:none;margin-top:8px;font-size:14px;color:var(--ink)}
+.flip.open{background:#eef4f4;border-color:var(--acc)}
+.flip.open .back{display:block}
+.flip .hint{font-size:12px;color:var(--mut)}
+.tabs .tabrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:-1px}
+.tabbtn{border:1px solid var(--line);border-bottom:none;background:#eceadf;border-radius:10px 10px 0 0;padding:8px 16px;cursor:pointer;font:inherit;font-weight:600;font-size:14px}
+.tabbtn.on{background:#fff;color:var(--pri)}
+.tabpane{display:none;border:1px solid var(--line);border-radius:0 12px 12px 12px;background:#fff;padding:16px 18px}
+.tabpane.on{display:block}
+.matcher{margin:14px 0}
+.mcards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.mcard{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.mcard.sel{outline:3px solid var(--amb);border-color:var(--amb)}
+.mcard.ok{background:#e7f3ec;border-color:var(--ok);color:#28583b;cursor:default}
+.mcard.ok::after{content:" ✓"}
+.mcard.no{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.mzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.mzone{border:2px dashed var(--acc);border-radius:12px;background:#f4faf9;padding:12px;cursor:pointer;font:inherit;text-align:center;font-weight:700;color:var(--acc)}
+.mzone small{display:block;font-weight:400;color:var(--mut);margin-top:4px}
+.mstatus{margin-top:10px;font-weight:700;color:var(--pri)}
+.lab{border-left:6px solid var(--acc)}
+.lab .labno{color:var(--acc);font-weight:800;letter-spacing:.5px;font-size:13px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--acc);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.quiz .q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.quiz .q h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
+.stem{margin:6px 0 10px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fbfaf7;cursor:pointer;font:inherit;font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--pri)}
+.opt:disabled{cursor:default;opacity:.85}
+.opt.right{background:#e7f3ec;border-color:var(--ok);opacity:1;font-weight:600}
+.opt.wrong{background:#f8e9e7;border-color:var(--bad);opacity:1}
+.expl{display:none;margin-top:10px;padding:12px 14px;background:#f4f6fb;border-left:4px solid var(--pri);border-radius:8px;font-size:14.5px}
+.q.done .expl{display:block}
+.qresult{margin-top:16px}
+.bar{height:12px;background:#e8e4da;border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .4s}
+.scoreline{font-weight:700;margin:6px 0 0}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.small{padding:5px 12px;font-size:13px}
+.kpis{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.kpi{flex:1;min-width:130px;background:#f4f6fb;border-radius:10px;padding:10px 14px;text-align:center}
+.kpi b{display:block;font-size:22px;color:var(--pri);line-height:1.2}
+.kpi small{color:var(--mut)}
+.poll .popt{display:inline-block;margin:4px 6px 4px 0;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;cursor:pointer;font:inherit;font-size:14px}
+.poll .popt.sel{background:var(--amb);border-color:var(--amb);font-weight:700}
+.pollwhy{display:none;margin-top:8px;padding:10px 12px;background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;font-size:14px}
+.poll.done .pollwhy{display:block}
+.stackrow{display:flex;align-items:center;gap:10px;margin:3px 0}
+.stackrow .lay{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;background:#fbfaf7;transition:all .3s}
+.stackrow .who{width:96px;text-align:center;font-size:12px;font-weight:800;border-radius:8px;padding:4px}
+.who.you{background:#f3c9c2;color:#7a2417}
+.who.prov{background:#bfe6e0;color:#0b5450}
+input[type=range]{width:100%;accent-color:var(--pri)}
+.svgwrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;overflow-x:auto;text-align:center}
+.note{font-size:13.5px;color:var(--mut)}
+.serverfarm{display:flex;flex-wrap:wrap;gap:5px;min-height:40px;margin:8px 0}
+.srv{width:34px;height:40px;border-radius:6px;background:linear-gradient(180deg,#3f3d99,#2b2a6e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px}
+.srv.big{width:64px;height:56px;font-size:26px}
+.checkfield{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.checkfield input[type=number],.checkfield input[type=text]{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;width:110px}
+.fb{font-weight:700;font-size:14px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;min-height:70px}
+.exitrow{display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap}
+.light{font-size:20px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;cursor:pointer}
+.footer-nav{display:flex;justify-content:space-between;margin-top:30px;gap:10px;flex-wrap:wrap}
+table.simple{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+table.simple th{background:#f0eee6;text-align:left}
+table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+<style>
+/* ===== Session 5 additions ===== */
+.repl{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0}
+.rnode{flex:1;min-width:135px;border:2px solid var(--ok);border-radius:12px;padding:12px;text-align:center;background:#e7f3ec;font-weight:700;transition:all .3s}
+.rnode.dead{border-color:var(--bad);background:#f8e9e7;opacity:.6}
+.rnode.newborn{animation:pop .5s}
+@keyframes pop{0%{transform:scale(.5)}100%{transform:scale(1)}}
+.rnode .rico{font-size:26px}
+.rnode small{display:block;font-weight:400;color:var(--mut)}
+.rstat{margin-top:6px;font-size:12px;border-radius:6px;padding:1px 8px;display:inline-block;background:#bfe6e0;color:#0b5450;font-weight:800}
+.rnode.dead .rstat{background:#f3c9c2;color:#7a2417}
+.rlog{background:#171c2e;color:#cfe3d8;border-radius:10px;padding:10px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;max-height:150px;overflow:auto;margin-top:10px}
+.rlog div{margin:2px 0}
+.bigin{border:1.5px solid var(--line);border-radius:10px;padding:9px 12px;font:inherit;width:100%;max-width:360px}
+.sliderrow{margin:12px 0 2px;font-weight:600;font-size:14.5px}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">⌂ Course Hub</a>
+  <span class="mid">Week 2 · Session 5 — Data Storage in the Cloud</span>
+  <span><span id="scoreChip">Quiz: 0/0</span> &nbsp; <a href="week2-session4.html">← Session 4</a> · <a href="week2-session6.html">Session 6 →</a></span>
+</nav>
+<main>
+
+
+<!-- ============ WARM-UP ============ -->
+<section class="card warmup">
+  <h3>🔥 Warm-Up Polls <span class="note">(no wrong answers — vote, then we discuss)</span></h3>
+  <div class="poll" id="poll1">
+    <p><strong>Poll 1:</strong> Right now, in how many physically separate places do your phone photos exist?</p>
+    <button class="popt">One — the phone</button><button class="popt">Two — phone + a cloud</button><button class="popt">Three or more</button><button class="popt">Honestly no idea</button>
+    <div class="pollwhy">Most people answer "two" and feel safe — but if that cloud copy is a <em>sync</em> mirror, it faithfully replicates your mistakes: delete the photo (or let ransomware encrypt it) and the "backup" deletes itself seconds later. Sync is for convenience; <strong>backup</strong> is an independent, versioned copy that survives your own bad day. Today ends with the 3-2-1 rule — the difference will be on the midterm and, more importantly, will someday save your actual photos.</div>
+  </div>
+  <div class="poll" id="poll2">
+    <p><strong>Poll 2:</strong> Best guess: storing 1 TB in a cloud ARCHIVE tier costs about how much per month?</p>
+    <button class="popt">About $1</button><button class="popt">About $25</button><button class="popt">About $100</button><button class="popt">About $400</button>
+    <div class="pollwhy"><strong>About $1.</strong> Real archive tiers (e.g., AWS S3 Glacier Deep Archive) run roughly a dollar per TB-month, while "hot" storage runs $20-something — a 20×+ spread for the same bytes. That spread is why storage <em>tiering</em> is a genuine architectural decision, not billing trivia. The catch: archive charges you to get data back and makes you wait hours — today's simulator lets you find exactly where "cheap" flips to "trap."</div>
+  </div>
+  <div class="poll" id="poll3">
+    <p><strong>Poll 3:</strong> Harbor Lane's web store has ~40,000 product cover images. Where should they live?</p>
+    <button class="popt">A big Windows file share</button><button class="popt">Inside the database as BLOBs</button><button class="popt">Cloud object storage</button><button class="popt">A binder of DVDs behind the register</button>
+    <div class="pollwhy"><strong>Object storage</strong> — and by the end of Segment 2 you'll be able to say exactly why: images are written once and read millions of times over HTTP, need effectively unlimited capacity, and want per-GB pricing with eleven-nines durability. File shares choke at web scale; stuffing images into the database bloats and slows it; and the DVD binder… we'll talk about durability. This poll returns as a Lab A check — with reasons attached.</div>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 1 ============ -->
+<section class="segment">
+  <h2><span class="segno">1</span> From DAS to the Cloud: How Storage Got Here</h2>
+  <div class="card">
+    <h3>Four eras, one direction: away from the single machine</h3>
+    <p>The evolution of network storage is a story with a single plot: every era pries data a little further away from one physical computer. <strong>DAS — direct-attached storage</strong> — is the starting point: disks cabled directly to one server (or the drive inside your laptop). It's simple and fast, but the data is an island: it grows only as big as that machine allows, it's reachable only through that machine, and when that machine dies, so does access. <strong>NAS — network-attached storage</strong> — put a dedicated file-serving appliance on the office network: now many users and servers share folders over protocols like SMB or NFS. Every office "shared drive" you've ever mapped is NAS thinking. <strong>SAN — storage area network</strong> — went further for the data center: a dedicated high-speed network (Fibre Channel, or iSCSI over Ethernet) serving raw <em>block</em> volumes to servers, which treat them exactly like local disks. SANs separated storage from compute at building scale — but at eye-watering enterprise cost.</p>
+    <p>Then 2006: Amazon launched S3, and storage became a <strong>metered internet utility</strong> — capacity on demand, no arrays to buy, replication and durability handled by the provider, everything reachable through an API from anywhere. Cloud storage is the arc completed: your data finally has no home machine at all.</p>
+    <p><strong>Common misconception:</strong> "NAS and SAN are just fancy words for a computer full of disks." The difference is the <em>level of abstraction served over the wire</em>: NAS serves <strong>files</strong> ("give me /invoices/march.pdf"), a SAN serves <strong>blocks</strong> ("give me sectors 4096–8191"), and that distinction — file vs block — is exactly the vocabulary you need for Segment 2, where the cloud sells you both, plus a third kind the older eras never had.</p>
+    <h3>🗂️ Interactive: The Storage Time Machine</h3>
+    <p>Tap each era card — front is the sales pitch of its decade, back is the reality check and where it survives today:</p>
+    <div class="flipgrid">
+      <button class="flip"><h5>1980s–90s · DAS</h5><span class="hint">“Just add another drive!” — tap to flip</span><span class="back"><strong>Direct-attached storage:</strong> disks inside or cabled to one server. ✅ Simple, cheapest, lowest latency. ❌ An island — capacity, access, and fate all chained to one machine; backups are somebody's Friday chore. <em>Survives today as:</em> your laptop's SSD, and the disks inside every cloud server (the cloud is built ON DAS — it just never shows it to you).</span></button>
+      <button class="flip"><h5>mid-1990s · NAS</h5><span class="hint">“One shared drive for the whole office!” — tap</span><span class="back"><strong>Network-attached storage:</strong> a file-serving appliance on the LAN speaking SMB/NFS. ✅ Many users share FILES; central backups finally possible. ❌ The appliance is still one box in one building; performance sags as the office grows. <em>Survives today as:</em> office shared drives, home Synology boxes — and cloud file services (Google Drive is NAS's spiritual heir at planet scale).</span></button>
+      <button class="flip"><h5>late 1990s–2000s · SAN</h5><span class="hint">“The data center gets its own network!” — tap</span><span class="back"><strong>Storage area network:</strong> dedicated fabric serving raw BLOCKS; servers mount volumes as if local. ✅ Fast, pooled, grows independently of servers — databases love it. ❌ Enterprise-priced: specialized switches, HBAs, and a storage admin priesthood. <em>Survives today as:</em> the model behind cloud block storage (AWS EBS is "SAN as a service" — no priesthood required).</span></button>
+      <button class="flip"><h5>2006 → · Cloud storage</h5><span class="hint">“Storage as a utility.” — tap</span><span class="back"><strong>Storage as a metered service:</strong> S3 (2006) made capacity an API call — pay per GB-month, provider handles hardware, replication, durability. ✅ No ceiling, no arrays, geographic redundancy included. ❌ You now depend on connectivity, must watch egress/retrieval fees, and must still design backups (replication ≠ backup — Segment 2 explains). <em>Survives today as:</em> the default for everything new.</span></button>
+    </div>
+    <p class="note">Notice the pattern for the midterm: DAS→NAS decoupled data from one <em>user's machine</em>; NAS→SAN decoupled it from one <em>server</em>; cloud decoupled it from your <em>building entirely</em>.</p>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 2 ============ -->
+<section class="segment">
+  <h2><span class="segno">2</span> Block vs File vs Object — and Why Data Survives</h2>
+  <div class="card">
+    <h3>The three shapes of cloud storage</h3>
+    <p>Cloud providers sell storage in three shapes, and choosing correctly is half of your capstone storage plan. <strong>Block storage</strong> rents you raw volumes — numbered blocks with no built-in meaning — that a VM formats with its own filesystem. It is the low-latency choice: database files, VM boot disks, anything that rewrites small pieces of large files thousands of times per second. Cloud examples: AWS EBS, Azure Managed Disks. <strong>File storage</strong> rents a ready-made shared filesystem — folders, paths, permissions — that many machines and humans mount simultaneously: the cloud descendant of NAS (AWS EFS, Azure Files). It fits shared documents, home directories, legacy apps that expect "a drive letter." <strong>Object storage</strong> is the cloud-native shape with no pre-cloud ancestor: a flat namespace of <em>objects</em> — each a blob of bytes + metadata + a unique key — reached over HTTP (S3, Azure Blob, Google Cloud Storage). No hierarchy, no in-place edits: you write, read, or replace <em>whole objects</em>. In exchange you get practically infinite capacity, the lowest cost per GB, and extreme durability — perfect for images, video, backups, logs, and static websites.</p>
+    <p><strong>Common misconception:</strong> "an S3 bucket is just a big folder." The "folders" are an illusion — <code>covers/2026/book.jpg</code> is one flat key that merely contains slashes. There is no directory tree to walk, which is precisely <em>why</em> it scales to trillions of objects: nothing hierarchical ever has to be locked, listed, or rebalanced. And because you can't edit byte 5 of an object, a database cannot run on it — that's what block storage is for.</p>
+    <p><strong>Match the workload to its storage shape</strong> — click a card, then a zone:</p>
+    <div class="matcher" id="typeMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="block">PostgreSQL volume behind the Harbor Lane web store</button>
+        <button class="mcard" data-match="obj">40,000 product cover images served on the website</button>
+        <button class="mcard" data-match="file">Shared “Marketing” folder 12 store managers browse daily</button>
+        <button class="mcard" data-match="block">Boot disk for a Windows VM</button>
+        <button class="mcard" data-match="obj">Nightly compressed database backups, kept 7 years</button>
+        <button class="mcard" data-match="file">Legacy label-printing app that requires a mapped <code>P:</code> drive</button>
+        <button class="mcard" data-match="obj">Video recordings of author events, streamed on demand</button>
+        <button class="mcard" data-match="block">POS transaction disk needing sub-millisecond writes</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="block">🧱 Block<small>raw volumes · low latency · one server at a time</small></button>
+        <button class="mzone" data-zone="file">📁 File<small>shared folders · many users · paths &amp; permissions</small></button>
+        <button class="mzone" data-zone="obj">🪣 Object<small>HTTP blobs · infinite scale · cheapest per GB</small></button>
+      </div>
+      <p class="mstatus">0/8 placed</p>
+    </div>
+    <h3>Replication &amp; durability: the eleven nines</h3>
+    <p>Why trust a provider with your only copy of anything? Because it's never one copy. Cloud object stores write every object to <strong>multiple devices across multiple availability zones</strong> — separate buildings with separate power, cooling, and networks — and continuously verify checksums, re-copying anything that degrades. The famous durability figure, <strong>99.999999999% ("eleven nines")</strong>, means: store 10 million objects and statistically expect to lose one every 10,000 years. Compare that to the USB drive in Rosa's flooded closet from Session 1. Two distinctions the midterm loves: <strong>durability ≠ availability</strong> (durability = your data still exists; availability = you can reach it right now — an outage can make durable data temporarily unreachable), and <strong>replication ≠ backup</strong> (replication faithfully copies your <em>mistakes</em> too — delete a file or get hit by ransomware, and all replicas update instantly; only versioning/backup lets you rewind).</p>
+    <h3>💥 Interactive: Try to Lose the Data</h3>
+    <p>Three replicas of Harbor Lane's product-image bucket. Break things and watch the system respond — then flip the scenario and see why <em>where</em> the replicas live matters as much as how many there are:</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+      <button class="btn small" id="rmAZ">🌎 3 separate buildings (AZs)</button>
+      <button class="btn ghost small" id="rmOne">🏢 All 3 in one building</button>
+    </div>
+    <div class="repl">
+      <div class="rnode" id="rn0"></div>
+      <div class="rnode" id="rn1"></div>
+      <div class="rnode" id="rn2"></div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><b id="kAlive">3</b><small>copies alive</small></div>
+      <div class="kpi"><b id="kData" style="color:var(--ok)">SAFE</b><small>your data</small></div>
+      <div class="kpi"><b id="kKilled">0</b><small>failures survived</small></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="btnKill">💥 Kill a replica</button>
+      <button class="btn ghost" id="btnFlood" style="display:none">🌊 Flood the building</button>
+      <button class="btn ghost" id="btnRepReset">↺ Reset</button>
+    </div>
+    <div class="rlog" id="repLog"><div>&gt; replication monitor online. 3/3 replicas healthy.</div></div>
+    <p class="note">Watch the log: after each failure, reads keep flowing from the survivors and a fresh replica re-syncs itself within seconds. Count what the "copies alive" KPI shows <em>right after</em> a kill — Lab A asks.</p>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 3 ============ -->
+<section class="segment">
+  <h2><span class="segno">3</span> Tiers, Backup &amp; Compliance</h2>
+  <div class="card">
+    <h3>Hot, cool, archive: paying for access, not just space</h3>
+    <p>Cloud storage pricing has a second axis people miss: not just <em>how much</em> you store, but <em>how often you touch it</em>. The <strong>hot tier</strong> costs the most per GB but reads instantly and freely — for data in active use. The <strong>cool tier</strong> (a.k.a. infrequent access) cuts the per-GB price roughly in half in exchange for per-GB <em>retrieval fees</em> and minimum storage durations — for data touched monthly, not hourly. The <strong>archive tier</strong> is the deep freeze: around a dollar per TB-month, but restores can take hours and retrieval fees are steep — for data you keep because you must (compliance, history), not because you use it. <strong>Lifecycle policies</strong> automate the demotion: "move objects untouched for 30 days to cool; after 180, to archive; delete after 7 years." Set once, save forever.</p>
+    <p><strong>Common misconception:</strong> "archive everything, save 95%!" The tier prices <em>assume</em> your access pattern matches the tier. Put weekly-used data in archive and you'll pay retrieval fees that dwarf the storage savings — and wait hours, every week, for your own files. The simulator below has a verdict line that catches exactly this mistake; Lab A makes you find the break-even point yourself.</p>
+    <h3>🎛️ Interactive: The Storage Tier Cost Simulator</h3>
+    <p>Model prices (rounded from real public price sheets): <strong>hot $23</strong>/TB·mo · <strong>cool $12</strong>/TB·mo · <strong>archive $1</strong>/TB·mo · archive retrieval <strong>$30 per TB restored</strong>. Drag the sliders and watch the bill react:</p>
+    <p class="sliderrow">🔥 Hot tier: <span id="vHot" style="color:var(--pri)">2</span> TB</p>
+    <input type="range" id="tHot" min="0" max="50" step="1" value="2">
+    <p class="sliderrow">🌤️ Cool tier: <span id="vCool" style="color:var(--pri)">20</span> TB</p>
+    <input type="range" id="tCool" min="0" max="200" step="5" value="20">
+    <p class="sliderrow">🧊 Archive tier: <span id="vArch" style="color:var(--pri)">50</span> TB</p>
+    <input type="range" id="tArch" min="0" max="500" step="10" value="50">
+    <p class="sliderrow">↩️ Restored from archive: <span id="vRetr" style="color:var(--pri)">1</span> TB/month</p>
+    <input type="range" id="tRetr" min="0" max="20" step="1" value="1">
+    <div class="kpis">
+      <div class="kpi"><b id="kHot">$46</b><small>hot storage /mo</small></div>
+      <div class="kpi"><b id="kCool">$240</b><small>cool storage /mo</small></div>
+      <div class="kpi"><b id="kArch">$50</b><small>archive storage /mo</small></div>
+      <div class="kpi"><b id="kRetr">$30</b><small>retrieval fees /mo</small></div>
+      <div class="kpi"><b id="kTot">$366</b><small>TOTAL /mo</small></div>
+      <div class="kpi"><b id="kAllHot">$1,656</b><small>if everything were hot</small></div>
+    </div>
+    <p class="note" id="tierVerdict"></p>
+    <h3>Cloud backup and the 3-2-1 rule</h3>
+    <p>Backup is the discipline replication can't replace. The industry's memorable minimum is <strong>3-2-1</strong>: keep <strong>3</strong> copies of anything that matters, on <strong>2</strong> different types of media or services, with <strong>1</strong> copy offsite (and ideally offline or immutable, so ransomware can't reach it). Example for Harbor Lane's POS database: the live database (copy 1), a nightly backup to cloud object storage with versioning (copy 2, different service, offsite ✓), and a weekly export to an immutable archive bucket with object lock (copy 3 — can't be altered even by an administrator's stolen credentials). Two habits separate professionals from victims: <strong>versioning</strong> (so you can rewind to before the mistake — sync alone rewinds nothing) and <strong>test restores</strong> ("a backup isn't a backup until you've restored from it" — schedule a quarterly restore drill or assume the worst).</p>
+    <h3>Industry-specific concerns: storage with a lawyer attached</h3>
+    <p>Regulated industries attach concrete rules to storage: <strong>PCI-DSS</strong> governs card data (Harbor Lane's POS!), <strong>HIPAA</strong> health records, <strong>FERPA</strong> student records; finance faces multi-year <strong>retention schedules</strong> (typically ~7 years for financial records), and many jurisdictions add <strong>data residency</strong> rules about which country bytes may live in. Cloud tools that answer these: region selection (residency), retention policies and legal hold, <strong>object lock / WORM</strong> ("write once, read many" — immutable until the clock expires), and encryption with customer-managed keys. The skill Objective 6 wants: classify data first, then choose type + tier + region + retention <em>per class</em> — exactly what Lab C's register practices.</p>
+  </div>
+</section>
+
+<!-- ============ AI SPOTLIGHT ============ -->
+<section class="card ai">
+  <h3>🧠 AI Concept of the Day · Embeddings, Vector Databases &amp; RAG — storage that understands meaning</h3>
+  <p class="note" style="margin-top:-4px"><strong>AI concepts track:</strong> every session teaches one real AI concept through that day's cloud objective. Today, while differentiating storage solutions for Objective 6, you learn the storage type AI quietly added to the catalog — and RAG, the retrieval pattern that lets a chatbot answer from documents it was never trained on.</p>
+  <p>This session gave you block, file, and object storage. AI has quietly added a fourth shape to the market: the <strong>vector database</strong>. Here's the problem it solves. Keyword search finds <em>spelling</em>: search a bookstore's help docs for "return policy" and you'll miss the page titled "refunds &amp; exchanges." AI search finds <em>meaning</em>, and it does so with <strong>embeddings</strong>: a model reads any text (or image, or audio) and outputs a vector — a list of hundreds of numbers — positioned so that similar <em>meanings</em> land at nearby coordinates. "Return policy" and "refunds &amp; exchanges" become neighbors in that space even though they share almost no letters. A vector database (Pinecone, Weaviate, pgvector, Chroma…) is a storage engine built for one query the others can't do efficiently: <em>"here's a vector — find its nearest neighbors among millions, in milliseconds."</em></p>
+  <p><strong>Where the bytes actually live:</strong> an embedding is just a list of numbers — <em>coordinates of meaning</em>, typically a few hundred to a few thousand per item — so "similar meaning = nearby points" becomes geometry a computer can search. Nobody reads coordinates, though, so production systems split the job in two, exactly the way Objective 6 taught you to differentiate: the <strong>originals</strong> (PDFs, product pages, images) live in cheap, durable <strong>object storage</strong>, while the <strong>meaning-index</strong> — millions of embeddings under a specialized nearest-neighbor index — lives in the vector database, each vector carrying the key of the object it describes. Ask a question, search the index, follow the keys back to the source documents. The vector DB is a genuinely <em>new</em> storage type standing beside block, file, and object in modern architecture diagrams: a store optimized not for exact lookups or transactions, but for the question "what is <em>closest in meaning</em> to this?"</p>
+  <p><strong>RAG in one paragraph:</strong> Retrieval-Augmented Generation is how chatbots get grounded in <em>your</em> data without retraining. Your documents are chunked and embedded into a vector DB once. At question time: embed the user's question → retrieve the top-matching chunks → paste them into the prompt → the model answers <em>from those chunks</em>, ideally citing them. That's how Harbor Lane's future book-recommendation bot can know the owner's quirky store policies and this month's inventory: the knowledge lives in a retrievable store the business controls — updatable daily, auditable, and never shipped off to train someone else's model — and hallucination drops because the model quotes retrieved text instead of improvising.</p>
+  <p><strong>The misconception to kill: "when I upload my documents, the model memorizes them."</strong> It doesn't. Uploading changes <em>storage</em>, never the model — the billions of parameters that took months of GPU training to learn (Session 1) stay frozen; your documents are chunked, embedded, and <strong>retrieved at question time</strong>, every single time. That's why RAG knowledge can be updated this morning (re-embed one document), deleted on request (drop it from the index), and permission-checked per user at retrieval — none of which retraining can offer. The professional judgment call that follows is <strong>RAG vs. fine-tuning</strong>: retrieval for <em>knowledge</em> that changes (inventory, policies, this morning's memo), fine-tuning/retraining for <em>skills, style, and vocabulary</em> the model should exhibit permanently. Sort Harbor Lane's requests — click a card, then a zone:</p>
+  <div class="matcher" id="ragMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="rag">Harbor Lane adds 40 new titles every week — the bot must recommend them the day they arrive</button>
+      <button class="mcard" data-match="tune">The model keeps making grammar mistakes in its Spanish-language replies</button>
+      <button class="mcard" data-match="rag">Answer staff questions from this morning's memo about the new refund process</button>
+      <button class="mcard" data-match="tune">Teach the model the book trade's core vocabulary (remainders, galleys, co-op) permanently</button>
+      <button class="mcard" data-match="rag">Quote today's price and stock level for any book, with a citation</button>
+      <button class="mcard" data-match="tune">Make every reply match Harbor Lane's warm, bookish house style by default</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="rag">📚 Use RAG<small>changing knowledge — retrieve at question time</small></button>
+      <button class="mzone" data-zone="tune">🛠️ Retrain / fine-tune<small>permanent skills &amp; style — bake into parameters</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+  <h3>🧸 Toy Demo: Similarity as a Number</h3>
+  <p>Type two phrases; the page computes an overlap score from shared <strong>character pairs</strong> (bigrams). <strong>⚠️ This is a TOY</strong> — it runs entirely in this page and only sees spelling. That limitation is the whole lesson: watch it fail on synonyms, then imagine the version that doesn't.</p>
+  <input class="bigin" id="simA" type="text" value="car" aria-label="First phrase">
+  <input class="bigin" id="simB" type="text" value="automobile" aria-label="Second phrase" style="margin-top:6px">
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0">
+    <button class="btn ghost small simset" data-a="car" data-b="automobile">car vs automobile</button>
+    <button class="btn ghost small simset" data-a="car" data-b="cart">car vs cart</button>
+    <button class="btn ghost small simset" data-a="return policy" data-b="refunds and exchanges">return policy vs refunds</button>
+    <button class="btn ghost small simset" data-a="cloud storage" data-b="storage in the cloud">cloud storage vs storage in the cloud</button>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b id="kSim">0%</b><small>bigram similarity (toy)</small></div>
+    <div class="kpi"><b id="kShared">0</b><small>shared character pairs</small></div>
+  </div>
+  <div class="bar" style="height:14px"><span id="simBar"></span></div>
+  <p class="note" id="simNote"></p>
+  <p class="note"><strong>The punchline:</strong> this toy scores <em>car vs cart</em> high (shared letters) and <em>car vs automobile</em> at zero (no shared letters) — the exact opposite of what a search user wants. Real embeddings, trained on billions of sentences, score <em>car ≈ automobile</em> as near-twins because they encode meaning, not spelling. Storing and searching those meaning-coordinates at scale is why vector databases exist — a storage category that didn't exist when the classic block/file/object catalog was drawn up, and it now sits beside block, file, and object in every AI architecture diagram.</p>
+</section>
+
+<!-- ============ LEARN IT WITH AI ============ -->
+<section class="card ai">
+  <h3>🎓 Learn Objective 6 with AI (part 1: storage) — personal tutor drills</h3>
+  <p><strong>Objective 6: Differentiate the different Data Storage and collaboration solutions in the Cloud.</strong> Today covers the storage half — collaboration completes the objective next session. Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor. Log every drill in your AI Use Log.</p>
+  <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you from DAS all the way to the archive tier:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for my cloud computing course. Topic: Session 5 —
+Data Storage in the Cloud. Cover: the
+DAS → NAS → SAN → cloud storage evolution (and what each era decoupled),
+block vs file vs object storage, hot/cool/archive tiers and retrieval
+fees, and replication vs backup (durability, versioning, the 3-2-1 rule).
+Ask me ONE question at a time, easy to hard, 10 questions total. After
+each of my answers, tell me exactly what I got right or wrong before
+asking the next one. Finish with a summary of my weak spots and which
+of those topics I should restudy first.</pre></div>
+  <p><strong>Drill 2 · Architect's whiteboard</strong> — your real data, your placements, the AI grades:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Architect's whiteboard drill. I will describe 3 collections of data from
+my own life (for example: phone photos, game saves, schoolwork, video
+projects). For EACH collection, first ask me 2 clarifying questions a
+storage architect would ask (how often do I open it? how big is it? how
+bad would losing it be?) — ONE question at a time, waiting for my answer.
+THEN make me commit: I must place that collection on a storage type
+(block / file / object) and a tier (hot / cool / archive), plus a backup
+answer, with my reasoning. Grade every placement strictly:
+right or wrong, why, and what a professional would choose instead. Do all
+3 collections, then give me a score out of 3 and my one weakest concept.</pre></div>
+  <p><strong>Drill 3 · Quiz master</strong> — storage-choice story problems in this course's exact style:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Quiz me with workplace story problems about cloud data storage
+(Session 5 of my cloud computing course). Each question: a named character in a
+realistic situation must choose between DAS/NAS/SAN or block/file/object
+storage or hot/cool/archive tiers — or spot the flaw in a backup plan
+(sync vs backup, replication vs versioning, the 3-2-1 rule). Options A–D.
+ONE question at a time; after I answer, explain why EVERY option is right
+or wrong, then ask the next. 6 questions, track my score, get harder as I
+improve.</pre></div>
+  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify the tutor:</strong> AI tutors love to claim "sync is a backup" or misquote archive retrieval fees and the 3-2-1 rule. Cross-check one claim it made against the tier simulator and Segment 3 above, and note in your log whether it held up.</span></label>
+  <p class="note">Part 2 of Objective 6 — collaboration — gets its own drills next session, along with a full midterm coach. Free tier is plenty.</p>
+</section>
+
+<!-- ============ LABS ============ -->
+<h2>🔬 Hands-On Labs</h2>
+
+<section class="card lab">
+  <p class="labno">LAB A · IN-PAGE SIMULATOR · ~25 MIN</p>
+  <h3>The Tier Detective Challenge</h3>
+  <p>Use the tier cost simulator and replication visualizer above. Type your answers and check them:</p>
+  <label class="step"><input type="checkbox" data-step="a1"><span>Set the sliders to <strong>hot 5 · cool 20 · archive 100 · restored 0</strong>. Record the TOTAL monthly cost.</span></label>
+  <div class="checkfield">→ Total at 5/20/100/0: $<input type="number" id="labA1"> <button class="btn small" onclick="checkA(1)">Check</button> <span class="fb" id="fbA1"></span></div>
+  <label class="step"><input type="checkbox" data-step="a2"><span>Keep <strong>archive at 100 TB</strong>. Raise "restored from archive" 1 TB at a time: at how many TB/month does the retrieval fee FIRST exceed the archive storage cost?</span></label>
+  <div class="checkfield">→ Restored TB/month: <input type="number" id="labA2"> <button class="btn small" onclick="checkA(2)">Check</button> <span class="fb" id="fbA2"></span></div>
+  <label class="step"><input type="checkbox" data-step="a3"><span>Replication visualizer, 🌎 3-buildings mode: press 💥 once. What does "copies alive" read <em>immediately after</em> the kill (before self-heal finishes)?</span></label>
+  <div class="checkfield">→ Copies alive right after a kill: <input type="number" id="labA3"> <button class="btn small" onclick="checkA(3)">Check</button> <span class="fb" id="fbA3"></span></div>
+  <label class="step"><input type="checkbox" data-step="a4"><span>Poll 3, now with vocabulary: which storage TYPE should hold the 40,000 product images? (one word)</span></label>
+  <div class="checkfield">→ Storage type: <input type="text" id="labA4" placeholder="block / file / object"> <button class="btn small" onclick="checkA(4)">Check</button> <span class="fb" id="fbA4"></span></div>
+  <label class="step"><input type="checkbox" data-step="a5"><span>Switch the visualizer to 🏢 one-building mode and press 🌊. In your notebook, one sentence: what single design decision turned three copies into zero protection?</span></label>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB B · FREE AI CHATBOT · ~15 MIN · 🆓 ChatGPT / Gemini / Claude / Copilot (any free tier)</p>
+  <h3>Design a 3-2-1 Backup Plan — with an AI Junior Analyst</h3>
+  <p>Open any free AI chatbot and paste:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>You are a cloud storage consultant. Harbor Lane Books (a 12-store bookstore
+chain running everything from one aging server closet) has four data sets:
+1) a 900 GB POS/orders database (busy all day),
+2) 350 GB of product and event images used by the web store,
+3) a 1.2 TB office file share (12 stores, daily use),
+4) 7 years of financial records: 2 TB, opened maybe twice a year, must be
+   tamper-proof for auditors.
+Design a storage and backup plan that follows the 3-2-1 rule. For EACH data
+set give me: storage type (block / file / object), tier (hot / cool /
+archive), where each of the three copies lives, and one sentence on what
+goes wrong if we skip the offsite copy. Present it as a table, then explain
+the 3-2-1 rule in two sentences a bookstore owner would understand.</pre></div>
+  <p><strong>What to look for:</strong> the database on block + hot; images on object; the financial records on archive with immutability (object lock/WORM); at least one copy versioned or offline so ransomware can't reach it.</p>
+  <label class="step"><input type="checkbox" data-step="b1"><span>Run the prompt and read the table like a reviewer, not a fan. Did it confuse replication with backup anywhere?</span></label>
+  <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> check TWO things against this page — (1) its statement of the 3-2-1 rule (exactly 3 copies / 2 media / 1 offsite?), and (2) its tier for the 7-year financial records (should be archive — if it said hot or cool, challenge it and record its correction).</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — RAG in miniature:</strong> open a fresh chat and paste these three invented policy snippets, exactly as written: <em>"POLICY A: Harbor Lane staff may borrow up to 2 books for 14 days; new releases are excluded for their first 60 days. POLICY B: Author-event tickets are refunded automatically if WE cancel; customer cancellations receive store credit only. POLICY C: Damaged books are marked down 40% on the last Friday of each month."</em> Then ask: <em>"Using ONLY the policies above: when do damaged books get discounted, and by how much?"</em> — watch it answer from your pasted text (grounding: that's retrieval-then-generation, the step a vector database automates at scale). Now ask: <em>"Using ONLY the policies above: what is the staff discount on coffee?"</em> — watch it either admit the policies don't say (good) or invent an answer (hallucination). Log both outputs and one sentence on what this proves about where a RAG bot's knowledge really lives.</span></label>
+  <label class="step"><input type="checkbox" data-step="b3"><span>Add the prompt + what you verified/corrected to your <strong>AI Use Log</strong>.</span></label>
+</section>
+
+<section class="card lab">
+  <p class="labno">LAB C · REAL FREE TOOL · ~20 MIN · 🆓 Google Sheets (free Google account)</p>
+  <h3>Harbor Lane's Data Classification Register</h3>
+  <p>Objective 6 says <em>differentiate</em> storage solutions — professionals do that with a classification register, and it's a required exhibit in Deliverable D2. Build it for real:</p>
+  <label class="step"><input type="checkbox" data-step="c1"><span>Create a new Google Sheet named <code>HarborLane-DataRegister</code>. Header row: <strong>Data set · Contains personal data? · Storage type · Tier · Retention · Who can access</strong>.</span></label>
+  <label class="step"><input type="checkbox" data-step="c2"><span>Add these six rows and classify each using today's vocabulary: <em>POS/orders database · product images · CCTV footage (30-day cycle) · payroll records · customer email list · author-event videos</em>.</span></label>
+  <label class="step"><input type="checkbox" data-step="c3"><span>Make the "Storage type" and "Tier" columns dropdowns (select the cells → Insert → Dropdown) with the allowed values — data validation is how real registers stay clean.</span></label>
+  <label class="step"><input type="checkbox" data-step="c4"><span>Add conditional formatting: any row where "Contains personal data?" = yes turns light red — one glance shows where PCI/privacy rules apply.</span></label>
+  <label class="step"><input type="checkbox" data-step="c5"><span>Keep the sheet easy to find (rename it, star it, or move it into a course folder in Drive) — this file goes straight into D2 next session.</span></label>
+</section>
+
+<!-- ============ STORY QUIZ ============ -->
+<h2>📝 Session Quiz — Story Problems</h2>
+<p>Ten workplace scenarios — the last two test today's AI concept. Pick the best answer; every question explains all four options after you answer. Counts toward the syllabus "Exercises/Quizzes" grade (30%).</p>
+<section class="quiz" id="quiz1">
+
+  <div class="q" data-a="1">
+    <h4>Q1 · <em>The full server</em></h4>
+    <p class="stem">Dr. Okafor's dental practice stores 14 years of patient imaging on disks inside the front-office server — classic direct-attached storage. The drives are now 91% full, the imaging software crawls, and when the server rebooted for updates last Tuesday, no one in the building could open a single X-ray for 40 minutes. Her IT contractor proposes "just buying a second server with its own disks for the new images." What fundamental DAS limitation does that proposal fail to fix?</p>
+    <button class="opt">A. DAS disks are slower than network storage in every situation</button>
+    <button class="opt">B. Storage stays chained to individual machines — capacity, access, and uptime all depend on one box, and a second box just creates a second island</button>
+    <button class="opt">C. DAS cannot store medical images for legal reasons</button>
+    <button class="opt">D. Direct-attached disks cannot be backed up</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ The 40-minute X-ray blackout is the tell: with DAS, data's fate is welded to one machine's fate. A second server doubles capacity but also doubles the islands — now staff must know which box holds which year, each box is still a single point of failure, and each grows only as large as its own chassis. The evolutionary fix is shared storage (NAS/SAN) or cloud storage, which decouple data from any one machine. ✘ A is false — locally attached disks are typically the <em>fastest</em> option (that's why cloud VMs still use local disks for scratch data); speed isn't DAS's flaw, isolation is. ✘ C — no law forbids DAS for medical images; regulations govern protection and retention, not cable type. ✘ D — DAS backs up fine; the problem is it usually depends on someone remembering (Session 1's Rosa had a USB "backup").</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q2 · <em>Thirty accountants, one drive letter</em></h4>
+    <p class="stem">Marisol runs IT for a 30-person accounting firm in Fort Myers. Staff currently email spreadsheets to each other; version chaos is constant. She wants one central place where every employee's computer sees the same shared folders with permissions — "the S: drive experience" — served from a device on the office network she can back up centrally. She is NOT running databases and has no data-center budget. Which technology matches her need?</p>
+    <button class="opt">A. A storage area network (SAN) with Fibre Channel switches</button>
+    <button class="opt">B. More direct-attached disks in each accountant's PC</button>
+    <button class="opt">C. Raw block volumes mounted to each workstation</button>
+    <button class="opt">D. Network-attached storage (NAS) serving files over SMB/NFS</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Shared folders, many simultaneous users, permissions, central backup, modest budget — that is the NAS use case verbatim: a file-serving appliance on the LAN speaking file-level protocols. (Her likely next step, a cloud file service, is NAS's descendant — same file abstraction, different building.) ✘ A — a SAN serves <em>blocks</em> over a dedicated fabric at enterprise cost; it's built for database servers and hypervisors, not for thirty accountants who need "the S: drive," and block volumes aren't safely shareable between ordinary workstations anyway. ✘ B doubles down on the email-attachment disease: thirty private islands, zero shared truth, thirty backup chores. ✘ C repeats the SAN category error at retail scale — raw blocks have no shared-folder semantics or permissions; each workstation would just see an unformatted disk.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q3 · <em>The gallery goes viral</em></h4>
+    <p class="stem">StreetSnap, a photo-sharing startup, stores user photos as files on one big cloud file share. At 2 million photos the listing operations are slowing; at their growth rate they'll hit 80 million photos within two years. Photos are uploaded once, never edited, and served to browsers over HTTP millions of times a day. CTO Amara asks where the photos should live long-term. What should you recommend, and why?</p>
+    <button class="opt">A. Object storage — write-once/read-many blobs served over HTTP, near-infinite flat namespace, lowest cost per GB, with built-in multi-AZ durability</button>
+    <button class="opt">B. Block storage volumes — databases are fast, so photos on raw volumes will be fast too</button>
+    <button class="opt">C. A bigger file share — file systems are the natural home for anything called a "file"</button>
+    <button class="opt">D. Keep photos in RAM caches only, since they're read so often</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Uploaded once, never edited in place, read over HTTP at massive scale — that's the object-storage profile line by line. A flat keyspace has no directory tree to lock or rebalance, which is exactly why it scales to billions of objects, and per-GB pricing plus eleven-nines durability fits a startup's budget and paranoia. ✘ B — block volumes attach to one server at a time, cap out at volume-size limits, and make the app do all the serving work; you'd be rebuilding object storage badly on top of raw disks. ✘ C mistakes the word "file" for the workload: hierarchical filesystems slow precisely on enormous flat collections (their 2-million-photo symptom is the early warning). ✘ D — RAM is a <em>cache</em>, thousands of times pricier per GB and gone on reboot; caches sit in front of durable storage, never instead of it.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q4 · <em>The sluggish checkout</em></h4>
+    <p class="stem">Harbor Lane's new cloud POS backend commits every sale to a PostgreSQL database that rewrites thousands of small pieces of its data files every minute. A junior architect, eager to save money after this morning's lecture, proposes hosting the database's live data files directly in object storage: "It's 23× cheaper per GB than the disks we're renting!" Why must you overrule him?</p>
+    <button class="opt">A. Object storage is less durable than block storage</button>
+    <button class="opt">B. Databases are illegal to run in the cloud under PCI-DSS</button>
+    <button class="opt">C. Databases need low-latency, in-place partial writes to open files — block storage's specialty — while object storage only replaces whole objects over HTTP</button>
+    <button class="opt">D. Object storage cannot hold files larger than 1 GB</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ A live database engine constantly seeks and rewrites small regions inside big open files, demanding sub-millisecond block-level I/O — precisely what block volumes (the cloud's "SAN as a service") provide. Object storage offers no in-place edits: changing one byte means re-uploading the whole object over HTTP, so the "cheaper" plan would make every sale take seconds and corrupt consistency guarantees besides. Right tool, right shape: block for the live DB, object for its <em>backups</em>. ✘ A is backwards — object stores' multi-AZ replication typically makes them the durability champion; durability was never the issue. ✘ B — PCI-DSS regulates protecting cardholder data, not banning cloud databases; thousands of banks run them. ✘ D — object stores handle multi-terabyte objects; invented limits don't win design reviews.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q5 · <em>Selling the nines</em></h4>
+    <p class="stem">During the D2 pitch rehearsal, Harbor Lane's skeptical owner reads the slide aloud: "Product images stored with 99.999999999% durability." He squints: "Eleven nines. Does that mean the website never goes down?" Consultant Jocelyn has one sentence to answer correctly. Which is it?</p>
+    <button class="opt">A. "Yes — eleven nines means at most a few seconds of downtime per year."</button>
+    <button class="opt">B. "No — durability means the data itself essentially never gets LOST (store 10 million objects, expect one loss in ~10,000 years); availability, whether we can reach it right now, is a separate, lower number."</button>
+    <button class="opt">C. "It means every object is encrypted eleven different ways."</button>
+    <button class="opt">D. "It's marketing — the real number can't be estimated."</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Durability and availability are different promises with different math: durability says the bytes survive (achieved by replicating across devices and availability zones and continuously re-verifying checksums); availability says you can reach them this second (typically quoted around 99.9x% — a real but temporary outage risk). A provider outage can make perfectly durable data briefly unreachable — annoying, not fatal. Jocelyn's owner needs exactly that distinction before he repeats the slide to his bank. ✘ A confuses the two concepts — eleven nines describes loss probability, not uptime, and no one sells eleven-nines availability. ✘ C — encryption is a security control, orthogonal to durability; "eleven ways" is numerology. ✘ D — the estimate comes from published replication design and device failure statistics; "can't be estimated" is a dodge, and consultants who dodge get replaced.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q6 · <em>The CFO's frozen reports</em></h4>
+    <p class="stem">TrendMart's CFO, Bram, read that archive storage costs "$1 a terabyte" and ordered ALL 60 TB of company data — including the sales-reporting datasets analysts query every Monday — moved to the archive tier. Two months later he's furious: the monthly storage line shrank, but the total storage bill nearly doubled, and analysts wait hours each Monday for datasets to "thaw." What did Bram miss about storage tiers?</p>
+    <button class="opt">A. Archive tiers are only legal for government data</button>
+    <button class="opt">B. Archive tiers silently delete data after 90 days</button>
+    <button class="opt">C. The $1/TB price was a limited-time promotion</button>
+    <button class="opt">D. Tier prices assume a matching access pattern — archive charges steep per-TB retrieval fees and takes hours to restore, so weekly-used data generates fees that dwarf the storage savings</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ This is the tier trap from Segment 3 and your Lab A break-even exercise: archive's rock-bottom per-GB price is subsidized by retrieval fees and restore latency. Data touched every Monday belongs in hot (or at coolest, cool); a lifecycle policy should demote only what genuinely goes untouched — Bram paid retrieval on the same "cold" data 8+ times. The fix: classify by access pattern first, then tier — never the reverse. ✘ A — archive tiers are ordinary commercial products with no government restriction. ✘ B — archive tiers have minimum storage <em>durations</em> (early-deletion fees), the opposite of silent deletion; nothing is discarded. ✘ C — the ~$1/TB-month figure is standard published pricing, not a promotion; the price was real, and so were the fees printed beside it that nobody read.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q7 · <em>The backup that wasn't</em></h4>
+    <p class="stem">Ransomware hits Coastal Realty at 6:14 AM Friday, encrypting every file on the office server. Office manager Denise stays calm — "we're fine, everything syncs to our cloud drive." She opens the cloud drive: every file there is encrypted too. The sync client dutifully uploaded each encrypted file within seconds of the attack. Total loss? Not quite — what SINGLE capability, had it been in place, would rescue Coastal Realty this morning, and why didn't sync provide it?</p>
+    <button class="opt">A. Versioning / true backup — point-in-time copies that let you rewind to 6:13 AM; sync can't help because it replicates every change, including the attack itself</button>
+    <button class="opt">B. RAID across the office server's disks</button>
+    <button class="opt">C. More replicas of the cloud drive in additional regions</button>
+    <button class="opt">D. Moving the synced files to the archive tier for safety</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Sync's job is to make all copies identical <em>fast</em> — which on attack day means industrializing the damage. Versioned backup (or a backup service with point-in-time restore) keeps immutable history, so Denise rolls the whole share back to 6:13 AM and the ransom note becomes a war story. This is the sync-vs-backup distinction from Poll 1, now with payroll on the line; it's also why 3-2-1 wants one copy offline or immutable. ✘ B — RAID protects against <em>disk hardware failure</em>; it faithfully stores encrypted garbage with excellent redundancy. ✘ C — more replicas means more perfect copies of the attack; replication ≠ backup, in bold, on the midterm. ✘ D — tiering changes price and latency, not history; an encrypted file in archive is just cheaper encrypted garbage that takes hours to retrieve.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q8 · <em>Seven years, untouchable</em></h4>
+    <p class="stem">Harbor Lane's accountant, Mr. Whitaker, drops a requirement on you, the consultant: financial records must be kept for seven years, must be producible for auditors within a business day or two, are opened at most twice a year — and, after a franchise lawsuit he'd rather not discuss, must be provably unalterable, even by whoever holds the admin password. Which storage design meets ALL of it?</p>
+    <button class="opt">A. Hot-tier object storage, so auditors get the files instantly, with a shared admin folder for convenience</button>
+    <button class="opt">B. The office NAS, with a sticky note asking staff not to modify the records folder</button>
+    <button class="opt">C. Archive-tier object storage with object lock (WORM) and a 7-year retention policy — immutable until the clock expires, pennies per GB, restored within hours when auditors call</button>
+    <button class="opt">D. Delete records after one year to minimize what auditors can request</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Map each requirement to a feature: 7-year retention → lifecycle/retention policy; twice-a-year access with day-scale tolerance → archive tier (hours-long restores are fine, and ~$1/TB-month keeps Whitaker smiling); provable unalterability → object lock/WORM, which even a compromised administrator credential cannot override until the retention clock expires. This is compliance storage as a checklist, and it drops straight into your D2 deliverable. ✘ A pays hot prices ~23× over for files opened twice a year and — worse — a writable shared folder fails the "unalterable" requirement outright. ✘ B — a sticky note is not a control; NAS files are one bad click or one disgruntled admin from silent edits, and the lawsuit taught Whitaker exactly that. ✘ D is destruction of records with a retention obligation — a legal catastrophe, not a storage strategy.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q9 · <em>The Monday-morning oracle</em> 🧠 AI concept</h4>
+    <p class="stem">Cielo Insurance publishes a brand-new claims policy to its document portal Monday at 9:00 AM. At 9:20, an adjuster asks the company's AI assistant about hail-damage deductibles — and gets the NEW policy, quoted correctly, with a link to the source document. CTO Rios is baffled: "Training a model takes weeks of GPUs and a fortune, and we changed nothing this weekend. How can it know a document that's twenty minutes old?" What's the correct explanation?</p>
+    <button class="opt">A. The vendor secretly retrains the model every night on all customer documents</button>
+    <button class="opt">B. The model memorized the policy at upload, permanently updating its parameters</button>
+    <button class="opt">C. A lucky guess — the model inferred the new deductible from older policies in its training data</button>
+    <button class="opt">D. RAG: the new document was chunked and embedded into the vector index when published; at 9:20 the assistant embedded the QUESTION, retrieved the nearest chunks — including the new policy — and generated its answer from that retrieved text, citing it</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Retrieval-Augmented Generation separates knowledge from the model: the parameters stayed frozen all weekend — what changed was the <em>index</em>. Embedding one document takes seconds and pennies, and every question triggers a fresh nearest-neighbor search, so "twenty minutes old" is no harder than "twenty months old." The citation link is the tell: grounded answers can point at their source. ✘ A — nightly retraining of a large model per customer is economically absurd (Session 1's training-vs-inference math); no vendor does it. ✘ B is today's misconception verbatim: uploads change storage, never parameters. ✘ C — guessing from stale training data would produce the OLD deductible, fluently (a hallucination risk), and it cannot explain a working link to a document that didn't exist last week.</div>
+  </div>
+
+  <div class="q" data-a="0">
+    <h4>Q10 · <em>Two stores for one bot</em> 🧠 AI concept</h4>
+    <p class="stem">Architect Lena is designing the storage layer for Harbor Lane's book-recommendation bot. Two very different data sets: (1) the originals — 40,000 cover images and 9,000 publisher PDFs, written once and served to browsers; (2) an embedding vector for every book description, hit with a nearest-neighbor search on every recommendation request, all day. A junior dev shrugs: "Put everything in one system — simpler." Applying Objective 6 — differentiate storage solutions — what should Lena build?</p>
+    <button class="opt">A. Originals in object storage (cheap, durable, HTTP-served blobs) and embeddings in a vector database built for millisecond nearest-neighbor search — two purpose-built stores linked by shared object keys</button>
+    <button class="opt">B. Everything inside the vector database, including the images and PDFs as binary blobs</button>
+    <button class="opt">C. Everything on one big block-storage volume attached to the bot's server</button>
+    <button class="opt">D. Embeddings in the archive tier — vectors are tiny, so the cheapest tier wins</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Session 5's whole skill, applied to an AI workload: match each data set's access pattern to the store built for it. Write-once/read-many blobs over HTTP is object storage's exact profile (Q3's StreetSnap logic); millions of "what's closest in meaning?" queries is the one job vector databases exist for. Shared keys stitch them together — find neighbors in the index, fetch originals from the bucket. ✘ B misuses a specialized index as a blob store: vector DBs price and optimize for vectors, and gigabytes of images bloat both the index and the invoice. ✘ C chains both data sets to one machine — Session 5's DAS island reborn — while paying low-latency block prices for cold PDFs. ✘ D confuses size with temperature: archive trades <em>hours</em> of retrieval latency for pennies, and a search index consulted on every request is the hottest data in the system.</div>
+  </div>
+
+  <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+</section>
+
+<!-- ============ DISCUSSION ============ -->
+<section class="card disc">
+  <h3>💬 Discussion Forum Prompts <span class="note">(syllabus: Discussion Forums = 15%)</span></h3>
+  <p><strong>Prompt 1:</strong> Your CFO says: "We pay for a cloud sync drive — that IS our backup, and I won't fund a second system." Write the two-paragraph correction you'd actually send: paragraph one explains sync vs backup using today's ransomware scenario; paragraph two proposes a minimal 3-2-1 design and its rough monthly cost using the simulator's model prices. Reply to two classmates — do their designs really have one immutable/offline copy?</p>
+    <p><strong>Prompt 2:</strong> Harbor Lane's CCTV footage and customer email list could be stored in whatever cloud region is cheapest this quarter — possibly on another continent. Argue where that data should live and why, using data residency, privacy expectations, latency, and compliance — not vibes. Is "cheapest region" ever the right answer for <em>any</em> of Harbor Lane's data sets?</p>
+</section>
+
+<!-- ============ CAPSTONE ============ -->
+<section class="card capstone">
+  <h3>🏗️ Capstone · Harbor Lane Books — Checkpoint 5 of 12</h3>
+  <p>This session's slice is the <strong>data third of Deliverable D2</strong> — and D2 (Identity + Data + Collaboration plan) is due <strong>next session</strong>, at the end of Week 2. Full brief and rubric: <a href="project.html"><strong>open the Project Brief →</strong></a></p>
+  <p><strong>Due before Session 6 (individual):</strong></p>
+  <label class="step"><input type="checkbox" data-step="cap1"><span><strong>Storage architecture map:</strong> a table assigning every Harbor Lane data set (POS DB, product images, file share, financial records, CCTV, email archives) a storage type (block/file/object), a tier, and a one-line justification. Your Lab C register is the raw material.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Backup policy:</strong> a 3-2-1 design for the two most critical data sets — name where each copy lives, which copy is versioned, which is immutable/offline, and your test-restore cadence.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap3"><span><strong>Cost estimate:</strong> plug your proposed TB per tier into today's simulator and screenshot/record the monthly total — plus the "if everything were hot" number, because the savings line is what the owner reads first.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap4"><span>Record all AI assistance in your <strong>AI Use Log</strong> (prompts + what you verified or corrected).</span></label>
+</section>
+
+<!-- ============ EXIT TICKET ============ -->
+<section class="card exit">
+  <h3>🎟️ Exit Ticket</h3>
+  <p>Tap each light until it matches your confidence: 🔴 lost · 🟡 shaky · 🟢 got it</p>
+  <div class="exitrow"><button class="light" data-exit="e1">⚪</button><span>I can explain DAS, NAS, SAN, and cloud storage in one sentence each — and what each era decoupled.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e2">⚪</button><span>I can pick block, file, or object for a workload and defend the choice (and I know why a database can't live on object storage).</span></div>
+  <div class="exitrow"><button class="light" data-exit="e3">⚪</button><span>I can design a 3-2-1 backup with tiers, versioning, and immutability — and estimate its monthly cost.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e4">⚪</button><span>🧠 AI concept: I can explain embeddings, vector databases, and how RAG grounds AI answers in stored documents.</span></div>
+  <p style="margin-top:10px"><strong>Muddiest point</strong> — one thing still fuzzy (instructor reads these at the start of Session 6):</p>
+  <textarea data-persist="muddy" placeholder="The thing I'm least sure about is…"></textarea>
+</section>
+
+<footer>
+  <div class="card" style="background:#f0eee6">
+    <strong>📚 Before Session 6:</strong> preview <strong>Session 6 (Collaborating in the Cloud)</strong> by skimming its opening segment — keep it light, on purpose: Session 6 is double-duty, collaboration <em>plus</em> the full <strong>midterm review</strong> (the midterm exam itself is at the START of Week 3, Session 7). Bring questions from Sessions 1–5. Capstone: <strong>Deliverable D2 is due at the end of Session 6</strong> — your identity (S4) and storage (S5) sections should be drafted before you walk in.
+  </div>
+  <div class="footer-nav">
+    <a class="btn ghost" href="index.html">⌂ Course Hub</a>
+    <span><button class="btn ghost small" onclick="resetPage()">Reset my progress on this page</button></span>
+    <span><a class="btn ghost" href="week2-session4.html">← Session 4</a> <a class="btn" href="week2-session6.html">Session 6: Collaboration + Midterm Review →</a></span>
+  </div>
+</footer>
+</main>
+<script>
+/* ===== CEN4086 core framework (copy verbatim into every session file) ===== */
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'page');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+function resetPage(){try{localStorage.removeItem(PKEY)}catch(e){};location.reload()}
+
+/* flips */
+document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));
+/* tabs */
+document.querySelectorAll('.tabs').forEach(t=>{
+  t.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>{
+    t.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('on'));
+    t.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');t.querySelector('.tabpane[data-p="'+b.dataset.t+'"]').classList.add('on');
+  }));
+});
+/* polls */
+document.querySelectorAll('.poll').forEach((p,pi)=>{
+  const key='poll:'+(p.id||pi);
+  p.querySelectorAll('.popt').forEach((o,oi)=>o.addEventListener('click',()=>{
+    if(p.classList.contains('done'))return;
+    o.classList.add('sel');p.classList.add('done');save(key,oi);
+  }));
+  if(S[key]!=null){p.classList.add('done');const o=p.querySelectorAll('.popt')[S[key]];if(o)o.classList.add('sel');}
+});
+/* quiz engine */
+function updateQuiz(qz){
+  const qs=[...qz.querySelectorAll('.q')];
+  const done=qs.filter(q=>q.classList.contains('done'));
+  const right=qs.filter(q=>q.classList.contains('gotit')).length;
+  const res=qz.querySelector('.qresult');
+  if(res){res.querySelector('.bar span').style.width=(done.length?Math.round(100*right/qs.length):0)+'%';
+    res.querySelector('.scoreline').textContent='Score: '+right+' / '+qs.length+(done.length===qs.length?(right===qs.length?' — perfect! 🎉':' — review the explanations above.'):' ('+(qs.length-done.length)+' remaining)');}
+  updateChip();
+}
+function updateChip(){
+  let r=0,t=0;
+  document.querySelectorAll('.quiz').forEach(qz=>qz.querySelectorAll('.q').forEach(q=>{t++;if(q.classList.contains('gotit'))r++;}));
+  const c=document.getElementById('scoreChip');if(c)c.textContent='Quiz: '+r+'/'+t;
+}
+document.querySelectorAll('.quiz').forEach((qz,qzi)=>{
+  const qid=qz.id||('qz'+qzi);
+  qz.querySelectorAll('.q').forEach((q,i)=>{
+    const a=+q.dataset.a,opts=[...q.querySelectorAll('.opt')];
+    const key=qid+':q'+i;
+    function answer(j,fresh){
+      q.classList.add('done');if(j===a)q.classList.add('gotit');
+      opts.forEach(o=>o.disabled=true);
+      opts[a].classList.add('right');if(j!==a)opts[j].classList.add('wrong');
+      if(fresh)save(key,j);
+    }
+    opts.forEach((o,j)=>o.addEventListener('click',()=>{if(!q.classList.contains('done')){answer(j,true);updateQuiz(qz);}}));
+    if(S[key]!=null)answer(S[key],false);
+  });
+  updateQuiz(qz);
+});
+/* matcher engine */
+document.querySelectorAll('.matcher').forEach((m,mi)=>{
+  const key='match:'+(m.id||mi);let sel=null,done=0;
+  const cards=[...m.querySelectorAll('.mcard')],st=m.querySelector('.mstatus');
+  function stat(){st.textContent=done+'/'+cards.length+' placed'+(done===cards.length?' — all correct! 🎉':'');}
+  cards.forEach((c,ci)=>{c.addEventListener('click',()=>{
+    if(c.classList.contains('ok'))return;
+    cards.forEach(x=>x.classList.remove('sel'));c.classList.add('sel');sel=c;
+  });});
+  m.querySelectorAll('.mzone').forEach(z=>z.addEventListener('click',()=>{
+    if(!sel)return;
+    if(sel.dataset.match===z.dataset.zone){
+      sel.classList.remove('sel');sel.classList.add('ok');done++;stat();
+      const solved=(S[key]||[]);solved.push(cards.indexOf(sel));save(key,solved);sel=null;
+    }else{sel.classList.add('no');setTimeout(()=>sel&&sel.classList.remove('no'),400);}
+  }));
+  (S[key]||[]).forEach(ci=>{if(cards[ci]&&!cards[ci].classList.contains('ok')){cards[ci].classList.add('ok');done++;}});
+  stat();
+});
+/* lab step checkboxes */
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+/* persisted inputs/textareas */
+document.querySelectorAll('[data-persist]').forEach(el=>{
+  const key='p:'+el.dataset.persist;
+  if(S[key]!=null)el.value=S[key];
+  el.addEventListener('input',()=>save(key,el.value));
+});
+/* exit ticket lights */
+const LIGHTS=['⚪','🔴','🟡','🟢'];
+document.querySelectorAll('.light').forEach(b=>{
+  const key='exit:'+b.dataset.exit;let i=S[key]||0;b.textContent=LIGHTS[i];
+  b.addEventListener('click',()=>{i=(i+1)%4;b.textContent=LIGHTS[i];save(key,i);});
+});
+/* copy prompt */
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+
+/* ===== Session 5 custom interactives ===== */
+/* replication visualizer */
+const REP={
+  az:{labels:['AZ-1 · building A','AZ-2 · building B','AZ-3 · building C'],names:['Replica A','Replica B','Replica C']},
+  one:{labels:['Rack 1 · Suite 200','Rack 2 · Suite 200','Rack 3 · Suite 200'],names:['Replica A','Replica B','Replica C']}
+};
+let repMode='az',repNodes=[1,1,1],repKilled=0,repFlooded=false,repGen=0;
+const repEls=[document.getElementById('rn0'),document.getElementById('rn1'),document.getElementById('rn2')];
+function repLog(msg){const l=document.getElementById('repLog');const d=document.createElement('div');d.textContent='> '+msg;l.appendChild(d);l.scrollTop=l.scrollHeight;}
+function repPaint(newborn){
+  const cfg=REP[repMode];
+  repEls.forEach((el,i)=>{
+    const alive=repNodes[i]===1;
+    el.className='rnode'+(alive?'':' dead')+(newborn===i?' newborn':'');
+    el.innerHTML='<div class="rico">'+(alive?'🗄️':'✖️')+'</div>'+cfg.names[i]+'<small>'+cfg.labels[i]+'</small><span class="rstat">'+(alive?'HEALTHY':'DOWN')+'</span>';
+  });
+  const alive=repNodes.filter(x=>x).length;
+  document.getElementById('kAlive').textContent=alive;
+  const kd=document.getElementById('kData');
+  if(alive===0){kd.textContent='LOST';kd.style.color='#c04f43';}
+  else if(alive<3){kd.textContent='SAFE';kd.style.color='#e0a437';}
+  else{kd.textContent='SAFE';kd.style.color='#3e8e5a';}
+  document.getElementById('kKilled').textContent=repKilled;
+}
+document.getElementById('btnKill').addEventListener('click',()=>{
+  if(repFlooded){repLog('nothing left to kill — the flood already took everything. Press ↺ Reset.');return;}
+  const aliveIdx=repNodes.map((v,i)=>v?i:-1).filter(i=>i>=0);
+  if(aliveIdx.length<=1){repLog('refusing — that is the LAST copy. (A real store would have re-replicated long before you got this far.)');return;}
+  const i=aliveIdx[Math.floor(Math.random()*aliveIdx.length)];
+  repNodes[i]=0;repKilled++;
+  repLog(REP[repMode].names[i]+' lost (disk failure). Reads continue from '+repNodes.filter(x=>x).length+' healthy cop'+(repNodes.filter(x=>x).length===1?'y':'ies')+' — users notice nothing.');
+  repPaint();
+  const gen=repGen;
+  setTimeout(()=>{
+    if(gen!==repGen||repFlooded||repNodes[i]===1)return;
+    repNodes[i]=1;
+    repLog('new replica synced from the healthy copies — back to '+repNodes.filter(x=>x).length+'/3. Self-healing, no human involved.');
+    repPaint(i);
+  },2600);
+});
+document.getElementById('btnFlood').addEventListener('click',()=>{
+  if(repFlooded)return;
+  repGen++;repFlooded=true;repNodes=[0,0,0];
+  repLog('🌊 FLOOD in Suite 200. Rack 1 down. Rack 2 down. Rack 3 down.');
+  repLog('all three replicas shared one roof, one power feed, one flood. Zero copies remain — there is nothing left to heal FROM. Data: UNRECOVERABLE.');
+  repLog('this is why providers spread replicas across availability zones — separate buildings, power, and network. Three copies in one room is one copy with extra steps.');
+  repPaint();
+});
+function repReset(){
+  repGen++;repNodes=[1,1,1];repKilled=0;repFlooded=false;
+  const l=document.getElementById('repLog');l.innerHTML='';
+  repLog('replication monitor online. 3/3 replicas healthy.'+(repMode==='one'?' WARNING: all replicas in ONE building. What could go wrong?':''));
+  document.getElementById('btnFlood').style.display=(repMode==='one')?'':'none';
+  document.getElementById('rmAZ').classList.toggle('ghost',repMode!=='az');
+  document.getElementById('rmOne').classList.toggle('ghost',repMode!=='one');
+  repPaint();
+}
+document.getElementById('btnRepReset').addEventListener('click',repReset);
+document.getElementById('rmAZ').addEventListener('click',()=>{repMode='az';repReset();});
+document.getElementById('rmOne').addEventListener('click',()=>{repMode='one';repReset();});
+repReset();
+
+/* storage tier cost simulator */
+const P_HOT=23,P_COOL=12,P_ARCH=1,P_RETR=30;
+const tHot=document.getElementById('tHot'),tCool=document.getElementById('tCool'),tArch=document.getElementById('tArch'),tRetr=document.getElementById('tRetr');
+function money(n){return '$'+Math.round(n).toLocaleString('en-US')}
+function tierPaint(){
+  const h=+tHot.value,c=+tCool.value,a=+tArch.value,r=+tRetr.value;
+  document.getElementById('vHot').textContent=h;
+  document.getElementById('vCool').textContent=c;
+  document.getElementById('vArch').textContent=a;
+  document.getElementById('vRetr').textContent=r;
+  const ch=h*P_HOT,cc=c*P_COOL,ca=a*P_ARCH,cr=r*P_RETR,tot=ch+cc+ca+cr;
+  const allHot=(h+c+a)*P_HOT;
+  document.getElementById('kHot').textContent=money(ch);
+  document.getElementById('kCool').textContent=money(cc);
+  document.getElementById('kArch').textContent=money(ca);
+  document.getElementById('kRetr').textContent=money(cr);
+  document.getElementById('kTot').textContent=money(tot);
+  document.getElementById('kAllHot').textContent=money(allHot);
+  const v=document.getElementById('tierVerdict');
+  if(h+c+a===0){v.textContent='Verdict: nothing stored yet — drag some sliders.';}
+  else if(a>0&&cr>ca){v.textContent='⚠️ Verdict: your retrieval fees ('+money(cr)+'/mo) now EXCEED your archive storage bill ('+money(ca)+'/mo). This data is not actually cold — you are living Bram’s mistake from quiz Q6. Promote the frequently-restored part to the cool tier.';}
+  else if(c+a>0){const sav=allHot-tot,pct=allHot?Math.round(100*sav/allHot):0;v.textContent='✔ Verdict: tiering saves '+money(sav)+'/mo ('+pct+'%) versus parking everything in hot. That is the line the owner reads first in D2.';}
+  else{v.textContent='Verdict: everything is in hot. Fine for small data — expensive at scale. Try sliding some TB into cool or archive and watch the total.';}
+}
+[tHot,tCool,tArch,tRetr].forEach(s=>s.addEventListener('input',tierPaint));
+tierPaint();
+
+/* toy similarity demo (character bigrams — deliberately NOT real embeddings) */
+function bigrams(s){
+  s=s.toLowerCase().replace(/\s+/g,' ').trim();
+  const m={};let n=0;
+  for(let i=0;i<s.length-1;i++){const b=s.slice(i,i+2);m[b]=(m[b]||0)+1;n++;}
+  return{m:m,n:n};
+}
+const simA=document.getElementById('simA'),simB=document.getElementById('simB');
+function simPaint(){
+  const A=bigrams(simA.value),B=bigrams(simB.value);
+  let shared=0;
+  for(const k in A.m){if(B.m[k])shared+=Math.min(A.m[k],B.m[k]);}
+  const score=(A.n+B.n)?Math.round(200*shared/(A.n+B.n)):0;
+  document.getElementById('kSim').textContent=score+'%';
+  document.getElementById('kShared').textContent=shared;
+  document.getElementById('simBar').style.width=score+'%';
+  const note=document.getElementById('simNote');
+  if(!A.n||!B.n)note.textContent='Type at least two characters in each box.';
+  else if(score>=60)note.textContent='High overlap — lots of shared spelling. The toy is happy. But is the MEANING actually similar? The toy has no idea.';
+  else if(score>=25)note.textContent='Partial spelling overlap. The toy shrugs.';
+  else note.textContent='Almost zero shared spelling — the toy declares these unrelated. If their meanings are actually twins (car / automobile), you just watched keyword-style matching fail. Real embeddings close exactly this gap.';
+}
+[simA,simB].forEach(el=>el.addEventListener('input',simPaint));
+document.querySelectorAll('.simset').forEach(b=>b.addEventListener('click',()=>{simA.value=b.dataset.a;simB.value=b.dataset.b;simPaint();}));
+simPaint();
+
+/* Lab A checks */
+function checkA(i){
+  const fb=document.getElementById('fbA'+i);
+  let ok=false,msg='';
+  if(i===4){
+    const val=(document.getElementById('labA4').value||'').trim().toLowerCase();
+    ok=val.indexOf('object')>-1;
+    msg=ok?'✔ Object storage: HTTP-addressable, effectively unlimited, cheapest per GB, eleven-nines durable — built for write-once/read-many web assets.':'✘ Think: written once, read millions of times over HTTP, needs infinite scale. Replay the Segment 2 matcher.';
+  }else{
+    const val=+document.getElementById('labA'+i).value;
+    if(i===1){ok=(val===455);msg=ok?'✔ Correct: 5×$23 + 20×$12 + 100×$1 + 0 = $115 + $240 + $100 = $455/mo.':'✘ Set hot 5, cool 20, archive 100, restored 0 — then read the TOTAL KPI (or add $115+$240+$100 yourself).';}
+    if(i===2){ok=(val===4);msg=ok?'✔ Right: archive storage = 100 × $1 = $100/mo. Retrievals: 3 TB = $90 (still under); 4 TB = $120 — first crossing. Past this point the “cheap” tier costs more than it saves.':'✘ Archive at 100 TB costs $100/mo to store. Retrieval is $30/TB. Find the first whole TB where retrieval > $100.';}
+    if(i===3){ok=(val===2);msg=ok?'✔ Yes — 2 copies kept serving reads while the third re-synced. Users never noticed. That is durability engineering in one number.':'✘ Press 💥 in 🌎 mode and read the “copies alive” KPI immediately, before the self-heal log line appears (~2.6 s).';}
+  }
+  fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
+}
+</script>
+</body>
+</html>

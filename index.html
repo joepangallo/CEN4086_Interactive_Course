@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Interactive Course Hub — Cloud and Internet Computing</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--w1:#0f8b8d;--w2:#e0a437;--w3:#b3543f;--w4:#7b5ea7}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+main{max-width:1020px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#22214f 100%);color:#fff;border-radius:18px;padding:34px 30px;margin:14px 0 24px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero::before{content:"";position:absolute;right:60px;bottom:-90px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.05)}
+.hero h1{margin:0 0 4px;font-size:32px}
+.hero .sub{opacity:.92;font-size:17px;margin:0 0 14px}
+.chip{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:#fff}
+h2{font-size:24px;margin:34px 0 12px;padding-left:12px;border-left:6px solid var(--pri)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.weekgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.wk{border-radius:14px;border:1px solid var(--line);background:#fff;overflow:hidden;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.wk .wkhead{padding:10px 16px;color:#fff;font-weight:800;font-size:15px}
+.wk .body{padding:6px 10px 12px}
+.sess{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:7px 4px;background:#fbfaf7;transition:transform .12s, box-shadow .12s}
+.sess:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(29,36,51,.12)}
+.sess b{display:block;font-size:14.5px;color:var(--pri)}
+.sess small{color:var(--mut);font-size:12.5px;display:block;margin-top:2px}
+.sess .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.4px;border-radius:5px;padding:1px 7px;margin-right:4px;margin-top:5px;background:#eceadf;color:#555}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.obj-pill{display:inline-block;background:var(--pri);color:#fff;border-radius:999px;font-size:12px;font-weight:700;padding:2px 10px;margin:1px}
+.btn{display:inline-block;background:var(--pri);color:#fff;border:none;border-radius:10px;padding:11px 22px;font:inherit;font-weight:700;cursor:pointer;font-size:15px;text-decoration:none}
+.btn.big{font-size:16.5px;padding:13px 26px}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.note{font-size:13.5px;color:var(--mut)}
+.free{display:inline-block;background:#e7f3ec;color:#28583b;border-radius:6px;font-size:11px;font-weight:800;padding:1px 7px;letter-spacing:.4px}
+ul.tight li{margin:6px 0}
+.threecol{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+@media print{.btn{display:none}}
+</style>
+</head>
+<body>
+<main>
+
+<header class="hero">
+  <h1>☁️ CEN4086 · Cloud and Internet Computing</h1>
+  <p class="sub">Interactive Curriculum v3 — 4 weeks · 3 sessions/week · 4 hours/session</p>
+  <div>
+    <span class="chip">🖱️ Interactive lectures with built-in simulators</span>
+    <span class="chip">🔬 3+ hands-on labs every session</span>
+    <span class="chip">📝 Story-problem quizzes with detailed answers</span>
+    <span class="chip">🧠 12 AI concepts taught through the objectives</span>
+    <span class="chip">💸 100% free tools — no credit card, ever</span>
+  </div>
+  <p style="margin-top:18px"><a class="btn big" href="week1-session1.html" style="background:#fff;color:var(--pri)">Start Session 1 →</a> &nbsp; <a class="btn big ghost" href="project.html" style="border-color:#fff;color:#fff;background:transparent">🏗️ Capstone Project Brief</a></p>
+</header>
+
+<h2>How this course works</h2>
+<div class="card">
+  <p>Each session page is a complete 4-hour class: warm-up polls, teaching segments, interactive simulators, hands-on labs, an AI Spotlight, an 8-question story-problem quiz with fully explained answers, discussion prompts, a capstone checkpoint, and an exit ticket. Everything runs in a plain browser — offline, no installs, no accounts required for the in-page tools. Your quiz scores, checkboxes, and notes save automatically in your browser on each page (use the same computer &amp; browser to keep them; the Reset button on each page clears that page only).</p>
+  <p>Throughout the course you act as an <strong>individual cloud consultant</strong> for a fictional client, <strong>Harbor Lane Books</strong>, delivering one milestone per week. AI is your study partner twice over: every session page has a <strong>"Learn it with AI"</strong> block — tutor drills tuned to that session's course objective (Socratic questioning, debates, unlimited practice quizzes) — and free AI chatbots serve as your capstone "junior analyst," with a mandatory AI Use Log where you record what you asked and what you verified. AI drafts, you decide.</p>
+</div>
+
+<h2>The 12 sessions</h2>
+<div class="weekgrid">
+  <div class="wk"><div class="wkhead" style="background:var(--w1)">WEEK 1 · The Cloud &amp; Its Service Models</div><div class="body">
+    <a class="sess" href="week1-session1.html"><b>Session 1 · What the Cloud Actually Is</b><small>traits, deployment models, scalability, grid</small><span class="tag">PRE-TEST</span><span class="tag">SCALE SIMULATOR</span><span class="tag">OBJ 1</span></a>
+    <a class="sess" href="week1-session2.html"><b>Session 2 · SaaS &amp; PaaS</b><small>multi-tenancy, cost model, deploy pipeline</small><span class="tag">GITHUB PAGES DEPLOY</span><span class="tag">OBJ 2·3</span></a>
+    <a class="sess" href="week1-session3.html"><b>Session 3 · IaaS</b><small>VMs, load balancing, providers</small><span class="tag">VM BUILDER</span><span class="tag">D1 DUE</span><span class="tag">OBJ 4</span></a>
+  </div></div>
+  <div class="wk"><div class="wkhead" style="background:var(--w2)">WEEK 2 · Identity, Data &amp; Collaboration</div><div class="body">
+    <a class="sess" href="week2-session4.html"><b>Session 4 · Identity as a Service</b><small>SSO, federation, MFA, provisioning</small><span class="tag">SSO ANIMATOR</span><span class="tag">OBJ 5</span></a>
+    <a class="sess" href="week2-session5.html"><b>Session 5 · Data Storage in the Cloud</b><small>block/object/file, tiers, replication</small><span class="tag">TIER SIMULATOR</span><span class="tag">OBJ 6</span></a>
+    <a class="sess" href="week2-session6.html"><b>Session 6 · Collaboration + Midterm Review</b><small>cloud collaboration; 12-Q review of Weeks 1–2</small><span class="tag">MIDTERM REVIEW</span><span class="tag">D2 DUE</span><span class="tag">OBJ 6</span></a>
+  </div></div>
+  <div class="wk"><div class="wkhead" style="background:var(--w3)">WEEK 3 · Virtualization, Security &amp; Survival</div><div class="body">
+    <a class="sess" href="week3-session7.html"><b>Session 7 · Virtualization</b><small>hypervisors, consolidation, containers · Midterm exam at start</small><span class="tag">MIDTERM EXAM</span><span class="tag">CONSOLIDATION SIM</span><span class="tag">OBJ 7</span></a>
+    <a class="sess" href="week3-session8.html"><b>Session 8 · Securing the Cloud</b><small>shared responsibility, encryption, threats</small><span class="tag">PHISHING DRILL</span><span class="tag">OBJ 7</span></a>
+    <a class="sess" href="week3-session9.html"><b>Session 9 · Disaster Recovery &amp; Business Continuity</b><small>RTO/RPO, SLAs, DR plans</small><span class="tag">RTO/RPO LAB</span><span class="tag">D3 DUE</span><span class="tag">OBJ 7</span></a>
+  </div></div>
+  <div class="wk"><div class="wkhead" style="background:var(--w4)">WEEK 4 · Architecture, Operations &amp; Migration</div><div class="body">
+    <a class="sess" href="week4-session10.html"><b>Session 10 · Service-Oriented Architecture</b><small>web services, REST, loose coupling</small><span class="tag">REST PLAYGROUND</span><span class="tag">OBJ 8</span></a>
+    <a class="sess" href="week4-session11.html"><b>Session 11 · Managing the Cloud</b><small>monitoring, scaling, cost control</small><span class="tag">OPS DASHBOARD SIM</span><span class="tag">OBJ 7·8</span></a>
+    <a class="sess" href="week4-session12.html"><b>Session 12 · Migrating to the Cloud + Finale</b><small>6 Rs, wave planning · final review · post-test · D4 presentations</small><span class="tag">POST-TEST</span><span class="tag">D4 + FINAL</span><span class="tag">OBJ 8</span></a>
+  </div></div>
+</div>
+
+<h2>Course objectives → where each is satisfied</h2>
+<div class="card">
+  <table>
+    <tr><th style="width:52%">Upon completion of CEN4086, students can…</th><th>Taught &amp; assessed in</th></tr>
+    <tr><td><span class="obj-pill">1</span> Understand the abstract nature and advantages/disadvantages of cloud computing</td><td>Session 1 (traits flip-cards, advantage sorter, scalability sim, quiz) · reinforced everywhere · Capstone D1</td></tr>
+    <tr><td><span class="obj-pill">2</span> Define and describe SaaS</td><td>Session 2 (multi-tenancy visual, cost calculator, quiz) · Capstone D1</td></tr>
+    <tr><td><span class="obj-pill">3</span> Define and describe the PaaS model</td><td>Session 2 (deploy-pipeline sim, GitHub Pages lab) · Capstone D1</td></tr>
+    <tr><td><span class="obj-pill">4</span> Describe IaaS and identify solution providers</td><td>Session 3 (VM builder, load-balancer sim, provider tabs, pricing lab) · Capstone D1</td></tr>
+    <tr><td><span class="obj-pill">5</span> Evaluate ID-management challenges and appraise IDaaS solutions</td><td>Session 4 (SSO animator, MFA sorter, provisioning stepper, real-MFA lab) · Capstone D2</td></tr>
+    <tr><td><span class="obj-pill">6</span> Differentiate cloud data-storage and collaboration solutions</td><td>Sessions 5–6 (storage matcher, tier sim, replication visualizer, collaboration stack builder) · Capstone D2</td></tr>
+    <tr><td><span class="obj-pill">7</span> Examine and evaluate virtualization solutions</td><td>Session 7 (consolidation sim, hypervisor toggles) · deepened in 8, 9, 11 · Capstone D3</td></tr>
+    <tr><td><span class="obj-pill">8</span> Define and describe Service-Oriented Architecture</td><td>Session 10 (REST playground, coupling animation) · applied in 11–12 · Capstone D4</td></tr>
+  </table>
+  <p class="note">Every objective is also learnable <strong>through AI</strong>: each session page carries a "Learn it with AI" block with Socratic-tutor, debate, and quiz-master drills aimed at that objective, plus an AI Concept of the Day section connecting the session to modern AI systems. Assessment mix per syllabus: Discussion Forums 15% · Review Question Sets 20% · Exercises/Quizzes 30% (every session) · Midterm 15% (start of Week 3) · Final 15% (end of Week 4) · Post-test 5%.</p>
+</div>
+
+<h2>The AI concepts track — learn AI <em>through</em> the cloud objectives</h2>
+<div class="card">
+  <p>AI in this course is a subject, not just a tool. Each session teaches one real AI concept inside the cloud topic that satisfies the matching course objective — with its own teaching section (🧠 AI Concept of the Day), dedicated quiz questions, and a hands-on exercise. By Session 12 students can hold their own in any conversation about how modern AI systems are built, served, secured, and paid for.</p>
+  <table>
+    <tr><th>Session</th><th>AI concept students learn</th><th>Learned through</th></tr>
+    <tr><td>1</td><td><strong>Training vs. inference</strong> — what a model is; tokens; why AI is billed like a utility</td><td>Obj 1 · cloud traits, metering, grid computing</td></tr>
+    <tr><td>2</td><td><strong>LLMs &amp; prompting</strong> — context windows, temperature, system prompts; chatbots as SaaS, model APIs as PaaS</td><td>Obj 2–3 · SaaS &amp; PaaS models</td></tr>
+    <tr><td>3</td><td><strong>AI infrastructure</strong> — GPUs vs CPUs, why training needs clusters, sizing inference fleets</td><td>Obj 4 · IaaS, server types, providers</td></tr>
+    <tr><td>4</td><td><strong>AI vs. identity</strong> — deepfakes &amp; voice cloning against authentication; AI-driven login-anomaly detection; bot-vs-human proof</td><td>Obj 5 · IDaaS, MFA, SSO</td></tr>
+    <tr><td>5</td><td><strong>Embeddings, vector databases &amp; RAG</strong> — how meaning becomes numbers AI can search</td><td>Obj 6 · cloud data storage</td></tr>
+    <tr><td>6</td><td><strong>Hallucination &amp; verification</strong> — why models confabulate; how AI meeting assistants work; trust calibration</td><td>Obj 6 · cloud collaboration</td></tr>
+    <tr><td>7</td><td><strong>Model serving</strong> — containers, GPU virtualization &amp; sharing; where a model actually runs</td><td>Obj 7 · virtualization</td></tr>
+    <tr><td>8</td><td><strong>AI security</strong> — prompt injection, jailbreaking (conceptually), AI-generated phishing, AI-powered defense</td><td>Obj 7 · securing the cloud</td></tr>
+    <tr><td>9</td><td><strong>AI reliability</strong> — model APIs as dependencies, fallbacks, drift, graceful degradation</td><td>Obj 7 · DR &amp; business continuity</td></tr>
+    <tr><td>10</td><td><strong>Function calling, tool use &amp; agents</strong> — AI models as web services; agents as SOA orchestration; <strong>MCP</strong> taught in depth (clients, servers, tools, resources)</td><td>Obj 8 · SOA &amp; REST</td></tr>
+    <tr><td>11</td><td><strong>MLOps, AIOps &amp; AI FinOps</strong> — monitoring model latency/quality/token spend; AI watching the metrics</td><td>Obj 7–8 · managing the cloud</td></tr>
+    <tr><td>12</td><td><strong>Adopting AI responsibly</strong> — build vs buy, governance, data readiness, the human in the loop</td><td>Obj 8 · migration &amp; change management</td></tr>
+  </table>
+  <p class="note">Plus, on every session page: "Learn it with AI" tutor drills (Socratic tutor, roleplay, quiz master) so students simultaneously <em>practice</em> working with AI while studying the cloud objective.</p>
+</div>
+
+<h2>The 100%-free toolkit</h2>
+<div class="threecol">
+  <div class="card"><h3 style="margin-top:0">🧪 Built into the pages <span class="free">FREE · OFFLINE</span></h3><ul class="tight">
+    <li>14 simulators &amp; games: scalability, VM builder, load balancer, SSO flow, storage tiers, replication, consolidation, DDoS, RTO/RPO, REST playground, ops dashboard, 6-Rs sorter, wave planner…</li>
+    <li>150+ story-problem quiz questions with fully explained answers — including two or three per session on that day's AI concept</li>
+    <li>Progress saves in your browser — nothing to install</li>
+  </ul></div>
+  <div class="card"><h3 style="margin-top:0">🤖 Free AI assistants <span class="free">FREE TIER</span></h3><ul class="tight">
+    <li>ChatGPT, Google Gemini, Claude, or Microsoft Copilot — any free tier works for every AI activity</li>
+    <li>"Learn it with AI" tutor drills on every session page — one set per course objective</li>
+    <li>Your capstone "junior analyst" (with mandatory verification + AI Use Log)</li>
+    <li>Every AI activity includes a copy-paste prompt and a fact-check step</li>
+  </ul></div>
+  <div class="card"><h3 style="margin-top:0">🌐 Free real-world tools <span class="free">NO CARD</span></h3><ul class="tight">
+    <li><strong>GitHub + GitHub Pages</strong> — you deploy a real live website (Session 2)</li>
+    <li><strong>diagrams.net</strong> — architecture diagrams, no account needed</li>
+    <li><strong>Google Docs/Sheets/Slides</strong> — capstone deliverables &amp; calculators</li>
+    <li><strong>jsonplaceholder · restcountries · open-meteo</strong> — real APIs, no keys (Session 10)</li>
+    <li>Public cloud pricing calculators (AWS/Azure/GCP) — browse without accounts</li>
+  </ul></div>
+</div>
+
+<h2>Capstone: Harbor Lane Books</h2>
+<div class="card" style="border-top:6px solid var(--pri)">
+  <p>An individual project: you consult for a 12-store Florida bookstore chain whose entire business runs from one aging server closet. Four deliverables — one per week — take them from "the site crashes every author event" to a full cloud adoption roadmap with AI-powered recommendations: <strong>D1</strong> Cloud adoption proposal · <strong>D2</strong> Identity, data &amp; collaboration plan · <strong>D3</strong> Virtualization, security &amp; DR plan · <strong>D4</strong> API design, operations &amp; migration roadmap + final presentation.</p>
+  <p><a class="btn" href="project.html">Open the full project brief, milestones &amp; rubrics →</a></p>
+</div>
+
+<p class="note" style="margin-top:26px">CEN4086 Cloud and Internet Computing · Keiser University, Bachelor of Software Engineering · Interactive Curriculum v3. These pages are self-contained — everything students need is here. All web-based tools referenced are free tiers as of course preparation; no purchase is ever required.</p>
+
+</main>
+</body>
+</html>
