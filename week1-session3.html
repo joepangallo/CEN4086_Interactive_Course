@@ -313,13 +313,12 @@ a product database around 40 GB, plus a nightly batch job that builds
 sales reports for 30 minutes. One VM for now; name which spec drives cost.</pre></div>
   <label class="step"><input type="checkbox" data-step="ai1"><span>Run the prompt in any free chatbot. Note its vCPU / RAM / storage numbers.</span></label>
   <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify with the VM Builder:</strong> dial in the AI's exact specs. Is the monthly price sane for a small business (&lt; $200)? Does the verdict call it a reasonable shape, or overkill? AI planners love rounding up "to be safe" — you now own a tool that prices that habit.</span></label>
-  <label class="step"><input type="checkbox" data-step="ai3"><span>Log the exchange in your AI Use Log: prompt, the AI's sizing, the Builder's verdict, and your final call.</span></label>
 </section>
 
 <!-- ============ LEARN IT WITH AI ============ -->
 <section class="card ai">
   <h3>🎓 Learn Objective 4 with AI — personal tutor drills</h3>
-  <p><strong>Objective 4: Describe IaaS and identify solution providers.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor. Log every drill in your AI Use Log.</p>
+  <p><strong>Objective 4: Describe IaaS and identify solution providers.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor.</p>
   <p><strong>Drill 1 · Socratic tutor</strong> — the AI grills you on the machinery of rented infrastructure:</p>
   <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for Session 3 of my cloud computing course —
 Infrastructure as a Service. Topics: on-demand computing, what IaaS
@@ -352,7 +351,7 @@ Cloud — including which free-tier species (always-free, trial credits,
 12-month tier) fits a given scenario. One question at a time, options
 A–D. After I answer, explain why EVERY option is right or wrong before
 asking the next. 8 questions, track my score, get harder as I improve.</pre></div>
-  <label class="step"><input type="checkbox" data-step="ai4"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai4"><span>Run at least one drill to completion.</span></label>
   <label class="step"><input type="checkbox" data-step="ai5"><span><strong>Verify the tutor:</strong> AI tutors misremember provider details — free-tier terms especially. Cross-check one claim it made against the VM Builder or the provider tabs above, and note in your log whether it held up.</span></label>
   <p class="note">Every session page carries a "Learn it with AI" block tuned to that day's objective — free tier is plenty. Bonus: the consultation drill is a dress rehearsal for D1's IaaS sizing section.</p>
 </section>
@@ -380,7 +379,7 @@ asking the next. 8 questions, track my score, get harder as I improve.</pre></di
 <section class="card lab">
   <p class="labno">LAB B · FREE AI CHATBOT · ~15 MIN · 🆓 ChatGPT / Gemini / Claude / Copilot (any free tier)</p>
   <h3>Capacity Planning with an AI Junior Analyst — Then Audit It</h3>
-  <p>Give your junior analyst a real sizing job, then audit the arithmetic with the simulator — the exact skill (delegate, then verify) your AI Use Log exists to document:</p>
+  <p>Give your junior analyst a real sizing job, then audit the arithmetic with the simulator — the exact skill (delegate, then verify) that matters most when working with AI:</p>
   <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as my capacity-planning analyst. My client's online store normally
 serves 300 requests/minute, but during 2-hour author-event sales traffic
 reaches 3,000 requests/minute. Each web server comfortably handles
@@ -393,8 +392,7 @@ Show your arithmetic for each answer.</pre></div>
   <label class="step"><input type="checkbox" data-step="b1"><span>Run the prompt; read the plan and the arithmetic.</span></label>
   <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> set the LB simulator to <strong>3,000 req/min</strong> and the AI's event-peak server count. Are all bars green? If the AI said 4 servers (integer division without the ceiling — a genuinely common AI arithmetic slip), the simulator shows amber/red at 750 req/server. Record verified ✔ or corrected ✘.</span></label>
   <label class="step"><input type="checkbox" data-step="b3"><span>Follow up: <em>"What monthly cost difference between running 5 servers 24/7 versus autoscaling 2→5 for roughly 20 event-hours a month, at $48/server/month?"</em> Sanity-check its math with a calculator.</span></label>
-  <label class="step"><input type="checkbox" data-step="b5"><span>🧠 <strong>Concept check — GPU capacity math:</strong> ask a follow-up: <em>"Our AI feature must generate 600 chat replies per second at peak; one GPU server sustains 40 replies per second. How many GPU servers do we need, including one spare for failure?"</em> Verify by hand before trusting it: 600 ÷ 40 = 15, +1 spare = <strong>16</strong>. Watch for the same floor-division slip you audited in task 2 — except now each wrongly-counted server costs 10–100× a web server. Log verified ✔ or corrected ✘.</span></label>
-  <label class="step"><input type="checkbox" data-step="b4"><span>AI Use Log entry: prompt, what you verified with the simulator, anything corrected.</span></label>
+  <label class="step"><input type="checkbox" data-step="b5"><span>🧠 <strong>Concept check — GPU capacity math:</strong> ask a follow-up: <em>"Our AI feature must generate 600 chat replies per second at peak; one GPU server sustains 40 replies per second. How many GPU servers do we need, including one spare for failure?"</em> Verify by hand before trusting it: 600 ÷ 40 = 15, +1 spare = <strong>16</strong>. Watch for the same floor-division slip you audited in task 2 — except now each wrongly-counted server costs 10–100× a web server.</span></label>
 </section>
 
 <section class="card lab">
@@ -535,7 +533,6 @@ Show your arithmetic for each answer.</pre></div>
   <label class="step"><input type="checkbox" data-step="cap3"><span><strong>One PaaS candidate</strong> for the web-store rebuild, with a two-sentence fit rationale and one lock-in risk you'd manage.</span></label>
   <label class="step"><input type="checkbox" data-step="cap4"><span><strong>IaaS section (today's work):</strong> chosen provider + instance sizes for the web store — normal-night fleet AND author-event fleet (use LB-sim evidence: server count, cost/month), one VM Builder screenshot or spec line for the database server, and your Lab C quotes as the pricing citation. One page of justification.</span></label>
   <label class="step"><input type="checkbox" data-step="cap5"><span><strong>Architecture diagram</strong> (diagrams.net, PNG): users → load balancer → web servers → database, labeled with your chosen sizes.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap6"><span><strong>AI Use Log</strong> attached: every prompt used across Sessions 1–3, with what you verified or corrected each time.</span></label>
   <label class="step"><input type="checkbox" data-step="cap7"><span>Submit per your instructor's directions before leaving. Give yourself a high-five. Week 2 (Deliverable D2) starts with identity — read ahead.</span></label>
 </section>
 

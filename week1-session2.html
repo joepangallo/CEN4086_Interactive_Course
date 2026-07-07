@@ -369,13 +369,13 @@ Group items under three headings: Cost, Data, and Operations.
 One sentence per item. Number them 1-10.</pre></div>
   <label class="step"><input type="checkbox" data-step="ai1"><span>Run the prompt. Skim the 10 items.</span></label>
   <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify 3 items</strong> against today's material: does the checklist cover the four SaaS disadvantages (internet dependency, customization limits, data control, forever-subscription cost)? Mark each of your 3 as ✔ solid or ✘ weak/wrong.</span></label>
-  <label class="step"><input type="checkbox" data-step="ai3"><span>If <strong>data export / exit rights</strong> (the OpenSaaS lesson) is missing from the list, ask the AI why it left that out — and watch it concede. Note the exchange in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai3"><span>If <strong>data export / exit rights</strong> (the OpenSaaS lesson) is missing from the list, ask the AI why it left that out — and watch it concede.</span></label>
 </section>
 
 <!-- ============ LEARN IT WITH AI ============ -->
 <section class="card ai">
   <h3>🎓 Learn Objectives 2 &amp; 3 with AI — personal tutor drills</h3>
-  <p><strong>Objective 2: Define and describe SaaS. Objective 3: Define and describe the PaaS model.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor. Log every drill in your AI Use Log.</p>
+  <p><strong>Objective 2: Define and describe SaaS. Objective 3: Define and describe the PaaS model.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor.</p>
   <p><strong>Drill 1 · Socratic tutor</strong> — the AI interrogates you across both models:</p>
   <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for Session 2 of my cloud computing course —
 SaaS and PaaS. Topics: what defines SaaS (browser delivery,
@@ -405,7 +405,7 @@ SaaS won't bend to, lock-in fears, developer teams with no sysadmin,
 systems that must run offline. One question at a time, options A–D.
 After I answer, explain why EVERY option is right or wrong before asking
 the next. 8 questions, track my score, get harder as I improve.</pre></div>
-  <label class="step"><input type="checkbox" data-step="ai4"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai4"><span>Run at least one drill to completion.</span></label>
   <label class="step"><input type="checkbox" data-step="ai5"><span><strong>Verify the tutor:</strong> AI tutors occasionally garble definitions — multi-tenancy and lock-in are favorites. Cross-check one claim it made against the apartment-building model and this session's definitions above, and note in your log whether it held up.</span></label>
   <p class="note">Every session page carries a "Learn it with AI" block tuned to that day's objectives — free tier is plenty. Bonus: the vendor-call drill doubles as rehearsal for defending your capstone SaaS picks.</p>
 </section>
@@ -452,8 +452,7 @@ One risk to flag. End with a 3-sentence recommendation.</pre></div>
   <label class="step"><input type="checkbox" data-step="b1"><span>Run the prompt; read the table and recommendation.</span></label>
   <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> pick ONE price claim and check it against the vendor's public pricing page in another browser tab. AI models are trained on old data, and SaaS prices change yearly — stale pricing is one of the most common AI errors in real consulting work. Record what you found: exactly right, close, or wrong?</span></label>
   <label class="step"><input type="checkbox" data-step="b3"><span>Ask one follow-up: <em>"Which of these options is easiest to EXIT in three years, and why?"</em> — grade its answer against the OpenSaaS / lock-in material from today.</span></label>
-  <label class="step"><input type="checkbox" data-step="b5"><span>🧠 <strong>Concept check — temperature &amp; the context window:</strong> (1) In two fresh chats, make the exact same creative request: <em>"Name our new coffee-loyalty program — give exactly one name."</em> Different answers? That's <strong>sampling/temperature</strong> at work — the model draws from a probability spread each time; there is no stored answer to fetch. (2) Paste a long article (1,000+ words) into a chat, ask three questions about it, then ask: <em>"What was the first line of the text I pasted?"</em> Did it quote exactly, paraphrase, or miss? An exact quote means the text still sits inside its <strong>context window</strong>; a paraphrase or miss shows it generating from what remains. Log both observations in your AI Use Log.</span></label>
-  <label class="step"><input type="checkbox" data-step="b4"><span>Add this session's entry to your <strong>AI Use Log</strong>: the prompt, what you verified (the price check), and anything you corrected. Required for the capstone.</span></label>
+  <label class="step"><input type="checkbox" data-step="b5"><span>🧠 <strong>Concept check — temperature &amp; the context window:</strong> (1) In two fresh chats, make the exact same creative request: <em>"Name our new coffee-loyalty program — give exactly one name."</em> Different answers? That's <strong>sampling/temperature</strong> at work — the model draws from a probability spread each time; there is no stored answer to fetch. (2) Paste a long article (1,000+ words) into a chat, ask three questions about it, then ask: <em>"What was the first line of the text I pasted?"</em> Did it quote exactly, paraphrase, or miss? An exact quote means the text still sits inside its <strong>context window</strong>; a paraphrase or miss shows it generating from what remains.</span></label>
 </section>
 
 <section class="card lab">
@@ -478,7 +477,7 @@ One risk to flag. End with a 3-sentence recommendation.</pre></div>
   <label class="step"><input type="checkbox" data-step="c5"><span>Enable the platform: repo <strong>Settings → Pages</strong> (left sidebar) → under "Build and deployment," Source = <strong>Deploy from a branch</strong> → Branch = <code>main</code>, folder = <code>/ (root)</code> → <strong>Save</strong>.</span></label>
   <label class="step"><input type="checkbox" data-step="c6"><span>Wait ~1 minute, refresh the Pages settings page until the banner shows your live URL: <code>https://YOUR-USERNAME.github.io/cen4086-cloud/</code>. Visit it. You are live on the internet.</span></label>
   <label class="step"><input type="checkbox" data-step="c7"><span>Prove the pipeline: edit <code>index.html</code> in the web editor (change one word), commit, wait ~1 minute, refresh your live URL. Which pipeline stages just ran without you? (Answer: build + deploy — you only pushed.)</span></label>
-  <label class="step"><input type="checkbox" data-step="c8"><span>Paste your live URL into your project doc and your AI Use Log header. This URL is evidence in capstone Deliverable D1 that you can ship with a PaaS workflow.</span></label>
+  <label class="step"><input type="checkbox" data-step="c8"><span>Paste your live URL into your project doc. This URL is evidence in capstone Deliverable D1 that you can ship with a PaaS workflow.</span></label>
   <p class="note">🧠 Model check: GitHub's web editor is SaaS (finished software you use in a browser). GitHub Pages is PaaS-style (you bring content/code; it builds, deploys, hosts, and serves). The servers underneath are GitHub's IaaS-like fleet. Three models, one lab.</p>
 </section>
 
@@ -605,7 +604,6 @@ One risk to flag. End with a 3-sentence recommendation.</pre></div>
   <label class="step"><input type="checkbox" data-step="cap1"><span><strong>SaaS stack recommendation:</strong> pick an email + docs suite AND a CRM for Harbor Lane's 240 staff. Record real $/user/month from public pricing pages (verified — not just the AI's numbers from Lab B).</span></label>
   <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Cost table:</strong> a 3-year SaaS-vs-on-prem comparison for the email decision, built with today's calculator method (seats × rate × 36 vs. license + hardware + 20%/yr support). One table, one sentence of verdict.</span></label>
   <label class="step"><input type="checkbox" data-step="cap3"><span><strong>One PaaS candidate</strong> for rebuilding the web store (e.g., a Heroku-style platform, Google App Engine, Azure App Service, or GitHub Pages for the storefront's static parts) + two sentences: why it fits, and one lock-in risk you'd manage.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap4"><span>Update your <strong>AI Use Log</strong> (Lab B entry: prompt, what you verified, what you corrected).</span></label>
 </section>
 
 <!-- ============ EXIT TICKET ============ -->

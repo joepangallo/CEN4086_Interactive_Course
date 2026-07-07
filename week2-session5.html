@@ -315,7 +315,7 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
 <!-- ============ LEARN IT WITH AI ============ -->
 <section class="card ai">
   <h3>🎓 Learn Objective 6 with AI (part 1: storage) — personal tutor drills</h3>
-  <p><strong>Objective 6: Differentiate the different Data Storage and collaboration solutions in the Cloud.</strong> Today covers the storage half — collaboration completes the objective next session. Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor. Log every drill in your AI Use Log.</p>
+  <p><strong>Objective 6: Differentiate the different Data Storage and collaboration solutions in the Cloud.</strong> Today covers the storage half — collaboration completes the objective next session. Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor.</p>
   <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you from DAS all the way to the archive tier:</p>
   <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for my cloud computing course. Topic: Session 5 —
 Data Storage in the Cloud. Cover: the
@@ -346,7 +346,7 @@ storage or hot/cool/archive tiers — or spot the flaw in a backup plan
 ONE question at a time; after I answer, explain why EVERY option is right
 or wrong, then ask the next. 6 questions, track my score, get harder as I
 improve.</pre></div>
-  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion.</span></label>
   <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify the tutor:</strong> AI tutors love to claim "sync is a backup" or misquote archive retrieval fees and the 3-2-1 rule. Cross-check one claim it made against the tier simulator and Segment 3 above, and note in your log whether it held up.</span></label>
   <p class="note">Part 2 of Objective 6 — collaboration — gets its own drills next session, along with a full midterm coach. Free tier is plenty.</p>
 </section>
@@ -388,8 +388,7 @@ the 3-2-1 rule in two sentences a bookstore owner would understand.</pre></div>
   <p><strong>What to look for:</strong> the database on block + hot; images on object; the financial records on archive with immutability (object lock/WORM); at least one copy versioned or offline so ransomware can't reach it.</p>
   <label class="step"><input type="checkbox" data-step="b1"><span>Run the prompt and read the table like a reviewer, not a fan. Did it confuse replication with backup anywhere?</span></label>
   <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> check TWO things against this page — (1) its statement of the 3-2-1 rule (exactly 3 copies / 2 media / 1 offsite?), and (2) its tier for the 7-year financial records (should be archive — if it said hot or cool, challenge it and record its correction).</span></label>
-  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — RAG in miniature:</strong> open a fresh chat and paste these three invented policy snippets, exactly as written: <em>"POLICY A: Harbor Lane staff may borrow up to 2 books for 14 days; new releases are excluded for their first 60 days. POLICY B: Author-event tickets are refunded automatically if WE cancel; customer cancellations receive store credit only. POLICY C: Damaged books are marked down 40% on the last Friday of each month."</em> Then ask: <em>"Using ONLY the policies above: when do damaged books get discounted, and by how much?"</em> — watch it answer from your pasted text (grounding: that's retrieval-then-generation, the step a vector database automates at scale). Now ask: <em>"Using ONLY the policies above: what is the staff discount on coffee?"</em> — watch it either admit the policies don't say (good) or invent an answer (hallucination). Log both outputs and one sentence on what this proves about where a RAG bot's knowledge really lives.</span></label>
-  <label class="step"><input type="checkbox" data-step="b3"><span>Add the prompt + what you verified/corrected to your <strong>AI Use Log</strong>.</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — RAG in miniature:</strong> open a fresh chat and paste these three invented policy snippets, exactly as written: <em>"POLICY A: Harbor Lane staff may borrow up to 2 books for 14 days; new releases are excluded for their first 60 days. POLICY B: Author-event tickets are refunded automatically if WE cancel; customer cancellations receive store credit only. POLICY C: Damaged books are marked down 40% on the last Friday of each month."</em> Then ask: <em>"Using ONLY the policies above: when do damaged books get discounted, and by how much?"</em> — watch it answer from your pasted text (grounding: that's retrieval-then-generation, the step a vector database automates at scale). Now ask: <em>"Using ONLY the policies above: what is the staff discount on coffee?"</em> — watch it either admit the policies don't say (good) or invent an answer (hallucination) — that's what proves where a RAG bot's knowledge really lives.</span></label>
 </section>
 
 <section class="card lab">
@@ -526,7 +525,6 @@ the 3-2-1 rule in two sentences a bookstore owner would understand.</pre></div>
   <label class="step"><input type="checkbox" data-step="cap1"><span><strong>Storage architecture map:</strong> a table assigning every Harbor Lane data set (POS DB, product images, file share, financial records, CCTV, email archives) a storage type (block/file/object), a tier, and a one-line justification. Your Lab C register is the raw material.</span></label>
   <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Backup policy:</strong> a 3-2-1 design for the two most critical data sets — name where each copy lives, which copy is versioned, which is immutable/offline, and your test-restore cadence.</span></label>
   <label class="step"><input type="checkbox" data-step="cap3"><span><strong>Cost estimate:</strong> plug your proposed TB per tier into today's simulator and screenshot/record the monthly total — plus the "if everything were hot" number, because the savings line is what the owner reads first.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap4"><span>Record all AI assistance in your <strong>AI Use Log</strong> (prompts + what you verified or corrected).</span></label>
 </section>
 
 <!-- ============ EXIT TICKET ============ -->

@@ -321,7 +321,7 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
 <!-- ============ LEARN IT WITH AI ============ -->
 <section class="card ai">
   <h3>🎓 Learn Objectives 7 &amp; 8 with AI (running cloud systems)</h3>
-  <p><strong>Objective 7: Examine and evaluate virtualization solutions. Objective 8: Define and describe Service-Oriented Architecture.</strong> Today's session is where both objectives go to work — operating the virtualized fleet and keeping its services healthy. Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor. Log every drill in your AI Use Log.</p>
+  <p><strong>Objective 7: Examine and evaluate virtualization solutions. Objective 8: Define and describe Service-Oriented Architecture.</strong> Today's session is where both objectives go to work — operating the virtualized fleet and keeping its services healthy. Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor.</p>
   <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you, not the other way around:</p>
   <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for my cloud computing course (today's session:
 Managing the Cloud). Topics: monitoring
@@ -351,7 +351,7 @@ alert fatigue, cloud bill anomalies and waste, SLA math and breach claims,
 scale up vs. scale out, and runbooks/automation. One question at a time.
 After I answer, explain why EVERY option is right or wrong, then ask the
 next. 8 questions, track my score, get harder as I improve.</pre></div>
-  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion.</span></label>
   <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify the tutor:</strong> AI tutors occasionally misstate definitions or invent plausible numbers. Cross-check one claim it made (an SLA downtime allowance, a metric definition, a scaling trade-off) against today's dashboard, Segment 3's SLA math, or this session's definitions above, and note in your log whether it held up.</span></label>
   <p class="note">If you can close all three incident-commander rounds cleanly, your Checkpoint 11 runbook is probably ready. Free tier is plenty.</p>
 </section>
@@ -388,8 +388,7 @@ INCIDENT LOG:
 (paste the log here)</pre></div>
   <label class="step"><input type="checkbox" data-step="b1"><span>Generate the postmortem from your real log.</span></label>
   <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> check the structure (all six sections present?), then audit the Timeline line-by-line against the raw log: are the timestamps real or invented? Did it claim a root cause the log doesn't actually establish? Find <strong>at least one</strong> hallucinated detail, smoothed-over gap, or vague action item ("improve monitoring" — how?) and make the AI fix it.</span></label>
-  <label class="step"><input type="checkbox" data-step="b3"><span>Add the prompt + what you corrected to your <strong>AI Use Log</strong>.</span></label>
-  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — AI FinOps, by hand first:</strong> Harbor Lane's recommender will serve <strong>4,000 recommendations/day</strong>, averaging <strong>700 input + 250 output tokens</strong> per request, priced at <strong>$0.15 per million input tokens</strong> and <strong>$0.60 per million output tokens</strong>. Compute the monthly cost by hand (input $/day + output $/day, then × days), enter it below, THEN paste your arithmetic into the chatbot and ask it to check you — you should both land near <strong>≈ $31.50/month</strong> ($1.02/day: $30.60 for a 30-day month, $31.62 for 31). If you and the AI disagree, one of you slipped a decimal — find out which, and log the winner in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — AI FinOps, by hand first:</strong> Harbor Lane's recommender will serve <strong>4,000 recommendations/day</strong>, averaging <strong>700 input + 250 output tokens</strong> per request, priced at <strong>$0.15 per million input tokens</strong> and <strong>$0.60 per million output tokens</strong>. Compute the monthly cost by hand (input $/day + output $/day, then × days), enter it below, THEN paste your arithmetic into the chatbot and ask it to check you — you should both land near <strong>≈ $31.50/month</strong> ($1.02/day: $30.60 for a 30-day month, $31.62 for 31). If you and the AI disagree, one of you slipped a decimal — find out which.</span></label>
   <div class="checkfield">→ Your monthly total (30–31 days): $<input type="number" id="labB4" step="0.01"> <button class="btn small" onclick="checkB4()">Check</button> <span class="fb" id="fbB4"></span></div>
   <p class="note">Why this matters: AIOps tools now auto-draft postmortems from logs exactly like this. The engineer who can audit the draft against the evidence is the one who stays valuable.</p>
 </section>
@@ -531,7 +530,6 @@ INCIDENT LOG:
   <label class="step"><input type="checkbox" data-step="cap1"><span><strong>Monitoring plan (1 page):</strong> the 5 metrics you'll watch for the web store (include p95 latency and error rate), each with a threshold and a one-line justification tied to today's tuner lesson (why not lower? why not higher?).</span></label>
   <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Mini-runbook (3 entries):</strong> for traffic spike, memory leak, and zone outage — symptom fingerprint → first response → escalation path. Steal shamelessly from your Lab A notes; that's what they were for.</span></label>
   <label class="step"><input type="checkbox" data-step="cap3"><span><strong>Cost guardrails (3 bullets):</strong> a monthly budget alert level, a tagging rule, and a scheduled waste review — plus your Lab C chargeback table as evidence.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap4"><span>Update the <strong>AI Use Log</strong> with Lab B's postmortem entry (prompt + what you corrected).</span></label>
 </section>
 
 <!-- ============ EXIT TICKET ============ -->

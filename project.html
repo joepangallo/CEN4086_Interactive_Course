@@ -51,7 +51,7 @@ ul.tight li{margin:6px 0}
   <h1>🏗️ Capstone: Harbor Lane Books</h1>
   <p class="sub">You are the cloud consultant. Four weeks, four deliverables, one client who never wants to buy a server again.</p>
   <div>
-    <span class="chip">Individual project</span><span class="chip">4 deliverables · one per week</span><span class="chip">Free tools only</span><span class="chip">AI allowed — with an AI Use Log</span><span class="chip">Final presentation in Session 12</span>
+    <span class="chip">Individual project</span><span class="chip">4 deliverables · one per week</span><span class="chip">Free tools only</span><span class="chip">AI allowed</span><span class="chip">Final presentation in Session 12</span>
   </div>
 </header>
 
@@ -80,7 +80,7 @@ ul.tight li{margin:6px 0}
     <li><strong>Individual project.</strong> You own every deliverable end-to-end, all four weeks, and you present solo in Session 12. Discussing ideas with classmates is encouraged; the analysis, writing, and diagrams must be yours.</li>
     <li><strong>Free tools only</strong> — Google Docs/Sheets/Slides (deliverables), diagrams.net (architecture diagrams), GitHub (optional artifact hosting), free-tier AI chatbots. If a step ever asks for a credit card, stop: you've wandered off the assignment.</li>
     <li><strong>Use the course vocabulary.</strong> Each deliverable must correctly use at least three named concepts from that week's session pages (e.g., “rapid elasticity,” “warm standby,” “loose coupling”) — the session pages are your complete reference.</li>
-    <li><strong>AI is your junior analyst, not your ghostwriter.</strong> You may use free AI chatbots to brainstorm, draft, and explain. Every deliverable must include your <strong>AI Use Log</strong>: date · tool · what you asked · what it got wrong or you verified · what you kept. Undisclosed AI use is an academic-integrity violation per the syllabus. An empty log is fine <em>if it's true</em>.</li>
+    <li><strong>AI is your junior analyst, not your ghostwriter.</strong> You may use free AI chatbots to brainstorm, draft, and explain. Undisclosed AI use is an academic-integrity violation per the syllabus.</li>
     <li><strong>Recommendations need reasons.</strong> "Use AWS" earns nothing; "object storage for the photo archive because it's accessed rarely and scales cheaply (Session 5's storage tiers)" earns full marks. Provider-neutral answers are welcome.</li>
   </ul>
   <div class="warn">💡 <strong>The AI junior-analyst starter prompt</strong> (adapt each week):</div>
@@ -102,14 +102,12 @@ I will fact-check you against my course materials.</pre></div>
   <label class="step"><input type="checkbox" data-step="d1d"><span>One PaaS candidate (what would you build/deploy on a platform, and why).</span></label>
   <label class="step"><input type="checkbox" data-step="d1e"><span>IaaS section: provider choice + instance sizing for the web store (Session 3 VM-builder reasoning), with a second provider quote for comparison.</span></label>
   <label class="step"><input type="checkbox" data-step="d1f"><span>Target architecture diagram + 1-paragraph "letter to Ray" translating the plan into his language.</span></label>
-  <label class="step"><input type="checkbox" data-step="d1g"><span>AI Use Log appended.</span></label>
   <table>
     <tr><th>Criterion</th><th>Pts</th></tr>
     <tr><td>Correct use of Week 1 concepts (traits, models, SaaS/PaaS/IaaS distinctions)</td><td>10</td></tr>
     <tr><td>Costs are real, sourced, and arithmetic checks out</td><td>6</td></tr>
     <tr><td>Diagram is readable and matches the text</td><td>4</td></tr>
-    <tr><td>Persuasiveness &amp; clarity (would Maya sign? would Ray nod?)</td><td>3</td></tr>
-    <tr><td>AI Use Log honest and specific</td><td>2</td></tr>
+    <tr><td>Persuasiveness &amp; clarity (would Maya sign? would Ray nod?)</td><td>5</td></tr>
   </table>
 </div>
 
@@ -121,14 +119,13 @@ I will fact-check you against my course materials.</pre></div>
   <label class="step"><input type="checkbox" data-step="d2c"><span>Backup policy: 3-2-1 rule applied; USB-drive-on-desk retired with honors.</span></label>
   <label class="step"><input type="checkbox" data-step="d2d"><span>Collaboration stack: chat, meetings, docs, scheduling — free/low-cost picks with a sync-vs-async usage guideline for 12 stores.</span></label>
   <label class="step"><input type="checkbox" data-step="d2e"><span>Data classification mini-register: 6+ data types (HR files, card data, photos…) with sensitivity + storage decision. Note PCI/HR handling.</span></label>
-  <label class="step"><input type="checkbox" data-step="d2f"><span>AI Use Log appended.</span></label>
   <table>
     <tr><th>Criterion</th><th>Pts</th></tr>
     <tr><td>IDaaS plan (SSO/MFA/lifecycle) is complete and appraises at least two options</td><td>8</td></tr>
     <tr><td>Storage plan differentiates block/object/file + tiers correctly with costs</td><td>8</td></tr>
     <tr><td>Collaboration stack fits a 12-store retail workforce</td><td>5</td></tr>
     <tr><td>Classification register sound (PCI &amp; HR handled)</td><td>2</td></tr>
-    <tr><td>Diagram updated + AI Use Log</td><td>2</td></tr>
+    <tr><td>Diagram updated</td><td>2</td></tr>
   </table>
 </div>
 
@@ -140,13 +137,12 @@ I will fact-check you against my course materials.</pre></div>
   <label class="step"><input type="checkbox" data-step="d3c"><span>Top-5 security controls with the threat each answers (from Session 8's threat→control work); staff phishing-awareness note.</span></label>
   <label class="step"><input type="checkbox" data-step="d3d"><span>DR plan: RTO + RPO per system (web store, POS, files, email) with the DR tier each implies (backup-restore / pilot light / warm standby / multi-site) and why; hurricane tabletop scenario 1-pager.</span></label>
   <label class="step"><input type="checkbox" data-step="d3e"><span>SLA targets: availability level per system, downtime math shown (Session 9 SLA widget method).</span></label>
-  <label class="step"><input type="checkbox" data-step="d3f"><span>AI Use Log appended.</span></label>
   <table>
     <tr><th>Criterion</th><th>Pts</th></tr>
     <tr><td>Virtualization plan quantified (consolidation math shown)</td><td>7</td></tr>
     <tr><td>Responsibility matrix + controls map to real threats</td><td>7</td></tr>
     <tr><td>RTO/RPO targets are per-system, justified, and drive the DR tier chosen</td><td>8</td></tr>
-    <tr><td>SLA math correct + AI Use Log</td><td>3</td></tr>
+    <tr><td>SLA math correct</td><td>3</td></tr>
   </table>
 </div>
 
@@ -158,14 +154,13 @@ I will fact-check you against my course materials.</pre></div>
   <label class="step"><input type="checkbox" data-step="d4c"><span>Operations plan: 5 monitored metrics with alert thresholds, on-call reality for a 2-person IT team, monthly cost-review ritual (Session 11).</span></label>
   <label class="step"><input type="checkbox" data-step="d4d"><span>Migration roadmap: every system from the closet table classified by the 6 Rs, sequenced into 3 waves with dependencies (identity first!), rollback thinking for cutover weekend (Session 12).</span></label>
   <label class="step"><input type="checkbox" data-step="d4e"><span>Change management: the "Convince Ray" section — training plan and what Ray's new job looks like.</span></label>
-  <label class="step"><input type="checkbox" data-step="d4f"><span>Final presentation delivered; complete AI Use Log for the whole project appended.</span></label>
+  <label class="step"><input type="checkbox" data-step="d4f"><span>Final presentation delivered.</span></label>
   <table>
     <tr><th>Criterion</th><th>Pts</th></tr>
     <tr><td>API design follows REST conventions; AI endpoint sensible</td><td>6</td></tr>
     <tr><td>Migration roadmap: 6-Rs classification + wave dependencies sound</td><td>8</td></tr>
     <tr><td>Operations plan realistic for a small team</td><td>4</td></tr>
-    <tr><td>Presentation: clear story, confident delivery, questions handled</td><td>5</td></tr>
-    <tr><td>Cumulative AI Use Log complete</td><td>2</td></tr>
+    <tr><td>Presentation: clear story, confident delivery, questions handled</td><td>7</td></tr>
   </table>
 </div>
 
@@ -173,7 +168,7 @@ I will fact-check you against my course materials.</pre></div>
 <div class="card">
   <table>
     <tr><th>Session</th><th>In-class capstone checkpoint (bottom of each session page)</th><th>Feeds</th></tr>
-    <tr><td>1</td><td>Project doc created · 5 pain points table · AI Use Log started</td><td>D1</td></tr>
+    <tr><td>1</td><td>Project doc created · 5 pain points table</td><td>D1</td></tr>
     <tr><td>2</td><td>SaaS stack + PaaS candidate + cost table</td><td>D1</td></tr>
     <tr><td>3</td><td><strong>D1 due</strong> · IaaS sizing finalized</td><td>D1</td></tr>
     <tr><td>4</td><td>IDaaS pick + provisioning policy draft</td><td>D2</td></tr>
@@ -194,7 +189,7 @@ I will fact-check you against my course materials.</pre></div>
   <ul class="tight">
     <li><strong>6 minutes + 2 minutes Q&amp;A</strong> per student. Audience roleplay: instructor is Maya; a volunteer classmate plays Ray and asks one skeptical question.</li>
     <li>Slides must include: the before/after architecture diagrams, one costs slide (monthly, honest), the RTO/RPO table, the 3-wave migration timeline, and one "what could still go wrong" slide — consultants who hide risks get follow-up questions.</li>
-    <li>Rehearse with your AI junior analyst: paste your outline and ask it to grill you with the five hardest questions Maya or Ray could ask. Log it.</li>
+    <li>Rehearse with your AI junior analyst: paste your outline and ask it to grill you with the five hardest questions Maya or Ray could ask.</li>
   </ul>
 </div>
 

@@ -299,7 +299,7 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
 <!-- ============ LEARN IT WITH AI ============ -->
 <section class="card ai">
   <h3>🎓 Learn Objective 7 with AI (DR &amp; business continuity)</h3>
-  <p><strong>Objective 7: Examine and evaluate virtualization solutions.</strong> Keeping cloud and virtualized infrastructure alive through a disaster is that objective applied — no evaluation is complete until you know how the solution survives its worst day. Run these three drills on today's DR and business-continuity topics in any free AI chatbot (ChatGPT, Gemini, Claude, Copilot), and log every drill in your AI Use Log.</p>
+  <p><strong>Objective 7: Examine and evaluate virtualization solutions.</strong> Keeping cloud and virtualized infrastructure alive through a disaster is that objective applied — no evaluation is complete until you know how the solution survives its worst day. Run these three drills on today's DR and business-continuity topics in any free AI chatbot (ChatGPT, Gemini, Claude, Copilot).</p>
   <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you, not the other way around:</p>
   <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for Session 9 of my cloud computing course:
 disaster recovery and business continuity. Topics: RTO vs RPO (and
@@ -333,7 +333,7 @@ and show the downtime arithmetic step by step in your explanations.
 One question at a time. After I answer, explain why EVERY option is
 right or wrong, then ask the next. 6 questions, track my score, get
 harder as I improve.</pre></div>
-  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion.</span></label>
   <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify the tutor:</strong> AI tutors occasionally misstate definitions or invent plausible-sounding details. Cross-check one claim it made — an RTO/RPO definition or an SLA downtime figure (redo the arithmetic yourself) — against this session's Segment 2 definitions and SLA widget above, and note in your log whether it held up.</span></label>
   <p class="note">Rerun the tabletop drill with a different business each time — it never plays the same twice. Free tier is plenty.</p>
 </section>
@@ -373,8 +373,7 @@ continuing. Do not reveal consequences until we commit. At the end, grade
 our performance against our stated RTO/RPO and list 2 gaps in our plan.</pre></div>
   <label class="step"><input type="checkbox" data-step="b1"><span>Run the exercise and own every decision yourself. Note where you hesitated — that hesitation IS the plan gap.</span></label>
   <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> after the debrief, ask it to define RTO and RPO in one line each. Check against this session's definitions: RTO = max downtime (forward clock), RPO = max data loss (backward clock). AIs regularly swap them — if it did, correct it and note the exchange.</span></label>
-  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — the AI fallback chain:</strong> in your Lab C doc (or notebook), design a <strong>4-tier fallback chain</strong> for Harbor Lane's recommendation widget, one line per tier: trigger → behavior (today's AI Concept section names the ladder — live model under a timeout, cached results, rules-based "bestsellers," feature flag hides the widget). Then paste your chain into the chatbot and ask: <em>"Critique this fallback chain for an e-commerce recommendation widget — which tier, trigger, or monitoring am I missing?"</em> Log what it caught (drift checks? a retry budget? how you recover back UP the chain?) and your fix in your AI Use Log.</span></label>
-  <label class="step"><input type="checkbox" data-step="b3"><span><strong>AI Use Log entry (required):</strong> prompt, model, the two gaps it found, and what you verified or corrected.</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — the AI fallback chain:</strong> in your Lab C doc (or notebook), design a <strong>4-tier fallback chain</strong> for Harbor Lane's recommendation widget, one line per tier: trigger → behavior (today's AI Concept section names the ladder — live model under a timeout, cached results, rules-based "bestsellers," feature flag hides the widget). Then paste your chain into the chatbot and ask: <em>"Critique this fallback chain for an e-commerce recommendation widget — which tier, trigger, or monitoring am I missing?"</em> Note what it caught (drift checks? a retry budget? how you recover back UP the chain?) and your fix.</span></label>
 </section>
 
 <section class="card lab">
@@ -538,7 +537,7 @@ Owner: ______   Last updated: ______   Last TESTED: ______
   <label class="step"><input type="checkbox" data-step="cap1"><span><strong>Virtualization plan (S7):</strong> closet-server inventory with virtualize/migrate/retire verdicts, hypervisor choice + consolidation ratio with savings math, and the before/after diagram.</span></label>
   <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Security baseline (S8):</strong> the responsibility matrix for your recommended stack, your top-5 controls with threat-tied justifications, and the phishing-defense paragraph.</span></label>
   <label class="step"><input type="checkbox" data-step="cap3"><span><strong>DR plan (S9):</strong> the RTO/RPO + tier table for web store, POS database, file share, and email (Lab A step 6); a 3-2-1 backup policy; SLA targets you will demand from vendors; and the Lab C runbook as an appendix.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap4"><span><strong>AI Use Log</strong> appended, current through tonight — every prompt, every verification, every correction. Submit D3.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap4"><span>Submit D3.</span></label>
 </section>
 
 <!-- ============ EXIT TICKET ============ -->

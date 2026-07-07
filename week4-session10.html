@@ -395,7 +395,7 @@ Content-Type: application/json
 <!-- ============ LEARN IT WITH AI ============ -->
 <section class="card ai">
   <h3>🎓 Learn Objective 8 with AI (SOA)</h3>
-  <p><strong>Objective 8: Define and describe Service-Oriented Architecture.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor. Log every drill in your AI Use Log.</p>
+  <p><strong>Objective 8: Define and describe Service-Oriented Architecture.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor.</p>
   <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you, not the other way around:</p>
   <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for my cloud computing course (today's session:
 Service-Oriented Architecture). Topics: web
@@ -429,7 +429,7 @@ a wrong status code) and "pick the right verb and status code" for a given
 operation. One question at a time. After I answer, explain why EVERY option
 is right or wrong, then ask the next. 8 questions, track my score, get
 harder as I improve.</pre></div>
-  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion.</span></label>
   <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify the tutor:</strong> AI tutors occasionally misstate REST rules or invent status codes. Cross-check one claim it made against the /books playground in Segment 2 (fire the request and read the real code) or this session's definitions above, and note in your log whether it held up.</span></label>
   <p class="note">The design-review drill is the highest-value one this week: it hardens the exact API sheet you submit for Checkpoint 10. Free tier is plenty.</p>
 </section>
@@ -467,10 +467,9 @@ Follow REST conventions strictly: plural nouns for resources, no verbs in
 paths, correct verb semantics. Present the result as a table, then list any
 design decisions you had to make.</pre></div>
   <label class="step"><input type="checkbox" data-step="b1"><span>Run the prompt and get the 5-endpoint table.</span></label>
-  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — the model only <em>proposes</em> calls:</strong> in the same chat, paste: <em>"You have one tool: get_inventory(store_id, isbn). A customer asks whether store 4 has ISBN 9780316769488. Reply ONLY with the JSON tool call you would emit."</em> Compare its JSON to the /books playground's conventions — field names, types, quoting — and note any schema drift (invented fields? renamed parameters?). Log the exchange in your AI Use Log with one sentence on what this proves: the model emitted a <em>request</em>, and nothing executed — because execution belongs to YOUR code, not the model.</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — the model only <em>proposes</em> calls:</strong> in the same chat, paste: <em>"You have one tool: get_inventory(store_id, isbn). A customer asks whether store 4 has ISBN 9780316769488. Reply ONLY with the JSON tool call you would emit."</em> Compare its JSON to the /books playground's conventions — field names, types, quoting — and note any schema drift (invented fields? renamed parameters?) — the model emitted a <em>request</em>, and nothing executed, because execution belongs to YOUR code, not the model.</span></label>
   <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> grade every endpoint against Segment 2's three REST rules. Check specifically: Are paths nouns (<code>/orders/17</code>, never <code>/cancelOrder</code>)? Is cancel done with DELETE or a status-update PUT — and did the AI justify the choice? Are the status codes right (201 for created order, 404 for missing order)? Find <strong>at least one thing to challenge or improve</strong> — ask the AI to defend it and see if you agree.</span></label>
-  <label class="step"><input type="checkbox" data-step="b3"><span>Record the prompt, the AI's table, and your correction in your <strong>AI Use Log</strong> (required for the capstone) — note what you verified and what you changed.</span></label>
-  <p class="note">⚖️ Course rule reminder: AI is your junior analyst, not your ghostwriter. The endpoint table you submit in the capstone must be YOUR reviewed version, with the AI's contribution disclosed in the log.</p>
+  <p class="note">⚖️ Course rule reminder: AI is your junior analyst, not your ghostwriter. The endpoint table you submit in the capstone must be YOUR reviewed version.</p>
 </section>
 
 <section class="card lab">
@@ -632,7 +631,6 @@ design decisions you had to make.</pre></div>
   <p><strong>Due before Session 11 (individual project):</strong></p>
   <label class="step"><input type="checkbox" data-step="cap1"><span>Draft your <strong>API design sheet: exactly 5 endpoints</strong> for Harbor Lane's store platform in a table: Method | Path | Request body (if any) | Success status | Error status | Owning service. Cover at least: books, inventory-by-store, and orders. Start from your Lab B table — but the submitted sheet must be your reviewed, corrected version.</span></label>
   <label class="step"><input type="checkbox" data-step="cap2"><span>Write one paragraph titled <strong>"Why the POS and the web store won't break each other,"</strong> using loose coupling and contracts to justify your design to a non-technical owner.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap3"><span>Update your <strong>AI Use Log</strong> with Lab B's entry: prompt used, what the AI proposed, what you verified and corrected.</span></label>
 </section>
 
 <!-- ============ EXIT TICKET ============ -->

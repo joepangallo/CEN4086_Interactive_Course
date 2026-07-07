@@ -342,7 +342,7 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
 <!-- ============ LEARN IT WITH AI ============ -->
 <section class="card ai">
   <h3>🎓 Learn Objective 5 with AI — personal tutor drills</h3>
-  <p><strong>Objective 5: Evaluate challenges related to ID management and appraise IDaaS solutions.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor. Log every drill in your AI Use Log.</p>
+  <p><strong>Objective 5: Evaluate challenges related to ID management and appraise IDaaS solutions.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor.</p>
   <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you across the whole identity toolkit:</p>
   <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for my cloud computing course. Topic: Session 4 —
 Identity as a Service (IDaaS). Cover: the identity
@@ -373,7 +373,7 @@ guaranteed forever") and I must judge how credible it is and what to
 check. Named characters, realistic situations, options A–D. ONE question
 at a time; after I answer, explain why EVERY option is right or wrong,
 then ask the next. 6 questions, track my score, get harder as I improve.</pre></div>
-  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion and record your result in your AI Use Log.</span></label>
+  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion.</span></label>
   <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify the tutor:</strong> AI tutors regularly scramble identity vocabulary — OAuth vs. OpenID Connect and "SMS is a fine second factor" are favorite stumbles. Cross-check one claim it made against this session's definitions and interactives in Segment 2 above, and note in your log whether it held up.</span></label>
   <p class="note">Same pattern as every session: the AI drills the objective, you verify the AI. Objective 5 is midterm material (exam at the start of Week 3) — every drill you run tonight is studying, and it's already logged.</p>
 </section>
@@ -414,8 +414,7 @@ Keep it under 400 words, warm in tone, and translate any jargon you use.</pre></
   <p><strong>What to look for:</strong> a good answer explains the IdP "kill switch" logic for Q1, backup codes or help-desk re-enrollment for Q3, that a TOTP app only stores a secret seed and reads nothing else for Q4, and SIM-swap risk for Q5.</p>
   <label class="step"><input type="checkbox" data-step="b1"><span>Run the prompt and read the FAQ critically. Would a 19-year-old part-time bookseller actually understand Q4's answer?</span></label>
   <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> fact-check its Q5 claim against Segment 2 of this session. The correct reason is SIM-swap/interception risk — if the AI said something vague ("texts are less encrypted") or wrong, write the correction. AI assistants also love recommending SMS as a "backup factor" without flagging its weakness — did yours?</span></label>
-  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — verify before you comply:</strong> with the AI's help, draft a 3-rule "verify before you comply" protocol for Harbor Lane covering any phone/video request that moves money, credentials, or gift cards (think: call back on a number already on file; urgency is never a bypass; payment changes need a second approver). Then stress-test it — ask the AI: <em>"You are a scammer with a perfect voice clone of the owner. How would you still get around these three rules?"</em> — and tighten the ONE rule its best attack exposed. Paste the before/after rule into your AI Use Log.</span></label>
-  <label class="step"><input type="checkbox" data-step="b3"><span>Add the prompt, the one claim you verified, and any correction to your <strong>AI Use Log</strong> (required for the capstone).</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — verify before you comply:</strong> with the AI's help, draft a 3-rule "verify before you comply" protocol for Harbor Lane covering any phone/video request that moves money, credentials, or gift cards (think: call back on a number already on file; urgency is never a bypass; payment changes need a second approver). Then stress-test it — ask the AI: <em>"You are a scammer with a perfect voice clone of the owner. How would you still get around these three rules?"</em> — and tighten the ONE rule its best attack exposed.</span></label>
 </section>
 
 <section class="card lab">
@@ -561,7 +560,6 @@ Keep it under 400 words, warm in tone, and translate any jargon you use.</pre></
   <label class="step"><input type="checkbox" data-step="cap1"><span><strong>IDaaS recommendation:</strong> pick a product direction (independent IDaaS vs. suite-bundled identity) and justify it against at least 3 appraisal criteria from Segment 3 (protocols, app catalog, HR connectors, MFA options, SLA, price at 240 users).</span></label>
   <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Provisioning policy:</strong> a JML table for three roles (store associate, store manager, HQ finance): for each lifecycle event, which systems are granted/revoked and the deadline in hours. Seasonal staff get auto-expiry — you saw why in Q8.</span></label>
   <label class="step"><input type="checkbox" data-step="cap3"><span><strong>MFA policy:</strong> which factor(s) you'll require, what you'll allow as backup, the lost-phone recovery flow, and one sentence on why you did or didn't allow SMS.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap4"><span>Record all AI assistance in your <strong>AI Use Log</strong> (prompts + what you verified or corrected).</span></label>
 </section>
 
 <!-- ============ EXIT TICKET ============ -->
