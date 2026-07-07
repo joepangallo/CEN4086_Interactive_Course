@@ -375,6 +375,33 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     </div>
     <p class="mstatus">0/6 placed</p>
   </div>
+  <h3>🧮 Interactive: AI Token Cost Calculator</h3>
+  <p>"You pay per million tokens" is the trait you just sorted — now put numbers on it. Harbor Lane's "customers who liked X" recommendation feature calls a model API every time a shopper views a book page. Set the traffic and pricing:</p>
+  <div class="calcgrid">
+    <div class="calcbox">
+      <h5>📊 Traffic</h5>
+      <label>Requests per day</label>
+      <input type="number" id="aiReq" value="5000" min="0" step="100">
+      <label>Input tokens / request</label>
+      <input type="number" id="aiIn" value="600" min="0" step="10">
+      <label>Output tokens / request</label>
+      <input type="number" id="aiOut" value="200" min="0" step="10">
+    </div>
+    <div class="calcbox">
+      <h5>💵 Pricing</h5>
+      <label>$ per million input tokens</label>
+      <input type="number" id="aiPriceIn" value="0.20" min="0" step="0.05">
+      <label>$ per million output tokens</label>
+      <input type="number" id="aiPriceOut" value="0.50" min="0" step="0.05">
+    </div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b id="aiDaily">$0</b><small>daily cost</small></div>
+    <div class="kpi"><b id="aiMonthly">$0</b><small>monthly cost (×30)</small></div>
+    <div class="kpi"><b id="aiInShare">0%</b><small>input tokens' share of the bill</small></div>
+  </div>
+  <div class="verdict" id="aiVerdict">—</div>
+  <p class="note" id="aiWork">working…</p>
   <p><strong>⚡ In-class activity (10 min):</strong> ask any free AI chatbot for the checklist below, then verify it like a professional:</p>
   <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>You are a cloud analyst. Draft a 10-item evaluation checklist a small retail
 chain should use before adopting ANY SaaS product (email, CRM, or docs).
@@ -462,6 +489,11 @@ the next. 8 questions, track my score, get harder as I improve.</pre></div>
   <label class="step"><input type="checkbox" data-step="a4"><span>Run the full deploy pipeline (Push → Build → Deploy → Scale). During the <strong>Scale</strong> stage, how many web instances does the autoscaler run at peak?</span></label>
   <div class="checkfield">→ Instances at peak: <input type="number" id="labA4"> <button class="btn small" onclick="checkA(4)">Check</button> <span class="fb" id="fbA4"></span></div>
   <label class="step"><input type="checkbox" data-step="a5"><span>Discuss with a neighbor (1 min): at your Task 3 crossover, on-prem "wins" on raw dollars. Name two costs the model omits that could flip the verdict back — then check the note under the calculator.</span></label>
+  <label class="step"><input type="checkbox" data-step="a6"><span>Use the <strong>AI Token Cost Calculator</strong> in Segment 3. Set requests/day = <strong>5,000</strong>, input tokens = <strong>600</strong>, output tokens = <strong>200</strong>, $/million input = <strong>$0.20</strong>, $/million output = <strong>$0.50</strong>. Record the daily cost.</span></label>
+  <div class="checkfield">→ Daily cost: $<input type="number" step="0.01" id="labA5"> <button class="btn small" onclick="checkA(5)">Check</button> <span class="fb" id="fbA5"></span></div>
+  <label class="step"><input type="checkbox" data-step="a7"><span>Same settings — record the monthly cost (×30 days).</span></label>
+  <div class="checkfield">→ Monthly cost: $<input type="number" step="0.01" id="labA6"> <button class="btn small" onclick="checkA(6)">Check</button> <span class="fb" id="fbA6"></span></div>
+  <label class="step"><input type="checkbox" data-step="a8"><span>Flip it: set output tokens to <strong>600</strong> and input tokens to <strong>200</strong> (same prices, same traffic). In one sentence: which token type now drives the bill, and what would you change about this feature's prompts to control cost?</span></label>
 </section>
 
 <section class="card lab">
@@ -808,6 +840,25 @@ function calcCost(){
 [seatsEl,rateEl,licEl,capexEl].forEach(el=>el.addEventListener('input',calcCost));
 calcCost();
 
+/* AI token cost calculator */
+const aiReqEl=document.getElementById('aiReq'),aiInEl=document.getElementById('aiIn'),aiOutEl=document.getElementById('aiOut'),aiPriceInEl=document.getElementById('aiPriceIn'),aiPriceOutEl=document.getElementById('aiPriceOut');
+function calcAI(){
+  const req=Math.max(0,+aiReqEl.value||0),inTok=Math.max(0,+aiInEl.value||0),outTok=Math.max(0,+aiOutEl.value||0),
+        priceIn=Math.max(0,+aiPriceInEl.value||0),priceOut=Math.max(0,+aiPriceOutEl.value||0);
+  const inCost=req*inTok/1e6*priceIn, outCost=req*outTok/1e6*priceOut, daily=inCost+outCost, monthly=daily*30;
+  const inShare=daily>0?Math.round(inCost/daily*100):0;
+  document.getElementById('aiDaily').textContent='$'+daily.toFixed(2);
+  document.getElementById('aiMonthly').textContent='$'+monthly.toFixed(2);
+  document.getElementById('aiInShare').textContent=inShare+'%';
+  const v=document.getElementById('aiVerdict');
+  if(daily<=0){v.textContent='Set some traffic and pricing above.';}
+  else if(inShare>=50){v.textContent='📥 Input tokens drive '+inShare+'% of this bill. Even though output tokens are priced higher per token here, this feature sends more input than it generates — trimming the prompt (Segment 3\'s context-window lesson) cuts the bill faster than shortening replies would.';}
+  else{v.textContent='📤 Output tokens drive '+(100-inShare)+'% of this bill. A short prompt but a long reply is the common shape — capping response length is often the cheapest lever in AI FinOps.';}
+  document.getElementById('aiWork').textContent='Working: input = '+fmt(req)+' req × '+fmt(inTok)+' tok ÷ 1,000,000 × $'+priceIn+' = $'+inCost.toFixed(2)+'/day · output = '+fmt(req)+' req × '+fmt(outTok)+' tok ÷ 1,000,000 × $'+priceOut+' = $'+outCost.toFixed(2)+'/day · total × 30 days = monthly.';
+}
+[aiReqEl,aiInEl,aiOutEl,aiPriceInEl,aiPriceOutEl].forEach(el=>el.addEventListener('input',calcAI));
+calcAI();
+
 /* SaaS decision dashboard */
 const SD_IDS=['sdFit','sdSec','sdExit','sdOff','sdAdmin','sdSeat'];
 function calcSaasDecision(){
@@ -907,6 +958,8 @@ function checkA(i){
   if(i===2){ok=(val===88800);msg=ok?'✔ Right: (120 × $400 × 1.6) + $12,000 = $88,800 — the ×1.6 bundles the license plus three years of 20% support.':'✘ Check the on-prem inputs: license $400/seat, hardware $12,000, seats 120. The KPI should read $88,800 (76,800 license+support + 12,000 hardware).';}
   if(i===3){ok=(val>=78&&val<=80);msg=ok?'✔ Crossover ≈ 79 seats. Per seat over 3 years: SaaS $792 vs on-prem $640 + a $12,000 fixed cost that amortizes away as seats grow — small teams rent, big stable teams start penciling out to own.':'✘ Not it. At $22/mo SaaS costs $792/seat over 3 years; on-prem is $640/seat + $12,000 fixed. Use arrow keys on the seats slider and watch the verdict flip (hint: it happens in the high 70s).';}
   if(i===4){ok=(val===4);msg=ok?'✔ Yes — the autoscaler grew web.1 → web.4: 4 instances at peak, then back down to 1 when the sale ended.':'✘ Run the Scale stage and count the web.N instances reported healthy at the spike’s peak.';}
+  if(i===5){ok=(val>=1.09&&val<=1.11);msg=ok?'✔ Correct: input (5,000 × 600 ÷ 1,000,000 × $0.20 = $0.60) + output (5,000 × 200 ÷ 1,000,000 × $0.50 = $0.50) = $1.10/day.':'✘ Set the calculator exactly as instructed and read the daily-cost KPI (or compute input cost + output cost by hand).';}
+  if(i===6){ok=(val>=32.9&&val<=33.1);msg=ok?'✔ Right: $1.10/day × 30 days = $33.00/month — this is Segment 3\'s measured-service trait, priced.':'✘ Take your Task 6 daily cost and multiply by 30.';}
   fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
 }
 </script>
