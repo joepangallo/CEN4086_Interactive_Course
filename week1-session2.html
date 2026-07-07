@@ -23,7 +23,6 @@ main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
 h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
 h3{font-size:18px;margin:20px 0 8px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
-.card.warmup{border-top:6px solid var(--amb)}
 .card.ai{border-top:6px solid var(--vio);background:linear-gradient(180deg,#f7f3fc,#fff 90px)}
 .card.disc{border-top:6px solid var(--acc)}
 .card.capstone{border-top:6px solid var(--pri);background:linear-gradient(180deg,#f0f0fa,#fff 90px)}
@@ -89,10 +88,6 @@ h3{font-size:18px;margin:20px 0 8px}
 .kpi{flex:1;min-width:130px;background:#f4f6fb;border-radius:10px;padding:10px 14px;text-align:center}
 .kpi b{display:block;font-size:22px;color:var(--pri);line-height:1.2}
 .kpi small{color:var(--mut)}
-.poll .popt{display:inline-block;margin:4px 6px 4px 0;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;cursor:pointer;font:inherit;font-size:14px}
-.poll .popt.sel{background:var(--amb);border-color:var(--amb);font-weight:700}
-.pollwhy{display:none;margin-top:8px;padding:10px 12px;background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;font-size:14px}
-.poll.done .pollwhy{display:block}
 .stackrow{display:flex;align-items:center;gap:10px;margin:3px 0}
 .stackrow .lay{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;background:#fbfaf7;transition:all .3s}
 .stackrow .who{width:96px;text-align:center;font-size:12px;font-weight:800;border-radius:8px;padding:4px}
@@ -187,32 +182,12 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     <div class="outcome"><b>Defend it</b>Name what the vendor owns, what you still own, and how you would leave.</div>
   </div>
   <table class="agenda">
-    <tr><td>0:00-0:20</td><td><span class="bdg b-int">INTERACT</span> warm-up polls and SaaS recognition</td></tr>
+    <tr><td>0:00-0:20</td><td><span class="bdg b-int">INTERACT</span> SaaS recognition warm-up</td></tr>
     <tr><td>0:20-1:20</td><td><span class="bdg b-lec">BUILD</span> SaaS anatomy, multi-tenancy, OpenSaaS</td></tr>
     <tr><td>1:20-2:05</td><td><span class="bdg b-lab">MODEL</span> cost calculator and SaaS decision dashboard</td></tr>
     <tr><td>2:05-4:00</td><td><span class="bdg b-cap">APPLY</span> AI, labs, quiz, Harbor Lane recommendation</td></tr>
   </table>
 </header>
-
-<!-- ============ WARM-UP ============ -->
-<section class="card warmup">
-  <h3>🔥 Warm-Up Polls <span class="note">(no wrong answers — vote, then we discuss)</span></h3>
-  <div class="poll" id="poll1">
-    <p><strong>Poll 1:</strong> Which of these did you use in the last 24 hours <em>without installing or updating anything</em>?</p>
-    <button class="popt">Web email (Gmail / Outlook)</button><button class="popt">A doc or spreadsheet in a browser</button><button class="popt">Streaming (Netflix / Spotify)</button><button class="popt">All of the above</button>
-    <div class="pollwhy">Every option is <strong>SaaS</strong>: finished software, delivered over the internet, always the newest version — no install disc, no patch Tuesday, no "version 11.2 required." Today's core claim is that for most everyday software categories, the delivery model has <em>already</em> flipped from products you own to services you rent. Today we open the hood: the machinery (multi-tenancy) and the math (subscription vs. license) that made the flip happen.</div>
-  </div>
-  <div class="poll" id="poll2">
-    <p><strong>Poll 2:</strong> Your 240-person company needs email. Gut call — before any math:</p>
-    <button class="popt">Run our own mail server — control!</button><button class="popt">Rent it as SaaS — make it someone else's 3 AM problem</button><button class="popt">Depends entirely on the numbers</button><button class="popt">Carrier pigeons</button>
-    <div class="pollwhy">There is no universally right answer — which is why "depends on the numbers" is the professional instinct. In Segment 2 you'll build the actual 3-year cost model and find <em>where</em> the crossover lives, and you'll price what "control" really costs in patches, spam filtering, hardware refreshes, and weekend outages. (Pigeons: RFC 1149, "IP over Avian Carriers," is a real April Fools' standard. Throughput is decent; latency and packet loss are catastrophic.)</div>
-  </div>
-  <div class="poll" id="poll3">
-    <p><strong>Poll 3:</strong> A developer friend brags: "I typed <code>git push</code> and my app was live on the internet 90 seconds later. I have never configured a server in my life." Which model is she using?</p>
-    <button class="popt">SaaS</button><button class="popt">PaaS</button><button class="popt">IaaS</button><button class="popt">Witchcraft</button>
-    <div class="pollwhy"><strong>PaaS.</strong> She pushes code; the platform builds it, deploys it, and scales it. If it feels like witchcraft, that's the abstraction doing its job — an entire operations department condensed into a git command. You'll run this exact ritual twice today: once in the deploy-pipeline simulator (Segment 3), and once for real when you publish a page to GitHub Pages in Lab C.</div>
-  </div>
-</section>
 
 <!-- ============ SEGMENT 1 ============ -->
 <section class="segment">
@@ -702,15 +677,6 @@ document.querySelectorAll('.tabs').forEach(t=>{
     t.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
     b.classList.add('on');t.querySelector('.tabpane[data-p="'+b.dataset.t+'"]').classList.add('on');
   }));
-});
-/* polls */
-document.querySelectorAll('.poll').forEach((p,pi)=>{
-  const key='poll:'+(p.id||pi);
-  p.querySelectorAll('.popt').forEach((o,oi)=>o.addEventListener('click',()=>{
-    if(p.classList.contains('done'))return;
-    o.classList.add('sel');p.classList.add('done');save(key,oi);
-  }));
-  if(S[key]!=null){p.classList.add('done');const o=p.querySelectorAll('.popt')[S[key]];if(o)o.classList.add('sel');}
 });
 /* quiz engine */
 function updateQuiz(qz){
