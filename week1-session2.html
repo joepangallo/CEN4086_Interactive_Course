@@ -258,6 +258,10 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
         <p class="note" style="margin:8px 0 0">+ support contract: 20% of total license cost per year, included automatically.</p>
       </div>
     </div>
+    <label class="note" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:10px 0 0">
+      <input type="checkbox" id="aiToggle" style="width:16px;height:16px;accent-color:var(--acc)">
+      🤖 Include AI recommendation feature costs (from the AI Token Cost Calculator in Segment 3): <strong id="aiToggleAmt">$0.00/mo</strong> — added equally to both sides, since it's a separate, model-agnostic API cost
+    </label>
     <div class="kpis">
       <div class="kpi"><b id="kSaas">$0</b><small>SaaS · 3-year total</small></div>
       <div class="kpi"><b id="kPrem">$0</b><small>On-prem · 3-year total</small></div>
@@ -489,11 +493,39 @@ the next. 8 questions, track my score, get harder as I improve.</pre></div>
   <label class="step"><input type="checkbox" data-step="a4"><span>Run the full deploy pipeline (Push → Build → Deploy → Scale). During the <strong>Scale</strong> stage, how many web instances does the autoscaler run at peak?</span></label>
   <div class="checkfield">→ Instances at peak: <input type="number" id="labA4"> <button class="btn small" onclick="checkA(4)">Check</button> <span class="fb" id="fbA4"></span></div>
   <label class="step"><input type="checkbox" data-step="a5"><span>Discuss with a neighbor (1 min): at your Task 3 crossover, on-prem "wins" on raw dollars. Name two costs the model omits that could flip the verdict back — then check the note under the calculator.</span></label>
-  <label class="step"><input type="checkbox" data-step="a6"><span>Use the <strong>AI Token Cost Calculator</strong> in Segment 3. Set requests/day = <strong>5,000</strong>, input tokens = <strong>600</strong>, output tokens = <strong>200</strong>, $/million input = <strong>$0.20</strong>, $/million output = <strong>$0.50</strong>. Record the daily cost.</span></label>
+  <h4>🧮 AI Token Cost Calculator</h4>
+  <p>Same calculator as Segment 3, right here so you don't have to scroll — set traffic and pricing for Harbor Lane's "customers who liked X" recommendation feature:</p>
+  <div class="calcgrid">
+    <div class="calcbox">
+      <h5>📊 Traffic</h5>
+      <label>Requests per day</label>
+      <input type="number" id="aiReqLab" value="5000" min="0" step="100">
+      <label>Input tokens / request</label>
+      <input type="number" id="aiInLab" value="600" min="0" step="10">
+      <label>Output tokens / request</label>
+      <input type="number" id="aiOutLab" value="200" min="0" step="10">
+    </div>
+    <div class="calcbox">
+      <h5>💵 Pricing</h5>
+      <label>$ per million input tokens</label>
+      <input type="number" id="aiPriceInLab" value="0.20" min="0" step="0.05">
+      <label>$ per million output tokens</label>
+      <input type="number" id="aiPriceOutLab" value="0.50" min="0" step="0.05">
+    </div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b id="aiDailyLab">$0</b><small>daily cost</small></div>
+    <div class="kpi"><b id="aiMonthlyLab">$0</b><small>monthly cost (×30)</small></div>
+    <div class="kpi"><b id="aiInShareLab">0%</b><small>input tokens' share of the bill</small></div>
+  </div>
+  <div class="verdict" id="aiVerdictLab">—</div>
+  <p class="note" id="aiWorkLab">working…</p>
+  <label class="step"><input type="checkbox" data-step="a6"><span>Using the calculator above: set requests/day = <strong>5,000</strong>, input tokens = <strong>600</strong>, output tokens = <strong>200</strong>, $/million input = <strong>$0.20</strong>, $/million output = <strong>$0.50</strong> (the defaults). Record the daily cost.</span></label>
   <div class="checkfield">→ Daily cost: $<input type="number" step="0.01" id="labA5"> <button class="btn small" onclick="checkA(5)">Check</button> <span class="fb" id="fbA5"></span></div>
   <label class="step"><input type="checkbox" data-step="a7"><span>Same settings — record the monthly cost (×30 days).</span></label>
   <div class="checkfield">→ Monthly cost: $<input type="number" step="0.01" id="labA6"> <button class="btn small" onclick="checkA(6)">Check</button> <span class="fb" id="fbA6"></span></div>
   <label class="step"><input type="checkbox" data-step="a8"><span>Flip it: set output tokens to <strong>600</strong> and input tokens to <strong>200</strong> (same prices, same traffic). In one sentence: which token type now drives the bill, and what would you change about this feature's prompts to control cost?</span></label>
+  <label class="step"><input type="checkbox" data-step="a9"><span>Reset the calculator above back to the defaults (5,000 / 600 / 200 / $0.20 / $0.50). Then scroll up to the <strong>3-Year Cost Calculator</strong> and check "Include AI recommendation feature costs" — watch both 3-year totals grow by the same amount. Why does adding this cost NOT change which option wins?</span></label>
 </section>
 
 <section class="card lab">
@@ -826,38 +858,62 @@ function calcCost(){
   const s=+seatsEl.value,r=+rateEl.value,lic=Math.max(0,+licEl.value||0),cap=Math.max(0,+capexEl.value||0);
   document.getElementById('seatsVal').textContent=s;
   document.getElementById('rateVal').textContent=r;
-  const saas=s*r*36,prem=Math.round(lic*s*1.6+cap),diff=prem-saas;
+  const aiToggleEl=document.getElementById('aiToggle');
+  const includeAI=!!(aiToggleEl&&aiToggleEl.checked);
+  const aiMonthly=includeAI&&typeof getAIMonthlyCost==='function'?getAIMonthlyCost():0;
+  const amtEl=document.getElementById('aiToggleAmt');
+  if(amtEl)amtEl.textContent='$'+aiMonthly.toFixed(2)+'/mo';
+  let saas=s*r*36,prem=Math.round(lic*s*1.6+cap);
+  if(includeAI){saas=Math.round(saas+aiMonthly*36);prem=Math.round(prem+aiMonthly*36);}
+  const diff=prem-saas;
   document.getElementById('kSaas').textContent='$'+fmt(saas);
   document.getElementById('kPrem').textContent='$'+fmt(prem);
   document.getElementById('kDiff').textContent='$'+fmt(Math.abs(diff));
-  document.getElementById('kMo').textContent='$'+fmt(s*r);
+  document.getElementById('kMo').textContent='$'+fmt(Math.round(s*r+aiMonthly));
   const v=document.getElementById('kCVerdict');
   if(Math.abs(diff)<=0.1*Math.max(saas,prem)){v.textContent='⚖️ Within 10% — effectively a cost tie. Decide on staffing, customization needs, cash flow, and risk instead of raw dollars.';}
   else if(diff>0){v.textContent='☁️ SaaS is $'+fmt(diff)+' cheaper over 3 years here — before even counting the admin hours nobody spends patching a closet server.';}
   else{v.textContent='🏢 On-prem is $'+fmt(-diff)+' cheaper on raw 3-year math — typical at large, stable seat counts or high SaaS rates. Before recommending it, add admin labor, refresh cycles, and outage risk back in.';}
-  document.getElementById('cWork').textContent='Working: SaaS = '+s+' seats × $'+r+' × 36 mo = $'+fmt(saas)+' · On-prem = ('+s+' seats × $'+fmt(lic)+' license × 1.6) + $'+fmt(cap)+' hardware = $'+fmt(prem)+'  [×1.6 = license + 20% support × 3 yrs]';
+  document.getElementById('cWork').textContent='Working: SaaS = '+s+' seats × $'+r+' × 36 mo = $'+fmt(s*r*36)+' · On-prem = ('+s+' seats × $'+fmt(lic)+' license × 1.6) + $'+fmt(cap)+' hardware = $'+fmt(Math.round(lic*s*1.6+cap))+'  [×1.6 = license + 20% support × 3 yrs]'+(includeAI?' · + AI feature: $'+aiMonthly.toFixed(2)+'/mo × 36 mo = $'+fmt(Math.round(aiMonthly*36))+' added to BOTH totals (a separate, model-agnostic API cost)':'');
 }
 [seatsEl,rateEl,licEl,capexEl].forEach(el=>el.addEventListener('input',calcCost));
+const aiToggleCheckbox=document.getElementById('aiToggle');
+if(aiToggleCheckbox)aiToggleCheckbox.addEventListener('change',calcCost);
 calcCost();
 
-/* AI token cost calculator */
-const aiReqEl=document.getElementById('aiReq'),aiInEl=document.getElementById('aiIn'),aiOutEl=document.getElementById('aiOut'),aiPriceInEl=document.getElementById('aiPriceIn'),aiPriceOutEl=document.getElementById('aiPriceOut');
-function calcAI(){
-  const req=Math.max(0,+aiReqEl.value||0),inTok=Math.max(0,+aiInEl.value||0),outTok=Math.max(0,+aiOutEl.value||0),
-        priceIn=Math.max(0,+aiPriceInEl.value||0),priceOut=Math.max(0,+aiPriceOutEl.value||0);
-  const inCost=req*inTok/1e6*priceIn, outCost=req*outTok/1e6*priceOut, daily=inCost+outCost, monthly=daily*30;
-  const inShare=daily>0?Math.round(inCost/daily*100):0;
-  document.getElementById('aiDaily').textContent='$'+daily.toFixed(2);
-  document.getElementById('aiMonthly').textContent='$'+monthly.toFixed(2);
-  document.getElementById('aiInShare').textContent=inShare+'%';
-  const v=document.getElementById('aiVerdict');
-  if(daily<=0){v.textContent='Set some traffic and pricing above.';}
-  else if(inShare>=50){v.textContent='📥 Input tokens drive '+inShare+'% of this bill. Even though output tokens are priced higher per token here, this feature sends more input than it generates — trimming the prompt (Segment 3\'s context-window lesson) cuts the bill faster than shortening replies would.';}
-  else{v.textContent='📤 Output tokens drive '+(100-inShare)+'% of this bill. A short prompt but a long reply is the common shape — capping response length is often the cheapest lever in AI FinOps.';}
-  document.getElementById('aiWork').textContent='Working: input = '+fmt(req)+' req × '+fmt(inTok)+' tok ÷ 1,000,000 × $'+priceIn+' = $'+inCost.toFixed(2)+'/day · output = '+fmt(req)+' req × '+fmt(outTok)+' tok ÷ 1,000,000 × $'+priceOut+' = $'+outCost.toFixed(2)+'/day · total × 30 days = monthly.';
+/* AI token cost calculator (reusable — one copy in Segment 3, one copy in Lab A) */
+function initAICalc(sfx){
+  const reqEl=document.getElementById('aiReq'+sfx),inEl=document.getElementById('aiIn'+sfx),outEl=document.getElementById('aiOut'+sfx),
+        priceInEl=document.getElementById('aiPriceIn'+sfx),priceOutEl=document.getElementById('aiPriceOut'+sfx);
+  if(!reqEl)return;
+  function calc(){
+    const req=Math.max(0,+reqEl.value||0),inTok=Math.max(0,+inEl.value||0),outTok=Math.max(0,+outEl.value||0),
+          priceIn=Math.max(0,+priceInEl.value||0),priceOut=Math.max(0,+priceOutEl.value||0);
+    const inCost=req*inTok/1e6*priceIn, outCost=req*outTok/1e6*priceOut, daily=inCost+outCost, monthly=daily*30;
+    const inShare=daily>0?Math.round(inCost/daily*100):0;
+    document.getElementById('aiDaily'+sfx).textContent='$'+daily.toFixed(2);
+    document.getElementById('aiMonthly'+sfx).textContent='$'+monthly.toFixed(2);
+    document.getElementById('aiInShare'+sfx).textContent=inShare+'%';
+    const v=document.getElementById('aiVerdict'+sfx);
+    if(daily<=0){v.textContent='Set some traffic and pricing above.';}
+    else if(inShare>=50){v.textContent='📥 Input tokens drive '+inShare+'% of this bill. Even though output tokens are priced higher per token here, this feature sends more input than it generates — trimming the prompt (Segment 3\'s context-window lesson) cuts the bill faster than shortening replies would.';}
+    else{v.textContent='📤 Output tokens drive '+(100-inShare)+'% of this bill. A short prompt but a long reply is the common shape — capping response length is often the cheapest lever in AI FinOps.';}
+    document.getElementById('aiWork'+sfx).textContent='Working: input = '+fmt(req)+' req × '+fmt(inTok)+' tok ÷ 1,000,000 × $'+priceIn+' = $'+inCost.toFixed(2)+'/day · output = '+fmt(req)+' req × '+fmt(outTok)+' tok ÷ 1,000,000 × $'+priceOut+' = $'+outCost.toFixed(2)+'/day · total × 30 days = monthly.';
+    if(sfx===''&&typeof calcCost==='function')calcCost();
+  }
+  [reqEl,inEl,outEl,priceInEl,priceOutEl].forEach(el=>el.addEventListener('input',calc));
+  calc();
 }
-[aiReqEl,aiInEl,aiOutEl,aiPriceInEl,aiPriceOutEl].forEach(el=>el.addEventListener('input',calcAI));
-calcAI();
+function getAIMonthlyCost(){
+  const req=Math.max(0,+(document.getElementById('aiReq')?.value)||0),
+        inTok=Math.max(0,+(document.getElementById('aiIn')?.value)||0),
+        outTok=Math.max(0,+(document.getElementById('aiOut')?.value)||0),
+        priceIn=Math.max(0,+(document.getElementById('aiPriceIn')?.value)||0),
+        priceOut=Math.max(0,+(document.getElementById('aiPriceOut')?.value)||0);
+  return (req*inTok/1e6*priceIn + req*outTok/1e6*priceOut)*30;
+}
+initAICalc('');
+initAICalc('Lab');
 
 /* SaaS decision dashboard */
 const SD_IDS=['sdFit','sdSec','sdExit','sdOff','sdAdmin','sdSeat'];
