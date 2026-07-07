@@ -146,16 +146,53 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
 .calcbox label{font-size:13.5px;font-weight:600;display:block;margin-top:6px}
 .calcbox input[type=number]{border:1.5px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit;width:120px}
 .verdict{margin:8px 0;padding:10px 14px;border-radius:10px;background:#f4f6fb;border-left:4px solid var(--pri);font-weight:700;font-size:14.5px}
+.outcomegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:14px 0}
+.outcome{border:1px solid rgba(255,255,255,.32);background:rgba(255,255,255,.12);border-radius:12px;padding:12px 14px}
+.outcome b{display:block;font-size:14px;margin-bottom:4px}
+.saastest{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:12px 0}
+.testcard{border:1px solid var(--line);background:#fbfaf7;border-radius:12px;padding:12px 14px}
+.testcard b{display:block;color:var(--pri);font-size:14px;margin-bottom:3px}
+.testcard span{font-size:13.5px;color:var(--mut)}
+.askgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:12px 0}
+.ask{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px 14px;border-left:4px solid var(--acc)}
+.ask b{display:block;color:var(--pri);font-size:14px;margin-bottom:4px}
+.decisiongrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:10px 0}
+.decisionbox{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fbfaf7}
+.decisionbox label{font-size:13.5px;font-weight:700;display:block;margin-top:7px}
 </style>
 </head>
 <body>
 <nav class="topnav">
   <a href="index.html">⌂ Course Hub</a>
   <span class="mid">Week 1 · Session 2 — SaaS &amp; PaaS</span>
-  <span><a href="week1-session1.html">← Session 1</a> &nbsp; <span id="scoreChip">Quiz: 0/0</span> &nbsp; <a href="week1-session3.html">Session 3 →</a></span>
+  <span><a href="week1-session1.html">← Session 1</a> &nbsp; <a href="week1-session2-saas-lab.html">SaaS Lab</a> &nbsp; <span id="scoreChip">Quiz: 0/0</span> &nbsp; <a href="week1-session3.html">Session 3 →</a></span>
 </nav>
 <main>
 
+<header class="hero">
+  <h1>SaaS: rent the software, own the decision</h1>
+  <p class="sub">Today you are not memorizing acronyms. You are acting as Harbor Lane Books' buyer, architect, and risk reviewer for the software the business will live in every day.</p>
+  <div>
+    <span class="chip obj">Objective 2 · Define and describe SaaS</span>
+    <span class="chip">multi-tenancy</span>
+    <span class="chip">subscription math</span>
+    <span class="chip">data control</span>
+    <span class="chip">exit planning</span>
+    <span class="chip">AI as SaaS</span>
+  </div>
+  <div class="outcomegrid">
+    <div class="outcome"><b>Spot it</b>Separate true SaaS from websites, IaaS, PaaS, and on-prem software.</div>
+    <div class="outcome"><b>Inspect it</b>Explain why one shared application can safely serve many tenants.</div>
+    <div class="outcome"><b>Price it</b>Model 3-year subscription cost, unused seats, and the rent-vs-own crossover.</div>
+    <div class="outcome"><b>Defend it</b>Name what the vendor owns, what you still own, and how you would leave.</div>
+  </div>
+  <table class="agenda">
+    <tr><td>0:00-0:20</td><td><span class="bdg b-int">INTERACT</span> warm-up polls and SaaS recognition</td></tr>
+    <tr><td>0:20-1:20</td><td><span class="bdg b-lec">BUILD</span> SaaS anatomy, multi-tenancy, OpenSaaS</td></tr>
+    <tr><td>1:20-2:05</td><td><span class="bdg b-lab">MODEL</span> cost calculator and SaaS decision dashboard</td></tr>
+    <tr><td>2:05-4:00</td><td><span class="bdg b-cap">APPLY</span> AI, labs, quiz, Harbor Lane recommendation</td></tr>
+  </table>
+</header>
 
 <!-- ============ WARM-UP ============ -->
 <section class="card warmup">
@@ -185,6 +222,12 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     <p><strong>SaaS delivers a complete, finished application over the internet, billed as a subscription (usually per user per month), with the provider running everything underneath</strong> — servers, storage, the application code, patching, upgrades, backups, uptime. You bring a browser, your data, and your users. Compare that to how software shipped for decades: you bought Office on discs, installed it on every PC, applied service packs, and bought the next version in three years. With Google Workspace or Microsoft 365, there is no install, no version number to chase, and no server in your building; you log in and the newest version is simply <em>there</em>, for every employee, on every device.</p>
     <p><strong>Why it matters:</strong> SaaS turned software from a capital purchase into an operating expense (the CapEx→OpEx shift from Session 1, now applied to applications), collapsed deployment time from months to minutes, and moved the burden of keeping software secure and current onto a vendor whose entire business depends on doing it well. It's why a 12-store bookstore can run the same email and CRM technology as a Fortune 500 — paying only for 240 seats instead of an IT department.</p>
     <p><strong>Common misconception:</strong> "SaaS just means a website." Not quite. A static marketing page isn't SaaS. SaaS is software <em>functionality</em> — email, CRM, accounting, design tools — consumed as a metered, account-based service. The tell: you'd lose real work capability if your subscription lapsed.</p>
+    <div class="saastest">
+      <div class="testcard"><b>1 · Finished application</b><span>Users do work immediately; they are not deploying their own code.</span></div>
+      <div class="testcard"><b>2 · Internet delivery</b><span>Access happens through a browser, mobile app, or thin client over the network.</span></div>
+      <div class="testcard"><b>3 · Provider-run stack</b><span>The vendor operates the application, infrastructure, backups, patches, and upgrades.</span></div>
+      <div class="testcard"><b>4 · Account/subscription model</b><span>Access is tied to users, tenants, plans, usage, or recurring billing.</span></div>
+    </div>
     <div class="flipgrid">
       <button class="flip"><h5>📧 Email &amp; calendars</h5><span class="hint">tap to flip</span><span class="back">Gmail, Outlook.com / Exchange Online. The provider fights spam, stores mail redundantly, and patches the servers. The classic first SaaS a business adopts — and Harbor Lane's most urgent candidate.</span></button>
       <button class="flip"><h5>🤝 CRM</h5><span class="hint">tap to flip</span><span class="back">Customer Relationship Management — Salesforce practically invented SaaS in 1999 with "No Software." Tracks customers, sales pipelines, loyalty. Free tiers exist (e.g., HubSpot's free CRM tier).</span></button>
@@ -216,6 +259,15 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     <div class="tenantinfo" id="mtInfo">👆 Click a tenant floor, the lobby, or the single-tenant house to see how isolation works.</div>
     <h3>OpenSaaS: SaaS with an exit door</h3>
     <p><strong>OpenSaaS is SaaS built on open-source software.</strong> You still get the convenience of a hosted, vendor-run service — but because the underlying code is open and the data formats are standard, you keep options a proprietary SaaS never offers: export your data cleanly, self-host the very same software, or move to a different hosting company running the same stack. The classic example pattern: WordPress.com is a hosted service, but it runs open-source WordPress — if the relationship sours, you can take your content to any other WordPress host or your own server. <strong>Why it matters:</strong> it directly softens vendor lock-in, the risk that switching costs trap you (a theme that returns loudly in the PaaS segment). <strong>Misconception:</strong> OpenSaaS is not free — you're still paying for hosting, operations, and support. The "open" refers to the source code and your freedom to leave, not the price tag.</p>
+    <h3>The buyer questions that separate amateurs from consultants</h3>
+    <div class="askgrid">
+      <div class="ask"><b>Cost</b>What is the true 3-year cost after seats, storage, support, migration, and unused licenses?</div>
+      <div class="ask"><b>Data</b>Where is the data stored, how is it encrypted, and can we export it cleanly on demand?</div>
+      <div class="ask"><b>Identity</b>Can it use SSO/MFA, role-based access, and automated offboarding?</div>
+      <div class="ask"><b>Customization</b>Can our workflow live inside configuration, or are we asking SaaS to become custom software?</div>
+      <div class="ask"><b>Reliability</b>What uptime, backup, support, and offline options are actually promised?</div>
+      <div class="ask"><b>Exit</b>If we leave in three years, what breaks, what exports, and what will the migration cost?</div>
+    </div>
   </div>
 </section>
 
@@ -255,6 +307,33 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     <div class="verdict" id="kCVerdict">—</div>
     <p class="note" id="cWork">working…</p>
     <p class="note">What the model deliberately leaves out — and you should mention in any real recommendation: on-prem also costs <em>admin labor</em> (patching, backups, 2 AM restarts), a hardware refresh every 4–5 years, and outage risk; SaaS also costs <em>migration effort</em> and the discipline to deprovision unused seats. Numbers open the conversation; they don't end it.</p>
+    <h3>🎚️ Interactive: SaaS Decision Dashboard</h3>
+    <p>Price is only one signal. Set the non-price sliders as if you were evaluating Harbor Lane's email + docs choice.</p>
+    <div class="decisiongrid">
+      <div class="decisionbox">
+        <label>Workflow fit: <span id="sdFitVal" style="color:var(--pri)">4</span>/5</label>
+        <input type="range" id="sdFit" min="1" max="5" value="4">
+        <label>Security + identity fit: <span id="sdSecVal" style="color:var(--pri)">4</span>/5</label>
+        <input type="range" id="sdSec" min="1" max="5" value="4">
+      </div>
+      <div class="decisionbox">
+        <label>Data export / exit rights: <span id="sdExitVal" style="color:var(--pri)">3</span>/5</label>
+        <input type="range" id="sdExit" min="1" max="5" value="3">
+        <label>Offline tolerance: <span id="sdOffVal" style="color:var(--pri)">3</span>/5</label>
+        <input type="range" id="sdOff" min="1" max="5" value="3">
+      </div>
+      <div class="decisionbox">
+        <label>Admin simplicity: <span id="sdAdminVal" style="color:var(--pri)">5</span>/5</label>
+        <input type="range" id="sdAdmin" min="1" max="5" value="5">
+        <label>Seat discipline: <span id="sdSeatVal" style="color:var(--pri)">3</span>/5</label>
+        <input type="range" id="sdSeat" min="1" max="5" value="3">
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><b id="sdScore">0/30</b><small>decision score</small></div>
+      <div class="kpi"><b id="sdGrade">—</b><small>recommendation posture</small></div>
+    </div>
+    <div class="verdict" id="sdVerdict">—</div>
   </div>
 </section>
 
@@ -386,6 +465,13 @@ the next. 8 questions, track my score, get harder as I improve.</pre></div>
 
 <!-- ============ LABS ============ -->
 <h2>🔬 Hands-On Labs</h2>
+
+<section class="card lab">
+  <p class="labno">OPTIONAL SAAS-ONLY PRACTICE · NEW</p>
+  <h3>SaaS Hands-On Studio</h3>
+  <p>Need focused Objective 2 practice before the mixed SaaS/PaaS labs below? Open the standalone SaaS lab for classification, multi-tenancy, responsibility split, subscription math, risk triage, lock-in, and a short Harbor Lane recommendation draft.</p>
+  <p><a class="btn" href="week1-session2-saas-lab.html">Open the SaaS Hands-On Studio →</a></p>
+</section>
 
 <section class="card lab">
   <p class="labno">LAB A · IN-PAGE SIMULATOR · ~25 MIN</p>
@@ -745,6 +831,29 @@ function calcCost(){
 }
 [seatsEl,rateEl,licEl,capexEl].forEach(el=>el.addEventListener('input',calcCost));
 calcCost();
+
+/* SaaS decision dashboard */
+const SD_IDS=['sdFit','sdSec','sdExit','sdOff','sdAdmin','sdSeat'];
+function calcSaasDecision(){
+  let score=0;
+  SD_IDS.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const val=+el.value;
+    score+=val;
+    const out=document.getElementById(id+'Val');
+    if(out)out.textContent=val;
+  });
+  const grade=score>=25?'Adopt':score>=19?'Pilot':score>=13?'Investigate':'Do not sign yet';
+  const weak=SD_IDS.filter(id=>+document.getElementById(id).value<=2).length;
+  document.getElementById('sdScore').textContent=score+'/30';
+  document.getElementById('sdGrade').textContent=grade;
+  document.getElementById('sdVerdict').textContent=weak
+    ? 'Weak spots remain. Treat every 1-2 slider as a required vendor question before signing.'
+    : (score>=25?'Strong SaaS candidate: business fit, risk controls, and operations all clear the bar.':'Promising, but not automatic. Run a pilot, verify export rights, and model seat cleanup before recommending adoption.');
+}
+SD_IDS.forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',calcSaasDecision);});
+calcSaasDecision();
 
 /* stack painter — SaaS vs PaaS focus */
 const LAYERS=['Data & access','Applications','Runtime','Middleware','Operating system','Virtualization','Servers','Storage','Networking'];

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Interactive Anatomy of an AI Agent</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--wk:#7b5ea7}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--wk);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:700}
+.topnav .mid{font-weight:800}
+#progressChip{background:var(--pri);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:800}
+main{max-width:1120px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#26245f 100%);color:#fff;border-radius:16px;padding:28px 26px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-78px;top:-78px;width:250px;height:250px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:31px;line-height:1.22}
+.hero .sub{margin:0 0 12px;opacity:.92;font-size:16.5px;max-width:850px}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:700;margin:2px;color:var(--ink)}
+.hero .chip{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .chip.obj{background:var(--amb);border-color:var(--amb);color:#3a2c05}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
+h3{font-size:18px;margin:18px 0 8px}
+p{margin:8px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.note{font-size:13.5px;color:var(--mut)}
+code{background:#f0eee6;border-radius:6px;padding:1px 5px;font-size:.92em}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:8px 15px;font:inherit;font-weight:800;cursor:pointer;font-size:14px;text-decoration:none;display:inline-block}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.small{padding:5px 11px;font-size:13px}
+.lead{font-size:17px;max-width:900px}
+.comparegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:14px 0}
+.tracepanel{display:grid;grid-template-columns:minmax(260px,.9fr) minmax(280px,1.1fr);gap:14px;align-items:start;border:1px solid var(--line);border-radius:12px;background:#fbfaf7;padding:14px;margin-top:16px}
+.tracepanel h3,.tracepanel h4{margin-top:0}
+.traceSteps{display:flex;gap:8px;flex-wrap:wrap}
+.traceBtn{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 11px;cursor:pointer;font:inherit;font-size:13.5px;font-weight:800;color:var(--ink)}
+.traceBtn.on{background:#e9f4ee;border-color:var(--acc);outline:3px solid rgba(15,139,141,.17)}
+.traceOutput{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px}
+.owner{display:inline-block;background:#eef6f6;color:#0b6668;border:1px solid #b9dfdf;border-radius:999px;padding:3px 10px;font-size:12.5px;font-weight:900}
+.layout{display:grid;grid-template-columns:minmax(340px,1.2fr) minmax(300px,.8fr);gap:16px;align-items:start}
+.agentmap{position:relative;min-height:520px;border:1px solid var(--line);border-radius:14px;background:radial-gradient(circle at 50% 48%,#f4f6fb 0 120px,#fff 121px);padding:18px;overflow:hidden}
+.node{position:absolute;border:1.5px solid var(--line);background:#fbfaf7;color:var(--ink);border-radius:12px;padding:10px 12px;width:155px;min-height:64px;text-align:left;font:inherit;font-weight:800;cursor:pointer;box-shadow:0 2px 8px rgba(29,36,51,.06)}
+.node small{display:block;font-weight:600;color:var(--mut);font-size:12px;line-height:1.25;margin-top:3px}
+.node.on{background:#e9f4ee;border-color:var(--acc);outline:3px solid rgba(15,139,141,.18)}
+.node.core{left:50%;top:50%;transform:translate(-50%,-50%);width:190px;min-height:94px;text-align:center;background:#2f2d7a;color:#fff;border-color:#2f2d7a}
+.node.core small{color:#dce6ff}
+.node[data-part=user]{left:26px;top:36px}
+.node[data-part=instructions]{left:50%;top:22px;transform:translateX(-50%)}
+.node[data-part=context]{right:26px;top:36px}
+.node[data-part=planner]{left:36px;top:210px}
+.node[data-part=tools]{right:36px;top:210px}
+.node[data-part=memory]{left:26px;bottom:48px}
+.node[data-part=guardrails]{left:50%;bottom:24px;transform:translateX(-50%)}
+.node[data-part=observability]{right:26px;bottom:48px}
+.line{position:absolute;background:#d7d2c7;transform-origin:left center;height:2px;left:50%;top:50%;z-index:0}
+.agentmap .node{z-index:2}
+.line.l1{width:205px;transform:rotate(-137deg)}
+.line.l2{width:185px;transform:rotate(-90deg)}
+.line.l3{width:205px;transform:rotate(-43deg)}
+.line.l4{width:190px;transform:rotate(178deg)}
+.line.l5{width:190px;transform:rotate(2deg)}
+.line.l6{width:205px;transform:rotate(137deg)}
+.line.l7{width:185px;transform:rotate(90deg)}
+.line.l8{width:205px;transform:rotate(43deg)}
+.inspector{border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+.inspectHead{background:#f0eee6;padding:14px 16px;border-bottom:1px solid var(--line)}
+.inspectHead h3{margin:0;color:var(--pri)}
+.inspectBody{padding:16px}
+.bullets{padding-left:20px;margin:8px 0}
+.bullets li{margin:5px 0}
+.flow{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.flow span{border:1px solid var(--line);border-radius:999px;padding:4px 10px;background:#fbfaf7;font-size:13px;font-weight:700;color:var(--mut)}
+.flow span.on{background:var(--amb);border-color:var(--amb);color:#3a2c05}
+.labgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:12px 0}
+.labbox{border:1px solid var(--line);border-radius:12px;background:#fbfaf7;padding:14px}
+.labbox h4{margin:0 0 8px;color:var(--pri);font-size:15px}
+select,input[type=text],textarea{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;font:inherit;background:#fff;width:100%}
+textarea{min-height:86px;resize:vertical}
+.runlog{background:#111827;color:#dbeafe;border-radius:10px;padding:12px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.55;min-height:210px;overflow:auto}
+.runlog .dim{color:#94a3b8}.runlog .ok{color:#86efac}.runlog .warn{color:#facc15}.runlog .bad{color:#fca5a5}.runlog .call{color:#93c5fd}
+.meter{height:13px;background:#e8e4da;border-radius:99px;overflow:hidden;margin:8px 0}
+.meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .25s}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:12px 0}
+.kpi{background:#f4f6fb;border-radius:10px;padding:10px 12px;text-align:center;border:1px solid #e3e7f3}
+.kpi b{display:block;font-size:21px;color:var(--pri);line-height:1.2}
+.kpi small{color:var(--mut)}
+.schema{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:12px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;white-space:pre-wrap}
+.checkrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.fb{font-weight:800;font-size:14px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.matcher{margin:12px 0}
+.mcards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.mcard{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.mcard.sel{outline:3px solid var(--amb);border-color:var(--amb)}
+.mcard.ok{background:#e7f3ec;border-color:var(--ok);color:#28583b;cursor:default}
+.mcard.ok:after{content:" OK";font-weight:900}
+.mcard.no{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.mzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px}
+.mzone{border:2px dashed var(--acc);border-radius:12px;background:#f4faf9;padding:12px;cursor:pointer;font:inherit;text-align:center;font-weight:900;color:var(--acc)}
+.mzone small{display:block;font-weight:500;color:var(--mut);margin-top:4px}
+.mstatus{margin-top:9px;font-weight:900;color:var(--pri)}
+.task,.option{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:8px;margin:5px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.task input,.option input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.task.done{background:#e9f4ee;border-color:#bcd9c6}
+.footer-nav{display:flex;justify-content:space-between;margin-top:30px;gap:10px;flex-wrap:wrap}
+@media (max-width:840px){.layout,.tracepanel{grid-template-columns:1fr}.agentmap{min-height:780px}.node{position:static;width:100%;margin:8px 0;transform:none!important}.node.core{transform:none}.line{display:none}}
+@media print{.topnav,.btn{display:none}body{background:#fff}.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">Course Hub</a>
+  <span class="mid">Interactive Anatomy of an AI Agent</span>
+  <span><a href="week4-session10.html">Session 10</a> &nbsp; <span id="progressChip">Progress: 0%</span></span>
+</nav>
+
+<main>
+<header class="hero">
+  <h1>Anatomy of an AI Agent</h1>
+  <p class="sub">Click the parts, run the loop, validate a tool call, and sort the risks. By the end, "agent" should mean a specific architecture: model plus instructions, state, tools, guardrails, and an execution loop.</p>
+  <div>
+    <span class="chip obj">Function calling and agents</span>
+    <span class="chip">planner</span>
+    <span class="chip">tools</span>
+    <span class="chip">classic software</span>
+    <span class="chip">memory</span>
+    <span class="chip">guardrails</span>
+    <span class="chip">human approval</span>
+    <span class="chip">observability</span>
+  </div>
+</header>
+
+<h2>0 · More Than the Model</h2>
+<section class="card">
+  <p class="lead">An AI agent is not just the AI model. The model is one component inside a classic software system that stores context, decides what data the model can see, validates proposed actions, calls real APIs, handles failures, and records what happened.</p>
+  <div class="comparegrid">
+    <div class="labbox">
+      <h4>AI model helps decide</h4>
+      <ul class="bullets">
+        <li>Interprets the user goal and the current context.</li>
+        <li>Reasons, plans, drafts, and chooses a likely next step.</li>
+        <li>Proposes structured tool calls such as <code>draft_refund(...)</code>.</li>
+      </ul>
+    </div>
+    <div class="labbox">
+      <h4>Classic software controls</h4>
+      <ul class="bullets">
+        <li>Builds context from databases, files, search, and prior state.</li>
+        <li>Checks schemas, permissions, approval rules, and policy boundaries.</li>
+        <li>Executes APIs, manages retries and timeouts, logs the audit trail.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="flow" aria-label="Agent loop summary">
+    <span class="on">user goal</span><span>software builds context</span><span>model reasons</span><span>model proposes call</span><span>software validates</span><span>software executes</span><span>model explains</span>
+  </div>
+  <div class="tracepanel">
+    <div>
+      <h3>Refund Example</h3>
+      <p class="note">Click each step to see where the model stops and ordinary application code takes over.</p>
+      <div class="traceSteps" id="classicTrace">
+        <button class="traceBtn on" data-classic-step="goal">1. Goal</button>
+        <button class="traceBtn" data-classic-step="context">2. Context</button>
+        <button class="traceBtn" data-classic-step="model">3. Model</button>
+        <button class="traceBtn" data-classic-step="validate">4. Validate</button>
+        <button class="traceBtn" data-classic-step="execute">5. Execute</button>
+        <button class="traceBtn" data-classic-step="explain">6. Explain</button>
+      </div>
+    </div>
+    <div class="traceOutput">
+      <h4 id="classicTitle">User goal enters the app</h4>
+      <p id="classicBody">The user asks, "Refund order 123." This is only an intention. Nothing has been changed in the real world yet.</p>
+      <span class="owner" id="classicOwner">Owner: user + app</span>
+    </div>
+  </div>
+  <p class="note"><strong>Bottom line:</strong> an AI agent is a software app where the model helps decide the next step, while ordinary software controls tools, data, permissions, execution, and safety boundaries.</p>
+</section>
+
+<h2>1 · Click the Anatomy</h2>
+<section class="card">
+  <div class="layout">
+    <div class="agentmap" aria-label="Clickable AI agent anatomy map">
+      <div class="line l1"></div><div class="line l2"></div><div class="line l3"></div><div class="line l4"></div>
+      <div class="line l5"></div><div class="line l6"></div><div class="line l7"></div><div class="line l8"></div>
+      <button class="node core on" data-part="model">Model core<small>predicts, reasons, drafts</small></button>
+      <button class="node" data-part="user">User goal<small>task, constraints, success</small></button>
+      <button class="node" data-part="instructions">Instructions<small>role, policy, priorities</small></button>
+      <button class="node" data-part="context">Context window<small>current working memory</small></button>
+      <button class="node" data-part="planner">Planner loop<small>decompose and choose</small></button>
+      <button class="node" data-part="tools">Tools / APIs<small>real-world actions</small></button>
+      <button class="node" data-part="memory">Long-term memory<small>saved facts, history</small></button>
+      <button class="node" data-part="guardrails">Guardrails<small>permissions, checks</small></button>
+      <button class="node" data-part="observability">Logs + evals<small>trace and improve</small></button>
+    </div>
+    <aside class="inspector">
+      <div class="inspectHead"><h3 id="partTitle">Model core</h3><p class="note" id="partTag">The reasoning and language engine.</p></div>
+      <div class="inspectBody">
+        <p id="partExplain">The model reads the current context and predicts useful next tokens. In an agent, it also proposes plans and structured tool calls.</p>
+        <ul class="bullets" id="partBullets"></ul>
+        <div class="flow" id="partFlow"></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<h2>2 · Run the Agent Loop</h2>
+<section class="card">
+  <div class="labgrid">
+    <div class="labbox">
+      <h4>Choose a mission</h4>
+      <select id="mission">
+        <option value="policy">Answer a staff policy question</option>
+        <option value="inventory">Check whether a book is in stock</option>
+        <option value="refund">Draft a refund and request approval</option>
+        <option value="tickets">Summarize support tickets and flag trends</option>
+      </select>
+      <label class="option"><input type="checkbox" id="toggleMemory" checked><span>Use long-term memory</span></label>
+      <label class="option"><input type="checkbox" id="toggleTools" checked><span>Allow tool calls</span></label>
+      <label class="option"><input type="checkbox" id="toggleApproval" checked><span>Require human approval for risky actions</span></label>
+      <p><button class="btn" id="runAgent">Run loop</button> <button class="btn ghost" id="resetLog">Reset</button></p>
+    </div>
+    <div class="labbox">
+      <h4>Architecture score</h4>
+      <div class="meter"><span id="archMeter"></span></div>
+      <div class="kpis">
+        <div class="kpi"><b id="loopSteps">0</b><small>loop steps</small></div>
+        <div class="kpi"><b id="riskScore">0</b><small>risk checks</small></div>
+      </div>
+      <p class="note" id="archVerdict">Run a mission to see which agent parts were used.</p>
+    </div>
+  </div>
+  <div class="runlog" id="runLog"><div class="dim">Agent trace will appear here.</div></div>
+</section>
+
+<h2>3 · Tool Call Sandbox</h2>
+<section class="card">
+  <p>Agents do not magically act. The model proposes structured calls; your application validates and executes them.</p>
+  <div class="labgrid">
+    <div class="labbox">
+      <h4>Tool schema</h4>
+      <div class="schema">tool: get_inventory
+required:
+  store_id: number
+  isbn: string
+allowed:
+  read-only lookup
+blocked:
+  edits, payments, deletes</div>
+    </div>
+    <div class="labbox">
+      <h4>Proposed call</h4>
+      <textarea id="toolJson">{"store_id":4,"isbn":"978-0135957059"}</textarea>
+      <p><button class="btn" id="validateTool">Validate call</button></p>
+      <p class="fb" id="toolFb"></p>
+    </div>
+  </div>
+</section>
+
+<h2>4 · Sort the Failure Mode</h2>
+<section class="card">
+  <p>Pick a card, then place it where the fix belongs.</p>
+  <div class="matcher" id="riskMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="instructions">Agent ignores the refund policy because the rule was never in the system prompt</button>
+      <button class="mcard" data-match="tools">Tool accepts any dollar amount with no schema or permission cap</button>
+      <button class="mcard" data-match="memory">Agent remembers an old customer address and uses it in a new order</button>
+      <button class="mcard" data-match="approval">Agent is allowed to issue refunds without a human reviewing them</button>
+      <button class="mcard" data-match="evals">Nobody can explain why yesterday's agent run failed</button>
+      <button class="mcard" data-match="context">The chat grew so long that the original task fell out of view</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="instructions">Instructions<small>policy and priority</small></button>
+      <button class="mzone" data-zone="tools">Tool boundary<small>schemas and scopes</small></button>
+      <button class="mzone" data-zone="memory">Memory hygiene<small>save, expire, verify</small></button>
+      <button class="mzone" data-zone="approval">Human approval<small>risky actions pause</small></button>
+      <button class="mzone" data-zone="evals">Logs and evals<small>trace and test</small></button>
+      <button class="mzone" data-zone="context">Context management<small>summarize and retrieve</small></button>
+    </div>
+    <p class="mstatus">0/6 placed</p>
+  </div>
+</section>
+
+<h2>5 · Build Check</h2>
+<section class="card">
+  <p>Before calling something an agent, check the architecture.</p>
+  <div class="labgrid">
+    <div class="labbox"><h4>Minimum agent</h4><label class="task"><input type="checkbox" data-step="c1"><span>Has a goal and success criteria</span></label><label class="task"><input type="checkbox" data-step="c2"><span>Can plan more than one step</span></label><label class="task"><input type="checkbox" data-step="c3"><span>Can call at least one external tool</span></label></div>
+    <div class="labbox"><h4>Safe agent</h4><label class="task"><input type="checkbox" data-step="c4"><span>Tool permissions are least-privilege</span></label><label class="task"><input type="checkbox" data-step="c5"><span>Risky actions require approval</span></label><label class="task"><input type="checkbox" data-step="c6"><span>Runs are logged and evaluated</span></label></div>
+    <div class="labbox"><h4>Production agent</h4><label class="task"><input type="checkbox" data-step="c7"><span>Memory is explicit and removable</span></label><label class="task"><input type="checkbox" data-step="c8"><span>Failure modes have tests</span></label><label class="task"><input type="checkbox" data-step="c9"><span>Humans know how to stop it</span></label></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-nav">
+    <a class="btn ghost" href="index.html">Course Hub</a>
+    <span><a class="btn ghost" href="week4-session10.html">Session 10</a> <button class="btn ghost small" onclick="resetPage()">Reset this page</button></span>
+  </div>
+</footer>
+</main>
+
+<script>
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'agent-anatomy');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S);updateProgress()}
+function resetPage(){try{localStorage.removeItem(PKEY)}catch(e){};location.reload()}
+
+const PARTS={
+  model:{title:'Model core',tag:'The reasoning and language engine.',explain:'The model reads the current context and predicts useful next tokens. In an agent, it also proposes plans and structured tool calls.',bullets:['Good at language, pattern matching, decomposition, and synthesis.','Does not execute code by itself. It proposes actions for the host app to validate.','Needs context, instructions, and feedback to stay on task.'],flow:['read context','reason','draft','propose call']},
+  user:{title:'User goal',tag:'The mission and success definition.',explain:'The user supplies the job to be done. A strong agent starts by turning a vague request into a clear goal, constraints, and done condition.',bullets:['Weak goal: help with inventory.','Strong goal: check SKU X at store 4 and explain pickup options.','Ambiguous goals should trigger a question, not a risky action.'],flow:['intent','constraints','success']},
+  instructions:{title:'Instructions',tag:'The operating manual.',explain:'System and developer instructions define the agent role, boundaries, priorities, and policies before the user task begins.',bullets:['Higher-priority instructions outrank ordinary user text.','Policies should be concrete enough to test.','Missing instructions become inconsistent behavior.'],flow:['role','policy','priority']},
+  context:{title:'Context window',tag:'The current working memory.',explain:'The context window is everything the model can read right now: messages, retrieved docs, tool results, plans, and relevant state.',bullets:['Long chats can push old facts out.','Retrieval adds selected facts back into view.','Summaries reduce size but can lose details.'],flow:['messages','retrieval','tool results']},
+  planner:{title:'Planner loop',tag:'Turns a goal into steps.',explain:'The planner decomposes the mission, chooses the next move, and decides whether to answer, ask, call a tool, or stop.',bullets:['Simple agents use implicit planning inside the model response.','Robust agents expose the plan and update it after observations.','Plans should change when tools return surprising results.'],flow:['plan','act','observe','revise']},
+  tools:{title:'Tools and APIs',tag:'The hands and sensors.',explain:'Tools let the agent read live systems or take actions. They are ordinary functions, APIs, or MCP tools wrapped in schemas and permissions.',bullets:['Read tools are lower risk than write tools.','Schemas validate arguments before execution.','Least privilege keeps a bad call small.'],flow:['schema','validate','execute','return JSON']},
+  memory:{title:'Long-term memory',tag:'Saved facts outside the prompt.',explain:'Memory persists across runs. It can improve personalization, but it must be explicit, scoped, correctable, and removable.',bullets:['Useful: preferred store, project name, stable user setting.','Risky: stale addresses, sensitive data, guessed preferences.','Memory should be verified before high-impact use.'],flow:['save','retrieve','expire','delete']},
+  guardrails:{title:'Guardrails',tag:'The safety boundary.',explain:'Guardrails are checks around model output and tool execution: scopes, validators, content rules, approval gates, and stop buttons.',bullets:['The model proposes; the app decides what runs.','Approval gates belong before irreversible actions.','Guardrails should fail closed, not improvise.'],flow:['validate','authorize','approve','block']},
+  observability:{title:'Logs and evaluations',tag:'The flight recorder.',explain:'Production agents need traces, metrics, test cases, and review loops so teams can explain failures and improve behavior.',bullets:['Trace every plan, tool call, observation, and final answer.','Evaluate common tasks and known failure modes.','Monitor cost, latency, error rate, and human overrides.'],flow:['trace','metric','eval','improve']}
+};
+
+const CLASSIC_STEPS={
+  goal:{title:'User goal enters the app',body:'The user asks, "Refund order 123." This is only an intention. Nothing has been changed in the real world yet.',owner:'Owner: user + app'},
+  context:{title:'Software builds the context',body:'Application code loads the order, payment state, customer record, refund policy, and prior support notes. It chooses which facts are safe and relevant enough to show the model.',owner:'Owner: classic software'},
+  model:{title:'Model proposes a next action',body:'The model reads the context and proposes a structured call such as draft_refund({order_id:123, amount:49.00}). It is recommending an action, not executing it.',owner:'Owner: AI model'},
+  validate:{title:'Software validates the proposal',body:'The host app checks the JSON schema, employee permissions, refund amount, policy limits, fraud signals, and whether a human must approve the action.',owner:'Owner: classic software'},
+  execute:{title:'Software executes real APIs',body:'Only after validation does ordinary code call the payment or order API. It handles timeouts, retries, errors, idempotency, and the audit log.',owner:'Owner: classic software'},
+  explain:{title:'Model explains the result',body:'The tool result returns to the model. The model turns the raw result into a human-readable answer, next step, or approval request.',owner:'Owner: model + app'}
+};
+function renderClassicStep(key){
+  const step=CLASSIC_STEPS[key]||CLASSIC_STEPS.goal;
+  document.querySelectorAll('.traceBtn').forEach(b=>b.classList.toggle('on',b.dataset.classicStep===key));
+  document.getElementById('classicTitle').textContent=step.title;
+  document.getElementById('classicBody').textContent=step.body;
+  document.getElementById('classicOwner').textContent=step.owner;
+  save('classicStep',key);
+}
+document.querySelectorAll('.traceBtn').forEach(b=>b.addEventListener('click',()=>renderClassicStep(b.dataset.classicStep)));
+renderClassicStep(S.classicStep||'goal');
+
+function renderPart(key){
+  const p=PARTS[key]||PARTS.model;
+  document.querySelectorAll('.node').forEach(n=>n.classList.toggle('on',n.dataset.part===key));
+  document.getElementById('partTitle').textContent=p.title;
+  document.getElementById('partTag').textContent=p.tag;
+  document.getElementById('partExplain').textContent=p.explain;
+  document.getElementById('partBullets').innerHTML=p.bullets.map(b=>'<li>'+b+'</li>').join('');
+  document.getElementById('partFlow').innerHTML=p.flow.map((f,i)=>'<span class="'+(i===0?'on':'')+'">'+f+'</span>').join('');
+  save('part',key);
+}
+document.querySelectorAll('.node').forEach(n=>n.addEventListener('click',()=>renderPart(n.dataset.part)));
+renderPart(S.part||'model');
+
+document.querySelectorAll('.task input[type=checkbox][data-step]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.task').classList.add('done')}
+  cb.addEventListener('change',()=>{cb.closest('.task').classList.toggle('done',cb.checked);save(key,cb.checked)});
+});
+
+const MISSIONS={
+  policy:['Read goal: answer a staff policy question.','Retrieve handbook section.','Draft answer with citation.','No tool action needed.','Return concise answer and uncertainty if policy is missing.'],
+  inventory:['Read goal: check live stock.','Plan: need store id and ISBN.','Tool call proposed: get_inventory(store_id, isbn).','Observation: inventory JSON returned.','Answer with quantity, pickup option, and timestamp.'],
+  refund:['Read goal: prepare refund.','Retrieve order and refund policy.','Tool call proposed: draft_refund(order_id, amount).','Risk check: write action requires approval.','Pause for human approval before issuing refund.'],
+  tickets:['Read goal: summarize support tickets.','Retrieve recent ticket batch.','Cluster themes and count frequency.','Flag high-risk trend for human review.','Return summary plus follow-up questions.']
+};
+function logLine(cls,text){
+  const d=document.createElement('div');
+  d.className=cls||'';
+  d.textContent=text;
+  document.getElementById('runLog').appendChild(d);
+}
+document.getElementById('runAgent').addEventListener('click',()=>{
+  const log=document.getElementById('runLog');
+  log.innerHTML='';
+  const mission=document.getElementById('mission').value;
+  const useMem=document.getElementById('toggleMemory').checked;
+  const useTools=document.getElementById('toggleTools').checked;
+  const approval=document.getElementById('toggleApproval').checked;
+  const steps=[...MISSIONS[mission]];
+  logLine('dim','mission = '+mission);
+  if(useMem)logLine('ok','memory: retrieved stable preferences');
+  else logLine('warn','memory: off, agent can only use current context');
+  steps.forEach((s,i)=>{
+    let cls=s.includes('Tool')?'call':s.includes('Risk')?'warn':'';
+    if(s.includes('Tool')&&!useTools){cls='bad';s='Tool needed, but tools are disabled. Agent must ask a human or stop.'}
+    if(s.includes('approval')&&!approval){cls='bad';s='Approval gate disabled. This is unsafe for write actions.'}
+    logLine(cls,(i+1)+'. '+s);
+  });
+  const risk=(useMem?1:0)+(useTools?1:0)+(approval?2:0);
+  const stepCount=steps.length+(useMem?1:0);
+  document.getElementById('loopSteps').textContent=stepCount;
+  document.getElementById('riskScore').textContent=risk+'/4';
+  const pct=Math.round((risk/4)*100);
+  document.getElementById('archMeter').style.width=pct+'%';
+  document.getElementById('archVerdict').textContent=risk>=4?'Good architecture: state, tools, and approval are all visible.':risk>=2?'Partial architecture: useful, but missing a safety or state layer.':'This is closer to a chatbot than a production agent.';
+  save('ranLoop',true);
+});
+document.getElementById('resetLog').addEventListener('click',()=>{
+  document.getElementById('runLog').innerHTML='<div class="dim">Agent trace will appear here.</div>';
+});
+
+document.getElementById('validateTool').addEventListener('click',()=>{
+  const fb=document.getElementById('toolFb');
+  try{
+    const o=JSON.parse(document.getElementById('toolJson').value);
+    const errors=[];
+    if(typeof o.store_id!=='number')errors.push('store_id must be a number');
+    if(typeof o.isbn!=='string'||!o.isbn.trim())errors.push('isbn must be a non-empty string');
+    const forbidden=Object.keys(o).filter(k=>!['store_id','isbn'].includes(k));
+    if(forbidden.length)errors.push('unexpected field(s): '+forbidden.join(', '));
+    if(errors.length){fb.textContent='Blocked: '+errors.join('; ')+'.';fb.className='fb no'}
+    else{fb.textContent='Valid read-only tool call. The host app may execute get_inventory.';fb.className='fb ok';save('toolValid',true)}
+  }catch(e){fb.textContent='Blocked: not valid JSON.';fb.className='fb no'}
+});
+
+document.querySelectorAll('.matcher').forEach((m,mi)=>{
+  const key='match:'+(m.id||mi);let sel=null,done=0;
+  const cards=[...m.querySelectorAll('.mcard')],st=m.querySelector('.mstatus');
+  function stat(){st.textContent=done+'/'+cards.length+' placed'+(done===cards.length?' - all correct':'');updateProgress()}
+  cards.forEach((c,ci)=>c.addEventListener('click',()=>{
+    if(c.classList.contains('ok'))return;
+    cards.forEach(x=>x.classList.remove('sel'));
+    c.classList.add('sel');sel=c;
+  }));
+  m.querySelectorAll('.mzone').forEach(z=>z.addEventListener('click',()=>{
+    if(!sel)return;
+    if(sel.dataset.match===z.dataset.zone){
+      sel.classList.remove('sel');sel.classList.add('ok');done++;
+      const solved=S[key]||[];if(!solved.includes(cards.indexOf(sel)))solved.push(cards.indexOf(sel));
+      save(key,solved);sel=null;stat();
+    }else{sel.classList.add('no');setTimeout(()=>sel&&sel.classList.remove('no'),400)}
+  }));
+  (S[key]||[]).forEach(ci=>{if(cards[ci]&&!cards[ci].classList.contains('ok')){cards[ci].classList.add('ok');done++}});
+  stat();
+});
+
+function updateProgress(){
+  const tasks=[...document.querySelectorAll('.task input[data-step]')];
+  const taskDone=tasks.filter(t=>t.checked).length;
+  const cards=[...document.querySelectorAll('.mcard')];
+  const cardDone=cards.filter(c=>c.classList.contains('ok')).length;
+  const bonus=(S.ranLoop?1:0)+(S.toolValid?1:0);
+  const total=tasks.length+cards.length+2;
+  const done=taskDone+cardDone+bonus;
+  document.getElementById('progressChip').textContent='Progress: '+Math.round(done/total*100)+'%';
+}
+updateProgress();
+</script>
+</body>
+</html>

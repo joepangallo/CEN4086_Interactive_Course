@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Week 1 · Session 2 Lab — SaaS Hands-On Studio</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--wk:#0f8b8d}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--wk);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:700}
+.topnav .mid{font-weight:800}
+#progressChip{background:var(--pri);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:800}
+main{max-width:1040px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#2b2a6e 100%);color:#fff;border-radius:16px;padding:28px 26px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-72px;top:-72px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:30px;line-height:1.22}
+.hero .sub{margin:0 0 12px;opacity:.92;font-size:16.5px}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:700;margin:2px;color:var(--ink)}
+.hero .chip{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .chip.obj{background:var(--amb);border-color:var(--amb);color:#3a2c05}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
+h3{font-size:18px;margin:18px 0 8px}
+p{margin:8px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.lab{border-left:6px solid var(--acc)}
+.labno{color:var(--acc);font-weight:900;letter-spacing:.5px;font-size:13px;margin-top:0;text-transform:uppercase}
+.note{font-size:13.5px;color:var(--mut)}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:8px 15px;font:inherit;font-weight:800;cursor:pointer;font-size:14px}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.small{padding:5px 11px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:12px 0}
+.casepacket{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:12px 0}
+.casefact{border:1px solid var(--line);border-left:4px solid var(--acc);background:#fff;border-radius:10px;padding:12px 14px}
+.casefact b{display:block;color:var(--pri);font-size:14px;margin-bottom:3px}
+.mini{border:1px solid var(--line);background:#fbfaf7;border-radius:12px;padding:14px 15px}
+.mini h4{margin:0 0 6px;color:var(--pri);font-size:15px}
+.task{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:8px;margin:5px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.task input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.task.done{background:#e9f4ee;border-color:#bcd9c6}
+.classify{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:12px 0}
+.scenario{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px;min-height:178px;display:flex;flex-direction:column;justify-content:space-between}
+.scenario h4{margin:0 0 7px;font-size:15px;color:var(--pri)}
+.choicebar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.scenario.correct{border-color:var(--ok);background:#f1f8f4}
+.scenario.wrong{border-color:var(--bad);background:#fff3f1}
+.fb{display:block;font-weight:800;font-size:13.5px;margin-top:8px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.matcher{margin:12px 0}
+.mcards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.mcard{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.mcard.sel{outline:3px solid var(--amb);border-color:var(--amb)}
+.mcard.ok{background:#e7f3ec;border-color:var(--ok);color:#28583b;cursor:default}
+.mcard.ok:after{content:" OK";font-weight:900}
+.mcard.no{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.mzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.mzone{border:2px dashed var(--acc);border-radius:12px;background:#f4faf9;padding:12px;cursor:pointer;font:inherit;text-align:center;font-weight:900;color:var(--acc)}
+.mzone small{display:block;font-weight:500;color:var(--mut);margin-top:4px}
+.mstatus{margin-top:9px;font-weight:900;color:var(--pri)}
+.tenantbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0}
+select,input[type=number],input[type=text],textarea{border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;font:inherit;background:#fff}
+select{min-width:210px}
+textarea{width:100%;min-height:78px;resize:vertical}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0;background:#fff}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:7px 9px;vertical-align:top}
+.querybox{background:#111827;color:#dbeafe;border-radius:10px;padding:12px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;overflow:auto}
+.leak{border-left:5px solid var(--bad);background:#fff3f1}
+.safe{border-left:5px solid var(--ok);background:#f1f8f4}
+.calcgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:10px 0}
+.calcbox{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fbfaf7}
+.calcbox label{font-size:13.5px;font-weight:800;display:block;margin-top:7px}
+input[type=range]{width:100%;accent-color:var(--pri)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0}
+.kpi{background:#f4f6fb;border-radius:10px;padding:10px 12px;text-align:center;border:1px solid #e3e7f3}
+.kpi b{display:block;font-size:22px;color:var(--pri);line-height:1.2}
+.kpi small{color:var(--mut)}
+.checkfield{display:flex;gap:8px;align-items:center;margin:7px 0;flex-wrap:wrap}
+.checkfield input[type=number],.checkfield input[type=text]{width:125px}
+.riskrow{display:grid;grid-template-columns:minmax(230px,1fr) 230px auto;gap:8px;align-items:center;border:1px solid var(--line);background:#fbfaf7;border-radius:10px;padding:10px;margin:8px 0}
+.scoregrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.scorebox{border:1px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px}
+.scorebox h4{margin:0 0 8px;color:var(--pri);font-size:15px}
+.scorebox label{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;font-weight:800;margin-top:8px}
+.meter{height:13px;background:#e8e4da;border-radius:99px;overflow:hidden;margin:8px 0}
+.meter span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .25s}
+.picklist{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin:10px 0}
+.pick{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;background:#fbfaf7;padding:9px 10px}
+.pick input{margin-top:4px;accent-color:var(--acc)}
+.runrow{display:grid;grid-template-columns:70px minmax(220px,1fr) minmax(180px,260px);gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;background:#fbfaf7;padding:10px;margin:8px 0}
+.runrow input[type=number]{width:58px;text-align:center}
+.runrow .why{font-size:13px;color:var(--mut)}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--acc);border:none;color:#fff;border-radius:8px;padding:4px 11px;font-size:12.5px;font-weight:800;cursor:pointer}
+.footer-nav{display:flex;justify-content:space-between;margin-top:30px;gap:10px;flex-wrap:wrap}
+@media (max-width:700px){.riskrow,.runrow{grid-template-columns:1fr}.topnav{align-items:flex-start}.hero h1{font-size:25px}}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">Course Hub</a>
+  <span class="mid">Week 1 · Session 2 Lab — SaaS Hands-On Studio</span>
+  <span><a href="week1-session2.html">Session 2</a> &nbsp; <span id="progressChip">Progress: 0%</span> &nbsp; <a href="week1-session3.html">Session 3</a></span>
+</nav>
+
+<main>
+<header class="hero">
+  <h1>SaaS Hands-On Studio</h1>
+  <p class="sub">Short tasks for defining, spotting, costing, evaluating, and governing Software as a Service.</p>
+  <div>
+    <span class="chip obj">Objective 2</span>
+    <span class="chip">SaaS definition</span>
+    <span class="chip">multi-tenancy</span>
+    <span class="chip">cost model</span>
+    <span class="chip">responsibilities</span>
+    <span class="chip">adoption runbook</span>
+    <span class="chip">lock-in and exit</span>
+  </div>
+</header>
+
+<section class="card">
+  <h3>Lab Rules</h3>
+  <div class="grid">
+    <div class="mini"><h4>Work product</h4><p>Finish the checks, then use Lab 9 as your SaaS recommendation draft for Harbor Lane Books.</p></div>
+    <div class="mini"><h4>Evidence</h4><p>Buttons, matchers, calculators, and text boxes save in this browser.</p></div>
+    <div class="mini"><h4>Target time</h4><p>90-120 minutes. Pair discussion is fine; final recommendation is individual.</p></div>
+  </div>
+</section>
+
+<section class="card">
+  <h3>Harbor Lane SaaS Case Packet</h3>
+  <p>Use these facts in every lab. The goal is a practical purchase recommendation, not a vocabulary recital.</p>
+  <div class="casepacket">
+    <div class="casefact"><b>Business</b>12-store Florida bookstore chain, 240 staff, frequent author-event traffic spikes.</div>
+    <div class="casefact"><b>Current pain</b>Closet email server, file chaos, manual account cleanup, fragile weekend operations.</div>
+    <div class="casefact"><b>Near-term need</b>Email/docs suite for all staff and CRM for loyalty/customer history.</div>
+    <div class="casefact"><b>Decision bar</b>Fast rollout, clear cost, strong identity controls, clean export, manageable lock-in.</div>
+  </div>
+</section>
+
+<h2>Lab 1 · SaaS Spotter</h2>
+<section class="card lab">
+  <p class="labno">CLASSIFY · 10 MIN</p>
+  <p>Use the operational test: finished application, internet delivery, provider-managed stack, subscription/account access.</p>
+  <div class="classify" id="saasSpotter">
+    <div class="scenario" data-answer="saas" data-why="SaaS: employees use finished email software in a browser; the provider runs patches, spam filtering, storage, and uptime.">
+      <div><h4>Case A</h4><p>240 employees use browser email, shared calendars, and cloud documents billed monthly per user.</p></div>
+      <div class="choicebar"><button class="btn small" data-pick="saas">SaaS</button><button class="btn ghost small" data-pick="not">Not SaaS</button></div><span class="fb"></span>
+    </div>
+    <div class="scenario" data-answer="not" data-why="Not SaaS: this is a static website, not finished business software with accounts and work functions.">
+      <div><h4>Case B</h4><p>A public marketing page lists store hours and has no login, data, workflow, or subscription.</p></div>
+      <div class="choicebar"><button class="btn small" data-pick="saas">SaaS</button><button class="btn ghost small" data-pick="not">Not SaaS</button></div><span class="fb"></span>
+    </div>
+    <div class="scenario" data-answer="saas" data-why="SaaS: the company rents complete CRM functionality instead of installing and running CRM software.">
+      <div><h4>Case C</h4><p>A sales team logs into a CRM, tracks leads, and pays per salesperson each month.</p></div>
+      <div class="choicebar"><button class="btn small" data-pick="saas">SaaS</button><button class="btn ghost small" data-pick="not">Not SaaS</button></div><span class="fb"></span>
+    </div>
+    <div class="scenario" data-answer="not" data-why="Not SaaS: renting virtual machines and installing your own software is IaaS-style responsibility, not finished software.">
+      <div><h4>Case D</h4><p>A team rents Linux VMs and installs its own database, web server, app, backups, and patches.</p></div>
+      <div class="choicebar"><button class="btn small" data-pick="saas">SaaS</button><button class="btn ghost small" data-pick="not">Not SaaS</button></div><span class="fb"></span>
+    </div>
+    <div class="scenario" data-answer="saas" data-why="SaaS: the AI assistant is finished software consumed through an account; the vendor runs model serving and product updates.">
+      <div><h4>Case E</h4><p>Support staff use a hosted AI chat assistant through a web app with company accounts.</p></div>
+      <div class="choicebar"><button class="btn small" data-pick="saas">SaaS</button><button class="btn ghost small" data-pick="not">Not SaaS</button></div><span class="fb"></span>
+    </div>
+    <div class="scenario" data-answer="not" data-why="Not SaaS: custom code deployed to a platform is PaaS. The platform runs the runtime; the team owns the app.">
+      <div><h4>Case F</h4><p>Developers push their own checkout code; a platform builds, deploys, and scales it.</p></div>
+      <div class="choicebar"><button class="btn small" data-pick="saas">SaaS</button><button class="btn ghost small" data-pick="not">Not SaaS</button></div><span class="fb"></span>
+    </div>
+  </div>
+  <label class="task"><input type="checkbox" data-step="spotterNote"><span>Write one sentence in your notes: "SaaS is not just a website because..."</span></label>
+</section>
+
+<h2>Lab 2 · Responsibility Split</h2>
+<section class="card lab">
+  <p class="labno">MATCH · 12 MIN</p>
+  <p>Pick a card, then place it with the SaaS provider, the customer, or both.</p>
+  <div class="matcher" id="respMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="provider">Patch the application code for all tenants</button>
+      <button class="mcard" data-match="customer">Disable accounts when employees leave</button>
+      <button class="mcard" data-match="provider">Operate servers, storage, network, and backups</button>
+      <button class="mcard" data-match="customer">Choose retention, sharing, and data-classification rules</button>
+      <button class="mcard" data-match="provider">Ship upgrades without every customer installing them</button>
+      <button class="mcard" data-match="shared">Configure MFA/SSO and enforce login policy</button>
+      <button class="mcard" data-match="customer">Clean up unused paid seats</button>
+      <button class="mcard" data-match="shared">Respond to an incident and notify affected users</button>
+      <button class="mcard" data-match="customer">Verify data exports before renewal</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="provider">Provider<small>runs the product and stack</small></button>
+      <button class="mzone" data-zone="customer">Customer<small>owns users, data, settings</small></button>
+      <button class="mzone" data-zone="shared">Shared<small>both sides must act</small></button>
+    </div>
+    <p class="mstatus">0/9 placed</p>
+  </div>
+</section>
+
+<h2>Lab 3 · Multi-Tenant Data Inspector</h2>
+<section class="card lab">
+  <p class="labno">QUERY SIMULATION · 15 MIN</p>
+  <p>Same table, many tenants. The safe query filters every row by <code>tenant_id</code>.</p>
+  <div class="tenantbar">
+    <label><strong>Signed-in tenant:</strong>
+      <select id="tenantSelect">
+        <option value="harbor">Harbor Lane Books</option>
+        <option value="gulf">Gulf Coast Gym</option>
+        <option value="nimbus">Nimbus Travel</option>
+      </select>
+    </label>
+    <button class="btn small" id="safeQuery">Run safe query</button>
+    <button class="btn ghost small" id="badQuery">Run unsafe query</button>
+  </div>
+  <div class="querybox" id="queryText">SELECT * FROM customer_records WHERE tenant_id = "harbor";</div>
+  <table id="tenantTable">
+    <thead><tr><th>tenant_id</th><th>record</th><th>module</th><th>sample value</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <div class="mini safe" id="queryVerdict"><strong>Safe:</strong> rows are filtered to the signed-in tenant.</div>
+  <div class="checkfield">Harbor Lane safe-query rows: <input type="number" id="tenantAnswer1"> <button class="btn small" onclick="checkTenant(1)">Check</button> <span class="fb" id="tenantFb1"></span></div>
+  <div class="checkfield">Isolation field name: <input type="text" id="tenantAnswer2" placeholder="field_name"> <button class="btn small" onclick="checkTenant(2)">Check</button> <span class="fb" id="tenantFb2"></span></div>
+  <label class="task"><input type="checkbox" data-step="tenantTradeoff"><span>Name one benefit of multi-tenancy and one risk to ask the vendor about.</span></label>
+</section>
+
+<h2>Lab 4 · Subscription Math</h2>
+<section class="card lab">
+  <p class="labno">CALCULATE · 15 MIN</p>
+  <p>Set the controls to model Harbor Lane's email/docs subscription.</p>
+  <div class="calcgrid">
+    <div class="calcbox">
+      <h3 style="margin-top:0">Seats</h3>
+      <label>Paid seats: <span id="seatVal">240</span></label>
+      <input type="range" id="seats" min="10" max="500" step="1" value="240">
+      <label>Unused seats: <span id="unusedVal">12</span></label>
+      <input type="range" id="unused" min="0" max="80" step="1" value="12">
+    </div>
+    <div class="calcbox">
+      <h3 style="margin-top:0">Price</h3>
+      <label>$/seat/month: $<span id="priceVal">8</span></label>
+      <input type="range" id="price" min="4" max="40" step="1" value="8">
+      <label>Migration/setup cost</label>
+      <input type="number" id="migration" value="3000" min="0" step="500">
+    </div>
+    <div class="calcbox">
+      <h3 style="margin-top:0">Operations</h3>
+      <label>SaaS admin hours/month</label>
+      <input type="number" id="adminHours" value="10" min="0" step="1">
+      <label>Internal labor $/hour</label>
+      <input type="number" id="laborRate" value="50" min="0" step="5">
+    </div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b id="monthlyBill">$0</b><small>monthly subscription</small></div>
+    <div class="kpi"><b id="threeYearSub">$0</b><small>3-year subscription</small></div>
+    <div class="kpi"><b id="threeYearTotal">$0</b><small>3-year total with labor/setup</small></div>
+    <div class="kpi"><b id="waste">$0</b><small>unused-seat waste over 3 years</small></div>
+  </div>
+  <div class="checkfield">With the default settings, monthly bill: $<input type="number" id="costA"> <button class="btn small" onclick="checkCost(1)">Check</button> <span class="fb" id="costFb1"></span></div>
+  <div class="checkfield">With the default settings, 3-year total: $<input type="number" id="costB"> <button class="btn small" onclick="checkCost(2)">Check</button> <span class="fb" id="costFb2"></span></div>
+  <div class="checkfield">With the default settings, unused-seat waste: $<input type="number" id="costC"> <button class="btn small" onclick="checkCost(3)">Check</button> <span class="fb" id="costFb3"></span></div>
+  <label class="task"><input type="checkbox" data-step="costLesson"><span>Circle the SaaS control that reduces waste fastest: deprovision unused seats.</span></label>
+</section>
+
+<h2>Lab 5 · Risk Triage</h2>
+<section class="card lab">
+  <p class="labno">DIAGNOSE · 12 MIN</p>
+  <p>Assign the primary SaaS concern in each case.</p>
+  <div id="riskRows">
+    <div class="riskrow" data-answer="customization"><span>Legal wants the intake workflow to match a 14-step legacy process exactly.</span><select><option value="">Choose risk</option><option value="internet">Internet dependency</option><option value="customization">Customization limit</option><option value="data">Data control/privacy</option><option value="subscription">Forever subscription</option><option value="exit">Lock-in/exit</option></select><span class="fb"></span></div>
+    <div class="riskrow" data-answer="data"><span>Customer records will live in the vendor's systems and may cross jurisdictions.</span><select><option value="">Choose risk</option><option value="internet">Internet dependency</option><option value="customization">Customization limit</option><option value="data">Data control/privacy</option><option value="subscription">Forever subscription</option><option value="exit">Lock-in/exit</option></select><span class="fb"></span></div>
+    <div class="riskrow" data-answer="subscription"><span>The product is cheap per month, but the company will pay every year forever.</span><select><option value="">Choose risk</option><option value="internet">Internet dependency</option><option value="customization">Customization limit</option><option value="data">Data control/privacy</option><option value="subscription">Forever subscription</option><option value="exit">Lock-in/exit</option></select><span class="fb"></span></div>
+    <div class="riskrow" data-answer="internet"><span>Store registers need the app during storms when broadband is unreliable.</span><select><option value="">Choose risk</option><option value="internet">Internet dependency</option><option value="customization">Customization limit</option><option value="data">Data control/privacy</option><option value="subscription">Forever subscription</option><option value="exit">Lock-in/exit</option></select><span class="fb"></span></div>
+    <div class="riskrow" data-answer="exit"><span>The vendor exports only partial CSV files unless you buy a premium migration package.</span><select><option value="">Choose risk</option><option value="internet">Internet dependency</option><option value="customization">Customization limit</option><option value="data">Data control/privacy</option><option value="subscription">Forever subscription</option><option value="exit">Lock-in/exit</option></select><span class="fb"></span></div>
+  </div>
+  <p><button class="btn small" onclick="checkRisks()">Check risks</button> <span class="fb" id="riskSummary"></span></p>
+</section>
+
+<h2>Lab 6 · SaaS Vendor Scorecard</h2>
+<section class="card lab">
+  <p class="labno">EVALUATE · 15 MIN</p>
+  <p>Score a candidate from 1-5. Higher is better. Use any SaaS category: email/docs, CRM, help desk, accounting, design, AI assistant.</p>
+  <div class="checkfield">
+    Candidate name: <input type="text" data-persist="candidateName" placeholder="e.g., email/docs suite" style="min-width:240px">
+    Category: <input type="text" data-persist="candidateCategory" placeholder="e.g., collaboration" style="min-width:190px">
+  </div>
+  <div class="scoregrid">
+    <div class="scorebox"><h4>Business fit</h4><label>Fits the workflow <span id="fitOut">3</span></label><input type="range" class="score" id="fit" min="1" max="5" value="3"><label>Fast user rollout <span id="rolloutOut">3</span></label><input type="range" class="score" id="rollout" min="1" max="5" value="3"></div>
+    <div class="scorebox"><h4>Risk control</h4><label>Data/export rights <span id="exportOut">3</span></label><input type="range" class="score" id="export" min="1" max="5" value="3"><label>Security/availability proof <span id="securityOut">3</span></label><input type="range" class="score" id="security" min="1" max="5" value="3"></div>
+    <div class="scorebox"><h4>Economics</h4><label>Predictable total cost <span id="costOut">3</span></label><input type="range" class="score" id="costScore" min="1" max="5" value="3"><label>Low lock-in <span id="lockOut">3</span></label><input type="range" class="score" id="lock" min="1" max="5" value="3"></div>
+  </div>
+  <div class="meter"><span id="scoreMeter"></span></div>
+  <div class="kpis">
+    <div class="kpi"><b id="scoreTotal">18/30</b><small>score</small></div>
+    <div class="kpi"><b id="scoreVerdict">Pilot</b><small>recommendation</small></div>
+  </div>
+  <label class="task"><input type="checkbox" data-step="scoreEvidence"><span>For any score below 3, write the exact vendor question you would ask before signing.</span></label>
+</section>
+
+<h2>Lab 7 · SaaS Launch Runbook</h2>
+<section class="card lab">
+  <p class="labno">IMPLEMENT · 10 MIN</p>
+  <p>Put the rollout steps in the order you would actually run them for Harbor Lane. Use 1-5 once each.</p>
+  <div id="runbookRows">
+    <div class="runrow" data-order="1"><div><input type="number" min="1" max="5"></div><div><strong>Define owners, success measures, and exit requirements</strong></div><div class="why">Agree what good looks like before the vendor demo takes over.</div></div>
+    <div class="runrow" data-order="2"><div><input type="number" min="1" max="5"></div><div><strong>Configure identity, MFA/SSO, roles, and retention defaults</strong></div><div class="why">Access control comes before broad data movement.</div></div>
+    <div class="runrow" data-order="3"><div><input type="number" min="1" max="5"></div><div><strong>Pilot with one store and a small data migration</strong></div><div class="why">Find workflow gaps while the blast radius is small.</div></div>
+    <div class="runrow" data-order="4"><div><input type="number" min="1" max="5"></div><div><strong>Train staff, migrate remaining data, and launch by wave</strong></div><div class="why">Rollout succeeds when people know the new workflow.</div></div>
+    <div class="runrow" data-order="5"><div><input type="number" min="1" max="5"></div><div><strong>Monitor adoption, deprovision unused seats, and test export</strong></div><div class="why">SaaS work continues after go-live.</div></div>
+  </div>
+  <p><button class="btn small" onclick="checkRunbook()">Check runbook</button> <span class="fb" id="runbookFb"></span></p>
+</section>
+
+<h2>Lab 8 · Exit Plan Builder</h2>
+<section class="card lab">
+  <p class="labno">LOCK-IN CONTROL · 10 MIN</p>
+  <p>Select the items that belong in a SaaS exit plan.</p>
+  <div class="picklist" id="exitPicks">
+    <label class="pick"><input type="checkbox" data-good="1"><span>Test a full data export before renewal.</span></label>
+    <label class="pick"><input type="checkbox" data-good="1"><span>Document standard file formats and API limits.</span></label>
+    <label class="pick"><input type="checkbox" data-good="1"><span>Require account deletion and data deletion terms.</span></label>
+    <label class="pick"><input type="checkbox" data-good="1"><span>Name an internal owner for deprovisioning.</span></label>
+    <label class="pick"><input type="checkbox" data-good="1"><span>Keep an integration inventory: SSO, CRM, mail, storage.</span></label>
+    <label class="pick"><input type="checkbox" data-good="0"><span>Wait until cancellation week to ask about exports.</span></label>
+    <label class="pick"><input type="checkbox" data-good="0"><span>Assume screenshots are a complete backup.</span></label>
+    <label class="pick"><input type="checkbox" data-good="0"><span>Let every department buy separate duplicate tools.</span></label>
+  </div>
+  <p><button class="btn small" onclick="checkExitPlan()">Check exit plan</button> <span class="fb" id="exitFb"></span></p>
+  <label class="task"><input type="checkbox" data-step="openSaas"><span>Identify whether OpenSaaS, standard exports, or both would reduce this product's lock-in.</span></label>
+</section>
+
+<h2>Lab 9 · Mini Deliverable</h2>
+<section class="card lab">
+  <p class="labno">SUBMITTABLE DRAFT · 15 MIN</p>
+  <p>Draft the SaaS part of Harbor Lane's Week 1 recommendation. Keep it concise.</p>
+  <label><strong>Recommended SaaS category and product type</strong></label>
+  <textarea data-persist="recType" placeholder="Example: email/docs suite for all 240 staff; CRM for loyalty and customer history."></textarea>
+  <label><strong>Why SaaS fits</strong></label>
+  <textarea data-persist="recWhy" placeholder="Mention speed, provider-managed stack, automatic upgrades, predictable per-seat billing, or reduced server-room risk."></textarea>
+  <label><strong>Risks and controls</strong></label>
+  <textarea data-persist="recRisk" placeholder="Mention data/export rights, SSO/MFA, deprovisioning, customization limits, offline needs, or subscription waste."></textarea>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>Act as a skeptical cloud procurement reviewer. Review my SaaS recommendation for:
+1. whether I clearly define why the solution is SaaS,
+2. whether I identify what the provider manages and what the customer still owns,
+3. whether I include cost, data/export, customization, internet dependency, and lock-in risks,
+4. whether my recommendation is specific enough to defend.
+Ask me up to five tough follow-up questions. Do not rewrite it for me.</pre></div>
+  <label class="task"><input type="checkbox" data-step="finalDraft"><span>Paste the three short paragraphs into your project notes and mark any AI feedback you verified.</span></label>
+</section>
+
+<footer>
+  <div class="card" style="background:#f0eee6">
+    <strong>Before leaving:</strong> your final draft should prove you can define SaaS, explain multi-tenancy, split responsibilities, model subscription cost, name risks, and plan an exit.
+  </div>
+  <div class="footer-nav">
+    <a class="btn ghost" href="week1-session2.html">Back to Session 2</a>
+    <span><a class="btn ghost" href="index.html">Course Hub</a> <button class="btn ghost small" onclick="resetPage()">Reset this lab</button></span>
+    <a class="btn" href="week1-session3.html">Next: Session 3</a>
+  </div>
+</footer>
+</main>
+
+<script>
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'saas-lab');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S);updateProgress()}
+function resetPage(){try{localStorage.removeItem(PKEY)}catch(e){};location.reload()}
+function money(n){return Math.round(n).toLocaleString('en-US')}
+
+document.querySelectorAll('[data-persist]').forEach(el=>{
+  const key='p:'+el.dataset.persist;
+  if(S[key]!=null)el.value=S[key];
+  el.addEventListener('input',()=>save(key,el.value));
+});
+
+document.querySelectorAll('.task input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.task').classList.add('done')}
+  cb.addEventListener('change',()=>{cb.closest('.task').classList.toggle('done',cb.checked);save(key,cb.checked)});
+});
+
+document.querySelectorAll('#saasSpotter .scenario').forEach((card,i)=>{
+  const key='spotter:'+i;
+  function apply(pick,fresh){
+    const ok=pick===card.dataset.answer;
+    card.classList.remove('correct','wrong');
+    card.classList.add(ok?'correct':'wrong');
+    card.querySelectorAll('button').forEach(b=>b.disabled=true);
+    const fb=card.querySelector('.fb');
+    fb.className='fb '+(ok?'ok':'no');
+    fb.textContent=(ok?'Correct. ':'Try again mentally. ')+card.dataset.why;
+    if(fresh)save(key,pick);
+  }
+  card.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>apply(btn.dataset.pick,true)));
+  if(S[key])apply(S[key],false);
+});
+
+document.querySelectorAll('.matcher').forEach((m,mi)=>{
+  const key='match:'+(m.id||mi);
+  let sel=null,done=0;
+  const cards=[...m.querySelectorAll('.mcard')],st=m.querySelector('.mstatus');
+  function stat(){st.textContent=done+'/'+cards.length+' placed'+(done===cards.length?' - all correct':'');updateProgress()}
+  cards.forEach((c,ci)=>c.addEventListener('click',()=>{
+    if(c.classList.contains('ok'))return;
+    cards.forEach(x=>x.classList.remove('sel'));
+    c.classList.add('sel');sel=c;
+  }));
+  m.querySelectorAll('.mzone').forEach(z=>z.addEventListener('click',()=>{
+    if(!sel)return;
+    if(sel.dataset.match===z.dataset.zone){
+      sel.classList.remove('sel');sel.classList.add('ok');done++;
+      const solved=S[key]||[];if(!solved.includes(cards.indexOf(sel)))solved.push(cards.indexOf(sel));
+      save(key,solved);sel=null;stat();
+    }else{
+      sel.classList.add('no');setTimeout(()=>sel&&sel.classList.remove('no'),400);
+    }
+  }));
+  (S[key]||[]).forEach(ci=>{if(cards[ci]&&!cards[ci].classList.contains('ok')){cards[ci].classList.add('ok');done++}});
+  stat();
+});
+
+const DATA=[
+  {tenant:'harbor',record:'HLB-1001',module:'CRM',value:'Loyalty signup'},
+  {tenant:'harbor',record:'HLB-1002',module:'Email',value:'Author event list'},
+  {tenant:'harbor',record:'HLB-1003',module:'Docs',value:'Store manager handbook'},
+  {tenant:'harbor',record:'HLB-1004',module:'CRM',value:'VIP reader segment'},
+  {tenant:'gulf',record:'GCG-2201',module:'CRM',value:'Membership renewal'},
+  {tenant:'gulf',record:'GCG-2202',module:'Billing',value:'Trainer invoice'},
+  {tenant:'nimbus',record:'NIM-3301',module:'CRM',value:'Trip quote'},
+  {tenant:'nimbus',record:'NIM-3302',module:'Docs',value:'Itinerary template'}
+];
+const tenantNames={harbor:'Harbor Lane Books',gulf:'Gulf Coast Gym',nimbus:'Nimbus Travel'};
+function renderRows(rows){
+  document.querySelector('#tenantTable tbody').innerHTML=rows.map(r=>'<tr><td>'+r.tenant+'</td><td>'+r.record+'</td><td>'+r.module+'</td><td>'+r.value+'</td></tr>').join('');
+}
+function runTenantQuery(safe){
+  const t=document.getElementById('tenantSelect').value;
+  const rows=safe?DATA.filter(r=>r.tenant===t):DATA;
+  document.getElementById('queryText').textContent=safe?'SELECT * FROM customer_records WHERE tenant_id = "'+t+'";':'SELECT * FROM customer_records;';
+  renderRows(rows);
+  const v=document.getElementById('queryVerdict');
+  v.className='mini '+(safe?'safe':'leak');
+  v.innerHTML=safe?'<strong>Safe:</strong> '+tenantNames[t]+' sees only its own rows.':'<strong>Unsafe:</strong> rows from every tenant are visible. This is the data-leak bug SaaS teams must prevent.';
+  save('tenantSafe',safe);save('tenantChoice',t);
+}
+document.getElementById('tenantSelect').addEventListener('change',()=>runTenantQuery(S.tenantSafe!==false));
+document.getElementById('safeQuery').addEventListener('click',()=>runTenantQuery(true));
+document.getElementById('badQuery').addEventListener('click',()=>runTenantQuery(false));
+if(S.tenantChoice)document.getElementById('tenantSelect').value=S.tenantChoice;
+runTenantQuery(S.tenantSafe!==false);
+function checkTenant(i){
+  const fb=document.getElementById('tenantFb'+i);
+  let ok=false,msg='';
+  if(i===1){ok=+document.getElementById('tenantAnswer1').value===4;msg=ok?'Correct: Harbor has 4 rows in the sample table.':'Not yet. Run the safe query for Harbor Lane and count only Harbor rows.'}
+  if(i===2){ok=document.getElementById('tenantAnswer2').value.trim().toLowerCase()==='tenant_id';msg=ok?'Correct: tenant_id is the isolation key in this simplified model.':'Not yet. Look at the WHERE clause in the safe query.'}
+  fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
+  if(ok)save('tenantCheck'+i,true);
+}
+
+['seats','unused','price','migration','adminHours','laborRate'].forEach(id=>document.getElementById(id).addEventListener('input',calcCosts));
+function calcCosts(){
+  const seats=+document.getElementById('seats').value;
+  const unused=+document.getElementById('unused').value;
+  const price=+document.getElementById('price').value;
+  const migration=+document.getElementById('migration').value||0;
+  const adminHours=+document.getElementById('adminHours').value||0;
+  const labor=+document.getElementById('laborRate').value||0;
+  document.getElementById('seatVal').textContent=seats;
+  document.getElementById('unusedVal').textContent=unused;
+  document.getElementById('priceVal').textContent=price;
+  const monthly=seats*price;
+  const sub=monthly*36;
+  const total=sub+migration+(adminHours*labor*36);
+  const waste=Math.min(unused,seats)*price*36;
+  document.getElementById('monthlyBill').textContent='$'+money(monthly);
+  document.getElementById('threeYearSub').textContent='$'+money(sub);
+  document.getElementById('threeYearTotal').textContent='$'+money(total);
+  document.getElementById('waste').textContent='$'+money(waste);
+}
+calcCosts();
+function checkCost(i){
+  const vals=[null,1920,90120,3456],ids=[null,'costA','costB','costC'];
+  const fb=document.getElementById('costFb'+i);
+  const ok=+document.getElementById(ids[i]).value===vals[i];
+  const msg=[
+    '',
+    'Default monthly bill is 240 seats x $8 = $1,920.',
+    'Default 3-year total is $69,120 subscription + $3,000 setup + $18,000 labor = $90,120.',
+    'Default unused-seat waste is 12 seats x $8 x 36 = $3,456.'
+  ][i];
+  fb.textContent=(ok?'Correct. ':'Not yet. ')+msg;
+  fb.className='fb '+(ok?'ok':'no');
+  if(ok)save('costCheck'+i,true);
+}
+
+function checkRisks(){
+  let right=0,total=0;
+  document.querySelectorAll('#riskRows .riskrow').forEach((row,i)=>{
+    const sel=row.querySelector('select'),fb=row.querySelector('.fb');
+    const ok=sel.value===row.dataset.answer;
+    total++;if(ok)right++;
+    fb.textContent=ok?'Correct':'Try again';
+    fb.className='fb '+(ok?'ok':'no');
+    save('risk:'+i,sel.value);
+  });
+  const s=document.getElementById('riskSummary');
+  s.textContent=right+'/'+total+' correct';
+  s.className='fb '+(right===total?'ok':'no');
+  if(right===total)save('riskAll',true);
+}
+document.querySelectorAll('#riskRows .riskrow').forEach((row,i)=>{
+  const sel=row.querySelector('select');
+  if(S['risk:'+i])sel.value=S['risk:'+i];
+});
+
+document.querySelectorAll('#runbookRows .runrow').forEach((row,i)=>{
+  const inp=row.querySelector('input');
+  const key='runbook:'+i;
+  if(S[key])inp.value=S[key];
+  inp.addEventListener('input',()=>save(key,inp.value));
+});
+function checkRunbook(){
+  let right=0,seen=new Set();
+  document.querySelectorAll('#runbookRows .runrow').forEach((row,i)=>{
+    const inp=row.querySelector('input');
+    const val=+inp.value;
+    seen.add(val);
+    const ok=val===+row.dataset.order;
+    if(ok)right++;
+    row.style.borderColor=ok?'#3e8e5a':'#c04f43';
+    save('runbook:'+i,inp.value);
+  });
+  const complete=right===5&&seen.size===5;
+  const fb=document.getElementById('runbookFb');
+  fb.textContent=complete?'Correct: this sequence protects the decision, the data, the users, and the budget.':right+'/5 in the right position. Use each number 1-5 once.';
+  fb.className='fb '+(complete?'ok':'no');
+  if(complete)save('runbookAll',true);
+}
+
+const scoreIds=['fit','rollout','export','security','costScore','lock'];
+function updateScore(){
+  let total=0;
+  scoreIds.forEach(id=>{
+    const el=document.getElementById(id),val=+el.value;total+=val;
+    const outId=id==='costScore'?'costOut':id+'Out';
+    const out=document.getElementById(outId);if(out)out.textContent=val;
+    save('score:'+id,val);
+  });
+  const pct=Math.round(total/30*100);
+  document.getElementById('scoreTotal').textContent=total+'/30';
+  document.getElementById('scoreMeter').style.width=pct+'%';
+  document.getElementById('scoreVerdict').textContent=total>=25?'Adopt':total>=19?'Pilot':total>=13?'Investigate':'Avoid';
+}
+scoreIds.forEach(id=>{
+  const el=document.getElementById(id);
+  if(S['score:'+id])el.value=S['score:'+id];
+  el.addEventListener('input',updateScore);
+});
+updateScore();
+
+document.querySelectorAll('#exitPicks input').forEach((cb,i)=>{
+  const key='exitPick:'+i;
+  if(S[key])cb.checked=true;
+  cb.addEventListener('change',()=>save(key,cb.checked));
+});
+function checkExitPlan(){
+  let ok=true,good=0,bad=0;
+  document.querySelectorAll('#exitPicks input').forEach(cb=>{
+    if(cb.dataset.good==='1'&&cb.checked)good++;
+    if(cb.dataset.good==='1'&&!cb.checked)ok=false;
+    if(cb.dataset.good==='0'&&cb.checked){bad++;ok=false}
+  });
+  const fb=document.getElementById('exitFb');
+  fb.textContent=ok?'Correct: you selected the five exit controls and avoided the traps.':'Selected good controls: '+good+'/5. Remove trap items selected: '+bad+'.';
+  fb.className='fb '+(ok?'ok':'no');
+  if(ok)save('exitPlanOk',true);
+}
+
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent='Copy',1500)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done))}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(e){}document.body.removeChild(ta)}
+
+function updateProgress(){
+  const spotTotal=document.querySelectorAll('#saasSpotter .scenario').length;
+  const spotDone=document.querySelectorAll('#saasSpotter .scenario.correct,#saasSpotter .scenario.wrong').length;
+  const matchTotal=document.querySelectorAll('.mcard').length;
+  const matchDone=document.querySelectorAll('.mcard.ok').length;
+  const taskTotal=document.querySelectorAll('.task input').length;
+  const taskDone=document.querySelectorAll('.task input:checked').length;
+  const checks=['tenantCheck1','tenantCheck2','costCheck1','costCheck2','costCheck3','riskAll','runbookAll','exitPlanOk'];
+  const checkDone=checks.filter(k=>S[k]).length;
+  const total=spotTotal+matchTotal+taskTotal+checks.length;
+  const done=spotDone+matchDone+taskDone+checkDone;
+  document.getElementById('progressChip').textContent='Progress: '+Math.round(done/total*100)+'%';
+}
+updateProgress();
+</script>
+</body>
+</html>
