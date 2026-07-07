@@ -481,6 +481,17 @@ One risk to flag. End with a 3-sentence recommendation.</pre></div>
   <p class="note">🧠 Model check: GitHub's web editor is SaaS (finished software you use in a browser). GitHub Pages is PaaS-style (you bring content/code; it builds, deploys, hosts, and serves). The servers underneath are GitHub's IaaS-like fleet. Three models, one lab.</p>
 </section>
 
+<section class="card lab">
+  <p class="labno">LAB D · SYNTHESIS · ~20 MIN</p>
+  <h3>The Design Deep Dive: One Architecture, Two Sessions of Concepts</h3>
+  <p>Every lab so far tested one piece of vocabulary at a time. Real design work never does — Maya doesn't ask "what's a cloud trait?", she asks "should we do this?" This lab makes you defend one decision, Harbor Lane's email + docs move, using <strong>Session 1's traits, deployment models, and scaling</strong> together with <strong>today's SaaS/PaaS and multi-tenancy material</strong> — exactly the synthesis your D1 deliverable will require.</p>
+  <label class="step"><input type="checkbox" data-step="d1"><span><strong>Trait audit:</strong> for each of Session 1's five traits — on-demand self-service, broad network access, resource pooling, rapid elasticity, measured service — write one sentence on how Google Workspace or Microsoft 365 actually delivers it. If you can't name a concrete mechanism for a trait, flag it; that's a gap in your D1 argument.</span></label>
+  <label class="step"><input type="checkbox" data-step="d2"><span><strong>Connect the dots:</strong> explain, in your own words, why <em>multi-tenancy</em> (today's Segment 1) is the mechanism that actually delivers Session 1's <em>resource pooling</em> and <em>rapid elasticity</em> traits — one is the "how," the other is what the customer feels.</span></label>
+  <label class="step"><input type="checkbox" data-step="d3"><span><strong>Deployment model check:</strong> Harbor Lane's email/docs move is public-cloud SaaS, but their card-payment data (PCI-DSS, one of Session 1's disadvantages) is not a public-cloud fit. Name the deployment model this split produces across the whole business, and predict which system in the closet table (see the capstone brief) will need it.</span></label>
+  <label class="step"><input type="checkbox" data-step="d4"><span><strong>Scale check:</strong> Session 1 contrasted vertical/horizontal scaling and grid computing. Which scaling shape does a SaaS email provider use to add its 10,000th customer overnight — one bigger server, or many identical servers behind a load balancer? Justify using the cost-crossover math you just ran in Lab A.</span></label>
+  <label class="step"><input type="checkbox" data-step="d5"><span><strong>Write the memo:</strong> in 4–6 sentences, recommend Harbor Lane's email/docs move to Maya, naming at least THREE Session 1 concepts (traits, deployment model, scaling) and at least THREE Session 2 concepts (SaaS definition, multi-tenancy, cost crossover, or OpenSaaS/lock-in). This is a rehearsal for D1's "letter to Ray."</span></label>
+</section>
+
 <!-- ============ STORY QUIZ ============ -->
 <h2>📝 Session Quiz — Story Problems</h2>
 <p>Ten workplace scenarios on SaaS and PaaS — the last two test today's AI concept. Pick the best answer; every question explains all four options after you answer. Counts toward the syllabus "Exercises/Quizzes" grade (30%).</p>
