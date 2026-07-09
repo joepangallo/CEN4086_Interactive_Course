@@ -81,6 +81,8 @@ h3{font-size:18px;margin:20px 0 8px}
 .aichat-bar span{display:block;height:100%;width:0%;background:var(--vio);transition:width .2s}
 .aichat-status{font-size:13px;color:var(--mut)}
 .quiz .q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.sa{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.sa h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
 .quiz .q h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
 .stem{margin:6px 0 10px}
 .opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fbfaf7;cursor:pointer;font:inherit;font-size:15px}
@@ -613,6 +615,28 @@ Be specific to MY answers, not generic.</pre></div>
   <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
 </section>
 
+<!-- ============ SHORT ANSWER ============ -->
+<section class="card" id="shortanswer1">
+  <h3>✏️ Short Answer</h3>
+  <p class="note">Not auto-graded — the instructor reads these directly when you submit below.</p>
+  <div class="sa">
+    <h4>Q11 · Real-world disadvantage</h4>
+    <p class="stem">In 2–3 sentences, describe a real-world situation — a business, a personal experience, or something you've read about — where a cloud DISADVANTAGE from today's session actually caused a problem.</p>
+    <textarea class="sa-input" data-persist="sa1" rows="3" placeholder="Type your answer here…"></textarea>
+  </div>
+</section>
+
+<!-- ============ SUBMIT QUIZ RESULTS ============ -->
+<section class="card" id="submitBlock">
+  <h3>📤 Submit My Results</h3>
+  <p class="note">Sends your quiz score, answers, and short-answer response to the instructor. Click once you've finished the Session Quiz and Short Answer above.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <input id="studentName" type="text" placeholder="Your full name" autocomplete="name" style="flex:1;min-width:200px;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;font:inherit">
+    <button class="btn" id="submitQuizBtn">Finished — Submit My Results</button>
+  </div>
+  <p id="submitStatus" class="note" style="margin-top:8px"></p>
+</section>
+
 <!-- ============ DISCUSSION ============ -->
 <section class="card disc">
   <h3>💬 Discussion Forum Prompts <span class="note">(syllabus: Discussion Forums = 15%)</span></h3>
@@ -756,6 +780,78 @@ function copyPrompt(btn){
   else fallbackCopy(txt,done);
 }
 function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+
+/* ===== quiz submission to instructor ===== */
+(function(){
+  const QUIZ_ENDPOINT='https://quiz.metaltorque.dev/submit';
+  const NAME_KEY='cen4086v3:studentName';
+  const nameInput=document.getElementById('studentName');
+  const btn=document.getElementById('submitQuizBtn');
+  const statusEl=document.getElementById('submitStatus');
+  if(!btn)return;
+  try{const saved=localStorage.getItem(NAME_KEY);if(saved&&nameInput)nameInput.value=saved;}catch(e){}
+  if(nameInput)nameInput.addEventListener('input',()=>{try{localStorage.setItem(NAME_KEY,nameInput.value);}catch(e){}});
+
+  function collectQuizData(){
+    // Only the chosen option index is sent — correctness is decided
+    // server-side against the answer key, never trusted from this page.
+    const answers=[];let total=0;
+    document.querySelectorAll('.quiz').forEach((qz,qzi)=>{
+      const qid=qz.id||('qz'+qzi);
+      qz.querySelectorAll('.q').forEach((q,i)=>{
+        total++;
+        const opts=[...q.querySelectorAll('.opt')];
+        const stemEl=q.querySelector('.stem')||q.querySelector('h4');
+        const stem=stemEl?stemEl.textContent.trim():'';
+        const chosenIdx=S[qid+':q'+i];
+        const answered=chosenIdx!=null&&opts[chosenIdx];
+        answers.push({
+          question:stem,
+          response:answered?opts[chosenIdx].textContent.trim():'(not answered)',
+          optionIndex:answered?chosenIdx:undefined
+        });
+      });
+    });
+    document.querySelectorAll('.sa').forEach(sa=>{
+      const stemEl=sa.querySelector('.stem')||sa.querySelector('h4');
+      const input=sa.querySelector('.sa-input');
+      if(!input)return;
+      answers.push({
+        question:stemEl?stemEl.textContent.trim():'',
+        response:input.value.trim()||'(not answered)'
+      });
+    });
+    return {answers,total};
+  }
+
+  btn.addEventListener('click',async()=>{
+    const name=(nameInput&&nameInput.value||'').trim();
+    if(!name){statusEl.textContent='Please enter your name first.';statusEl.style.color='var(--bad)';return;}
+    const {answers,total}=collectQuizData();
+    if(total===0){statusEl.textContent='No quiz questions found on this page.';statusEl.style.color='var(--bad)';return;}
+    btn.disabled=true;statusEl.textContent='Submitting…';statusEl.style.color='var(--mut)';
+    try{
+      const res=await fetch(QUIZ_ENDPOINT,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          quizId:(location.pathname.split('/').pop()||'page').replace(/\.html$/,''),
+          quizTitle:document.title,
+          studentName:name,
+          answers
+        })
+      });
+      if(!res.ok)throw new Error('server returned '+res.status);
+      const answeredCount=answers.filter(a=>a.response!=='(not answered)').length;
+      statusEl.textContent='✓ Submitted! You answered '+answeredCount+'/'+answers.length+' questions. You can keep working or close this page.';
+      statusEl.style.color='var(--ok)';
+    }catch(err){
+      statusEl.textContent='Could not submit ('+err.message+'). Check your connection and try again.';
+      statusEl.style.color='var(--bad)';
+      btn.disabled=false;
+    }
+  });
+})();
 
 /* ===== Session 1 custom interactives ===== */
 /* stack painter */

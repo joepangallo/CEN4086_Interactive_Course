@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Course Project — Choose Your Track</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--teal:#0f8b8d;--blue:#1273a8;--vio:#7b5ea7}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--pri);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+main{max-width:1020px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#22214f 100%);color:#fff;border-radius:18px;padding:30px 28px;margin:14px 0 24px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero h1{margin:0 0 6px;font-size:30px}
+.hero .sub{opacity:.92;margin:0 0 12px;font-size:17px}
+.chip{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:#fff}
+h2{font-size:23px;margin:32px 0 12px;padding-left:12px;border-left:6px solid var(--pri)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+.track{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;box-shadow:0 2px 10px rgba(29,36,51,.05);display:flex;flex-direction:column}
+.track.t1{border-top:6px solid var(--teal)}.track.t2{border-top:6px solid var(--blue)}.track.t3{border-top:6px solid var(--vio)}
+.track h3{margin:0 0 8px;font-size:19px}
+.track p{margin:0 0 10px;font-size:14.5px}
+.meta{font-size:13px;color:var(--mut);margin:0 0 14px}
+.meta b{color:var(--ink)}
+.btnrow{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-block;color:#fff;border:none;border-radius:10px;padding:9px 16px;font:inherit;font-weight:700;cursor:pointer;font-size:14px;text-decoration:none}
+.t1 .btn{background:var(--teal)}.t2 .btn{background:var(--blue)}.t3 .btn{background:var(--vio)}
+.btn.ghost{background:#fff!important;border:1.5px solid var(--line);color:var(--ink)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.note{font-size:13.5px;color:var(--mut)}
+@media print{.topnav,.btn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="../index.html">⌂ Course Hub</a>
+  <span style="font-weight:700">🏗️ Course Project</span>
+  <span></span>
+</nav>
+<main>
+
+<header class="hero">
+  <h1>🏗️ The Course Project</h1>
+  <p class="sub">One individual project runs the rest of the course: introduced in Class 3 (nothing due), with the first assignment — Milestone 1 — due Class 4, something due at every class through 11 (milestones at Classes 4 · 7 · 9 · 11), and a live demo on Class 12, which is presentation only. Checkpoints follow the Mon/Tue/Thu calendar: weekend-sized work lands on Mondays, Tuesday items stay light. All three tracks cover the same eight course objectives and carry the same points — choose the one that fits you.</p>
+  <div>
+    <span class="chip">Individual</span><span class="chip">4 milestones · 25 pts each</span><span class="chip">Live demo on Class 12</span><span class="chip">All 8 objectives</span>
+  </div>
+</header>
+
+<h2>Choose your track</h2>
+<div class="grid">
+  <div class="track t1">
+    <h3>☁️ Pocket Cloud</h3>
+    <p>Turn your own laptop into a working miniature cloud provider hosting two tenant storefronts — self-service provisioning, load balancing, SSO with MFA, object storage, backups, a disaster drill, monitoring, an API split, and usage-based billing.</p>
+    <p class="meta"><b>Runs on:</b> your machine (Docker) · <b>Cost:</b> free, no credit card · <b>Good fit if:</b> you want everything under your fingers, offline-friendly</p>
+    <div class="btnrow">
+      <a class="btn" href="pocket-cloud/index.html">Project brief →</a>
+      <a class="btn ghost" href="pocket-cloud/setup.html">Setup guide</a>
+    </div>
+  </div>
+  <div class="track t2">
+    <h3>🌊 Pelican Tours</h3>
+    <p>Deploy the same booking app to real AWS three different ways — EC2 rehost, managed replatform (S3, lifecycle tiers, snapshots), then a serverless refactor (API Gateway + Lambda + DynamoDB) — with a cross-region disaster drill and a real cost model.</p>
+    <p class="meta"><b>Runs on:</b> AWS Academy Learner Lab · <b>Cost:</b> $100 class credit, no credit card · <b>Good fit if:</b> you want real-provider experience on your résumé</p>
+    <div class="btnrow">
+      <a class="btn" href="aws-pelican-tours/index.html">Project brief →</a>
+      <a class="btn ghost" href="aws-pelican-tours/setup.html">Setup guide</a>
+    </div>
+  </div>
+  <div class="track t3">
+    <h3>📱 Bring Your Own App</h3>
+    <p>Already built a mobile app or a website with an app? Run every milestone on your own system: deploy its backend, protect its admin surfaces, move its assets to object storage, harden it, survive a disaster drill, and document its API.</p>
+    <p class="meta"><b>Runs on:</b> your choice of the two platforms · <b>Requires:</b> instructor approval before Class 4 · <b>Good fit if:</b> you have a real app you want to level up</p>
+    <div class="btnrow">
+      <a class="btn" href="bring-your-own-app/index.html">Project brief →</a>
+      <a class="btn ghost" href="bring-your-own-app/setup.html">Eligibility &amp; setup</a>
+    </div>
+  </div>
+</div>
+
+<h2>Same course, three lenses</h2>
+<div class="card">
+  <table>
+    <tr><th></th><th>☁️ Pocket Cloud</th><th>🌊 Pelican Tours</th><th>📱 Bring Your Own App</th></tr>
+    <tr><td><strong>You play</strong></td><td>The cloud provider</td><td>The cloud engineer for a client</td><td>The owner-operator of your app</td></tr>
+    <tr><td><strong>Platform</strong></td><td>Docker on your machine</td><td>AWS Learner Lab</td><td>Either</td></tr>
+    <tr><td><strong>Starter code</strong></td><td>Provided (two-tenant storefront)</td><td>Provided (booking app)</td><td>Your app</td></tr>
+    <tr><td><strong>M1 · Class 4</strong></td><td>Stand up the cloud: tenants, scaling, metering</td><td>Rehost: EC2 → ALB + Auto Scaling</td><td>Assess &amp; deploy your backend, prove it scales</td></tr>
+    <tr><td><strong>M2 · Class 7</strong></td><td>Identity (SSO/MFA) &amp; storage, 3-2-1 backups</td><td>Identity, S3 tiers, versioning, backups</td><td>Your logins, your assets, your backups</td></tr>
+    <tr><td><strong>M3 · Class 9</strong></td><td>Consolidation, hardening, disaster drill</td><td>Golden images, hardening, cross-region drill</td><td>Package, harden, and recover your app</td></tr>
+    <tr><td><strong>M4 · Class 11 + demo Class 12</strong></td><td>API split, monitoring, tenant invoice, demo</td><td>Serverless refactor, alarms, cost model, demo</td><td>API contract, decoupling, cost roadmap, demo</td></tr>
+  </table>
+  <p class="note">Milestone checklists, point rubrics, and the objective coverage map are on each track's brief. Set up your environment the weekend after Class 3 — M1 is due at Class 4 and requires it.</p>
+</div>
+
+</main>
+</body>
+</html>

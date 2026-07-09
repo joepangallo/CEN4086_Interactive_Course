@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Week 1 — Complete Interactive Review</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--wk:#0f8b8d}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--wk);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+.topnav .mid{font-weight:700}
+#scoreChip{background:var(--pri);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:700}
+main{max-width:980px;margin:0 auto;padding:18px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#2b2a6e 100%);color:#fff;border-radius:16px;padding:26px 24px;margin:12px 0 16px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:28px;line-height:1.25}
+.hero .sub{margin:0;opacity:.92;font-size:16px}
+.dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+.dashcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.dashcard b{display:block;font-size:22px;color:var(--pri);line-height:1.15}
+.dashcard small{color:var(--mut);font-size:12.5px}
+.dashcard .mini{height:7px;border-radius:99px;background:#e8e4da;overflow:hidden;margin-top:7px}
+.dashcard .mini span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .4s}
+.weeknav{position:sticky;top:52px;z-index:40;display:flex;gap:6px;flex-wrap:wrap;background:rgba(246,244,239,.95);backdrop-filter:blur(6px);padding:10px 0;margin-bottom:6px}
+.wtab{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 15px;cursor:pointer;font:inherit;font-weight:700;font-size:14px;color:var(--ink)}
+.wtab.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.wpane{display:none}
+.wpane.on{display:block}
+h2{font-size:22px;margin:22px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
+h3{font-size:18px;margin:20px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.s1{border-top:6px solid var(--pri)}.card.s2{border-top:6px solid var(--amb)}.card.s3{border-top:6px solid var(--acc)}
+.card.boss{border-top:6px solid var(--bad);background:linear-gradient(180deg,#fdf1ef,#fff 90px)}
+.card.exit{border-top:6px solid var(--vio)}
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.flip{border:1.5px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
+.flip h5{margin:0;font-size:15px;color:var(--pri)}
+.flip .back{display:none;margin-top:8px;font-size:14px;color:var(--ink)}
+.flip.open{background:#eef4f4;border-color:var(--acc)}
+.flip.open .back{display:block}
+.flip .hint{font-size:12px;color:var(--mut)}
+.tabs .tabrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:-1px}
+.tabbtn{border:1px solid var(--line);border-bottom:none;background:#eceadf;border-radius:10px 10px 0 0;padding:8px 16px;cursor:pointer;font:inherit;font-weight:600;font-size:14px}
+.tabbtn.on{background:#fff;color:var(--pri)}
+.tabpane{display:none;border:1px solid var(--line);border-radius:0 12px 12px 12px;background:#fff;padding:16px 18px;font-size:14.5px}
+.tabpane.on{display:block}
+.matcher{margin:14px 0}
+.mcards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.mcard{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.mcard.sel{outline:3px solid var(--amb);border-color:var(--amb)}
+.mcard.ok{background:#e7f3ec;border-color:var(--ok);color:#28583b;cursor:default}
+.mcard.ok::after{content:" ✓"}
+.mcard.no{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.mzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.mzone{border:2px dashed var(--acc);border-radius:12px;background:#f4faf9;padding:12px;cursor:pointer;font:inherit;text-align:center;font-weight:700;color:var(--acc)}
+.mzone small{display:block;font-weight:400;color:var(--mut);margin-top:4px}
+.mstatus{margin-top:10px;font-weight:700;color:var(--pri)}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.quiz .q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.quiz .q h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
+.stem{margin:6px 0 10px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fbfaf7;cursor:pointer;font:inherit;font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--pri)}
+.opt:disabled{cursor:default;opacity:.85}
+.opt.right{background:#e7f3ec;border-color:var(--ok);opacity:1;font-weight:600}
+.opt.wrong{background:#f8e9e7;border-color:var(--bad);opacity:1}
+.expl{display:none;margin-top:10px;padding:12px 14px;background:#f4f6fb;border-left:4px solid var(--pri);border-radius:8px;font-size:14.5px}
+.q.done .expl{display:block}
+.qresult{margin-top:16px}
+.bar{height:12px;background:#e8e4da;border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .4s}
+.scoreline{font-weight:700;margin:6px 0 0}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.small{padding:5px 12px;font-size:13px}
+.kpis{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.kpi{flex:1;min-width:120px;background:#f4f6fb;border-radius:10px;padding:10px 14px;text-align:center}
+.kpi b{display:block;font-size:20px;color:var(--pri);line-height:1.2}
+.kpi small{color:var(--mut)}
+input[type=range]{width:100%;accent-color:var(--pri)}
+.note{font-size:13.5px;color:var(--mut)}
+.serverfarm{display:flex;flex-wrap:wrap;gap:5px;min-height:40px;margin:8px 0}
+.srv{width:34px;height:40px;border-radius:6px;background:linear-gradient(180deg,#3f3d99,#2b2a6e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px}
+.srv.big{width:64px;height:56px;font-size:26px}
+.checkfield{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.checkfield input[type=number],.checkfield input[type=text]{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;width:130px}
+.fb{font-weight:700;font-size:14px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+.exq{background:#fbfaf7;border:1px solid var(--line);border-left:4px solid var(--amb);border-radius:10px;padding:12px 14px;margin:12px 0}
+.exq p{margin:0 0 6px}
+textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;min-height:70px}
+.exitrow{display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap}
+.light{font-size:20px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;cursor:pointer}
+.footer-nav{display:flex;justify-content:space-between;margin-top:30px;gap:10px;flex-wrap:wrap}
+.stackrow{display:flex;align-items:center;gap:10px;margin:3px 0}
+.stackrow .lay{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;background:#fbfaf7;transition:all .3s}
+.stackrow .who{width:96px;text-align:center;font-size:12px;font-weight:800;border-radius:8px;padding:4px}
+.who.you{background:#f3c9c2;color:#7a2417}
+.who.prov{background:#bfe6e0;color:#0b5450}
+/* multi-tenancy building */
+.bldgwrap{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end;justify-content:center;margin:14px 0}
+.bldgcol{display:flex;flex-direction:column;align-items:center}
+.roof{width:70%;height:0;border-left:26px solid transparent;border-right:26px solid transparent;border-bottom:26px solid #2b2a6e}
+.bldg{display:flex;flex-direction:column;width:min(360px,86vw)}
+.tfloor{border:2px solid #2b2a6e;border-top:none;background:#eef0fb;padding:10px 12px;font:inherit;cursor:pointer;text-align:left;font-size:14px;font-weight:600;color:var(--ink)}
+.bldg .tfloor:first-child{border-top:2px solid #2b2a6e}
+.tfloor:hover{background:#dfe4fa}
+.tfloor.on{background:var(--amb);border-color:#8a6410;color:#3a2c05}
+.tfloor.lobby{background:#2b2a6e;color:#fff}
+.tfloor.lobby.on{background:#4a48a8;border-color:var(--amb)}
+.house{border:2px solid #6b4d05;background:#fdf6e6;border-radius:10px;padding:16px 14px;font:inherit;cursor:pointer;font-size:14px;font-weight:700;text-align:center;line-height:1.4}
+.house.on{background:var(--amb);color:#3a2c05}
+.tenantinfo{border:1px solid var(--line);border-left:5px solid var(--acc);background:#f4faf9;border-radius:10px;padding:12px 14px;min-height:78px;font-size:14.5px;margin:10px 0}
+/* pipeline console */
+.console{background:#10141f;color:#c8d3f5;border-radius:10px;padding:12px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.6;height:220px;overflow-y:auto;margin:10px 0}
+.console .cmd{color:#7dd3fc}.console .okl{color:#6ee7a0}.console .wrn{color:#fbbf24}.console .dim{color:#8b93ad}
+.pipebar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;align-items:center}
+.pipebar .btn:disabled{opacity:.35;cursor:not-allowed}
+.pipestatus{font-weight:700;color:var(--pri);font-size:14px}
+/* calculators */
+.calcgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:10px 0}
+.calcbox{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fbfaf7}
+.calcbox h5{margin:0 0 8px;font-size:14px;color:var(--pri)}
+.calcbox label{font-size:13.5px;font-weight:600;display:block;margin-top:6px}
+.calcbox input[type=number]{border:1.5px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit;width:120px}
+.verdict{margin:8px 0;padding:10px 14px;border-radius:10px;background:#f4f6fb;border-left:4px solid var(--pri);font-weight:700;font-size:14.5px}
+/* session 3: VM builder */
+.vmgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:10px 0}
+.vmbox{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fbfaf7}
+.vmbox h5{margin:0 0 8px;font-size:14px;color:var(--pri)}
+.vmbox label{font-size:13.5px;font-weight:600;display:block;margin-top:6px}
+.regsel{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;background:#fff;width:100%;margin-top:4px}
+/* session 3: LB simulator */
+.lbrow{display:flex;align-items:center;gap:8px;margin:4px 0}
+.lbrow .lbl{width:52px;font-size:12px;font-weight:700;color:var(--mut);text-align:right}
+.lbtrack{flex:1;height:16px;background:#e8e4da;border-radius:99px;overflow:hidden}
+.lbfill{height:100%;background:var(--ok);transition:width .25s,background .25s}
+.lbfill.warn{background:var(--amb)}
+.lbfill.hot{background:var(--bad)}
+.lbrow .pct{width:110px;font-size:12px;font-weight:700}
+.stepper{display:inline-flex;align-items:center;gap:10px;margin:6px 0}
+.stepbtn{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--pri);background:#fff;color:var(--pri);font-size:20px;font-weight:800;cursor:pointer;line-height:1}
+.stepbtn:hover{background:#f0f0fa}
+.lbcount{font-size:20px;font-weight:800;color:var(--pri);min-width:110px;text-align:center}
+@media print{.topnav,.weeknav,.btn{display:none}body{background:#fff}.wpane{display:block!important}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">⌂ Course Hub</a>
+  <span class="mid">Week 1 — Complete Interactive Review</span>
+  <span><span id="scoreChip">Quiz: 0/0</span></span>
+</nav>
+<main>
+
+<header class="hero">
+  <h1>🔁 Week 1 Interactive Review — Sessions 1, 2 &amp; 3</h1>
+  <p class="sub">One page, every simulator from the week: cloud foundations, SaaS &amp; PaaS, and IaaS — plus a Boss Challenge that only falls to someone who has mastered all three. Use the tabs to jump around; your progress dashboard updates live.</p>
+</header>
+
+<div class="dash">
+  <div class="dashcard"><b id="dashPct">0%</b><small>Week 1 mastery</small><div class="mini"><span id="dashPctBar"></span></div></div>
+  <div class="dashcard"><b id="dashEx">0/0</b><small>exercises solved</small><div class="mini"><span id="dashExBar"></span></div></div>
+  <div class="dashcard"><b id="dashMatch">0/0</b><small>sorting drills done</small><div class="mini"><span id="dashMatchBar"></span></div></div>
+  <div class="dashcard"><b id="dashQuiz">0/8</b><small>mastery quiz</small><div class="mini"><span id="dashQuizBar"></span></div></div>
+</div>
+
+<div class="weeknav">
+  <button class="wtab on" data-w="s1">① Foundations</button>
+  <button class="wtab" data-w="s2">② SaaS &amp; PaaS</button>
+  <button class="wtab" data-w="s3">③ IaaS</button>
+  <button class="wtab" data-w="boss">🏆 Boss Challenge</button>
+  <button class="wtab" data-w="quiz">📝 Mastery Quiz</button>
+</div>
+
+<!-- ============================ SESSION 1 ============================ -->
+<div class="wpane on" data-w="s1">
+<section class="card s1">
+  <h2 style="border:none;padding:0;margin:0 0 8px">① Cloud Foundations</h2>
+  <p>The five traits, the responsibility stack, and the two ways to grow — replay each and prove you can apply them.</p>
+
+  <h3>The five traits (tap to flip)</h3>
+  <div class="flipgrid">
+    <button class="flip"><h5>1 · On-demand self-service</h5><span class="hint">tap to flip</span><span class="back">Provision it yourself in minutes — no purchase orders, no waiting for IT.</span></button>
+    <button class="flip"><h5>2 · Broad network access</h5><span class="hint">tap to flip</span><span class="back">Reachable over standard networks from any device. One wired terminal in one room isn't cloud.</span></button>
+    <button class="flip"><h5>3 · Resource pooling</h5><span class="hint">tap to flip</span><span class="back">One provider's hardware serves many customers (multi-tenancy). Pooling is why prices are low.</span></button>
+    <button class="flip"><h5>4 · Rapid elasticity</h5><span class="hint">tap to flip</span><span class="back">Capacity stretches and shrinks with demand, often automatically. Resources feel unlimited.</span></button>
+    <button class="flip"><h5>5 · Measured service</h5><span class="hint">tap to flip</span><span class="back">Metered like electricity: per hour, per GB, per request. Pay for what you use.</span></button>
+  </div>
+
+  <h3>🎛️ Scalability Simulator</h3>
+  <p><strong>TicketBlitz:</strong> each small server handles <strong>500 req/min</strong> at <strong>$40/mo</strong>; a load balancer adds <strong>$18/mo</strong>. Drag traffic and compare scale-up vs scale-out.</p>
+  <p><strong>Incoming traffic:</strong> <span id="traffVal" style="font-weight:800;color:var(--pri)">1,000</span> requests/min</p>
+  <input type="range" id="traffic" min="500" max="12000" step="250" value="1000">
+  <div class="kpis">
+    <div class="kpi"><b id="kOut">$98</b><small>Scale OUT monthly</small></div>
+    <div class="kpi"><b id="kOutN">2</b><small>small servers (+LB)</small></div>
+    <div class="kpi"><b id="kUp">$90</b><small>Scale UP monthly</small></div>
+    <div class="kpi"><b id="kVerdict">—</b><small>verdict</small></div>
+  </div>
+  <div class="serverfarm" id="farmOut"></div>
+  <p class="note" id="simNote">Slide the traffic and watch both strategies react.</p>
+
+  <div class="exq">
+    <p><strong>Exercise · Price it.</strong> Set traffic to <strong>3,000 req/min</strong>. Scale-OUT monthly cost?</p>
+    <div class="checkfield">→ $<input type="number" id="hxr1a"> <button class="btn small" onclick="checkHX('r1a')">Check</button> <span class="fb" id="fbHXr1a"></span></div>
+  </div>
+
+  <h3>Sort each client to a deployment model</h3>
+  <div class="matcher" id="depMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="pub">Two-person startup, tiny budget, launching next month</button>
+      <button class="mcard" data-match="pri">Defense contractor processing classified workloads</button>
+      <button class="mcard" data-match="com">Five hospitals sharing one HIPAA records platform</button>
+      <button class="mcard" data-match="hyb">Bank: private ledger + spiky public marketing site</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="pub">Public<small>shared, cheap</small></button>
+      <button class="mzone" data-zone="pri">Private<small>one org</small></button>
+      <button class="mzone" data-zone="com">Community<small>allied orgs</small></button>
+      <button class="mzone" data-zone="hyb">Hybrid<small>mix</small></button>
+    </div>
+    <p class="mstatus">0/4 placed</p>
+  </div>
+</section>
+</div>
+
+<!-- ============================ SESSION 2 ============================ -->
+<div class="wpane" data-w="s2">
+<section class="card s2">
+  <h2 style="border:none;padding:0;margin:0 0 8px">② SaaS &amp; PaaS</h2>
+
+  <h3>Multi-tenancy — the apartment building</h3>
+  <p>One app, one infrastructure pool, many tenants, each isolated by <code>tenant_id</code>. Click a floor, the lobby, or the single-tenant house.</p>
+  <div class="bldgwrap">
+    <div class="bldgcol">
+      <div class="roof"></div>
+      <div class="bldg" id="mtBldg">
+        <button class="tfloor" data-t="f4">🌸 Floor 4 · Petal &amp; Stem Florists</button>
+        <button class="tfloor" data-t="f3">🏋️ Floor 3 · Gulf Coast Gym</button>
+        <button class="tfloor" data-t="f2">📚 Floor 2 · Driftwood Books</button>
+        <button class="tfloor" data-t="f1">✈️ Floor 1 · Nimbus Travel</button>
+        <button class="tfloor lobby" data-t="lobby">🏢 LOBBY — shared: app code, servers, database, security</button>
+      </div>
+      <p class="note">Multi-tenant: one building, many tenants</p>
+    </div>
+    <div class="bldgcol">
+      <button class="house" data-t="house">🏠<br>Single-tenant<br>house</button>
+      <p class="note">One customer,<br>whole building</p>
+    </div>
+  </div>
+  <div class="tenantinfo" id="mtInfo">👆 Click a tenant floor, the lobby, or the single-tenant house.</div>
+
+  <h3>🧮 3-Year Cost Calculator</h3>
+  <p>SaaS = seats × rate × 36. On-prem = license/seat × seats × 1.6 (license + 3yr support) + hardware.</p>
+  <div class="calcgrid">
+    <div class="calcbox">
+      <h5>☁️ SaaS subscription</h5>
+      <label>Seats: <span id="seatsVal" style="color:var(--pri)">120</span></label>
+      <input type="range" id="seats" min="5" max="500" step="1" value="120">
+      <label>$/seat/month: $<span id="rateVal" style="color:var(--pri)">14</span></label>
+      <input type="range" id="rate" min="4" max="40" step="1" value="14">
+    </div>
+    <div class="calcbox">
+      <h5>🏢 On-premises</h5>
+      <label>Perpetual license, $/seat</label>
+      <input type="number" id="lic" value="400" min="0" step="10">
+      <label>Server hardware + setup, $ (one-time)</label>
+      <input type="number" id="capex" value="12000" min="0" step="500">
+    </div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b id="kSaas">$0</b><small>SaaS · 3-year</small></div>
+    <div class="kpi"><b id="kPrem">$0</b><small>On-prem · 3-year</small></div>
+    <div class="kpi"><b id="kDiff">$0</b><small>gap</small></div>
+    <div class="kpi"><b id="kMo">$0</b><small>SaaS monthly</small></div>
+  </div>
+  <div class="verdict" id="kCVerdict">—</div>
+  <p class="note" id="cWork">working…</p>
+
+  <div class="exq">
+    <p><strong>Exercise · Crossover.</strong> Set rate = <strong>$22</strong> (license $400, hardware $12,000). The smallest seat count where on-prem becomes cheaper than SaaS?</p>
+    <div class="checkfield">→ <input type="number" id="hxr2a"> seats <button class="btn small" onclick="checkHX('r2a')">Check</button> <span class="fb" id="fbHXr2a"></span></div>
+  </div>
+
+  <h3>🚀 Deploy-Pipeline Simulator (PaaS)</h3>
+  <p>Push code; the platform builds, deploys, and autoscales it. Press the stages in order.</p>
+  <div class="pipebar">
+    <button class="btn small" id="pipePush">1 · Push code</button>
+    <button class="btn small" id="pipeBuild" disabled>2 · Build</button>
+    <button class="btn small" id="pipeDeploy" disabled>3 · Deploy</button>
+    <button class="btn small" id="pipeScale" disabled>4 · Scale</button>
+    <button class="btn ghost small" id="pipeReset">↺ Reset</button>
+    <span class="pipestatus" id="pipeStatus">Ready — push your code.</span>
+  </div>
+  <div class="console" id="pipeConsole"><div class="dim"># PaaS console — output appears here…</div></div>
+
+  <h3>Sort the scenario to its model</h3>
+  <div class="matcher" id="modelMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="saas">80 staff need email + calendars by Friday, zero admin</button>
+      <button class="mcard" data-match="paas">Team ships a custom app weekly; nobody wants to patch servers</button>
+      <button class="mcard" data-match="onprem">Factory control system must run offline, on owned machines</button>
+      <button class="mcard" data-match="iaas">Lab rents raw VMs by the hour and installs its own OS</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="saas">SaaS<small>finished software</small></button>
+      <button class="mzone" data-zone="paas">PaaS<small>bring code</small></button>
+      <button class="mzone" data-zone="iaas">IaaS<small>raw machines</small></button>
+      <button class="mzone" data-zone="onprem">On-premises<small>own it all</small></button>
+    </div>
+    <p class="mstatus">0/4 placed</p>
+  </div>
+</section>
+</div>
+
+<!-- ============================ SESSION 3 ============================ -->
+<div class="wpane" data-w="s3">
+<section class="card s3">
+  <h2 style="border:none;padding:0;margin:0 0 8px">③ Infrastructure as a Service</h2>
+
+  <h3>🖥️ VM Builder</h3>
+  <p>Spec a virtual machine and watch the meter: <em>monthly $ = (vCPU × $18 + RAM × $4.50 + storage × $0.08) × region multiplier</em>.</p>
+  <div class="vmgrid">
+    <div class="vmbox">
+      <h5>⚙️ Compute</h5>
+      <label>vCPUs: <span id="vmCpuVal" style="color:var(--pri)">2</span></label>
+      <input type="range" id="vmCpu" min="1" max="64" step="1" value="2">
+      <label>RAM: <span id="vmRamVal" style="color:var(--pri)">8</span> GB</label>
+      <input type="range" id="vmRam" min="1" max="256" step="1" value="8">
+    </div>
+    <div class="vmbox">
+      <h5>💾 Storage &amp; Region</h5>
+      <label>SSD storage: <span id="vmStoVal" style="color:var(--pri)">50</span> GB</label>
+      <input type="range" id="vmSto" min="20" max="2000" step="10" value="50">
+      <label>Region</label>
+      <select class="regsel" id="vmRegion">
+        <option value="1" selected>US East (N. Virginia) · ×1.00</option>
+        <option value="1.04">US West (Oregon) · ×1.04</option>
+        <option value="1.12">Europe (Frankfurt) · ×1.12</option>
+        <option value="1.2">Asia Pacific (Tokyo) · ×1.20</option>
+        <option value="1.38">South America (São Paulo) · ×1.38</option>
+      </select>
+    </div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b id="vmSpec">—</b><small>your build</small></div>
+    <div class="kpi"><b id="vmPrice">$0</b><small>per month</small></div>
+    <div class="kpi"><b id="vmHr">$0.00</b><small>per hour (÷730)</small></div>
+  </div>
+  <div class="verdict" id="vmVerdict">—</div>
+
+  <div class="exq">
+    <p><strong>Exercise · Price a database VM.</strong> Build <strong>8 vCPU / 32 GB / 300 GB</strong> in <strong>US East</strong>. Monthly price?</p>
+    <div class="checkfield">→ $<input type="number" id="hxr3a"> <button class="btn small" onclick="checkHX('r3a')">Check</button> <span class="fb" id="fbHXr3a"></span></div>
+  </div>
+
+  <h3>⚖️ Load-Balancer Simulator</h3>
+  <p>Each server serves <strong>700 req/min</strong> green, <strong>1,000</strong> capacity, then overloads. Servers cost <strong>$48/mo</strong> + <strong>$18/mo</strong> balancer.</p>
+  <p style="margin:4px 0"><strong>Incoming traffic:</strong> <span id="lbTVal" style="font-weight:800;color:var(--pri)">2,400</span> req/min</p>
+  <input type="range" id="lbTraffic" min="500" max="12000" step="100" value="2400">
+  <div class="stepper">
+    <button class="stepbtn" id="lbMinus" aria-label="remove a server">−</button>
+    <span class="lbcount" id="lbN">3 servers</span>
+    <button class="stepbtn" id="lbPlus" aria-label="add a server">+</button>
+  </div>
+  <div id="lbBars"></div>
+  <div class="kpis">
+    <div class="kpi"><b id="lbLoad">—</b><small>load per server</small></div>
+    <div class="kpi"><b id="lbLat">—</b><small>p95 latency</small></div>
+    <div class="kpi"><b id="lbCost">—</b><small>monthly cost</small></div>
+  </div>
+  <div class="verdict" id="lbStatus">—</div>
+
+  <div class="exq">
+    <p><strong>Exercise · Size the fleet.</strong> At <strong>6,000 req/min</strong>, find the cheapest server count where every bar is green (≤700 each).</p>
+    <div class="checkfield">→ <input type="number" id="hxr3b"> servers <button class="btn small" onclick="checkHX('r3b')">Check</button> <span class="fb" id="fbHXr3b"></span></div>
+  </div>
+
+  <h3>🧮 VRAM Fit-Checker (AI concept)</h3>
+  <p>The first AI-capacity question is never "how fast?" — it's "does it fit?" Weights ≈ parameters × bytes/param.</p>
+  <div class="vmgrid">
+    <div class="vmbox">
+      <h5>🧠 Model</h5>
+      <label>Parameters: <span id="vrPVal" style="color:var(--pri)">70</span> B</label>
+      <input type="range" id="vrParams" min="1" max="200" step="1" value="70">
+      <label>Precision</label>
+      <select class="regsel" id="vrPrec">
+        <option value="2" selected>Full precision (FP16) · 2 bytes/param</option>
+        <option value="1">8-bit quantized · 1 byte/param</option>
+        <option value="0.5">4-bit quantized · 0.5 bytes/param</option>
+      </select>
+    </div>
+    <div class="vmbox">
+      <h5>🎮 GPU class</h5>
+      <label>Card</label>
+      <select class="regsel" id="vrGpu">
+        <option value="24">Gaming card · 24 GB VRAM</option>
+        <option value="48">Workstation card · 48 GB VRAM</option>
+        <option value="80" selected>Data-center GPU · 80 GB VRAM</option>
+      </select>
+    </div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b id="vrGB">—</b><small>weights to hold</small></div>
+    <div class="kpi"><b id="vrN">—</b><small>GPUs needed (just to fit)</small></div>
+  </div>
+  <div class="verdict" id="vrVerdict">—</div>
+
+  <h3>Match each duty to its server type</h3>
+  <div class="matcher" id="srvMatcher">
+    <div class="mcards">
+      <button class="mcard" data-match="web">Terminates HTTPS and serves product pages to browsers</button>
+      <button class="mcard" data-match="app">Runs checkout logic: coupons, tax, payment gateway</button>
+      <button class="mcard" data-match="db">Stores orders in tables; answers SQL; never loses a write</button>
+      <button class="mcard" data-match="cache">Keeps the 500 hottest items in RAM for ~1 ms reads</button>
+    </div>
+    <div class="mzones">
+      <button class="mzone" data-zone="web">Web<small>HTTP front door</small></button>
+      <button class="mzone" data-zone="app">App<small>business logic</small></button>
+      <button class="mzone" data-zone="db">Database<small>structured truth</small></button>
+      <button class="mzone" data-zone="cache">Cache<small>hot data in RAM</small></button>
+    </div>
+    <p class="mstatus">0/4 placed</p>
+  </div>
+</section>
+</div>
+
+<!-- ============================ BOSS CHALLENGE ============================ -->
+<div class="wpane" data-w="boss">
+<section class="card boss">
+  <h2 style="border:none;padding:0;margin:0 0 8px">🏆 Week 1 Boss Challenge</h2>
+  <p><strong>Cove Coffee Co.</strong>, a regional chain, is going cloud-first. Only someone fluent in all three sessions can price this plan. Switch to the ③ IaaS and ② SaaS tabs to drive the simulators, then bring your answers back here. Every number is checkable.</p>
+
+  <p><strong>Step 1 · Database VM (VM Builder, ③).</strong> Build <strong>8 vCPU / 32 GB / 300 GB</strong> in US East. Monthly price?</p>
+  <div class="checkfield">→ $<input type="number" id="hxbb1"> <button class="btn small" onclick="checkHX('bb1')">Check</button> <span class="fb" id="fbHXbb1"></span></div>
+
+  <p><strong>Step 2 · Web fleet (Load-Balancer Simulator, ③).</strong> The store peaks at <strong>5,000 req/min</strong>. Cheapest all-green fleet's total monthly cost (servers + balancer)?</p>
+  <div class="checkfield">→ $<input type="number" id="hxbb2"> /month <button class="btn small" onclick="checkHX('bb2')">Check</button> <span class="fb" id="fbHXbb2"></span></div>
+
+  <p><strong>Step 3 · SaaS email + docs (3-Year Cost Calculator, ②).</strong> <strong>150 seats</strong> at <strong>$10/seat/month</strong>. 3-year SaaS total?</p>
+  <div class="checkfield">→ $<input type="number" id="hxbb3"> <button class="btn small" onclick="checkHX('bb3')">Check</button> <span class="fb" id="fbHXbb3"></span></div>
+
+  <p><strong>Step 4 · AI menu-reco cost (Token math).</strong> <strong>6,000 requests/day</strong>, <strong>400</strong> input tokens, <strong>120</strong> output tokens, at <strong>$0.20/M</strong> in and <strong>$0.50/M</strong> out. Monthly cost?</p>
+  <div class="checkfield">→ $<input type="number" step="0.01" id="hxbb4"> /month <button class="btn small" onclick="checkHX('bb4')">Check</button> <span class="fb" id="fbHXbb4"></span></div>
+
+  <p><strong>Step 5 · Self-hosted AI fit (VRAM Fit-Checker, ③).</strong> Cove wants to run a <strong>13 B-parameter</strong> model at full FP16 precision on <strong>24 GB gaming cards</strong>. How many GPUs just to hold the weights?</p>
+  <div class="checkfield">→ <input type="number" id="hxbb5"> GPUs <button class="btn small" onclick="checkHX('bb5')">Check</button> <span class="fb" id="fbHXbb5"></span></div>
+
+  <p><strong>Step 6 · The recommendation.</strong> Four sentences, saved with the page: the deployment model for Cove overall; which workload is SaaS, which is IaaS, and why; the load-balancing reason the store won't crash on a busy morning; and one cost lever you'd pull first.</p>
+  <textarea data-persist="bossMemo" placeholder="Cove should adopt … Email/docs is SaaS because … the store runs on IaaS because … The load balancer protects busy mornings by … The first cost lever I'd pull is …"></textarea>
+  <p class="note" id="bossDone" style="margin-top:10px">Solve all five numeric steps to clear the boss. 0/5 cleared.</p>
+</section>
+</div>
+
+<!-- ============================ MASTERY QUIZ ============================ -->
+<div class="wpane" data-w="quiz">
+<h2>📝 Week 1 Mastery Quiz</h2>
+<p>Eight story problems spanning all three sessions. Every question explains all options after you answer.</p>
+<section class="quiz" id="quiz1">
+
+  <div class="q" data-a="2">
+    <h4>Q1 · <em>The flooded closet</em> <span class="note">(S1)</span></h4>
+    <p class="stem">Rosa's firm keeps client files on one closet server, backed up to a USB drive in the same room. A pipe bursts; both are soaked. Which cloud characteristic would MOST directly have prevented the loss?</p>
+    <button class="opt">A. Rapid elasticity</button>
+    <button class="opt">B. Measured service</button>
+    <button class="opt">C. Resource pooling with redundant, geographically separate copies</button>
+    <button class="opt">D. On-demand self-service</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Every copy shared one room; cloud storage keeps redundant copies across devices and regions. ✘ A is about capacity swings. ✘ B is billing. ✘ D speeds provisioning after the fact — too late.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q2 · <em>The cautious bank</em> <span class="note">(S1)</span></h4>
+    <p class="stem">Coastal Bank wants a spiky public marketing site but must keep its core ledger on infrastructure it exclusively controls, as one coherent strategy. Best choice?</p>
+    <button class="opt">A. Pure public cloud for everything</button>
+    <button class="opt">B. Pure private cloud for everything</button>
+    <button class="opt">C. Community cloud shared with other banks</button>
+    <button class="opt">D. Hybrid: ledger private, spiky public workloads on public cloud, connected securely</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Each workload goes where its requirements point — control for the ledger, elasticity for the site. ✘ A ignores compliance. ✘ B overpays for marketing spikes. ✘ C is for shared regulatory needs among allied orgs, not a marketing site.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q3 · <em>The apartment worry</em> <span class="note">(S2)</span></h4>
+    <p class="stem">"Multi-tenant means my data is mixed with my competitor's." Accurate response?</p>
+    <button class="opt">A. Correct; multi-tenant SaaS commingles all data</button>
+    <button class="opt">B. Logically isolated ≠ commingled — rows are walled off by tenant_id, access controls, and encryption; the real concerns are noisy neighbors and vendor-bug blast radius</button>
+    <button class="opt">C. Demand the vendor delete all other customers</button>
+    <button class="opt">D. Multi-tenancy is illegal for business data</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Isolation is enforced on every query; the legitimate concerns are noisy neighbors and blast radius. ✘ A confuses shared infrastructure with shared data. ✘ C/D misunderstand SaaS.</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q4 · <em>The renewal shock</em> <span class="note">(S2)</span></h4>
+    <p class="stem">A PaaS vendor raises prices 40%; leaving means rewriting every feature built on its proprietary APIs. What is this, and when is it prevented?</p>
+    <button class="opt">A. Multi-tenancy — prevented by going single-tenant</button>
+    <button class="opt">B. Vendor lock-in — prevented at BUILD time via open standards, isolating vendor code behind your interfaces, and pricing the exit in from day one</button>
+    <button class="opt">C. Measured service — prevented by disabling metering</button>
+    <button class="opt">D. Elasticity — prevented by scaling down</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ High switching cost = lock-in, mitigated while building, not while leaving. ✘ A/C/D are unrelated concepts.</div>
+  </div>
+
+  <div class="q" data-a="2">
+    <h4>Q5 · <em>Whose patch was it?</em> <span class="note">(S3)</span></h4>
+    <p class="stem">A firm moves its store to two rented IaaS VMs. Months later both are breached through an unpatched guest-OS kernel bug; the provider's hosts and hypervisor were fully patched. Whose job was the guest-OS patching?</p>
+    <button class="opt">A. The provider's — IaaS includes full management</button>
+    <button class="opt">B. Nobody's — cloud VMs patch themselves</button>
+    <button class="opt">C. The customer's — in IaaS you manage the OS and up; the provider manages virtualization and below</button>
+    <button class="opt">D. The Linux Foundation's</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ The IaaS dividing line: provider owns hardware + hypervisor; customer owns guest OS, runtimes, apps, data. ✘ A describes managed hosting/PaaS/SaaS. ✘ B — auto-patching must be chosen. ✘ D — applying fixes is the operator's job.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q6 · <em>The 3% server</em> <span class="note">(S3)</span></h4>
+    <p class="stem">An audit finds a marketing-site VM at 32 vCPU / 128 GB provisioned "to be safe," running at 3% CPU. Right-sizing it to 4 vCPU / 16 GB cuts the bill from ~$1,168 to ~$160/month. What is this, and the rough annual saving?</p>
+    <button class="opt">A. Scaling out; ~$1,000/yr</button>
+    <button class="opt">B. Increasing elasticity; ~$500/yr</button>
+    <button class="opt">C. Load balancing; ~$12,000/yr</button>
+    <button class="opt">D. Rightsizing an overprovisioned instance; ~$12,000/yr</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Matching capacity to measured demand is rightsizing: ($1,168−$160)×12 ≈ $12,096/yr. ✘ A adds instances (off by 12×). ✘ B misnames it. ✘ C names the wrong technique with the right number.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q7 · <em>The Tuesday 2 PM mystery</em> <span class="note">(S3)</span></h4>
+    <p class="stem">Four IaaS servers sit behind a load balancer. Server #3's app hangs for six hours; zero support tickets, normal revenue. What most likely protected the site?</p>
+    <button class="opt">A. All four share one hard drive</button>
+    <button class="opt">B. Customers only shop weekends</button>
+    <button class="opt">C. DNS caching served the site from browsers</button>
+    <button class="opt">D. The load balancer's health checks pulled #3 from rotation and routed traffic to the three healthy servers</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Continuous health probes detect the hang and quietly reroute — fault tolerance as a side effect of scaling out. ✘ A can't reroute HTTP. ✘ B contradicts "normal revenue." ✘ C — DNS points at the balancer; it can't work around a dead backend.</div>
+  </div>
+
+  <div class="q" data-a="3">
+    <h4>Q8 · <em>The fastest computer money can buy</em> <span class="note">(🧠 AI)</span></h4>
+    <p class="stem">A CEO buys the top gaming PC (24 GB VRAM) to run a 70-billion-parameter model whose weights are ~140 GB at full precision. Why won't it work?</p>
+    <button class="opt">A. Open models are illegal on consumer hardware</button>
+    <button class="opt">B. The CPU clock is too low; overclock it</button>
+    <button class="opt">C. Home internet is too slow to stream the compute</button>
+    <button class="opt">D. It can't fit: every token read needs ~140 GB of weights in GPU memory, and no 24 GB card holds that — VRAM capacity, not speed, decides whether a model runs</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Inference touches nearly all parameters per token, so the whole model must live in VRAM; 140 GB into 24 GB doesn't go at any clock speed. ✘ A — open weights are legal. ✘ B — overclocking adds speed, not memory. ✘ C — local inference needs no internet once weights are downloaded.</div>
+  </div>
+
+  <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+</section>
+</div>
+
+<section class="card exit">
+  <h3>🎟️ Exit Ticket</h3>
+  <p>Tap each light: 🔴 lost · 🟡 shaky · 🟢 got it</p>
+  <div class="exitrow"><button class="light" data-exit="e1">⚪</button><span>Session 1: five traits, deployment models, scale-up vs scale-out.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e2">⚪</button><span>Session 2: SaaS, multi-tenancy, PaaS, lock-in, cost crossover.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e3">⚪</button><span>Session 3: VM sizing, load balancing, server types, VRAM.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e4">⚪</button><span>I cleared the Boss Challenge and can defend every number.</span></div>
+</section>
+
+<footer>
+  <div class="footer-nav">
+    <a class="btn ghost" href="week1-session1.html">← Session 1</a>
+    <span><a class="btn ghost" href="index.html">⌂ Course Hub</a> <button class="btn ghost small" onclick="resetPage()">Reset my progress</button></span>
+    <a class="btn" href="week2-session4.html">Week 2 →</a>
+  </div>
+</footer>
+
+</main>
+<script>
+/* ===== core framework ===== */
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'page');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+function resetPage(){try{localStorage.removeItem(PKEY)}catch(e){};location.reload()}
+function fmt(n){return n.toLocaleString('en-US')}
+
+/* ===== self-checking exercises (defined early so updateDash is safe during init) ===== */
+const HX={
+  'r1a':{a:258,ok:'✔ Correct: ceil(3,000 ÷ 500) = 6 servers × $40 + $18 balancer = $258/month.',no:'✘ Set traffic to 3,000 and read the Scale-OUT KPI. Hint: 6 small servers + the $18 balancer.'},
+  'r2a':{a:79,ok:'✔ Crossover ≈ 79 seats. At $22/mo SaaS is $792/seat/3yr; on-prem is $640/seat + a $12,000 fixed cost that amortizes as seats grow.',no:'✘ Set rate = $22, then slide seats up and watch the verdict flip in the high 70s.'},
+  'r3a':{a:312,ok:'✔ Correct: (8 × $18) + (32 × $4.50) + (300 × $0.08) = 144 + 144 + 24 = $312/month in US East. Note the shape — lots of RAM and disk: a database build.',no:'✘ Dial in exactly 8 vCPU, 32 GB, 300 GB in US East and read the monthly meter.'},
+  'r3b':{a:9,ok:'✔ Yes: green needs ≤700 req/min per server, and 6,000 ÷ 700 = 8.57 → ceiling = 9 servers (8 servers = 750 each = amber).',no:'✘ Green means ≤700 req/min per server. Divide 6,000 by 700, round UP, then confirm on the bars.'},
+  'bb1':{a:312,ok:'✔ Correct: (8×18)+(32×4.5)+(300×0.08) = $312/month. This is Cove’s database server.',no:'✘ Use the VM Builder (③): 8 vCPU / 32 GB / 300 GB, US East.'},
+  'bb2':{a:402,ok:'✔ Right: 5,000 ÷ 700 = 7.14 → 8 servers all green (625 req/min each); 8 × $48 + $18 = $402/month.',no:'✘ On the Load-Balancer Simulator (③): set 5,000 req/min, find the cheapest all-green fleet, read the monthly cost.'},
+  'bb3':{a:54000,ok:'✔ Right: 150 seats × $10 × 36 months = $54,000 over 3 years.',no:'✘ 3-Year Cost Calculator (②): 150 seats × $10 × 36.'},
+  'bb4':{a:25.20,tol:0.01,ok:'✔ Correct: input 6,000 × 400 ÷ 1M × $0.20 = $0.48/day, output 6,000 × 120 ÷ 1M × $0.50 = $0.36/day, total $0.84/day × 30 = $25.20/month.',no:'✘ Daily = 6,000 × 400 ÷ 1M × $0.20 + 6,000 × 120 ÷ 1M × $0.50; then × 30.'},
+  'bb5':{a:2,ok:'✔ Right: 13 B × 2 bytes = 26 GB of weights; 26 ÷ 24 = 1.08 → 2 gaming cards just to hold it. Try 4-bit precision and watch it drop to one card.',no:'✘ VRAM Fit-Checker (③): 13 B params × 2 bytes = 26 GB; divide by 24 GB per card and round UP.'}
+};
+function checkHX(k){
+  const el=document.getElementById('hx'+k),e=HX[k],fb=document.getElementById('fbHX'+k);
+  const val=parseFloat(el.value);
+  const ok=e.tol!=null?Math.abs(val-e.a)<=e.tol:val===e.a;
+  fb.textContent=ok?e.ok:e.no;fb.className='fb '+(ok?'ok':'no');
+  save('hx:'+k,ok?1:0);
+  if(k.slice(0,2)==='bb')updateBoss();
+  updateDash();
+}
+function updateBoss(){
+  const bossKeys=['bb1','bb2','bb3','bb4','bb5'];
+  const done=bossKeys.filter(k=>S['hx:'+k]===1).length;
+  const el=document.getElementById('bossDone');
+  if(el)el.textContent=done===5?'🏆 Boss cleared — all five numbers check out. Now write the recommendation above.':('Solve all five numeric steps to clear the boss. '+done+'/5 cleared.');
+}
+function updateDash(){
+  const exKeys=Object.keys(HX);
+  const exDone=exKeys.filter(k=>S['hx:'+k]===1).length;
+  let mTot=0,mDone=0;
+  document.querySelectorAll('.matcher').forEach(m=>{mTot+=m.querySelectorAll('.mcard').length;mDone+=m.querySelectorAll('.mcard.ok').length;});
+  let qTot=0,qRight=0;
+  document.querySelectorAll('.quiz .q').forEach(q=>{qTot++;if(q.classList.contains('gotit'))qRight++;});
+  const setBar=(id,frac)=>{const b=document.getElementById(id);if(b)b.style.width=Math.round(100*frac)+'%';};
+  document.getElementById('dashEx').textContent=exDone+'/'+exKeys.length;
+  document.getElementById('dashMatch').textContent=mDone+'/'+mTot;
+  document.getElementById('dashQuiz').textContent=qRight+'/'+qTot;
+  setBar('dashExBar',exKeys.length?exDone/exKeys.length:0);
+  setBar('dashMatchBar',mTot?mDone/mTot:0);
+  setBar('dashQuizBar',qTot?qRight/qTot:0);
+  const totItems=exKeys.length+mTot+qTot,totDone=exDone+mDone+qRight;
+  document.getElementById('dashPct').textContent=(totItems?Math.round(100*totDone/totItems):0)+'%';
+  setBar('dashPctBar',totItems?totDone/totItems:0);
+}
+
+/* week-nav tabs */
+document.querySelectorAll('.wtab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.wtab').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.wpane').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  document.querySelector('.wpane[data-w="'+b.dataset.w+'"]').classList.add('on');
+  save('wtab',b.dataset.w);
+  window.scrollTo({top:0,behavior:'smooth'});
+}));
+if(S['wtab']){const t=document.querySelector('.wtab[data-w="'+S['wtab']+'"]');if(t)t.click();}
+
+/* flips */
+document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));
+/* inner tabs (provider-style) */
+document.querySelectorAll('.tabs').forEach(t=>{
+  t.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>{
+    t.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('on'));
+    t.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');t.querySelector('.tabpane[data-p="'+b.dataset.t+'"]').classList.add('on');
+  }));
+});
+/* quiz engine */
+function updateQuiz(qz){
+  const qs=[...qz.querySelectorAll('.q')];
+  const done=qs.filter(q=>q.classList.contains('done'));
+  const right=qs.filter(q=>q.classList.contains('gotit')).length;
+  const res=qz.querySelector('.qresult');
+  if(res){res.querySelector('.bar span').style.width=(done.length?Math.round(100*right/qs.length):0)+'%';
+    res.querySelector('.scoreline').textContent='Score: '+right+' / '+qs.length+(done.length===qs.length?(right===qs.length?' — perfect! 🎉':' — review the explanations above.'):' ('+(qs.length-done.length)+' remaining)');}
+  updateChip();updateDash();
+}
+function updateChip(){
+  let r=0,t=0;
+  document.querySelectorAll('.quiz').forEach(qz=>qz.querySelectorAll('.q').forEach(q=>{t++;if(q.classList.contains('gotit'))r++;}));
+  const c=document.getElementById('scoreChip');if(c)c.textContent='Quiz: '+r+'/'+t;
+}
+document.querySelectorAll('.quiz').forEach((qz,qzi)=>{
+  const qid=qz.id||('qz'+qzi);
+  qz.querySelectorAll('.q').forEach((q,i)=>{
+    const a=+q.dataset.a,opts=[...q.querySelectorAll('.opt')];
+    const key=qid+':q'+i;
+    function answer(j,fresh){
+      q.classList.add('done');if(j===a)q.classList.add('gotit');
+      opts.forEach(o=>o.disabled=true);
+      opts[a].classList.add('right');if(j!==a)opts[j].classList.add('wrong');
+      if(fresh)save(key,j);
+    }
+    opts.forEach((o,j)=>o.addEventListener('click',()=>{if(!q.classList.contains('done')){answer(j,true);updateQuiz(qz);}}));
+    if(S[key]!=null)answer(S[key],false);
+  });
+  updateQuiz(qz);
+});
+/* matcher engine */
+document.querySelectorAll('.matcher').forEach((m,mi)=>{
+  const key='match:'+(m.id||mi);let sel=null,done=0;
+  const cards=[...m.querySelectorAll('.mcard')],st=m.querySelector('.mstatus');
+  function stat(){st.textContent=done+'/'+cards.length+' placed'+(done===cards.length?' — all correct! 🎉':'');}
+  cards.forEach((c,ci)=>{c.addEventListener('click',()=>{
+    if(c.classList.contains('ok'))return;
+    cards.forEach(x=>x.classList.remove('sel'));c.classList.add('sel');sel=c;
+  });});
+  m.querySelectorAll('.mzone').forEach(z=>z.addEventListener('click',()=>{
+    if(!sel)return;
+    if(sel.dataset.match===z.dataset.zone){
+      sel.classList.remove('sel');sel.classList.add('ok');done++;stat();updateDash();
+      const solved=(S[key]||[]);solved.push(cards.indexOf(sel));save(key,solved);sel=null;
+    }else{sel.classList.add('no');setTimeout(()=>sel&&sel.classList.remove('no'),400);}
+  }));
+  (S[key]||[]).forEach(ci=>{if(cards[ci]&&!cards[ci].classList.contains('ok')){cards[ci].classList.add('ok');done++;}});
+  stat();
+});
+/* steps */
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+/* persisted inputs/textareas */
+document.querySelectorAll('[data-persist]').forEach(el=>{
+  const key='p:'+el.dataset.persist;
+  if(S[key]!=null)el.value=S[key];
+  el.addEventListener('input',()=>save(key,el.value));
+});
+/* exit lights */
+const LIGHTS=['⚪','🔴','🟡','🟢'];
+document.querySelectorAll('.light').forEach(b=>{
+  const key='exit:'+b.dataset.exit;let i=S[key]||0;b.textContent=LIGHTS[i];
+  b.addEventListener('click',()=>{i=(i+1)%4;b.textContent=LIGHTS[i];save(key,i);});
+});
+
+/* ===== scalability simulator (S1) ===== */
+const UP_TIERS=[[1000,90,'M'],[2000,180,'L'],[4000,400,'XL'],[8000,900,'XXL']];
+const tr=document.getElementById('traffic');
+function simScale(){
+  const t=+tr.value;
+  document.getElementById('traffVal').textContent=fmt(t);
+  const n=Math.ceil(t/500),out=n*40+18;
+  document.getElementById('kOut').textContent='$'+fmt(out);
+  document.getElementById('kOutN').textContent=n;
+  const farm=document.getElementById('farmOut');
+  farm.innerHTML='<div class="srv" title="load balancer" style="background:linear-gradient(180deg,#0f8b8d,#0a6365)">LB</div>'+Array(Math.min(n,40)).fill('<div class="srv">🖥</div>').join('')+(n>40?'<div style="align-self:center;font-weight:700">+'+(n-40)+' more</div>':'');
+  const tier=UP_TIERS.find(x=>x[0]>=t);
+  const up=document.getElementById('kUp'),v=document.getElementById('kVerdict');
+  if(tier){up.textContent='$'+fmt(tier[1]);v.textContent=tier[1]<out?'UP cheaper':'OUT cheaper';
+    document.getElementById('simNote').textContent=tier[1]<out?'At low loads one machine is simpler AND cheaper. Keep sliding…':'Scale-out wins on price now — and it survives a single server failing.';
+  }else{up.textContent='—';v.textContent='UP impossible';
+    document.getElementById('simNote').textContent='No single machine can serve '+fmt(t)+' req/min — the scale-up ceiling. Beyond it, scaling OUT is the only option.';}
+}
+tr.addEventListener('input',simScale);simScale();
+
+/* ===== multi-tenancy building (S2) ===== */
+const TENANTS={
+  f4:'<strong>🌸 Petal &amp; Stem Florists — Floor 4.</strong> Every record carries tenant_id = petalstem, enforced on every query. They see only their flowers, never the gym’s member list — while sharing the elevator (code) and plumbing (servers, storage, network). They pay for one floor, not the tower.',
+  f3:'<strong>🏋️ Gulf Coast Gym — Floor 3.</strong> Their data sits in the SAME database cluster, one floor of rows, isolated by tenant_id + access controls + encryption. Cancel next month and the vendor reclaims the floor with zero hardware changes.',
+  f2:'<strong>📚 Driftwood Books — Floor 2.</strong> Their inventory and loyalty data are theirs alone, yet tonight’s security patch to the shared codebase reaches them the same instant as everyone else. No IT staff involved.',
+  f1:'<strong>✈️ Nimbus Travel — Floor 1.</strong> A heavy user: booking season slams the shared infrastructure — the <em>noisy neighbor</em> problem. Good vendors use quotas, throttling, and headroom so one tenant’s rush can’t slow the building.',
+  lobby:'<strong>🏢 The lobby — shared everything.</strong> One codebase, one server fleet, one database cluster, one security team, built once and shared. This is why SaaS costs $6–15/user/month — costs divide across every tenant — and why one upgrade reaches every floor at once.',
+  house:'<strong>🏠 Single-tenant: the whole house.</strong> One customer, a dedicated instance — more isolation and customization room, easier compliance… and much higher cost, with upgrades scheduled instead of continuous. A premium tier for banks and hospitals.'
+};
+const mtInfo=document.getElementById('mtInfo');
+const mtBtns=document.querySelectorAll('.tfloor,.house');
+function pickTenant(key,fresh){
+  if(!TENANTS[key])return;
+  mtBtns.forEach(b=>b.classList.toggle('on',b.dataset.t===key));
+  mtInfo.innerHTML=TENANTS[key];
+  if(fresh)save('mtSel',key);
+}
+mtBtns.forEach(b=>b.addEventListener('click',()=>pickTenant(b.dataset.t,true)));
+if(S['mtSel'])pickTenant(S['mtSel'],false);
+
+/* ===== 3-year cost calculator (S2) ===== */
+const seatsEl=document.getElementById('seats'),rateEl=document.getElementById('rate'),licEl=document.getElementById('lic'),capexEl=document.getElementById('capex');
+function calcCost(){
+  const s=+seatsEl.value,r=+rateEl.value,lic=Math.max(0,+licEl.value||0),cap=Math.max(0,+capexEl.value||0);
+  document.getElementById('seatsVal').textContent=s;
+  document.getElementById('rateVal').textContent=r;
+  const saas=s*r*36,prem=Math.round(lic*s*1.6+cap),diff=prem-saas;
+  document.getElementById('kSaas').textContent='$'+fmt(saas);
+  document.getElementById('kPrem').textContent='$'+fmt(prem);
+  document.getElementById('kDiff').textContent='$'+fmt(Math.abs(diff));
+  document.getElementById('kMo').textContent='$'+fmt(Math.round(s*r));
+  const v=document.getElementById('kCVerdict');
+  if(Math.abs(diff)<=0.1*Math.max(saas,prem)){v.textContent='⚖️ Within 10% — effectively a tie. Decide on staffing, customization, cash flow, and risk.';}
+  else if(diff>0){v.textContent='☁️ SaaS is $'+fmt(diff)+' cheaper over 3 years here — before counting admin hours saved.';}
+  else{v.textContent='🏢 On-prem is $'+fmt(-diff)+' cheaper on raw math — typical at large stable seat counts. Add admin labor, refresh, and outage risk before recommending it.';}
+  document.getElementById('cWork').textContent='SaaS = '+s+' × $'+r+' × 36 = $'+fmt(s*r*36)+' · On-prem = ('+s+' × $'+fmt(lic)+' × 1.6) + $'+fmt(cap)+' = $'+fmt(Math.round(lic*s*1.6+cap))+'  [×1.6 = license + 20% support × 3 yrs]';
+}
+[seatsEl,rateEl,licEl,capexEl].forEach(el=>el.addEventListener('input',calcCost));
+calcCost();
+
+/* ===== deploy-pipeline (S2) ===== */
+const PIPE_STAGES=[
+  {btn:'pipePush',status:'Code received. Next: Build.',lines:[
+    ['cmd','$ git push paas main'],['dim','Enumerating objects: 47, done.'],
+    ['okl','remote: ✓ New commit on main — build pipeline triggered.']]},
+  {btn:'pipeBuild',status:'Artifact ready and tested. Next: Deploy.',lines:[
+    ['cmd','[build] Detecting app type… Node.js 20 found.'],['dim','[build] Installing dependencies… 214 packages in 9.8s'],
+    ['dim','[build] Running test suite… 18 passed, 0 failed'],['okl','[build] ✓ Artifact created: store-v1.4.2']]},
+  {btn:'pipeDeploy',status:'Live in production. Next: Scale.',lines:[
+    ['cmd','[deploy] Provisioning container for v1.4.2…'],['dim','[deploy] Health check GET /healthz → 200 OK'],
+    ['dim','[deploy] Router swap (zero-downtime) · previous version kept for rollback'],['okl','[deploy] ✅ Live at https://store.paascloud.app']]},
+  {btn:'pipeScale',status:'Complete — build → deploy → manage. Hit ↺ Reset to replay.',lines:[
+    ['wrn','[autoscale] ⚠ Traffic spike: 4× baseline — flash sale detected 🛒'],['dim','[autoscale] Launching web.2, web.3, web.4 …'],
+    ['okl','[autoscale] 4/4 instances healthy · p95 latency 480 ms → 95 ms'],['okl','[autoscale] ✓ Extra instances paid for 2 hours only. That is elasticity.']]}
+];
+let pipeIdx=0,pipeBusy=false;
+const pc=document.getElementById('pipeConsole'),pst=document.getElementById('pipeStatus');
+function pipeButtons(){PIPE_STAGES.forEach((st,i)=>{document.getElementById(st.btn).disabled=pipeBusy||i!==pipeIdx;});}
+function logLine(cls,txt){const d=document.createElement('div');if(cls)d.className=cls;d.textContent=txt;pc.appendChild(d);pc.scrollTop=pc.scrollHeight;}
+PIPE_STAGES.forEach((st,i)=>{
+  document.getElementById(st.btn).addEventListener('click',()=>{
+    if(pipeBusy||i!==pipeIdx)return;
+    pipeBusy=true;pipeButtons();pst.textContent='Working…';
+    st.lines.forEach((ln,j)=>setTimeout(()=>{
+      logLine(ln[0],ln[1]);
+      if(j===st.lines.length-1){pipeIdx++;pipeBusy=false;pst.textContent=st.status;pipeButtons();}
+    },420*(j+1)));
+  });
+});
+document.getElementById('pipeReset').addEventListener('click',()=>{
+  if(pipeBusy)return;pipeIdx=0;pc.innerHTML='<div class="dim"># PaaS console — output appears here…</div>';
+  pst.textContent='Ready — push your code.';pipeButtons();
+});
+pipeButtons();
+
+/* ===== VM builder (S3) ===== */
+const vmCpu=document.getElementById('vmCpu'),vmRam=document.getElementById('vmRam'),vmSto=document.getElementById('vmSto'),vmReg=document.getElementById('vmRegion');
+function vmCalc(){
+  const c=+vmCpu.value,r=+vmRam.value,s=+vmSto.value,m=+vmReg.value;
+  document.getElementById('vmCpuVal').textContent=c;
+  document.getElementById('vmRamVal').textContent=r;
+  document.getElementById('vmStoVal').textContent=s;
+  const total=(c*18+r*4.5+s*0.08)*m,monthly=Math.round(total);
+  document.getElementById('vmSpec').textContent=c+' vCPU · '+r+' GB · '+s+' GB';
+  document.getElementById('vmPrice').textContent='$'+fmt(monthly);
+  document.getElementById('vmHr').textContent='$'+(total/730).toFixed(2);
+  let v;
+  if(c<=2&&r<=4){v='🌱 Starter box — a personal blog, portfolio, or dev sandbox.';}
+  else if(c<=4&&r<=16){v='🏪 Small-business workhorse — the classic web or app server shape. Run several behind a load balancer, not one giant.';}
+  else if(c<=16&&r<=64){v='🏭 Mid-size muscle — a busy web store, mid-size database, or CI runner. Fine IF monitoring justifies it.';}
+  else{v='🐘 Big iron — large databases or in-memory analytics. Measured service bills every idle hour at full price.';}
+  const ratio=r/c;
+  if(ratio>=16){v+=' Shape note: very RAM-heavy — a cache / in-memory-database ratio.';}
+  else if(ratio<2){v+=' Shape note: CPU-heavy — a batch/encoding ratio.';}
+  document.getElementById('vmVerdict').textContent=v;
+}
+[vmCpu,vmRam,vmSto,vmReg].forEach(el=>{el.addEventListener('input',vmCalc);el.addEventListener('change',vmCalc);});
+vmCalc();
+
+/* ===== load-balancer simulator (S3) ===== */
+let lbServers=3;
+const lbT=document.getElementById('lbTraffic');
+function lbSim(){
+  const t=+lbT.value;
+  document.getElementById('lbTVal').textContent=fmt(t);
+  document.getElementById('lbN').textContent=lbServers+(lbServers===1?' server':' servers');
+  const per=t/lbServers,u=per/1000;
+  let html='';
+  for(let i=1;i<=lbServers;i++){
+    const w=Math.min(100,u*100),cls=per<=700?'':(per<=950?' warn':' hot');
+    html+='<div class="lbrow"><span class="lbl">SRV '+i+'</span><div class="lbtrack"><div class="lbfill'+cls+'" style="width:'+w+'%"></div></div><span class="pct">'+Math.round(per)+' req/min · '+Math.round(u*100)+'%</span></div>';
+  }
+  document.getElementById('lbBars').innerHTML=html;
+  let lat;
+  if(u<=0.7)lat=Math.round(38+u*10)+' ms';
+  else if(u<=0.95)lat=Math.round(45+(u-0.7)*580)+' ms';
+  else if(u<=1.05)lat=Math.round(190+(u-0.95)*3000)+' ms';
+  else lat='2,500+ ms ⚠';
+  document.getElementById('lbLoad').textContent=Math.round(per)+' /min';
+  document.getElementById('lbLat').textContent=lat;
+  document.getElementById('lbCost').textContent='$'+fmt(lbServers*48+18);
+  const st=document.getElementById('lbStatus');
+  if(per<=700){st.textContent='🟢 All green — healthy headroom (every server under 70% of its 1,000 req/min capacity).';}
+  else if(per<=950){st.textContent='🟡 Running hot — past the 70% alert threshold. One bump or one failure tips this red. An autoscaler would add a server now.';}
+  else if(per<=1050){st.textContent='🟠 Saturated — at or beyond rated capacity. Latency spiking.';}
+  else{st.textContent='🔴 Overloaded — servers dropping requests and timing out. Add servers or shed load.';}
+}
+document.getElementById('lbMinus').addEventListener('click',()=>{lbServers=Math.max(1,lbServers-1);lbSim();});
+document.getElementById('lbPlus').addEventListener('click',()=>{lbServers=Math.min(12,lbServers+1);lbSim();});
+lbT.addEventListener('input',lbSim);lbSim();
+
+/* ===== VRAM fit-checker (S3) ===== */
+const vrP=document.getElementById('vrParams'),vrPrec=document.getElementById('vrPrec'),vrGpu=document.getElementById('vrGpu');
+function vrCalc(){
+  const bb=+vrP.value,bytes=+vrPrec.value,g=+vrGpu.value;
+  document.getElementById('vrPVal').textContent=bb;
+  const gb=bb*bytes,gbTxt=(gb%1?gb.toFixed(1):fmt(gb))+' GB',n=Math.ceil(gb/g);
+  document.getElementById('vrGB').textContent=gbTxt;
+  document.getElementById('vrN').textContent=n+(n===1?' GPU':' GPUs');
+  const names={24:'gaming card (24 GB)',48:'workstation card (48 GB)',80:'data-center GPU (80 GB)'};
+  document.getElementById('vrVerdict').textContent = n===1
+    ? '✅ Fits on a single '+names[g]+'. If you got here by lowering precision, you just performed quantization — trading a little accuracy for a lot of feasibility.'
+    : '🧱 Needs '+n+' × '+names[g]+' linked by fast interconnect just to HOLD the weights — before serving a single user. Capacity decides IF it runs; speed only decides how fast.';
+}
+[vrP,vrPrec,vrGpu].forEach(el=>{el.addEventListener('input',vrCalc);el.addEventListener('change',vrCalc);});
+vrCalc();
+
+/* ===== restore exercises + final dashboard refresh ===== */
+Object.keys(HX).forEach(k=>{
+  if(S['hx:'+k]===1){const el=document.getElementById('hx'+k),fb=document.getElementById('fbHX'+k);if(el&&fb){fb.textContent=HX[k].ok;fb.className='fb ok';}}
+});
+updateBoss();
+updateDash();
+</script>
+</body>
+</html>

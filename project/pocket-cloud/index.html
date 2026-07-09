@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Pocket Cloud Project — You Are the Provider Now</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#0f8b8d;--pri2:#0b5e60;--acc:#3f3d99;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--pri);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri2);text-decoration:none;font-weight:600}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,#0f8b8d,#173a56);color:#fff;border-radius:16px;padding:30px 28px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:29px}
+.hero .sub{opacity:.92;margin:0 0 10px}
+.chip{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:#fff}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--pri)}
+h3{font-size:18px;margin:18px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.m1{border-top:6px solid #0f8b8d}.card.m2{border-top:6px solid #e0a437}.card.m3{border-top:6px solid #b3543f}.card.m4{border-top:6px solid #7b5ea7}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--pri);width:16px;height:16px;flex-shrink:0}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--pri);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.btn{display:inline-block;background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--pri2);border:1.5px solid var(--pri)}
+.note{font-size:13.5px;color:var(--mut)}
+.due{display:inline-block;background:var(--bad);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800;letter-spacing:.4px}
+.pts{display:inline-block;background:var(--acc);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800}
+.obj{display:inline-block;background:var(--pri);color:#fff;border-radius:999px;font-size:11.5px;font-weight:800;padding:1px 9px;margin:1px}
+ul.tight li{margin:6px 0}
+.warn{background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.danger{background:#fbeae8;border-left:4px solid var(--bad);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.stretch{background:#f0edf7;border-left:4px solid var(--vio);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+code.inline{background:#ecebe4;border-radius:5px;padding:1px 6px;font-size:13.5px}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <span style="font-weight:700">☁️ Pocket Cloud Project</span>
+  <span>
+    <a href="setup.html">🛠 Environment Setup</a> &nbsp;·&nbsp;
+    <a href="starter-app/readme.html">📦 Starter App</a> &nbsp;·&nbsp;
+    <a href="../../index.html">⌂ Course Hub</a>
+  </span>
+</nav>
+<main>
+
+<header class="hero">
+  <h1>☁️ Pocket Cloud — You Are the Provider Now</h1>
+  <p class="sub">Every session in this course you study clouds. In this project, you <em>run one</em>. Over four weeks your laptop becomes a working miniature cloud provider — with real tenants, real identity, real storage, real outages, and real invoices.</p>
+  <div>
+    <span class="chip">Individual project</span><span class="chip">4 milestones · Classes 4 · 7 · 9 · 11</span><span class="chip">Runs 100% on your own machine</span><span class="chip">Free tools only — no credit card, ever</span><span class="chip">Live demo on Class 12</span>
+  </div>
+</header>
+
+<h2>The story</h2>
+<div class="card">
+  <p>You've founded a one-person hosting company: <strong>Pocket Cloud</strong>. Your data center is your laptop.</p>
+  <p>Two local businesses just signed as your first tenants:</p>
+  <ul class="tight">
+    <li><strong>Palmetto Surf Co.</strong> — a Cocoa Beach surf shop that needs an online storefront. Traffic spikes every time the surf report is good.</li>
+    <li><strong>Mango Yoga Studio</strong> — a tiny studio that wants the same storefront product. They will not pay for a second codebase.</li>
+  </ul>
+  <p>Over four weeks you'll take Pocket Cloud from "one container" to a platform with self-service provisioning, load balancing, single sign-on with MFA, object storage, backups that survive a disaster you inflict on yourself, monitoring with alerts, a REST API — and at the end, you'll bill your tenants from real usage data and present the whole thing live.</p>
+  <p>At every step, connect what you build to the concept it implements — <em>"this is rapid elasticity, and here is my evidence."</em></p>
+</div>
+
+<h2>Your platform stack (all free, all local)</h2>
+<div class="card">
+  <table>
+    <tr><th>Role in a real cloud</th><th>Your Pocket Cloud equivalent</th><th>Arrives in</th></tr>
+    <tr><td>Data center + hypervisor</td><td>Your laptop + <strong>Docker Desktop</strong> (or Podman)</td><td>Setup</td></tr>
+    <tr><td>Self-service console (like the AWS console)</td><td><strong>Portainer CE</strong> — provision workloads from a web UI</td><td>M1</td></tr>
+    <tr><td>Tenant workload</td><td>The <strong>starter storefront app</strong> (provided, in <code class="inline">starter-app/</code>)</td><td>M1</td></tr>
+    <tr><td>Load balancer + local HTTPS</td><td><strong>Caddy</strong></td><td>M1</td></tr>
+    <tr><td>IDaaS (SSO · MFA · lifecycle)</td><td><strong>Authelia</strong> (stretch: Keycloak)</td><td>M2</td></tr>
+    <tr><td>Object storage (S3-style)</td><td><strong>MinIO</strong></td><td>M2</td></tr>
+    <tr><td>File share</td><td><strong>Filebrowser</strong></td><td>M2</td></tr>
+    <tr><td>Backup & DR</td><td><code class="inline">tar</code> + a second disk/USB + a free cloud drive (3-2-1)</td><td>M2–M3</td></tr>
+    <tr><td>Monitoring + alerting</td><td><strong>Uptime Kuma</strong> + a free webhook (Discord/ntfy.sh)</td><td>M4</td></tr>
+    <tr><td>Billing / metering</td><td>The app's <code class="inline">/api/stats</code> endpoint + <code class="inline">docker stats</code> + your rate card</td><td>M1 → M4</td></tr>
+  </table>
+  <p class="note">Every component is free and open source or a free tier; no credit card is required at any step. Machine can't run Docker? The <a href="setup.html">setup guide</a> has two free fallbacks (GitHub Codespaces, Play with Docker).</p>
+</div>
+
+<h2>Milestones & rubrics</h2>
+
+<div class="card m1">
+  <h3>M1 · Stand Up the Cloud <span class="due">DUE CLASS 4</span> <span class="pts">25 pts</span> <span class="obj">Obj 1</span><span class="obj">Obj 2</span><span class="obj">Obj 3</span><span class="obj">Obj 4</span></h3>
+  <p>Your platform goes live: console, two tenants, load balancing, metering — and you prove the five NIST traits on your own hardware.</p>
+  <label class="step"><input type="checkbox" data-step="m1a"><span><strong>Environment up:</strong> Docker verified (<a href="setup.html">setup guide</a>), private repo created with <code class="inline">JOURNAL.md</code>, Portainer running — screenshot your "cloud console."</span></label>
+  <label class="step"><input type="checkbox" data-step="m1b"><span><strong>Tenant 1 live (IaaS thinking):</strong> build and run the starter storefront for Palmetto Surf Co. with explicit CPU/RAM limits. Justify your "instance size" in the journal: why those limits, what would a size up/down cost on a real provider?</span></label>
+  <label class="step"><input type="checkbox" data-step="m1c"><span><strong>Tenant 2, same image (SaaS thinking):</strong> launch Mango Yoga Studio from the <em>same image</em> — env-var branding + mounted <code class="inline">products-yoga.json</code>. In the journal: how does this mirror multi-tenancy in real SaaS? What's shared, what's isolated, what's the lock-in?</span></label>
+  <label class="step"><input type="checkbox" data-step="m1d"><span><strong>Elasticity, visibly:</strong> put Caddy in front, scale Palmetto to 3 replicas (<code class="inline">--scale</code>), refresh <code class="inline">/api/health</code> and screenshot <code class="inline">served_by</code> changing. Scale back to 1. That round trip is rapid elasticity — narrate it.</span></label>
+  <label class="step"><input type="checkbox" data-step="m1e"><span><strong>Broad network access:</strong> open a tenant site from your phone on the same Wi-Fi. One photo, one sentence.</span></label>
+  <label class="step"><input type="checkbox" data-step="m1f"><span><strong>Measured service:</strong> capture <code class="inline">/api/stats</code> for both tenants + <code class="inline">docker stats</code>; start your usage ledger (a simple table you'll keep updating — it becomes the M4 invoice).</span></label>
+  <label class="step"><input type="checkbox" data-step="m1g"><span><strong>PaaS — build one:</strong> write <code class="inline">deploy.sh</code>: one command that rebuilds the image and rolls the containers. Change the storefront's header text and redeploy with only <code class="inline">./deploy.sh</code>. In the journal: what does a real PaaS hide that your script still exposes?</span></label>
+  <label class="step"><input type="checkbox" data-step="m1h"><span><strong>SaaS — host one:</strong> run Excalidraw (<code class="inline">docker run -d -p 8090:80 excalidraw/excalidraw</code>) and use it to draw your Pocket Cloud architecture diagram. Export the PNG to your repo.</span></label>
+  <label class="step"><input type="checkbox" data-step="m1i"><span><strong>Honest limits:</strong> half-page reflection — which cloud advantages can your laptop <em>not</em> deliver (economies of scale, global reach, durability, physical security…) and why customers pay providers for exactly those.</span></label>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># compose.yml — M1 target shape (finish the TODOs yourself)
+services:
+  palmetto:
+    build: ./starter-app
+    environment:
+      TENANT_NAME: "Palmetto Surf Co."
+      THEME_COLOR: "#0f8b8d"
+      TAGLINE: "Boards, wax & good vibes"
+    cpus: "0.50"          # your chosen instance size
+    mem_limit: 256m
+    # no container_name — needed so --scale works
+  mango:
+    build: ./starter-app
+    environment:
+      TENANT_NAME: "Mango Yoga Studio"
+      THEME_COLOR: "#e0813a"
+      TAGLINE: "Breathe in, stream on"
+    volumes:
+      - ./starter-app/products-yoga.json:/app/products.json:ro
+    # TODO: give Mango limits too
+  caddy:
+    image: caddy:2-alpine
+    ports: ["8080:80"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+
+# Caddyfile — round-robin you can SEE
+# :80 {
+#   reverse_proxy palmetto:3000 {
+#     transport http { keepalive off }   # forces re-dial so replicas rotate
+#   }
+# }
+
+# scale up, watch served_by rotate, scale down:
+#   docker compose up -d --scale palmetto=3
+#   curl -s localhost:8080/api/health   (repeat!)
+#   docker compose up -d --scale palmetto=1</pre></div>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>All five NIST traits demonstrated with your own evidence (screenshots + narration)</td><td>10</td></tr>
+    <tr><td>IaaS sizing reasoned; SaaS multi-tenancy discussion correct; PaaS pipeline works and its limits are understood</td><td>8</td></tr>
+    <tr><td>"Honest limits" reflection shows real understanding of advantages/disadvantages</td><td>3</td></tr>
+    <tr><td>Repo hygiene: journal complete, commits tell the story, diagram matches reality</td><td>4</td></tr>
+  </table>
+</div>
+
+<div class="card m2">
+  <h3>M2 · Identity & Data <span class="due">DUE CLASS 7</span> <span class="pts">25 pts</span> <span class="obj">Obj 5</span><span class="obj">Obj 6</span></h3>
+  <p>One login for everything (with MFA), real object storage, a file share, and backups that follow the 3-2-1 rule.</p>
+  <label class="step"><input type="checkbox" data-step="m2a"><span><strong>IDaaS live:</strong> deploy Authelia behind Caddy (<code class="inline">forward_auth</code>) so <em>both</em> tenant admin URLs require login. One identity, two apps = single sign-on you can demo. Enable TOTP MFA and enroll with a free authenticator app.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2b"><span><strong>Lifecycle drill — "the contractor quits":</strong> provision user <code class="inline">kai</code>, verify access, then deprovision. Journal the timeline: what died instantly, what lingered (sessions!), and your written provisioning/deprovisioning policy. Compare with how a real IDaaS (Okta/Entra ID) automates this.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2c"><span><strong>Appraise before you adopt:</strong> half-page comparison of Authelia vs Keycloak vs a cloud IDaaS on: protocols (OIDC/SAML), MFA options, lifecycle automation, cost, ops burden. Say which you'd pick for a 200-person company and why it isn't the one on your laptop.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2d"><span><strong>Object storage:</strong> deploy MinIO; create <code class="inline">palmetto-media</code> (product photos) and <code class="inline">pocketcloud-archive</code> buckets; add a lifecycle rule (e.g., expire/transition after 30 days); share one object via a time-limited presigned URL and explain why that beats emailing the file.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2e"><span><strong>Block vs object vs file — with your own stack:</strong> table mapping each storage type to a real thing in Pocket Cloud (Docker volume / MinIO bucket / Filebrowser share), with one workload each type is wrong for. Deploy Filebrowser as "The Vault" for tenant documents.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2f"><span><strong>3-2-1 backups:</strong> write <code class="inline">backup.sh</code> that tars your volumes → copy 2 on a second disk/USB → copy 3 on a free cloud drive. Three copies, two media, one offsite: point at each. Schedule it (cron/Task Scheduler) and prove one automatic run happened.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2g"><span><strong>Data classification register:</strong> 6+ data types you now hold (tenant product data, order records, admin credentials, photos, configs, logs…) with sensitivity, storage location, backup tier, and who can access it.</span></label>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># Caddyfile — SSO in front of both tenants (Authelia 4.38+)
+# auth.localhost, palmetto.localhost, mango.localhost all resolve to
+# 127.0.0.1 automatically — and Caddy gives them local HTTPS for free.
+auth.localhost {
+  reverse_proxy authelia:9091
+}
+palmetto.localhost {
+  forward_auth authelia:9091 {
+    uri /api/authz/forward-auth
+    copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+  }
+  reverse_proxy palmetto:3000
+}
+mango.localhost {
+  forward_auth authelia:9091 {
+    uri /api/authz/forward-auth
+    copy_headers Remote-User Remote-Groups Remote-Name Remote-Email
+  }
+  reverse_proxy mango:3000
+}
+
+# backup.sh — the 3-2-1 skeleton (finish + schedule it)
+docker run --rm -v minio_data:/data -v "$PWD/backups:/backup" alpine \
+  tar czf /backup/minio-$(date +%F).tar.gz -C /data .
+# TODO: repeat per volume · copy to second disk · sync to free cloud drive</pre></div>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># M2 services — add to compose.yml
+  authelia:
+    image: authelia/authelia:4.38
+    volumes:
+      - ./authelia:/config          # holds the two files below
+    networks: [frontend, backend]
+  minio:
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: pocketadmin
+      MINIO_ROOT_PASSWORD: CHANGE_ME_STRONG
+    ports: ["9000:9000", "9001:9001"]   # console: http://localhost:9001
+    volumes: [minio_data:/data]
+  filebrowser:
+    image: filebrowser/filebrowser
+    ports: ["8095:80"]
+    volumes: [vault_data:/srv]
+
+volumes:
+  minio_data:
+  vault_data:</pre></div>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># authelia/configuration.yml — minimal working config (Authelia 4.38)
+server:
+  address: 'tcp://:9091'
+log:
+  level: info
+identity_validation:
+  reset_password:
+    jwt_secret: 'CHANGE_ME_random_40+_characters_1'
+totp:
+  issuer: 'Pocket Cloud'
+authentication_backend:
+  file:
+    path: /config/users_database.yml
+access_control:
+  default_policy: two_factor
+session:
+  secret: 'CHANGE_ME_random_40+_characters_2'
+  cookies:
+    - domain: 'localhost'
+      authelia_url: 'https://auth.localhost'
+storage:
+  encryption_key: 'CHANGE_ME_random_40+_characters_3'
+  local:
+    path: /config/db.sqlite3
+notifier:
+  filesystem:
+    filename: /config/notification.txt
+
+# authelia/users_database.yml — one user; generate the hash first:
+#   docker run --rm authelia/authelia:4.38 \
+#     authelia crypto hash generate argon2 --password 'pick-a-password'
+users:
+  you:
+    displayname: "Your Name"
+    password: "PASTE_THE_$argon2id$_HASH_HERE"
+    email: you@example.com
+    groups: [admins]
+
+# First login: open https://auth.localhost → sign in → register a TOTP
+# device (scan the QR from /config/notification.txt link) → then visit
+# palmetto.localhost and watch the redirect → login → MFA → app.</pre></div>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>SSO + MFA working across both apps, demonstrated; lifecycle drill timed and honest</td><td>8</td></tr>
+    <tr><td>IDaaS appraisal compares real options on real criteria</td><td>3</td></tr>
+    <tr><td>Storage types used and explained correctly; lifecycle rule + presigned URL shown</td><td>7</td></tr>
+    <tr><td>3-2-1 backup real, scheduled, and verifiable</td><td>5</td></tr>
+    <tr><td>Classification register sound</td><td>2</td></tr>
+  </table>
+</div>
+
+<div class="card m3">
+  <h3>M3 · Virtualize, Secure, Survive <span class="due">DUE CLASS 9</span> <span class="pts">25 pts</span> <span class="obj">Obj 7</span></h3>
+  <p>Consolidation math on your own hardware, a hardening pass — then you destroy your cloud on purpose and bring it back.</p>
+  <label class="step"><input type="checkbox" data-step="m3a"><span><strong>Consolidation study:</strong> your laptop is the host. Using your M1 limits and <code class="inline">docker stats</code>, compute how many storefront "instances" fit in your RAM/CPU at 70% max utilization. Show before/after math for running each service on its own dedicated machine vs consolidated — the Session 7 simulator logic, on real hardware.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3b"><span><strong>Container vs VM appraisal:</strong> compare startup time, memory overhead, isolation strength, and density for containers vs full VMs — then recommend (with reasons) which Pocket Cloud workloads would justify a real VM. Stretch: actually boot one in VirtualBox/UTM and measure.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3c"><span><strong>Hardening pass:</strong> (1) confirm app containers run non-root; (2) move all secrets to <code class="inline">.env</code> + <code class="inline">.gitignore</code>, rotate anything ever committed; (3) segment networks — <code class="inline">frontend</code> vs <code class="inline">backend</code>, with MinIO/Authelia unreachable from the front; (4) HTTPS on every admin console via Caddy's local CA; (5) per-service MinIO access key — retire root credentials from apps.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3d"><span><strong>Shared-responsibility matrix — you're the provider:</strong> for each Pocket Cloud service, who patches/secures what if a tenant used it: you (provider) vs tenant. Columns for IaaS-style vs PaaS-style vs SaaS-style offerings of your own platform.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3e"><span><strong>Set your targets first:</strong> write RTO + RPO per service (storefronts, MinIO, Authelia, Vault) and the DR tier each implies (backup-restore / pilot light / warm standby / multi-site). Justify: why doesn't Mango Yoga get multi-site?</span></label>
+  <label class="step"><input type="checkbox" data-step="m3f"><span><strong>💥 Game day:</strong> with backups verified — run <code class="inline">docker compose down -v</code> (yes, <code class="inline">-v</code>: volumes too). Restore everything from backup copy #2 or #3, timing every step. Report actual RTO/RPO vs your targets, in a 1-page incident report (timeline · what was lost · what you'd change). Failing your targets and analyzing why beats fudging the numbers — graded on honesty of analysis, not on hitting targets.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3g"><span><strong>SLA offer:</strong> given your measured restore times, write the availability SLA Pocket Cloud can honestly offer each tenant (downtime math shown, Session 9 method) — and what a real provider offers for the same service.</span></label>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># compose.yml — network segmentation shape (M3)
+networks:
+  frontend:   # things browsers reach (via Caddy)
+  backend:    # things only services reach
+
+services:
+  caddy:     { networks: [frontend] }
+  palmetto:  { networks: [frontend, backend] }
+  mango:     { networks: [frontend, backend] }
+  authelia:  { networks: [frontend, backend] }
+  minio:     { networks: [backend] }   # no route from the outside world
+
+# prove the wall exists (expect: FAIL from outside, OK from inside):
+#   curl -m 3 http://localhost:9000            → connection refused
+#   docker compose exec palmetto wget -qO- http://minio:9000/minio/health/live</pre></div>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Consolidation math correct on real measurements; container-vs-VM appraisal sound</td><td>6</td></tr>
+    <tr><td>Hardening: non-root, secrets, segmentation (proven), TLS, least-privilege keys</td><td>7</td></tr>
+    <tr><td>Responsibility matrix coherent from the provider's chair</td><td>3</td></tr>
+    <tr><td>Game day executed; measured RTO/RPO vs targets; honest incident report</td><td>7</td></tr>
+    <tr><td>SLA math correct and consistent with the evidence</td><td>2</td></tr>
+  </table>
+</div>
+
+<div class="card m4">
+  <h3>M4 · APIs, Operations & the Exit Plan <span class="due">DUE CLASS 11 · DEMO CLASS 12</span> <span class="pts">25 pts</span> <span class="obj">Obj 8</span></h3>
+  <p>Pocket Cloud becomes a platform: the monolith splits into services, monitoring alerts you before tenants notice, the invoice goes out — and you plan Palmetto's migration off your laptop.</p>
+  <label class="step"><input type="checkbox" data-step="m4a"><span><strong>Split the monolith (SOA):</strong> using the marked seam in <code class="inline">server.js</code>, extract the API into its own <code class="inline">api</code> service; the storefront keeps serving static files. Caddy routes <code class="inline">/api/*</code> to the API service. Two services, one contract, independent deploys.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4b"><span><strong>API design sheet:</strong> document your 5+ REST endpoints (method · path · purpose · sample request/response JSON · status codes). Add one <em>new</em> endpoint of your own design (e.g., <code class="inline">GET /api/recommendations?productId=</code>) and implement it.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4c"><span><strong>Loose coupling, live:</strong> <code class="inline">docker stop api</code> — the storefront shows its degraded-mode banner instead of dying, orders disable gracefully. Screenshot, restart, recover. Journal: what makes this coupling loose, and what would tight coupling have looked like?</span></label>
+  <label class="step"><input type="checkbox" data-step="m4d"><span><strong>Monitoring + alerting:</strong> Uptime Kuma watching ≥4 endpoints (both storefronts, API, MinIO) with an alert to a free channel (Discord webhook / ntfy.sh). Trigger a real alert by stopping a service. Define 5 metrics you'd watch at 1,000 tenants and their thresholds.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4e"><span><strong>The invoice:</strong> publish your rate card (e.g., $ per 1k requests, per GB-month stored, per replica-hour), then bill both tenants from your actual usage ledger (<code class="inline">/api/stats</code>, MinIO usage, replica history). One page per tenant. This is measured service, closed loop.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4f"><span><strong>Migration memo — the honest exit:</strong> Palmetto outgrew your laptop. Classify every Pocket Cloud component with the 6 Rs for a move to a real provider, sequence 3 waves with dependencies (identity first!), estimate monthly cost from public pricing calculators, and state your rollback plan for cutover weekend.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4g"><span><strong>Live demo (Class 12):</strong> present and demo Pocket Cloud live from your machine. 💥 Chaos moment: the instructor stops one container; you show the blast radius, the alert arriving, and the recovery.</span></label>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># M4 — monitoring + the split, concretely
+# Uptime Kuma (then add monitors for each /api/health in its web UI):
+docker run -d --name kuma -p 3001:3001 -v uptime_data:/app/data louislam/uptime-kuma:1
+#   → http://localhost:3001 · Settings → Notifications → Discord webhook / ntfy
+
+# Caddyfile — route the split (frontend serves static, api owns /api/*):
+# :80 {
+#   handle /api/* {
+#     reverse_proxy api:3000
+#   }
+#   handle {
+#     reverse_proxy web:3000
+#   }
+# }
+# The seam is marked in server.js: copy it to api/server.js and delete the
+# STATIC section there; in web/server.js delete the API section.</pre></div>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Service split works; REST design follows conventions; new endpoint sensible</td><td>7</td></tr>
+    <tr><td>Loose-coupling demo + explanation correct</td><td>4</td></tr>
+    <tr><td>Monitoring real, alert fired and received; metrics/thresholds thoughtful</td><td>4</td></tr>
+    <tr><td>Invoice sourced from real usage data; rate card coherent</td><td>3</td></tr>
+    <tr><td>Migration memo: 6-Rs + waves + costs + rollback sound</td><td>4</td></tr>
+    <tr><td>Live demo: clear story, working system, chaos moment survived, questions handled</td><td>3</td></tr>
+  </table>
+</div>
+
+<h2>Where each course objective is satisfied</h2>
+<div class="card">
+  <table>
+    <tr><th style="width:56%">Upon completion of CEN4086, students can…</th><th>Pocket Cloud evidence</th></tr>
+    <tr><td><span class="obj">1</span> Understand the abstract nature and advantages/disadvantages of cloud computing</td><td>M1: five NIST traits demonstrated on own hardware + "honest limits" reflection on what a laptop cloud can't deliver</td></tr>
+    <tr><td><span class="obj">2</span> Define and describe SaaS</td><td>M1: one image serving two tenants (multi-tenancy built, not just described); operating Excalidraw as a SaaS</td></tr>
+    <tr><td><span class="obj">3</span> Define and describe the PaaS model</td><td>M1: <code class="inline">deploy.sh</code> pipeline — building the abstraction a PaaS provides, then naming what real PaaS still hides</td></tr>
+    <tr><td><span class="obj">4</span> Describe IaaS and identify solution providers</td><td>M1: self-service provisioning via Portainer, instance sizing with limits; M4: migration memo prices real providers</td></tr>
+    <tr><td><span class="obj">5</span> Evaluate ID-management challenges and appraise IDaaS solutions</td><td>M2: SSO + TOTP MFA operated across two apps; lifecycle drill; written appraisal of Authelia vs Keycloak vs cloud IDaaS</td></tr>
+    <tr><td><span class="obj">6</span> Differentiate cloud data-storage and collaboration solutions</td><td>M2: block (volumes) vs object (MinIO) vs file (Filebrowser) each deployed; lifecycle tiers; presigned sharing; 3-2-1 backups</td></tr>
+    <tr><td><span class="obj">7</span> Examine and evaluate virtualization solutions</td><td>M3: consolidation math on real hardware; container-vs-VM appraisal; hardening; game-day DR with measured RTO/RPO</td></tr>
+    <tr><td><span class="obj">8</span> Define and describe Service-Oriented Architecture</td><td>M4: monolith split into services over REST; loose-coupling kill-switch demo; documented API contract</td></tr>
+  </table>
+</div>
+
+<h2>Class-by-class checkpoints</h2>
+<div class="card">
+  <table>
+    <tr><th>Class · Day</th><th>Due at the start of class (evidence in your journal)</th><th>Feeds</th></tr>
+    <tr><td>3 · Thu</td><td>Project introduced · choose your track · start the <a href="setup.html">setup guide</a> this weekend — <em>nothing due, but M1 lands Monday</em></td><td>—</td></tr>
+    <tr><td>4 · Mon</td><td><strong>M1 due</strong> — environment verified (Docker + Portainer) · private repo + journal · both tenants live with limits · scale-out demo · metering ledger · M1 write-ups</td><td>M1</td></tr>
+    <tr><td>5 · Tue</td><td><strong>Due:</strong> MinIO running · <code class="inline">palmetto-media</code> and <code class="inline">pocketcloud-archive</code> buckets created</td><td>M2</td></tr>
+    <tr><td>6 · Thu</td><td><strong>Due:</strong> Authelia SSO + MFA live in front of both tenant apps</td><td>M2</td></tr>
+    <tr><td>7 · Mon</td><td><strong>M2 due</strong> — lifecycle rule + presigned share · Filebrowser vault · scheduled 3-2-1 <code class="inline">backup.sh</code> · lifecycle drill · classification register</td><td>M2</td></tr>
+    <tr><td>8 · Tue</td><td><strong>Due (written):</strong> RTO/RPO targets per service · shared-responsibility matrix draft</td><td>M3</td></tr>
+    <tr><td>9 · Thu</td><td><strong>M3 due</strong> — consolidation study · hardening pass · 💥 game day with incident report + SLA offer</td><td>M3</td></tr>
+    <tr><td>10 · Mon</td><td><strong>Due:</strong> API service split live · Uptime Kuma monitoring with one real alert received · usage ledger closed out</td><td>M4</td></tr>
+    <tr><td>11 · Tue</td><td><strong>M4 due</strong> — REST design sheet, degraded-mode evidence, tenant invoices, migration memo; the heavy build was Monday's checkpoint</td><td>M4</td></tr>
+    <tr><td>12 · Thu</td><td><strong>Final Day — live demos</strong> 🎓 (presentation only)</td><td>M4</td></tr>
+  </table>
+  <p class="note">Pacing follows the class calendar: Monday items carry the weekend's work, Tuesday items are deliberately light (one day after Monday), Thursday items get two days. Milestone submissions on Tuesdays are mostly assembly — their heavy build work is the Monday checkpoint before them.</p>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin-top:26px;flex-wrap:wrap;gap:10px">
+  <a class="btn ghost" href="setup.html">🛠 Set up your environment</a>
+  <a class="btn" href="starter-app/readme.html">📦 Get the starter app →</a>
+</div>
+
+</main>
+<script>
+const PKEY='cen4086v3:pocket-cloud';
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+</script>
+</body>
+</html>

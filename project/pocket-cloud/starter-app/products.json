@@ -1,0 +1,8 @@
+[
+  { "id": 1, "name": "7'2\" Funboard — Seafoam", "price": 389.00, "stock": 4 },
+  { "id": 2, "name": "Coconut Surf Wax (3-pack)", "price": 11.50, "stock": 62 },
+  { "id": 3, "name": "6mm Leash — Storm Grey", "price": 24.99, "stock": 18 },
+  { "id": 4, "name": "Palmetto Logo Tee", "price": 22.00, "stock": 40 },
+  { "id": 5, "name": "Dawn Patrol Rash Guard", "price": 34.00, "stock": 12 },
+  { "id": 6, "name": "Beginner Lesson — 90 min", "price": 65.00, "stock": 999 }
+]

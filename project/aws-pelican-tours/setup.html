@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Pelican Tours — AWS Learner Lab Setup</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#1273a8;--pri2:#0b4460;--acc:#3f3d99;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--pri);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri2);text-decoration:none;font-weight:600}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,#123047,#1273a8);color:#fff;border-radius:16px;padding:26px 28px;margin:14px 0 22px}
+.hero h1{margin:0 0 6px;font-size:27px}
+.hero .sub{opacity:.92;margin:0}
+h2{font-size:22px;margin:32px 0 10px;padding-left:12px;border-left:6px solid var(--pri)}
+h3{font-size:17.5px;margin:16px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--pri);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.btn{display:inline-block;background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--pri2);border:1.5px solid var(--pri)}
+.note{font-size:13.5px;color:var(--mut)}
+.warn{background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.danger{background:#fbeae8;border-left:4px solid var(--bad);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.ok{background:#e9f4ee;border-left:4px solid var(--ok);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+code.inline{background:#ecebe4;border-radius:5px;padding:1px 6px;font-size:13.5px}
+ul.tight li{margin:6px 0}
+.plan{display:inline-block;background:var(--acc);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800;letter-spacing:.4px}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">← Pelican Tours Project Brief</a>
+  <span style="font-weight:700">🎓 AWS Learner Lab Setup</span>
+  <a href="starter-app/readme.html">📦 Starter App</a>
+</nav>
+<main>
+
+<header class="hero">
+  <h1>🎓 Your AWS Academy Learner Lab</h1>
+  <p class="sub">Real AWS console, real services, $100 of class credit, zero credit cards. ~20 minutes to get oriented — do this before Class 4 — M1 is due then and requires it. The lab has house rules — read them first.</p>
+</header>
+
+<h2>Getting in</h2>
+<div class="card">
+  <ul class="tight">
+    <li>Accept the <strong>AWS Academy</strong> email invitation from your instructor and create your Academy (Canvas) account.</li>
+    <li>Open the course → <strong>Modules → Launch AWS Academy Learner Lab</strong> → read/accept the terms.</li>
+    <li>On the lab page, press <strong>▶ Start Lab</strong>. Wait for the circle next to "AWS" to turn <strong style="color:#3e8e5a">green</strong>, then click the green <strong>AWS</strong> link — the real AWS console opens in a new tab, already signed in.</li>
+    <li>You're in as a <strong>federated, temporary identity</strong> using a role called <code class="inline">LabRole</code>. Note it — it's an M2 deliverable.</li>
+  </ul>
+  <div class="ok">✅ Done when: the console is open, region shows <strong>us-east-1 (N. Virginia)</strong>, and you can see your remaining budget on the lab page. Screenshot both for your journal — that budget number is your first "measured service" reading.</div>
+</div>
+
+<h2>House rules of the sandbox</h2>
+<div class="card">
+  <table>
+    <tr><th>Rule</th><th>What it means for you</th></tr>
+    <tr><td><strong>$100 budget, hard stop</strong></td><td>Shown on the lab page (updates every ~8–12 hrs, not live). If you hit it, <strong>the account is disabled and your work is gone</strong> — there is no appeal desk. The project is designed to use a fraction of it.</td></tr>
+    <tr><td><strong>Sessions end</strong></td><td>The lab session timer (usually 4 hrs) stops your session: <strong>EC2 instances are stopped</strong> (not terminated). Press Start Lab next time and they come back — <strong>with new public IPs</strong>. Use the ALB DNS name, not instance IPs, for anything you save or bookmark.</td></tr>
+    <tr><td><strong>Regions</strong></td><td><code class="inline">us-east-1</code> only (plus <code class="inline">us-west-2</code> where M3 says so). Resources elsewhere may be blocked — and anything orphaned there still burns budget.</td></tr>
+    <tr><td><strong>IAM is read-mostly</strong></td><td>You can't create users, and role creation is restricted. When anything asks for a role, use <code class="inline">LabRole</code>; for EC2 instance profiles use <code class="inline">LabInstanceProfile</code>. This is least privilege applied to lab accounts.</td></tr>
+    <tr><td><strong>Some services are off-limits</strong></td><td>Billing console, Budgets, Route 53, and various others are blocked or limited; a few (like Cognito) vary by lab template — where a milestone touches one of these, the brief includes a fallback. "Access Denied" on a milestone service? Journal it and use the fallback.</td></tr>
+    <tr><td><strong>Instance limits</strong></td><td>Only small instance types are allowed (and the project only ever needs t3.micro/t3.small). The lab caps how many can run at once — another reason desired capacity goes back to 1.</td></tr>
+  </table>
+  <div class="danger">🔒 <strong>Cost &amp; safety rules:</strong> t3.micro / t3.small only — nothing bigger; no NAT gateways, no unused Elastic IPs, no GPU anything. Security groups: 80/443 open to the world at most; SSH (22) only from your IP. Fictional guest data only — never real personal information in the lab.</div>
+</div>
+
+<h2>The end-of-session ritual</h2>
+<div class="card">
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Before you close the laptop, every single time:
+ 1. Auto Scaling group desired capacity → 1 (or 0 if done for the day)
+ 2. Terminate anything you experimented with and no longer need
+ 3. Check us-west-2 is empty (unless mid-M3)
+ 4. Lab page → End Lab   (instances stop; the meter mostly stops with them)
+ 5. Journal entry: what ran, what you stopped, budget reading</pre></div>
+  <p class="note">S3, DynamoDB, EBS volumes, and snapshots keep existing (and gently billing) while the lab is off — that's fine, they're pennies. The costly items are instances, load balancers, EFS mount targets, and forgotten experiments. The ALB is the priciest always-on piece (~$16/month if left up 24/7 — but your lab only "runs" while started, so in practice it costs a fraction of that; still, delete it if you'll be away a week).</p>
+</div>
+
+<h2>Budget forecast (so you know what normal looks like)</h2>
+<div class="card">
+  <table>
+    <tr><th>Resource</th><th>Price while running</th><th>Realistic semester use</th><th>Est. cost</th></tr>
+    <tr><td>t3.micro instances (1–3)</td><td>~$0.0104/hr each</td><td>~40 lab-hours, avg 1.5 running</td><td>~$0.65</td></tr>
+    <tr><td>Application Load Balancer</td><td>~$0.0225/hr + tiny LCU</td><td>~40 lab-hours</td><td>~$1.00</td></tr>
+    <tr><td>EBS volumes + snapshots</td><td>~$0.08/GB-month</td><td>2–3 small volumes, semester</td><td>~$2.00</td></tr>
+    <tr><td>S3 (site + photos + versioning)</td><td>~$0.023/GB-month + requests</td><td>a few GB</td><td>&lt; $1.00</td></tr>
+    <tr><td>Lambda + API Gateway + DynamoDB</td><td>per-request pricing</td><td>course-level traffic</td><td>&lt; $1.00</td></tr>
+    <tr><td>EFS (M2 exercise)</td><td>~$0.30/GB-month + mount target</td><td>created and deleted same session</td><td>&lt; $0.50</td></tr>
+    <tr><td><strong>Total, if you follow the ritual</strong></td><td colspan="2"></td><td><strong>≈ $6–15 of your $100</strong></td></tr>
+  </table>
+  <p class="note">The budget is rarely a problem unless instances are left running (e.g., an ASG at desired capacity 3 over a weekend). Your ledger predictions vs this table is an M1 deliverable.</p>
+</div>
+
+<h2>SSH keys & connecting to instances</h2>
+<div class="card">
+  <ul class="tight">
+    <li>The lab provides a ready key pair named <code class="inline">vockey</code> — download the <code class="inline">.pem</code> (Mac/Linux) or <code class="inline">.ppk</code> (PuTTY) from the lab page ("AWS Details" → SSH key).</li>
+    <li>Easier: skip SSH entirely with <strong>EC2 Instance Connect</strong> (Connect button in the console) or <strong>Session Manager</strong> — no keys, no port 22 open to the world — note the security difference in your journal.</li>
+  </ul>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>chmod 400 ~/Downloads/labsuser.pem
+ssh -i ~/Downloads/labsuser.pem ec2-user@INSTANCE-PUBLIC-IP
+# app logs:      sudo journalctl -u pelican -f
+# app restart:   sudo systemctl restart pelican</pre></div>
+</div>
+
+<h2>Troubleshooting the greatest hits</h2>
+<div class="card">
+  <table>
+    <tr><th>Symptom</th><th>Likely cause → fix</th></tr>
+    <tr><td>Green AWS dot never appears</td><td>Pop-up blocker ate the console tab, or the lab is still provisioning — wait 2 min, allow pop-ups for the Academy site, press Start Lab again.</td></tr>
+    <tr><td>Site worked yesterday, dead today</td><td>Session ended → instance stopped → new public IP on restart. Get the new IP, or (better) use the ALB DNS name which never changes.</td></tr>
+    <tr><td>"Access Denied" in the console</td><td>You've hit a Learner Lab restriction. Check the region first (us-east-1?), then the service list on the lab's README. If a milestone service is blocked, use the brief's fallback and journal it.</td></tr>
+    <tr><td>Role dropdown is empty / role error</td><td>Use <code class="inline">LabRole</code> (services) or <code class="inline">LabInstanceProfile</code> (EC2). You cannot create new roles — that's by design.</td></tr>
+    <tr><td>User data "didn't run"</td><td>It runs once, at first boot only. Check <code class="inline">/var/log/cloud-init-output.log</code>; did you replace <code class="inline">APP_ZIP_URL</code>? Relaunch the instance rather than fighting it.</td></tr>
+    <tr><td>Site loads, tours don't (S3 frontend)</td><td>Browser console will show it: <code class="inline">config.js</code> missing/wrong <code class="inline">API_BASE</code>, or CORS — confirm the API sends the CORS headers (starter app does) and API Gateway has CORS enabled (M4).</td></tr>
+    <tr><td>S3 website gives 403</td><td>Static website hosting on, bucket policy allowing public read on that bucket, and that bucket's Block Public Access turned off (only that one — M3 audits this).</td></tr>
+    <tr><td>Budget dropped more than expected</td><td>Something ran while you were gone. EC2 → all regions check (us-west-2!), delete orphans, and journal the post-mortem.</td></tr>
+  </table>
+  <p class="note">Golden rule: read the exact error text and check the region first — most lab issues are a wrong region or a stopped session. When searching for help, include the exact error message and what you clicked.</p>
+</div>
+
+<h2>No Learner Lab? <span class="plan">PERSONAL ACCOUNT APPENDIX</span></h2>
+<div class="card">
+  <p>If you're doing this outside a class Learner Lab: AWS's free plan for new accounts gives <strong>$100 in credits</strong> (up to $200 with activity bonuses) for 6 months, and on the <em>free account plan</em> you can't be charged — the account simply closes when credits or months run out. Signup does require a credit card and a phone number.</p>
+  <ul class="tight">
+    <li>Everything in this project fits comfortably in those credits — the budget table above still applies.</li>
+    <li>Differences from the Learner Lab: you have full IAM (create a non-root admin user with MFA on day one — that becomes your M2 evidence), all regions (stay in us-east-1 anyway), and Budgets works — set a $10 alert immediately.</li>
+    <li>The end-of-session ritual matters <em>more</em>, not less. Set a calendar reminder to close/clean the account at semester's end.</li>
+  </ul>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin-top:26px;flex-wrap:wrap;gap:10px">
+  <a class="btn ghost" href="index.html">← Back to the project brief</a>
+  <a class="btn" href="starter-app/readme.html">📦 Deploy the starter app →</a>
+</div>
+
+</main>
+<script>
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+</script>
+</body>
+</html>

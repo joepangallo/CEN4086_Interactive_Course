@@ -1,0 +1,7 @@
+[
+  { "id": 1, "name": "Drop-In Class", "price": 18.00, "stock": 999 },
+  { "id": 2, "name": "10-Class Pass", "price": 150.00, "stock": 999 },
+  { "id": 3, "name": "Cork Yoga Block (pair)", "price": 26.00, "stock": 21 },
+  { "id": 4, "name": "Mango Studio Mat — Sunrise", "price": 48.00, "stock": 9 },
+  { "id": 5, "name": "Sunset Rooftop Session", "price": 30.00, "stock": 999 }
+]

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · AWS Project — Pelican Tours</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#1273a8;--pri2:#0b4460;--acc:#3f3d99;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--pri);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri2);text-decoration:none;font-weight:600}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,#1273a8,#123047);color:#fff;border-radius:16px;padding:30px 28px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:29px}
+.hero .sub{opacity:.92;margin:0 0 10px}
+.chip{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:#fff}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--pri)}
+h3{font-size:18px;margin:18px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.m1{border-top:6px solid #1273a8}.card.m2{border-top:6px solid #e0a437}.card.m3{border-top:6px solid #b3543f}.card.m4{border-top:6px solid #7b5ea7}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--pri);width:16px;height:16px;flex-shrink:0}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--pri);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.btn{display:inline-block;background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--pri2);border:1.5px solid var(--pri)}
+.note{font-size:13.5px;color:var(--mut)}
+.due{display:inline-block;background:var(--bad);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800;letter-spacing:.4px}
+.pts{display:inline-block;background:var(--acc);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800}
+.obj{display:inline-block;background:var(--pri);color:#fff;border-radius:999px;font-size:11.5px;font-weight:800;padding:1px 9px;margin:1px}
+ul.tight li{margin:6px 0}
+.warn{background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.danger{background:#fbeae8;border-left:4px solid var(--bad);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.stretch{background:#f0edf7;border-left:4px solid var(--vio);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.budget{background:#e8f1f7;border-left:4px solid var(--pri);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+code.inline{background:#ecebe4;border-radius:5px;padding:1px 6px;font-size:13.5px}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <span style="font-weight:700">🌊 AWS Project — Pelican Tours</span>
+  <span>
+    <a href="setup.html">🎓 Learner Lab Setup</a> &nbsp;·&nbsp;
+    <a href="starter-app/readme.html">📦 Starter App</a> &nbsp;·&nbsp;
+    <a href="pelican-tours-project.pdf">📄 Printable Brief (PDF)</a> &nbsp;·&nbsp;
+    <a href="../../index.html">⌂ Course Hub</a>
+  </span>
+</nav>
+<main>
+
+<header class="hero">
+  <h1>🌊 Pelican Tours — Real AWS, Real Budget</h1>
+  <p class="sub">One small business, one real cloud, one $100 budget that has to survive the whole semester. You'll deploy the same app three different ways — as raw infrastructure, as managed platform, and as serverless — and learn why each exists.</p>
+  <div>
+    <span class="chip">Individual project</span><span class="chip">4 milestones · Classes 4 · 7 · 9 · 11</span><span class="chip">AWS Academy Learner Lab</span><span class="chip">No credit card — $100 class credit</span><span class="chip">Live demo on Class 12</span>
+  </div>
+</header>
+
+<h2>The client</h2>
+<div class="card">
+  <p><strong>Pelican Tours</strong> runs kayak, snorkel, and airboat trips out of Tampa, Florida — 9 guides, 6 boats, and the best manatee encounter rate on the Gulf Coast. Bookings live in a spiral notebook by the register. The "website" is a Facebook page.</p>
+  <p>Then a travel influencer's manatee video hit 40 million views with the caption <em>"book with Pelican Tours."</em> The phone melted. Owner <strong>Marissa Roydon</strong> hired a web kid who vanished mid-project, leaving one thing behind: a working little booking app (your <code class="inline">starter-app/</code>).</p>
+  <p>Marissa's brief to you: <em>"Put it on real cloud infrastructure. It has to survive the next viral video, our photo archive is drowning my laptop, my guides need proper logins, and I can't spend real money until bookings do. Oh — and hurricane season starts in June."</em></p>
+  <p>Your Learner Lab budget <strong>is</strong> Marissa's budget: $100 for the semester. If you exhaust it, the account shuts off — so every architectural choice you make is also a financial one.</p>
+</div>
+
+<h2>One app, three architectures</h2>
+<div class="card">
+  <p>The spine of the project: you deploy the <em>same booking app</em> three ways across the semester, and by the end you can explain from experience when each service model makes sense.</p>
+  <table>
+    <tr><th></th><th>Architecture</th><th>Service model</th><th>You manage</th><th>Built in</th></tr>
+    <tr><td><strong>1</strong></td><td>Everything on one EC2 instance (then an Auto Scaling group behind a load balancer)</td><td>IaaS — rehost</td><td>OS, runtime, scaling, health</td><td>M1</td></tr>
+    <tr><td><strong>2</strong></td><td>Frontend on S3 static hosting · API on EC2/ALB · photos in S3 with lifecycle tiers</td><td>Managed services — replatform</td><td>Less OS, more configuration</td><td>M2–M3</td></tr>
+    <tr><td><strong>3</strong></td><td>API Gateway + Lambda + DynamoDB · frontend stays on S3</td><td>Serverless — refactor</td><td>Code and configuration only</td><td>M4</td></tr>
+  </table>
+  <p class="note">The starter app is pre-cut for this journey: the API/static seam is marked in <code class="inline">server.js</code>, the frontend takes a configurable API base for S3 hosting, and bookings are held in memory <em>on purpose</em> — you'll watch that state vanish during scaling and finally fix it properly with DynamoDB in M4.</p>
+</div>
+
+<h2>Milestones & rubrics</h2>
+
+<div class="card m1">
+  <h3>M1 · Rehost: Marissa Goes Live <span class="due">DUE CLASS 4</span> <span class="pts">25 pts</span> <span class="obj">Obj 1</span><span class="obj">Obj 2</span><span class="obj">Obj 3</span><span class="obj">Obj 4</span></h3>
+  <p>The booking app moves from the vanished web kid's laptop to real infrastructure — then survives its first fake viral video.</p>
+  <label class="step"><input type="checkbox" data-step="m1a"><span><strong>Lab orientation:</strong> complete the <a href="setup.html">setup guide</a>; journal your first budget reading and the answer to: who is actually paying for the hardware under your $100, and what NIST trait is that?</span></label>
+  <label class="step"><input type="checkbox" data-step="m1b"><span><strong>Launch the instance (IaaS):</strong> EC2 t3.micro, Amazon Linux 2023, <code class="inline">LabInstanceProfile</code>, <code class="inline">user-data.sh</code> from the starter app. Security group: HTTP 80 from anywhere, SSH 22 from your IP only. Journal: what did you have to decide that a SaaS user never sees? Screenshot the working site + <code class="inline">/api/health</code>.</span></label>
+  <label class="step"><input type="checkbox" data-step="m1c"><span><strong>Sizing memo:</strong> defend t3.micro with numbers (vCPU, RAM, burst credits, on-demand price/hr from the pricing page) and name what you'd move to — and what it would cost — if Marissa's traffic 10×'d.</span></label>
+  <label class="step"><input type="checkbox" data-step="m1d"><span><strong>The viral-video drill (elasticity):</strong> create a launch template + Auto Scaling group (min 1 / desired 2 / max 3) behind an Application Load Balancer. Refresh <code class="inline">/api/health</code> through the ALB DNS and screenshot <code class="inline">served_by</code> rotating across instances. Then terminate one instance <em>manually</em> and watch the ASG heal itself — screenshot the timeline. Scale desired back to 1 (budget!).</span></label>
+  <label class="step"><input type="checkbox" data-step="m1e"><span><strong>The lost-state experiment:</strong> place a booking, then scale/replace instances and show the booking is gone. Journal: where did it go, why is in-memory state incompatible with elasticity, and which AWS services fix it? (You'll implement the fix in M4.)</span></label>
+  <label class="step"><input type="checkbox" data-step="m1f"><span><strong>Broad network access:</strong> book a tour from your phone (cellular, not Wi-Fi) via the ALB URL. One photo, one sentence.</span></label>
+  <label class="step"><input type="checkbox" data-step="m1g"><span><strong>Build vs buy (SaaS lens):</strong> half-page appraisal — should Marissa just use a booking SaaS (FareHarbor, Peek, etc.)? Compare on cost model, control, lock-in, and multi-tenancy; state when you'd advise each path. PaaS lens: what did the ALB + ASG manage <em>for</em> you, and what would a full PaaS have taken off your plate?</span></label>
+  <label class="step"><input type="checkbox" data-step="m1h"><span><strong>Cost ledger opens:</strong> table of every resource you're running, its hourly price, and your measured budget burn for the week. Predict M2's burn; you'll grade your own prediction next week.</span></label>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># M1 target architecture
+#
+#   phone/browser ──▶ ALB (port 80) ──▶ Auto Scaling group (1–3 × t3.micro)
+#                                        each runs starter-app via user-data
+#
+# Order of operations (console, us-east-1):
+# 1. EC2 → Launch templates → create from your working single instance
+#    (AMI: Amazon Linux 2023 · t3.micro · LabInstanceProfile · user-data)
+# 2. EC2 → Target groups → HTTP:80, health check path /api/health
+# 3. EC2 → Load balancers → ALB, internet-facing, 2+ AZs, your target group
+# 4. EC2 → Auto Scaling groups → min 1 / desired 2 / max 3, attach target group
+# 5. Visit http://ALB-DNS-NAME/api/health repeatedly → served_by rotates
+# 6. Terminate an instance → watch ASG replace it (screenshot before/after)
+# 7. Desired capacity → 1, then End Lab. Budget line in journal.</pre></div>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># Where user-data downloads your app from (pick ONE, do it before launching):
+#
+# Option A — public GitHub repo (simplest):
+#   1. Push the starter-app folder to a public repo you create
+#   2. Your zip URL is:
+#      https://github.com/YOUR-USERNAME/YOUR-REPO/archive/refs/heads/main.zip
+#   3. Paste that into APP_ZIP_URL in user-data.sh
+#
+# Option B — S3 bucket in your lab account:
+#   1. Zip the folder:  zip -r starter-app.zip starter-app
+#   2. S3 → Create bucket (any unique name) → Upload starter-app.zip
+#   3. Select the object → Presigned URL (12 hours) → paste into APP_ZIP_URL
+#      (an instance relaunching after the URL expires will fail — Option A avoids that)</pre></div>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Instance + user-data deploy works; security group and sizing reasoned like an engineer</td><td>6</td></tr>
+    <tr><td>ALB/ASG demo: rotation shown, self-healing shown, scaled back down</td><td>8</td></tr>
+    <tr><td>Lost-state experiment run and correctly explained</td><td>4</td></tr>
+    <tr><td>Build-vs-buy appraisal uses SaaS/PaaS/IaaS distinctions correctly</td><td>4</td></tr>
+    <tr><td>Journal + cost ledger complete, budget lines present</td><td>3</td></tr>
+  </table>
+</div>
+
+<div class="card m2">
+  <h3>M2 · Identity & Data: The Photo Archive and the Guides <span class="due">DUE CLASS 7</span> <span class="pts">25 pts</span> <span class="obj">Obj 5</span><span class="obj">Obj 6</span></h3>
+  <p>Marissa's 180 GB of manatee photos get a real home with real tiers, the frontend moves to S3 static hosting, and you appraise identity solutions from inside a federated sandbox.</p>
+  <label class="step"><input type="checkbox" data-step="m2a"><span><strong>You ARE a federation user:</strong> diagram your own login path (Canvas/Academy → Vocareum → temporary AWS credentials → console) and label the identity provider, the service provider, and the trust. Compare to corporate SSO into AWS.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2b"><span><strong>Read the role you live in:</strong> inspect <code class="inline">LabRole</code> in IAM — pick three allowed statements and one explicit deny, translate each to plain English, and explain how least privilege shows up in your own sandbox (what were you stopped from doing, and why is that good design?).</span></label>
+  <label class="step"><input type="checkbox" data-step="m2c"><span><strong>Author a least-privilege policy:</strong> author (JSON, in your repo) a least-privilege policy for a hypothetical "photo-uploader" guide role: put/get on <code class="inline">manatee-photos/*</code> only, no delete, no other buckets. Explain each statement. (Learner Lab may block attaching it — authoring and defending it is the assessed part; attach only if your lab allows.)</span></label>
+  <label class="step"><input type="checkbox" data-step="m2d"><span><strong>IDaaS appraisal:</strong> Marissa's 9 guides need logins for a future admin panel. Compare Amazon Cognito vs Okta/Entra ID vs "passwords in the app" on: MFA options, provisioning/deprovisioning (a guide quits mid-season!), cost at 9 users vs 900, and ops burden. Recommendation memo, half page. <em>Stretch (+2): if your Learner Lab allows Cognito, stand up a user pool with MFA and enroll one guide.</em></span></label>
+  <label class="step"><input type="checkbox" data-step="m2e"><span><strong>Object storage with tiers:</strong> S3 bucket for the photo archive; upload sample "photos"; add a lifecycle rule (Standard → Standard-IA at 30d → Glacier Flexible at 90d); enable versioning and demonstrate restoring an overwritten file; share one photo via a time-limited presigned URL. Cost the full 180 GB archive per tier per month (pricing page) — show Marissa the before/after.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2f"><span><strong>Block vs object vs file, on real services:</strong> table mapping EBS / S3 / EFS to what each holds in your architecture (root volume · photos+frontend · shared guide files), with one workload each is wrong for. Take an EBS snapshot now (you'll need it in M3). <em>EFS: create, mount on your instance, write one shared file — then delete the mount target and file system the same session (it bills hourly).</em></span></label>
+  <label class="step"><input type="checkbox" data-step="m2g"><span><strong>Frontend to S3 (replatform begins):</strong> host <code class="inline">public/</code> as an S3 static website with a <code class="inline">config.js</code> pointing <code class="inline">API_BASE</code> at your ALB. The site now survives every EC2 instance dying. Journal: which halves of the app now sit in which service model?</span></label>
+  <label class="step"><input type="checkbox" data-step="m2h"><span><strong>Data classification register:</strong> 6+ data types (bookings, guest names, photos, configs, credentials, logs…) with sensitivity, storage service, tier, and who can access. Note: why must the lab hold only fictional guest data?</span></label>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># M2 — frontend on S3 static hosting, step by step
+# 1. S3 → Create bucket (unique name) → UNCHECK "Block all public access"
+# 2. Upload everything inside starter-app/public/
+# 3. Create config.js in the bucket with one line:
+#      window.API_BASE = "http://YOUR-ALB-DNS-NAME";
+# 4. Bucket → Properties → Static website hosting → Enable
+#      index document: index.html   → note the website endpoint URL
+# 5. Bucket → Permissions → Bucket policy (public read of objects):
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "PublicRead",
+    "Effect": "Allow",
+    "Principal": "*",
+    "Action": "s3:GetObject",
+    "Resource": "arn:aws:s3:::YOUR-BUCKET-NAME/*"
+  }]
+}
+# 6. Open the website endpoint — tours should load from your ALB (the API
+#    already sends CORS headers). Booking flow should work end to end.</pre></div>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Federation diagram + LabRole reading show real understanding of identity plumbing</td><td>5</td></tr>
+    <tr><td>Least-privilege policy JSON correct and defended</td><td>4</td></tr>
+    <tr><td>IDaaS appraisal compares real options on real criteria</td><td>4</td></tr>
+    <tr><td>S3 lifecycle + versioning + presigned URL demonstrated; archive costed per tier</td><td>6</td></tr>
+    <tr><td>EBS/S3/EFS differentiation on real resources; snapshot taken; EFS cleaned up</td><td>3</td></tr>
+    <tr><td>S3 static frontend live via config.js; classification register sound</td><td>3</td></tr>
+  </table>
+</div>
+
+<div class="card m3">
+  <h3>M3 · Hurricane Season: Images, Hardening & the Drill <span class="due">DUE CLASS 9</span> <span class="pts">25 pts</span> <span class="obj">Obj 7</span></h3>
+  <p>Virtualization gets real — golden images, instance-type economics, a hardening pass — and then a simulated hurricane takes out us-east-1.</p>
+  <label class="step"><input type="checkbox" data-step="m3a"><span><strong>Instance-type safari (virtualization economics):</strong> using the EC2 pricing/instance pages, build a table for t3.micro, c5.large, r5.large, and one instance 10× t3.micro's price: vCPU, RAM, ratio, price/hr, and the workload each shape exists for. Then: which does the booking app actually need, and what does overprovisioning cost per year? Connect to how the hypervisor lets AWS sell one physical box as many shapes.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3b"><span><strong>Golden image:</strong> bake your configured instance into a custom AMI. Launch a fresh instance from it with <em>no user data</em> and time boot-to-serving. Compare against the user-data path; journal when imaging beats bootstrapping (and what "AMI drift" would mean six months from now).</span></label>
+  <label class="step"><input type="checkbox" data-step="m3c"><span><strong>Containers appraisal:</strong> you just built a VM image; compare with containerizing the app (startup time, density, image size, isolation, orchestration needs). Recommend VM vs container vs serverless for each Pelican Tours component — you'll test your serverless prediction in M4.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3d"><span><strong>Hardening pass:</strong> (1) security-group audit — tightest rules that still work, screenshot before/after; (2) S3 Block Public Access everywhere except the website bucket, and say why the website bucket is the exception; (3) verify encryption at rest on EBS + S3 (it's on by default — so what, exactly, does it protect against, and what not?); (4) fix the root/port-80 flag in <code class="inline">user-data.sh</code> (the comment tells you where); (5) confirm IMDSv2-only on your instances.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3e"><span><strong>Shared-responsibility matrix, AWS edition:</strong> for EC2 vs S3 vs (M4's) Lambda: who patches the hypervisor, the OS, the runtime, the app code, and who owns data + access config in each. One sharp paragraph: which of <em>your</em> past checkboxes were "security OF the cloud" vs "security IN the cloud"?</span></label>
+  <label class="step"><input type="checkbox" data-step="m3f"><span><strong>Targets first:</strong> RTO + RPO for the booking site, the photo archive, and guide files — justified in Marissa's business terms (a lost booking vs a lost decade of photos are different tragedies), and the DR tier each implies (backup-restore / pilot light / warm standby / multi-site).</span></label>
+  <label class="step"><input type="checkbox" data-step="m3g"><span><strong>💥 Hurricane drill:</strong> photos bucket gets cross-region replication to us-west-2 (verify an object lands there). Then simulate losing the region: terminate <em>all</em> instances, delete the ASG. Recover in <strong>us-west-2</strong>: copy your AMI across, launch, repoint <code class="inline">config.js</code>. Time every step. Report actual RTO/RPO vs your targets in a 1-page incident report — graded on the honesty of the analysis, not on hitting your numbers. Clean up us-west-2 completely the same session, and journal what a <em>warm standby</em> there would have cost per month vs your restore time.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3h"><span><strong>SLA reality check:</strong> EC2, S3, and the ALB each publish an SLA — find the numbers, compute the allowed monthly downtime (Session 9 method), and compare with the availability your single-region M1 design could honestly promise Marissa. What does the gap between "AWS's SLA" and "your architecture's availability" teach?</span></label>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Instance-type economics + golden-image timing show virtualization understood from the buyer's chair</td><td>6</td></tr>
+    <tr><td>Containers appraisal reasoned per component</td><td>3</td></tr>
+    <tr><td>Hardening pass complete with before/after evidence; shared-responsibility matrix sharp</td><td>7</td></tr>
+    <tr><td>Hurricane drill executed cross-region; measured RTO/RPO vs targets; honest incident report; full cleanup</td><td>7</td></tr>
+    <tr><td>SLA math correct and the architecture-vs-SLA gap articulated</td><td>2</td></tr>
+  </table>
+</div>
+
+<div class="card m4">
+  <h3>M4 · Serverless Refactor & the Reckoning <span class="due">DUE CLASS 11 · DEMO CLASS 12</span> <span class="pts">25 pts</span> <span class="obj">Obj 8</span></h3>
+  <p>The API becomes functions, bookings persist in DynamoDB, monitoring alerts reach your inbox — and three architectures face one cost comparison.</p>
+  <label class="step"><input type="checkbox" data-step="m4a"><span><strong>Refactor (SOA for real):</strong> re-implement the API as Lambda functions behind API Gateway (<code class="inline">LabRole</code> as execution role) with bookings in a DynamoDB table — the in-memory flaw from M1, finally fixed. Frontend on S3 just changes <code class="inline">config.js</code>. Prove bookings persist by placing one and reading it back after a fresh deployment.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4b"><span><strong>API design sheet:</strong> document 5+ REST endpoints (method · path · purpose · sample request/response · status codes). Design and implement one <em>new</em> endpoint (e.g., <code class="inline">GET /api/availability?date=</code>). Journal: what makes this loosely coupled — name the contract, and what each side can now change without asking the other.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4c"><span><strong>Loose coupling, live:</strong> break the API deliberately (throttle the stage to 0 or break a route) — the S3 frontend shows its degraded banner instead of dying. Screenshot, restore, recover. Bonus insight: which pieces of your M3 DR plan just became AWS's problem?</span></label>
+  <label class="step"><input type="checkbox" data-step="m4d"><span><strong>Monitoring + alerting:</strong> CloudWatch alarm on API Gateway 5xx (or Lambda errors) → SNS email; trigger it for real and screenshot the email. Define 5 metrics + thresholds you'd watch if Pelican Tours had 50 tour companies as tenants; note the on-call reality for a company of one.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4e"><span><strong>The reckoning (cost engineering):</strong> one spreadsheet, three architectures (M1 EC2+ASG · M2 hybrid · M4 serverless) priced at three traffic levels: 100, 10k, and 1M bookings/month (pricing calculator + your actual measured burn as the sanity check). Recommendation memo to Marissa: which architecture at which stage of her growth, and the trigger points for switching.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4f"><span><strong>Everything-as-evidence:</strong> final architecture diagram (all three generations, before/after), repo complete, cost ledger closed out with total semester burn vs $100.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4g"><span><strong>Live demo (Class 12):</strong> present and demo live from your lab account. 💥 Chaos moment: the instructor picks one thing to break (an instance, the API stage, or a photo); you show the blast radius, the alert, and the recovery.</span></label>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># M4 — serverless refactor, one endpoint worked end to end (repeat the pattern)
+#
+# 1. DynamoDB → Create table:  name Bookings · partition key bookingId (Number)
+# 2. Lambda → Create function: name pelican-bookings · Runtime Node.js 20
+#    → Change default execution role → Use existing role → LabRole
+# 3. Paste this as index.js (handles GET and POST /api/bookings):
+
+const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+const { DynamoDBDocumentClient, PutCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+const ddb = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const resp = (statusCode, obj) => ({
+  statusCode,
+  headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+  body: JSON.stringify(obj)
+});
+exports.handler = async (event) => {
+  if (event.requestContext.http.method === 'POST') {
+    const b = JSON.parse(event.body || '{}');
+    if (!b.tourId || !b.name) return resp(400, { error: 'tourId and name are required' });
+    const booking = { bookingId: Date.now(), tourId: b.tourId, name: b.name,
+                      guests: b.guests || 1, bookedAt: new Date().toISOString() };
+    await ddb.send(new PutCommand({ TableName: 'Bookings', Item: booking }));
+    return resp(201, booking);
+  }
+  const out = await ddb.send(new ScanCommand({ TableName: 'Bookings' }));
+  return resp(200, out.Items);
+};
+
+# 4. API Gateway → Create HTTP API → Add integration: your Lambda
+#    Routes:  GET /api/bookings  and  POST /api/bookings  → same integration
+#    CORS: allow origin *, methods GET,POST,OPTIONS, header Content-Type
+#    Deploy (default stage) → copy the Invoke URL
+# 5. Second function for the catalog: pelican-tours returns tours.json the
+#    same way (no DynamoDB needed) on GET /api/tours — same resp() pattern
+# 6. Update config.js in your S3 bucket:
+#      window.API_BASE = "https://XXXX.execute-api.us-east-1.amazonaws.com";
+# 7. Alarm: SNS → Create topic + email subscription (confirm the email!) →
+#    CloudWatch → Alarms → Create: metric = your Lambda Errors ≥ 1 → notify topic.
+#    Break the route on purpose, watch the email arrive.</pre></div>
+  <div class="stretch">🌟 <strong>Stretch (up to +3 bonus):</strong> Infrastructure as Code — a CloudFormation template that stands up your M1 stack (launch template, ASG, ALB) in one deploy. Demo: delete the stack, redeploy, working site, zero console clicks. Explain why this changes DR math entirely.</div>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Serverless refactor works end-to-end; DynamoDB fixes the state flaw and you can say why</td><td>8</td></tr>
+    <tr><td>REST design sheet follows conventions; new endpoint sensible; coupling explained via the contract</td><td>5</td></tr>
+    <tr><td>Break/recover demo + alarm fired to a real inbox</td><td>4</td></tr>
+    <tr><td>Three-architecture cost model honest, sourced, sanity-checked against measured burn; memo decisive</td><td>5</td></tr>
+    <tr><td>Live demo: clear story, working system, chaos moment survived, questions handled</td><td>3</td></tr>
+  </table>
+</div>
+
+<h2>Where each course objective is satisfied</h2>
+<div class="card">
+  <table>
+    <tr><th style="width:56%">Upon completion of CEN4086, students can…</th><th>Pelican Tours evidence</th></tr>
+    <tr><td><span class="obj">1</span> Understand the abstract nature and advantages/disadvantages of cloud computing</td><td>M1: NIST traits demonstrated on real AWS (self-healing ASG, metered $100 budget); lost-state experiment; whole-project cost discipline</td></tr>
+    <tr><td><span class="obj">2</span> Define and describe SaaS</td><td>M1: build-vs-buy appraisal against real booking SaaS (cost model, lock-in, multi-tenancy)</td></tr>
+    <tr><td><span class="obj">3</span> Define and describe the PaaS model</td><td>M1/M4: naming what ALB+ASG manage for you; serverless (Lambda/API GW) as the far end of the managed spectrum — experienced, then compared</td></tr>
+    <tr><td><span class="obj">4</span> Describe IaaS and identify solution providers</td><td>M1: EC2 provisioning, sizing memo, security groups; M3: instance-type economics across the AWS catalog</td></tr>
+    <tr><td><span class="obj">5</span> Evaluate ID-management challenges and appraise IDaaS solutions</td><td>M2: federation diagram of their own lab login; LabRole least-privilege reading; authored policy JSON; Cognito vs Okta vs DIY appraisal</td></tr>
+    <tr><td><span class="obj">6</span> Differentiate cloud data-storage and collaboration solutions</td><td>M2: S3 lifecycle tiers costed on a real archive; versioning; presigned sharing; EBS vs S3 vs EFS on live resources; M3: cross-region replication</td></tr>
+    <tr><td><span class="obj">7</span> Examine and evaluate virtualization solutions</td><td>M3: instance shapes as hypervisor economics; golden AMI vs bootstrap timing; containers appraisal; hurricane drill with measured RTO/RPO</td></tr>
+    <tr><td><span class="obj">8</span> Define and describe Service-Oriented Architecture</td><td>M4: monolith → API Gateway + Lambda + DynamoDB; documented REST contract; loose-coupling break/recover demo</td></tr>
+  </table>
+</div>
+
+<h2>Class-by-class checkpoints</h2>
+<div class="card">
+  <table>
+    <tr><th>Class · Day</th><th>Due at the start of class (journal evidence, budget line included)</th><th>Feeds</th></tr>
+    <tr><td>3 · Thu</td><td>Project introduced · accept the Learner Lab invite · start the <a href="setup.html">setup guide</a> this weekend — <em>nothing due, but M1 lands Monday</em></td><td>—</td></tr>
+    <tr><td>4 · Mon</td><td><strong>M1 due</strong> — lab access verified + first budget reading · repo + journal · EC2 via user data · ALB/ASG viral-video drill · sizing memo · lost-state note · cost ledger opened</td><td>M1</td></tr>
+    <tr><td>5 · Tue</td><td><strong>Due (written):</strong> federation diagram of your own lab login · LabRole reading</td><td>M2</td></tr>
+    <tr><td>6 · Thu</td><td><strong>Due:</strong> photo-uploader policy JSON · S3 archive with lifecycle + versioning · EBS snapshot taken</td><td>M2</td></tr>
+    <tr><td>7 · Mon</td><td><strong>M2 due</strong> — presigned share · EBS/EFS exercise · frontend live from S3 · classification register</td><td>M2</td></tr>
+    <tr><td>8 · Tue</td><td><strong>Due (written):</strong> RTO/RPO targets per system · shared-responsibility matrix draft</td><td>M3</td></tr>
+    <tr><td>9 · Thu</td><td><strong>M3 due</strong> — instance-type table · golden AMI timed · hardening pass · 💥 hurricane drill with incident report · us-west-2 cleaned up</td><td>M3</td></tr>
+    <tr><td>10 · Mon</td><td><strong>Due:</strong> Lambda + API Gateway routes working · DynamoDB wired in · CloudWatch alarm fired to your inbox</td><td>M4</td></tr>
+    <tr><td>11 · Tue</td><td><strong>M4 due</strong> — API design sheet, break/recover evidence, three-architecture cost model + recommendation memo; the heavy build was Monday's checkpoint</td><td>M4</td></tr>
+    <tr><td>12 · Thu</td><td><strong>Final Day — live demos</strong> 🎓 (presentation only)</td><td>M4</td></tr>
+  </table>
+  <p class="note">Pacing follows the class calendar: Monday items carry the weekend's work, Tuesday items are deliberately light (one day after Monday), Thursday items get two days. Milestone submissions on Tuesdays are mostly assembly — their heavy build work is the Monday checkpoint before them.</p>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin-top:26px;flex-wrap:wrap;gap:10px">
+  <a class="btn ghost" href="setup.html">🎓 Set up your Learner Lab</a>
+  <a class="btn" href="starter-app/readme.html">📦 Get the starter app →</a>
+</div>
+
+</main>
+<script>
+const PKEY='cen4086v3:aws-pelican-tours';
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+</script>
+</body>
+</html>

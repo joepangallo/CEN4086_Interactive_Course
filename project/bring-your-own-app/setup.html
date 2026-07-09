@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Bring Your Own App — Eligibility &amp; Setup</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#7b5ea7;--pri2:#4d3a70;--acc:#3f3d99;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--teal:#0f8b8d;--blue:#1273a8}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--pri);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri2);text-decoration:none;font-weight:600}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,#2c2350,#7b5ea7);color:#fff;border-radius:16px;padding:26px 28px;margin:14px 0 22px}
+.hero h1{margin:0 0 6px;font-size:27px}
+.hero .sub{opacity:.92;margin:0}
+h2{font-size:22px;margin:32px 0 10px;padding-left:12px;border-left:6px solid var(--pri)}
+h3{font-size:17.5px;margin:16px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.btn{display:inline-block;background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--pri2);border:1.5px solid var(--pri)}
+.note{font-size:13.5px;color:var(--mut)}
+.warn{background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.danger{background:#fbeae8;border-left:4px solid var(--bad);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.ok{background:#e9f4ee;border-left:4px solid var(--ok);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+code.inline{background:#ecebe4;border-radius:5px;padding:1px 6px;font-size:13.5px}
+ul.tight li{margin:6px 0}
+.local{display:inline-block;background:var(--teal);color:#fff;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:800}
+.aws{display:inline-block;background:var(--blue);color:#fff;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:800}
+@media print{.topnav,.btn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">← Project Brief</a>
+  <span style="font-weight:700">✅ Eligibility &amp; Setup</span>
+  <a href="../../index.html">⌂ Course Hub</a>
+</nav>
+<main>
+
+<header class="hero">
+  <h1>✅ Does your app qualify — and how to start</h1>
+  <p class="sub">This track is for students who already have a mobile app or a website with an app component. Eligibility, the proposal (emailed right after Class 3), safety rules for working with a real app, and how each kind of app adapts to the milestones.</p>
+</header>
+
+<h2>Eligibility</h2>
+<div class="card">
+  <p>Your app qualifies if <strong>all</strong> of these are true:</p>
+  <ul class="tight">
+    <li><strong>It's yours.</strong> You wrote it (side project, club app, a previous course project), or it was a team project and you're working from your own fork and can modify every layer yourself. All course work is individual.</li>
+    <li><strong>You have the source</strong> in a repository you control, and it runs today — on your machine, an emulator, or a device.</li>
+    <li><strong>It has, or can gain, a server side.</strong> The milestones operate on backend components. A pure static site or a fully offline mobile app qualifies only if you're willing to build its minimal API backend in M1 (the sibling tracks' starter apps show how small that can be).</li>
+    <li><strong>It can run on course infrastructure:</strong> your own machine with Docker, or the AWS Learner Lab. Apps hard-wired to a platform you can't replicate (e.g., entirely Firebase-dependent with no replaceable layer) need a plan for which slice you'll re-implement — put it in the proposal.</li>
+    <li><strong>A course copy is possible.</strong> You can run a separate instance with test data, without touching any live version real people use.</li>
+  </ul>
+  <p class="note">Not sure it qualifies? Ask at Class 3 — borderline cases usually work with a small scope adjustment. If it isn't approved, you take the <a href="../pocket-cloud/index.html">Pocket Cloud</a> or <a href="../aws-pelican-tours/index.html">Pelican Tours</a> track instead, no penalty.</p>
+</div>
+
+<h2>The proposal (one page — email it right after Class 3)</h2>
+<div class="card">
+  <table>
+    <tr><th>Section</th><th>What to include</th></tr>
+    <tr><td>The app</td><td>Name, what it does, who it's for, and a screenshot of it running today</td></tr>
+    <tr><td>Components</td><td>Client(s), server(s), database, file/media storage, third-party services — one line each</td></tr>
+    <tr><td>Stack</td><td>Languages, frameworks, database engine, current hosting (even if that's "my laptop")</td></tr>
+    <tr><td>Ownership</td><td>Solo or team-built; if team-built, confirm you have your own fork and full-stack ability</td></tr>
+    <tr><td>Users &amp; data</td><td>Does any live version have real users or real personal data? How will the course copy avoid it?</td></tr>
+    <tr><td>Gaps</td><td>What's missing for the milestones (no backend? no API? no auth?) and your plan for it</td></tr>
+    <tr><td>Platform</td><td><span class="local">LOCAL</span> Docker or <span class="aws">AWS</span> Learner Lab — and why</td></tr>
+  </table>
+  <div class="ok">✅ Approved proposals get a signature line in your journal: scope, platform, and any instructor-adjusted milestone items. That signed scope is your grading contract for the semester.</div>
+</div>
+
+<h2>Safety rules for a real app</h2>
+<div class="card">
+  <div class="danger">🔒 <strong>Non-negotiable:</strong>
+    <ul class="tight" style="margin:8px 0 0">
+      <li><strong>Course copy only.</strong> All milestone work happens on a separate branch/fork and a separate deployment. Never point course experiments at a live version people use.</li>
+      <li><strong>No real user data, ever.</strong> Test/generated data only in the course deployment, its database, its backups, and every screenshot. If a database dump contains real emails, names, or messages — it does not enter the course copy.</li>
+      <li><strong>Secrets:</strong> production API keys, signing keys, and store credentials never go in the course repo. M3's secrets audit covers the course copy; rotate anything you find already leaked.</li>
+      <li><strong>Game day (M3) is for the course deployment only.</strong> You destroy and restore the course copy — never a live system.</li>
+      <li>Platform rules still apply: <span class="local">LOCAL</span> stays on localhost/LAN — no port-forwarding to the internet · <span class="aws">AWS</span> follows every Learner Lab cost/safety rule in its <a href="../aws-pelican-tours/setup.html">guide</a>.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Set up your platform</h2>
+<div class="card">
+  <table>
+    <tr><th>Platform</th><th>Guide</th><th>What you'll install/access</th></tr>
+    <tr><td><span class="local">LOCAL</span> Docker on your machine</td><td><a href="../pocket-cloud/setup.html">Pocket Cloud setup guide</a></td><td>Docker Desktop (or Podman), Portainer; later Caddy, Authelia, MinIO, Uptime Kuma as the milestones call for them</td></tr>
+    <tr><td><span class="aws">AWS</span> Academy Learner Lab</td><td><a href="../aws-pelican-tours/setup.html">Learner Lab setup guide</a></td><td>Lab access via AWS Academy, $100 class credit, LabRole conventions, budget discipline and the end-of-session ritual</td></tr>
+  </table>
+  <p class="note">Follow the guide's verification steps before Class 4 — M1 is due at Class 4 and requires a working environment. Containerizing your app for the LOCAL platform: the Pocket Cloud starter app's <code class="inline">Dockerfile</code> is a minimal reference — most stacks follow the same shape (base image → copy code → install dependencies → expose port → start command).</p>
+</div>
+
+<h2>How different apps adapt to the milestones</h2>
+<div class="card">
+  <table>
+    <tr><th>Your situation</th><th>M1 deployment means…</th><th>Watch out for</th></tr>
+    <tr><td><strong>Full-stack web app</strong> (frontend + server + DB)</td><td>Containerize/deploy server + DB; frontend served from the server or object storage</td><td>Database state during scaling; connection strings as secrets</td></tr>
+    <tr><td><strong>Website + separate app/API</strong></td><td>Deploy the API; host the site from object storage or the reverse proxy</td><td>CORS between site and API; environment-specific URLs</td></tr>
+    <tr><td><strong>Mobile app with your own backend</strong></td><td>Deploy the backend; the phone/emulator client points at the cloud URL</td><td>Hard-coded server addresses in the client; HTTPS requirements on device</td></tr>
+    <tr><td><strong>Mobile app on BaaS</strong> (Firebase, Supabase, …)</td><td>Re-implement one thin slice (e.g., the data API for one screen) as your own service; the rest stays as-is and gets classified in the service-model map</td><td>Scope the slice small; document what the BaaS still manages in the responsibility matrix</td></tr>
+    <tr><td><strong>Static site or offline app, no backend</strong></td><td>Build the minimal API the app plausibly needs (a few endpoints + storage) — that build is the M1 deliverable</td><td>Keep it minimal; the sibling starter apps are the reference shape</td></tr>
+    <tr><td><strong>Game with online features</strong></td><td>Deploy the leaderboard/match/state service</td><td>Latency expectations; state persistence during scaling</td></tr>
+  </table>
+  <p class="note">Whatever the shape: every milestone item names a platform-neutral goal. When your app makes an item trivial (you already have great auth) the instructor swaps in a deeper alternative from the sibling briefs; when it makes one impossible, the proposal records the substitute. The signed scope wins every argument later.</p>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin-top:26px;flex-wrap:wrap;gap:10px">
+  <a class="btn ghost" href="index.html">← Back to the project brief</a>
+  <a class="btn" href="../pocket-cloud/setup.html">🛠 Local setup guide</a>
+  <a class="btn" href="../aws-pelican-tours/setup.html">🎓 AWS Learner Lab guide</a>
+</div>
+
+</main>
+</body>
+</html>

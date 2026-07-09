@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Pocket Cloud — Environment Setup</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#0f8b8d;--pri2:#0b5e60;--acc:#3f3d99;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--pri);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri2);text-decoration:none;font-weight:600}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,#173a56,#0f8b8d);color:#fff;border-radius:16px;padding:26px 28px;margin:14px 0 22px}
+.hero h1{margin:0 0 6px;font-size:27px}
+.hero .sub{opacity:.92;margin:0}
+h2{font-size:22px;margin:32px 0 10px;padding-left:12px;border-left:6px solid var(--pri)}
+h3{font-size:17.5px;margin:16px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--pri);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.btn{display:inline-block;background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--pri2);border:1.5px solid var(--pri)}
+.note{font-size:13.5px;color:var(--mut)}
+.warn{background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.danger{background:#fbeae8;border-left:4px solid var(--bad);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.ok{background:#e9f4ee;border-left:4px solid var(--ok);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+code.inline{background:#ecebe4;border-radius:5px;padding:1px 6px;font-size:13.5px}
+ul.tight li{margin:6px 0}
+.plan{display:inline-block;background:var(--acc);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800;letter-spacing:.4px}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="index.html">← Pocket Cloud Project Brief</a>
+  <span style="font-weight:700">🛠 Environment Setup</span>
+  <a href="starter-app/readme.html">📦 Starter App</a>
+</nav>
+<main>
+
+<header class="hero">
+  <h1>🛠 Setting up your local server</h1>
+  <p class="sub">One-time setup, ~30–45 minutes. Do this before Class 4 — M1 is due then and requires it. Your laptop becomes the data center — no accounts with a credit card, no paid anything, ever.</p>
+</header>
+
+<h2>What your machine needs</h2>
+<div class="card">
+  <table>
+    <tr><th></th><th>Minimum</th><th>Comfortable</th></tr>
+    <tr><td>RAM</td><td>8 GB</td><td>16 GB</td></tr>
+    <tr><td>Free disk</td><td>15 GB</td><td>25 GB</td></tr>
+    <tr><td>OS</td><td colspan="2">Windows 10/11 (64-bit) · macOS 12+ (Intel or Apple Silicon) · any mainstream Linux</td></tr>
+    <tr><td>CPU</td><td colspan="2">Anything from the last ~8 years with virtualization support (nearly all have it)</td></tr>
+  </table>
+  <p class="note">Under 8 GB RAM, or a school-locked machine where you can't install software? Skip to <strong>Plan B / Plan C</strong> below — you can complete the entire project in a free browser-based environment.</p>
+</div>
+
+<h2>Plan A · Docker Desktop on your machine <span class="plan">RECOMMENDED</span></h2>
+<div class="card">
+  <h3>Windows</h3>
+  <ul class="tight">
+    <li>Download <strong>Docker Desktop for Windows</strong> from <code class="inline">docker.com/products/docker-desktop</code> (free for personal &amp; education use — no account needed to download or run).</li>
+    <li>The installer enables <strong>WSL 2</strong> (Windows Subsystem for Linux). Accept it; reboot when asked.</li>
+    <li>If it complains about virtualization: enable <em>Intel VT-x / AMD-V (SVM)</em> in your BIOS/UEFI — usually under "Advanced" or "CPU Configuration."</li>
+  </ul>
+  <h3>macOS</h3>
+  <ul class="tight">
+    <li>Download <strong>Docker Desktop for Mac</strong> — pick <em>Apple Silicon</em> or <em>Intel</em> to match your machine ( → About This Mac).</li>
+    <li>Drag to Applications, open, grant the permissions it asks for.</li>
+  </ul>
+  <h3>Linux</h3>
+  <ul class="tight">
+    <li>Install <strong>Docker Engine</strong> + the compose plugin from your distro's docs (<code class="inline">docs.docker.com/engine/install</code>), then add yourself to the docker group: <code class="inline">sudo usermod -aG docker $USER</code> and log out/in.</li>
+  </ul>
+  <div class="warn">💡 Prefer <strong>Podman</strong> (or Docker Desktop won't run for you)? Podman Desktop is a drop-in for this project — <code class="inline">podman compose</code> replaces <code class="inline">docker compose</code>. Note any differences you hit in your journal.</div>
+
+  <h3>Verify it works (this screenshot is checkpoint 1)</h3>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>docker --version
+docker compose version
+docker run hello-world
+docker run -d -p 8088:80 --name web-test nginx:alpine
+# open http://localhost:8088 and confirm the nginx welcome page appears
+docker rm -f web-test</pre></div>
+
+  <h3>Install your cloud console (Portainer CE)</h3>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>docker volume create portainer_data
+docker run -d -p 9443:9443 --name portainer --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v portainer_data:/data portainer/portainer-ce:latest
+# open https://localhost:9443 — accept the local-certificate warning,
+# create your admin account IMMEDIATELY (it locks after a few minutes),
+# use a strong password you don't use anywhere else.</pre></div>
+  <div class="ok">✅ Done when: <code class="inline">hello-world</code> ran, you saw nginx on port 8088, and Portainer shows your containers at <code class="inline">https://localhost:9443</code>. Screenshot Portainer for your journal — that's your cloud console.</div>
+</div>
+
+<h2>Plan B · GitHub Codespaces <span class="plan">FREE FALLBACK</span></h2>
+<div class="card">
+  <ul class="tight">
+    <li>Free personal GitHub accounts include <strong>~60 hours/month</strong> of a 2-core, 8 GB cloud dev machine — <strong>Docker preinstalled</strong>, no credit card required.</li>
+    <li>Create your project repo on GitHub → green <strong>Code</strong> button → <strong>Codespaces</strong> → <em>Create codespace on main</em>. You get VS Code in the browser with a terminal; every <code class="inline">docker …</code> command in this project works there. Forwarded ports replace <code class="inline">localhost</code> links.</li>
+    <li>Budget your hours: stop the codespace when you're not working (it also auto-stops). Track usage at <code class="inline">github.com/settings/billing</code> — it will never charge you; it just stops at the limit.</li>
+  </ul>
+</div>
+
+<h2>Plan C · Play with Docker <span class="plan">LAST RESORT</span></h2>
+<div class="card">
+  <ul class="tight">
+    <li><code class="inline">labs.play-with-docker.com</code> — free browser terminal with Docker, using a free Docker Hub account.</li>
+    <li>Sessions last <strong>4 hours and then everything is deleted</strong>, so keep every config in your Git repo and re-run from scratch each session.</li>
+    <li>Use it for in-class checkpoints in a pinch; use Plan B for milestone work.</li>
+  </ul>
+</div>
+
+<h2>Troubleshooting the greatest hits</h2>
+<div class="card">
+  <table>
+    <tr><th>Symptom</th><th>Likely cause → fix</th></tr>
+    <tr><td>"WSL 2 installation is incomplete" (Windows)</td><td>Run <code class="inline">wsl --update</code> in PowerShell (as admin), reboot, relaunch Docker Desktop.</td></tr>
+    <tr><td>"Virtualization not enabled"</td><td>Enable VT-x / AMD-V in BIOS/UEFI. On school machines this may be locked → Plan B.</td></tr>
+    <tr><td><code class="inline">port is already allocated</code></td><td>Something else owns that port. Pick another (<code class="inline">-p 8089:80</code>) or find the squatter: <code class="inline">docker ps</code>, or <code class="inline">netstat -ano | findstr :8088</code> (Win) / <code class="inline">lsof -i :8088</code> (Mac/Linux).</td></tr>
+    <tr><td><code class="inline">permission denied … docker.sock</code> (Linux)</td><td>You skipped the docker-group step, or didn't log out/in after it.</td></tr>
+    <tr><td>Docker Desktop eats all RAM</td><td>Settings → Resources → cap memory (e.g., 4 GB). On Windows, create <code class="inline">%UserProfile%\.wslconfig</code> with <code class="inline">[wsl2]</code> / <code class="inline">memory=4GB</code>, then <code class="inline">wsl --shutdown</code>.</td></tr>
+    <tr><td><code class="inline">*.localhost</code> names don't resolve (M2)</td><td>Modern browsers/OSes send them to 127.0.0.1 automatically. If yours doesn't, add lines to your hosts file: <code class="inline">127.0.0.1 auth.localhost palmetto.localhost mango.localhost</code>.</td></tr>
+    <tr><td>Phone can't reach the site (M1)</td><td>Same Wi-Fi? Use the laptop's LAN IP (<code class="inline">ipconfig</code>/<code class="inline">ifconfig</code>), not "localhost". Campus/guest Wi-Fi often blocks device-to-device — demo on a home network or phone hotspot instead.</td></tr>
+    <tr><td>Nothing works anymore</td><td>Run <code class="inline">docker compose down</code>, then Docker Desktop → Troubleshoot → Restart. If problems persist, <em>Reset to factory defaults</em> erases all containers/volumes — fine early on, a disaster after M2 unless your backups work.</td></tr>
+  </table>
+  <p class="note">Golden rule: read the exact error text carefully — it usually names the fix. When searching for help, include the exact message, the command that caused it, and your OS.</p>
+</div>
+
+<h2>Safety rules</h2>
+<div class="card">
+  <div class="danger">🔒 <strong>Local means local.</strong> Never forward router ports to your Pocket Cloud or expose it to the internet (no ngrok/tunnels for this project). Strong unique passwords on every admin console (Portainer, MinIO, Authelia), stored in your password manager — never in Git. Only break, stop, or load-test containers that are yours. No tool in this project requires a credit card.</div>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin-top:26px;flex-wrap:wrap;gap:10px">
+  <a class="btn ghost" href="index.html">← Back to the project brief</a>
+  <a class="btn" href="starter-app/readme.html">📦 Deploy the starter app →</a>
+</div>
+
+</main>
+<script>
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+</script>
+</body>
+</html>

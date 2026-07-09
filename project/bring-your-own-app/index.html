@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Bring Your Own App — Your App, Real Cloud</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#7b5ea7;--pri2:#4d3a70;--acc:#3f3d99;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--teal:#0f8b8d;--blue:#1273a8}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--pri);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri2);text-decoration:none;font-weight:600}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,#7b5ea7,#2c2350);color:#fff;border-radius:16px;padding:30px 28px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:29px}
+.hero .sub{opacity:.92;margin:0 0 10px}
+.chip{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:#fff}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--pri)}
+h3{font-size:18px;margin:18px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.m1{border-top:6px solid #7b5ea7}.card.m2{border-top:6px solid #e0a437}.card.m3{border-top:6px solid #b3543f}.card.m4{border-top:6px solid #0f8b8d}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--pri);width:16px;height:16px;flex-shrink:0}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.btn{display:inline-block;background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--pri2);border:1.5px solid var(--pri)}
+.note{font-size:13.5px;color:var(--mut)}
+.due{display:inline-block;background:var(--bad);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800;letter-spacing:.4px}
+.pts{display:inline-block;background:var(--acc);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800}
+.obj{display:inline-block;background:var(--pri);color:#fff;border-radius:999px;font-size:11.5px;font-weight:800;padding:1px 9px;margin:1px}
+ul.tight li{margin:6px 0}
+.warn{background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.danger{background:#fbeae8;border-left:4px solid var(--bad);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.local{display:inline-block;background:var(--teal);color:#fff;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:800}
+.aws{display:inline-block;background:var(--blue);color:#fff;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:800}
+code.inline{background:#ecebe4;border-radius:5px;padding:1px 6px;font-size:13.5px}
+@media print{.topnav,.btn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <span style="font-weight:700">📱 Bring Your Own App</span>
+  <span>
+    <a href="setup.html">✅ Eligibility &amp; Setup</a> &nbsp;·&nbsp;
+    <a href="../../index.html">⌂ Course Hub</a>
+  </span>
+</nav>
+<main>
+
+<header class="hero">
+  <h1>📱 Bring Your Own App — Your App, Real Cloud</h1>
+  <p class="sub">Already built a mobile app, or a website with an app behind it? In this track you don't get a fictional client — your own app is the client. Over four weeks you take it from "runs on my machine" to a cloud deployment with identity, storage, backups, monitoring, and a documented API.</p>
+  <div>
+    <span class="chip">Individual project</span><span class="chip">4 milestones · Classes 4 · 7 · 9 · 11</span><span class="chip">Instructor approval before Class 4</span><span class="chip">Local Docker or AWS Learner Lab</span><span class="chip">Live demo on Class 12</span>
+  </div>
+</header>
+
+<h2>How this track works</h2>
+<div class="card">
+  <p>This is an alternative to the Pocket Cloud and Pelican Tours tracks with the same objectives, the same milestone schedule, and the same grading weight — the difference is the raw material. You bring an app you built (a mobile app, a web app, or a website with an app component), get it approved before Class 4 (email your proposal right after Class 3), and every milestone is performed on <em>your</em> system.</p>
+  <p><strong>Step 1 — check eligibility and submit your proposal:</strong> the <a href="setup.html">Eligibility &amp; Setup page</a> defines what qualifies, what you must never do with real user data, and the one-page proposal emailed right after Class 3. If your app isn't approved, you simply take one of the other two tracks — no penalty.</p>
+  <p><strong>Step 2 — choose your platform</strong> (also in the proposal):</p>
+  <table>
+    <tr><th>Platform</th><th>What it means</th><th>Environment guide</th></tr>
+    <tr><td><span class="local">LOCAL</span> Docker on your machine</td><td>Your backend runs as containers behind a reverse proxy; MinIO for object storage; Authelia for SSO; Uptime Kuma for monitoring</td><td><a href="../pocket-cloud/setup.html">Pocket Cloud setup guide</a></td></tr>
+    <tr><td><span class="aws">AWS</span> Academy Learner Lab</td><td>Your backend runs on EC2 (later Lambda if you refactor); S3 for storage; CloudWatch + SNS for monitoring; $100 class credit, no credit card</td><td><a href="../aws-pelican-tours/setup.html">Learner Lab setup guide</a></td></tr>
+  </table>
+  <p class="note">Mobile apps: the phone client stays on the phone or emulator — it's your <em>server side</em> that moves to the cloud. If your app has no server side yet, building a minimal API backend is part of M1 (the sibling tracks' starter apps show how small that can be). Milestone items below are written platform-neutral, with <span class="local">LOCAL</span>/<span class="aws">AWS</span> markers where the tools differ.</p>
+</div>
+
+<h2>Milestones &amp; rubrics</h2>
+
+<div class="card m1">
+  <h3>M1 · Assess &amp; Deploy <span class="due">DUE CLASS 4</span> <span class="pts">25 pts</span> <span class="obj">Obj 1</span><span class="obj">Obj 2</span><span class="obj">Obj 3</span><span class="obj">Obj 4</span></h3>
+  <p>You map what your app is actually made of, get its server side running in the cloud environment, and prove it can scale.</p>
+  <label class="step"><input type="checkbox" data-step="m1a"><span><strong>Approved proposal + environment ready:</strong> proposal accepted (emailed after Class 3, approved before Class 4), platform environment set up per its guide, private repo created with the course copy of your app and <code class="inline">JOURNAL.md</code>.</span></label>
+  <label class="step"><input type="checkbox" data-step="m1b"><span><strong>Component inventory &amp; service-model map:</strong> table of every piece of your app (client, server, database, media/files, third-party services) and, for each, the cloud service model it uses or maps to (IaaS / PaaS / SaaS / BaaS). If you use Firebase, Supabase, a hosted database, or an app-store service, classify it and explain who manages what.</span></label>
+  <label class="step"><input type="checkbox" data-step="m1c"><span><strong>First cloud deployment (IaaS reasoning):</strong> get your backend running in your environment — <span class="local">LOCAL</span> as a container with explicit CPU/RAM limits · <span class="aws">AWS</span> on a t3.micro via user data. Justify the sizing with measurements or estimates. If your app has no backend yet, build the minimal API it needs (the sibling starter apps show the shape) — this counts as the deliverable.</span></label>
+  <label class="step"><input type="checkbox" data-step="m1d"><span><strong>Elasticity demo:</strong> put a load balancer in front and scale to 2–3 instances of your backend — <span class="local">LOCAL</span> Caddy + <code class="inline">--scale</code> · <span class="aws">AWS</span> ALB + Auto Scaling group. Show requests distributing (add a hostname field to a health endpoint if your app lacks one), then scale back down. Journal what state (sessions, uploads, caches) breaks when instances multiply — that finding drives M2 and M4.</span></label>
+  <label class="step"><input type="checkbox" data-step="m1e"><span><strong>Reach it from a second device:</strong> your app's client (phone, emulator, or browser on another device) talking to the cloud-hosted backend. Screenshot + one sentence on what had to change (URLs, ports, CORS).</span></label>
+  <label class="step"><input type="checkbox" data-step="m1f"><span><strong>Metering baseline:</strong> start a usage ledger: requests served, resource use (<span class="local">LOCAL</span> <code class="inline">docker stats</code> · <span class="aws">AWS</span> CloudWatch metrics + budget reading), and what this would cost per month on a real provider at your current traffic.</span></label>
+  <label class="step"><input type="checkbox" data-step="m1g"><span><strong>Build vs buy:</strong> pick one component of your app (auth, media hosting, database, push notifications, payments) and appraise: keep self-managed vs replace with a managed/SaaS service — cost model, control, lock-in, and your decision with reasons.</span></label>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Inventory complete; service-model classification of your real stack is correct</td><td>6</td></tr>
+    <tr><td>Backend deployed with reasoned sizing (or minimal API built and deployed)</td><td>7</td></tr>
+    <tr><td>Elasticity demo works; broken-state analysis is specific to your app</td><td>6</td></tr>
+    <tr><td>Build-vs-buy appraisal uses the service models correctly</td><td>3</td></tr>
+    <tr><td>Journal, repo hygiene, metering baseline</td><td>3</td></tr>
+  </table>
+</div>
+
+<div class="card m2">
+  <h3>M2 · Identity &amp; Data <span class="due">DUE CLASS 7</span> <span class="pts">25 pts</span> <span class="obj">Obj 5</span><span class="obj">Obj 6</span></h3>
+  <p>Your app's logins get scrutiny, its files get proper storage with tiers, and its data gets classified and backed up.</p>
+  <label class="step"><input type="checkbox" data-step="m2a"><span><strong>Protect every admin surface:</strong> any dashboard, database console, or management UI in your stack goes behind SSO with MFA — <span class="local">LOCAL</span> Authelia behind Caddy · <span class="aws">AWS</span> Cognito where the lab allows it, otherwise a documented design + the IAM/least-privilege exercise from the <a href="../aws-pelican-tours/index.html">Pelican Tours brief</a> (M2).</span></label>
+  <label class="step"><input type="checkbox" data-step="m2b"><span><strong>User lifecycle policy for YOUR app:</strong> written policy covering signup, credential rules, MFA options, session length, deactivation, and full account deletion — what data dies, where, and when (include backups). Run one lifecycle drill on a test account and time it.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2c"><span><strong>IDaaS appraisal:</strong> compare your app's current auth (or lack of it) against one self-hosted IDaaS and one cloud IDaaS: protocols (OIDC/SAML), MFA, lifecycle automation, cost at your user count and at 100× it, migration effort. Recommendation with reasons.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2d"><span><strong>Object storage for your assets:</strong> move your app's media/uploads/static assets to object storage — <span class="local">LOCAL</span> MinIO · <span class="aws">AWS</span> S3 — with a lifecycle rule (age out or tier down old objects) and one time-limited presigned share. If your app stores nothing, host its client bundle from object storage instead.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2e"><span><strong>Block vs object vs file, in your stack:</strong> table mapping the three storage types to real pieces of your deployment, with one workload each type would be wrong for.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2f"><span><strong>3-2-1 backups of your database/state:</strong> scripted, scheduled, and restore-tested once — three copies, two media, one offsite. Name each copy's location.</span></label>
+  <label class="step"><input type="checkbox" data-step="m2g"><span><strong>Data classification register:</strong> 6+ data types your app holds (accounts, content, tokens, logs, analytics, media…) with sensitivity, storage location, backup tier, retention, and who can access. Flag anything that would be personal data if the app had real users, and how the course copy avoids holding it.</span></label>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Admin surfaces protected (or lab-limited design + IAM exercise done); lifecycle drill timed</td><td>8</td></tr>
+    <tr><td>IDaaS appraisal compares real options against your app's needs</td><td>4</td></tr>
+    <tr><td>Object storage live with lifecycle rule + presigned share; storage-type table correct</td><td>7</td></tr>
+    <tr><td>3-2-1 backup scripted, scheduled, restore-tested</td><td>4</td></tr>
+    <tr><td>Classification register sound, personal-data handling addressed</td><td>2</td></tr>
+  </table>
+</div>
+
+<div class="card m3">
+  <h3>M3 · Virtualize, Secure, Survive <span class="due">DUE CLASS 9</span> <span class="pts">25 pts</span> <span class="obj">Obj 7</span></h3>
+  <p>Your app gets packaged as an image, hardened, given recovery targets — and then you destroy the deployment and bring it back, timed.</p>
+  <label class="step"><input type="checkbox" data-step="m3a"><span><strong>Package it:</strong> <span class="local">LOCAL</span> a clean <code class="inline">Dockerfile</code> (multi-stage if your stack needs a build step) · <span class="aws">AWS</span> a golden AMI baked from your configured instance. Time a from-scratch redeploy using only the image + your repo, and compare against your original manual setup.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3b"><span><strong>Resource study:</strong> measure your app under light load; compute how many instances of it fit on your host (<span class="local">LOCAL</span> your laptop at 70% max · <span class="aws">AWS</span> per instance type), and pick the right "instance size" with evidence. Compare container vs VM vs serverless as packaging for <em>your</em> workload.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3c"><span><strong>Hardening pass on real code:</strong> (1) secrets audit — every key/password out of the code and git history, into <code class="inline">.env</code>/secrets handling, rotated if ever committed (real apps almost always fail this the first time); (2) TLS on every surface; (3) network segmentation — database and internal services unreachable from outside (<span class="local">LOCAL</span> Docker networks · <span class="aws">AWS</span> security groups), proven with a blocked and an allowed request; (4) least-privilege credentials per service; (5) dependency check — one pass over outdated packages with known issues.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3d"><span><strong>Shared-responsibility matrix for your stack:</strong> for each layer of your deployment (hardware, hypervisor, OS, runtime, app code, data, access config) — who is responsible in your chosen platform, and how that shifts if you moved to a PaaS or BaaS.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3e"><span><strong>Targets first:</strong> RTO + RPO for your app's components, justified by what the app is for, and the DR tier each implies (backup-restore / pilot light / warm standby / multi-site).</span></label>
+  <label class="step"><input type="checkbox" data-step="m3f"><span><strong>💥 Game day:</strong> with backups verified, destroy the deployment — <span class="local">LOCAL</span> <code class="inline">docker compose down -v</code> · <span class="aws">AWS</span> terminate the instances (and for full credit, recover in a second AZ or region). Restore from image + backups, timing every step. 1-page incident report: timeline, measured RTO/RPO vs targets, what was lost, what you'd change. Graded on the honesty of the analysis, not on hitting the targets.</span></label>
+  <label class="step"><input type="checkbox" data-step="m3g"><span><strong>SLA statement:</strong> from your measured restore times, the availability you could honestly promise users of your app, downtime math shown, compared with what a commercial provider promises for the equivalent service.</span></label>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Image/AMI rebuild works; redeploy timed; resource study quantified</td><td>6</td></tr>
+    <tr><td>Hardening pass complete with evidence (secrets audit is non-negotiable)</td><td>8</td></tr>
+    <tr><td>Responsibility matrix correct for your actual stack</td><td>3</td></tr>
+    <tr><td>Game day executed; measured RTO/RPO vs targets; honest incident report</td><td>6</td></tr>
+    <tr><td>SLA math correct and consistent with evidence</td><td>2</td></tr>
+  </table>
+</div>
+
+<div class="card m4">
+  <h3>M4 · API, Operations &amp; the Roadmap <span class="due">DUE CLASS 11 · DEMO CLASS 12</span> <span class="pts">25 pts</span> <span class="obj">Obj 8</span></h3>
+  <p>Your app's API becomes a documented contract, monitoring alerts you before users would, and you close with a real cost model and a live demo.</p>
+  <label class="step"><input type="checkbox" data-step="m4a"><span><strong>API contract:</strong> document your app's API — 5+ REST endpoints with method, path, purpose, sample request/response JSON, and status codes. If the client and server talk through anything undocumented, that ends now. Design and implement <strong>one new endpoint</strong> your app genuinely needs.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4b"><span><strong>Decouple one seam:</strong> split one responsibility into its own service (media handling, auth, a worker, the API itself from static serving) so the pieces communicate only over the documented contract and deploy independently.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4c"><span><strong>Graceful degradation, live:</strong> stop one service and show the client survives it — cached data, a fallback message, disabled actions — instead of crashing. Screenshot, restore, recover. If your client currently just breaks, adding the fallback is the deliverable.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4d"><span><strong>Monitoring + alerting:</strong> health checks on every service with an alert to a channel you actually see — <span class="local">LOCAL</span> Uptime Kuma + webhook · <span class="aws">AWS</span> CloudWatch alarm + SNS email. Trigger one real alert. Define 5 metrics + thresholds you'd watch if your app had 10,000 users.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4e"><span><strong>Cost model &amp; roadmap:</strong> price your deployment at three traffic levels (current, 10×, 100×) using public pricing calculators plus your measured usage; then a 1-page roadmap: what you'd change at each level (managed services? serverless? CDN?), sequenced with dependencies and a rollback plan for the riskiest change.</span></label>
+  <label class="step"><input type="checkbox" data-step="m4f"><span><strong>Live demo (Class 12):</strong> present your before/after architecture, demo the app end-to-end against the cloud backend, show the monitoring and one invoice-style usage summary. 💥 Chaos moment: the instructor picks one service to stop; you show the blast radius, the alert, and the recovery. Be ready to explain any line of your configs the instructor points at.</span></label>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>API documented to REST conventions; new endpoint implemented and sensible</td><td>7</td></tr>
+    <tr><td>Decoupled seam deploys independently; degradation demo works</td><td>6</td></tr>
+    <tr><td>Monitoring real; alert fired and received; metrics thoughtful</td><td>4</td></tr>
+    <tr><td>Cost model sourced and sanity-checked; roadmap decisions justified</td><td>4</td></tr>
+    <tr><td>Live demo: working system, chaos moment survived, questions handled</td><td>4</td></tr>
+  </table>
+</div>
+
+<h2>Where each course objective is satisfied</h2>
+<div class="card">
+  <table>
+    <tr><th style="width:56%">Upon completion of CEN4086, students can…</th><th>Bring-Your-Own-App evidence</th></tr>
+    <tr><td><span class="obj">1</span> Understand the abstract nature and advantages/disadvantages of cloud computing</td><td>M1: elasticity + metering on their own workload; broken-state analysis; M4: cost model at three traffic levels</td></tr>
+    <tr><td><span class="obj">2</span> Define and describe SaaS</td><td>M1: service-model inventory of their real stack; build-vs-buy appraisal of one component</td></tr>
+    <tr><td><span class="obj">3</span> Define and describe the PaaS model</td><td>M1/M3: classifying BaaS/PaaS pieces of their stack; container-vs-VM-vs-serverless packaging comparison; M4 roadmap</td></tr>
+    <tr><td><span class="obj">4</span> Describe IaaS and identify solution providers</td><td>M1: deploying their backend with reasoned sizing; M3: resource study and instance-size selection; provider pricing in M4</td></tr>
+    <tr><td><span class="obj">5</span> Evaluate ID-management challenges and appraise IDaaS solutions</td><td>M2: admin surfaces behind SSO+MFA; user lifecycle policy + drill on their own accounts; IDaaS appraisal against their auth</td></tr>
+    <tr><td><span class="obj">6</span> Differentiate cloud data-storage and collaboration solutions</td><td>M2: assets moved to object storage with lifecycle tiers; block/object/file mapped to their stack; 3-2-1 backups; classification register</td></tr>
+    <tr><td><span class="obj">7</span> Examine and evaluate virtualization solutions</td><td>M3: their app packaged as image/AMI; resource/consolidation study; hardening; timed game-day recovery with RTO/RPO</td></tr>
+    <tr><td><span class="obj">8</span> Define and describe Service-Oriented Architecture</td><td>M4: documented API contract; one seam decoupled into a service; graceful-degradation demo</td></tr>
+  </table>
+</div>
+
+<h2>Class-by-class checkpoints</h2>
+<div class="card">
+  <table>
+    <tr><th>Class · Day</th><th>Due at the start of class (evidence in your journal)</th><th>Feeds</th></tr>
+    <tr><td>3 · Thu</td><td>Project introduced · read <a href="setup.html">Eligibility &amp; Setup</a> · <strong>email your proposal by Friday night</strong> for weekend approval — <em>nothing due in class</em></td><td>—</td></tr>
+    <tr><td>4 · Mon</td><td><strong>M1 due</strong> — approved proposal on file · environment verified · course-copy repo + journal · backend deployed · component inventory · scale-out demo · metering baseline</td><td>M1</td></tr>
+    <tr><td>5 · Tue</td><td><strong>Due:</strong> object storage created for your assets · first objects uploaded</td><td>M2</td></tr>
+    <tr><td>6 · Thu</td><td><strong>Due:</strong> admin surfaces behind SSO/MFA (or the documented lab-limited design)</td><td>M2</td></tr>
+    <tr><td>7 · Mon</td><td><strong>M2 due</strong> — lifecycle rule · 3-2-1 backups restore-tested · user-lifecycle policy + drill · classification register</td><td>M2</td></tr>
+    <tr><td>8 · Tue</td><td><strong>Due (written):</strong> RTO/RPO targets for your components · shared-responsibility matrix draft</td><td>M3</td></tr>
+    <tr><td>9 · Thu</td><td><strong>M3 due</strong> — image/AMI + resource study · hardening + secrets audit · 💥 game day with incident report</td><td>M3</td></tr>
+    <tr><td>10 · Mon</td><td><strong>Due:</strong> API contract documented + new endpoint implemented · monitoring live with one real alert received</td><td>M4</td></tr>
+    <tr><td>11 · Tue</td><td><strong>M4 due</strong> — decoupling + degradation evidence, cost model + roadmap; the heavy build was Monday's checkpoint</td><td>M4</td></tr>
+    <tr><td>12 · Thu</td><td><strong>Final Day — live demos</strong> 🎓 (presentation only)</td><td>M4</td></tr>
+  </table>
+  <p class="note">Pacing follows the class calendar: Monday items carry the weekend's work, Tuesday items are deliberately light (one day after Monday), Thursday items get two days. Milestone submissions on Tuesdays are mostly assembly — their heavy build work is the Monday checkpoint before them.</p>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin-top:26px;flex-wrap:wrap;gap:10px">
+  <a class="btn ghost" href="setup.html">✅ Check eligibility &amp; submit your proposal</a>
+  <a class="btn" href="../pocket-cloud/setup.html">🛠 Local setup guide</a>
+  <a class="btn" href="../aws-pelican-tours/setup.html">🎓 AWS Learner Lab guide</a>
+</div>
+
+</main>
+<script>
+const PKEY='cen4086v3:byo-app';
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+</script>
+</body>
+</html>
