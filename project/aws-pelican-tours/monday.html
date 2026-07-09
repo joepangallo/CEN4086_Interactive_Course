@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Monday AWS Example Submissions</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#1273a8;--pri2:#0b4460;--vio:#7b5ea7;--vio2:#4d3a70;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--dark:#171c2e}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:60;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--pri);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri2);text-decoration:none;font-weight:700}
+main{max-width:1040px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,#123047,#1273a8);color:#fff;border-radius:16px;padding:30px 28px;margin:14px 0 16px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:29px}
+.hero p{margin:0 0 10px;opacity:.92}
+.chip{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:700;margin:2px;color:#fff}
+.tabs{position:sticky;top:48px;z-index:50;background:rgba(246,244,239,.96);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:14px;padding:8px;margin:0 0 18px;display:flex;gap:7px;flex-wrap:wrap}
+.tabbtn{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:9px 14px;font:inherit;font-size:13.5px;font-weight:800;cursor:pointer}
+.tabbtn.active{background:var(--pri);border-color:var(--pri);color:#fff}
+.tab{display:none}
+.tab.active{display:block}
+h2{font-size:23px;margin:30px 0 10px;padding-left:12px;border-left:6px solid var(--pri)}
+h3{font-size:18px;margin:18px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:14px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.story{border-top:6px solid var(--pri)}
+.card.own{border-top:6px solid var(--vio)}
+.card.good{border-top:6px solid var(--ok)}
+.card.warn{border-top:6px solid var(--amb)}
+.small{font-size:13.5px;color:var(--mut)}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:14px}
+.mini{background:#fbfaf7;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:8px 0}
+.mini strong{display:block;margin-bottom:3px}
+.aws-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:12px 0}
+.aws-tile{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;font-size:13.5px;font-weight:800;color:var(--ink)}
+.aws-tile img{display:block;width:52px;height:52px;object-fit:contain;margin:0 auto 8px}
+.aws-note{font-size:12.5px;color:var(--mut);margin:8px 0 0}
+.aws-flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:stretch;margin:12px 0}
+.aws-flow .node{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center;position:relative}
+.aws-flow img{width:58px;height:58px;object-fit:contain;margin-bottom:7px}
+.aws-flow strong{display:block;font-size:13.5px}
+.aws-flow span{display:block;font-size:12.5px;color:var(--mut);margin-top:2px}
+.shotgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:12px 0}
+.shot{background:#fbfaf7;border:1px dashed #c8c1b5;border-radius:10px;padding:14px;min-height:120px}
+.shot strong{display:block;margin-bottom:5px}
+.shot code{word-break:break-word}
+.promptbox{background:var(--dark);color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--pri);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:800;cursor:pointer}
+code.inline{background:#ecebe4;border-radius:5px;padding:1px 6px;font-size:13.5px}
+.btn{display:inline-block;background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:800;cursor:pointer;font-size:14.5px;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--pri2);border:1.5px solid var(--pri)}
+.callout{background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.done{background:#e9f4ee;border-left:4px solid var(--ok);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.bad{background:#fbeae8;border-left:4px solid var(--bad);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+@media print{.topnav,.tabs,.copybtn,.btn{display:none}.tab{display:block}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="../../index.html">Course Hub</a>
+  <span style="font-weight:800">Due Monday · Complete AWS Examples</span>
+  <span>
+    <a href="index.html">Pelican Tours</a> &nbsp;·&nbsp;
+    <a href="starter-app/readme.html">Starter App</a> &nbsp;·&nbsp;
+    <a href="../bring-your-own-app/index.html">BYOA</a>
+  </span>
+</nav>
+<main>
+
+<header class="hero">
+  <h1>Monday Submission, Shown as Finished Examples</h1>
+  <p>No abstract checklist first. These tabs show two complete fake students and exactly what their Monday work looks like when it is done.</p>
+  <div>
+    <span class="chip">M1 · Due Monday · 25 pts</span>
+    <span class="chip">Example A: student has no app</span>
+    <span class="chip">Example B: student already has an app</span>
+    <span class="chip">Includes final journal + submission text</span>
+  </div>
+</header>
+
+<div class="tabs" role="tablist" aria-label="Monday examples">
+  <button class="tabbtn active" data-tab="start" onclick="showTab('start')">Start Here · Repo</button>
+  <button class="tabbtn" data-tab="ec2" onclick="showTab('ec2')">EC2 Click Example</button>
+  <button class="tabbtn" data-tab="maya" onclick="showTab('maya')">Example A · No App</button>
+  <button class="tabbtn" data-tab="jordan" onclick="showTab('jordan')">Example B · Own App</button>
+  <button class="tabbtn" data-tab="screenshots" onclick="showTab('screenshots')">Real Screenshots</button>
+  <button class="tabbtn" data-tab="journal" onclick="showTab('journal')">Finished Journal</button>
+  <button class="tabbtn" data-tab="submit" onclick="showTab('submit')">Final Submission</button>
+  <button class="tabbtn" data-tab="grader" onclick="showTab('grader')">What Gets Graded</button>
+</div>
+
+<section class="tab active" id="tab-start">
+  <h2>Start Here: Maya Creates The Repo First</h2>
+  <div class="card story">
+    <p><strong>Maya starts with nothing.</strong> No app, no repo, no AWS resources. This example gives her one exact path. The repo name is <code class="inline">pelican-tours-m1</code>. The app is the provided Pelican Tours starter app.</p>
+    <div class="done"><strong>End result of this tab:</strong> Maya has a public GitHub repo that EC2 can download, a completed <code class="inline">user-data.sh</code>, and a started <code class="inline">JOURNAL.md</code>.</div>
+  </div>
+
+  <div class="card">
+    <h3>Part 1: Maya makes the GitHub repo</h3>
+    <p>Maya opens GitHub in a browser. She clicks the plus sign in the top-right corner. She clicks <strong>New repository</strong>. Her screen is filled out exactly like this.</p>
+    <table>
+      <tr><th>GitHub field</th><th>Maya's finished value</th></tr>
+      <tr><td>Repository owner</td><td><code class="inline">YOUR-GITHUB-USERNAME</code></td></tr>
+      <tr><td>Repository name</td><td><code class="inline">pelican-tours-m1</code></td></tr>
+      <tr><td>Description</td><td><code class="inline">CEN4086 M1 AWS EC2 Pelican Tours deployment</code></td></tr>
+      <tr><td>Visibility</td><td>Public</td></tr>
+      <tr><td>Add a README file</td><td>Unchecked</td></tr>
+      <tr><td>Add .gitignore</td><td>None</td></tr>
+      <tr><td>Choose a license</td><td>None</td></tr>
+    </table>
+    <p>She clicks <strong>Create repository</strong>. GitHub creates this empty repo:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1</pre></div>
+    <div class="mini"><strong>Replace the username:</strong> <code class="inline">YOUR-GITHUB-USERNAME</code> means the student's actual GitHub name. If Alex's GitHub username is <code class="inline">alex-cloud-student</code>, Alex's repo URL is <code class="inline">https://github.com/alex-cloud-student/pelican-tours-m1</code>.</div>
+    <div class="callout"><strong>Why public?</strong> EC2 can download a public GitHub zip without passwords, tokens, IAM roles, or extra setup.</div>
+  </div>
+
+  <div class="card">
+    <h3>Part 2: Maya makes the local folder</h3>
+    <p>Maya opens Terminal. Her course folder already contains the provided <code class="inline">starter-app</code>. She creates a new clean folder named exactly like the repo.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>mkdir pelican-tours-m1
+cp -R starter-app/* pelican-tours-m1/
+cd pelican-tours-m1
+mkdir screenshots
+touch JOURNAL.md</pre></div>
+    <p>After that, Maya's folder looks like this.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>pelican-tours-m1/
+  JOURNAL.md
+  public/
+    index.html
+  screenshots/
+  server.js
+  tours.json
+  user-data.sh</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Part 3: Maya tests the app before AWS</h3>
+    <p>Maya runs the app on her own computer first. This proves the code works before AWS gets involved.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>node server.js</pre></div>
+    <p>Her terminal says the app is listening. Maya opens these two browser URLs:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>http://localhost:3000
+http://localhost:3000/api/health</pre></div>
+    <p>The first URL shows the Pelican Tours page. The second URL shows health JSON. Maya stops the local server with <code class="inline">Control-C</code>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Part 4: Maya edits user-data.sh</h3>
+    <p>Maya opens <code class="inline">user-data.sh</code>. She finds this line:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>APP_ZIP_URL="REPLACE_ME_https://your-bucket.s3.amazonaws.com/starter-app.zip"</pre></div>
+    <p>She changes it to this exact style, using her repo name:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>APP_ZIP_URL="https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1/archive/refs/heads/main.zip"</pre></div>
+    <div class="callout"><strong>The word <code class="inline">main</code> matters.</strong> If Maya's GitHub branch is named <code class="inline">master</code>, the URL would use <code class="inline">master.zip</code>. In this example the branch is <code class="inline">main</code>.</div>
+  </div>
+
+  <div class="card">
+    <h3>Part 5: Maya starts JOURNAL.md</h3>
+    <p>Maya opens <code class="inline">JOURNAL.md</code> and pastes this starter text.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre># CEN4086 AWS M1 Journal
+
+Student: Maya Example
+Track: A - Pelican Tours starter app
+Repo: https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1
+Live app URL: not created yet
+Health URL: not created yet
+
+## Local app test
+I ran the starter app on my computer with node server.js.
+
+Local site:
+http://localhost:3000
+
+Local health check:
+http://localhost:3000/api/health
+
+Result:
+The Pelican Tours page loaded and the health endpoint returned JSON.</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Part 6: Maya pushes the repo to GitHub</h3>
+    <p>Maya runs these commands from inside the <code class="inline">pelican-tours-m1</code> folder.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>git init
+git add .
+git commit -m "Add Pelican Tours M1 starter app"
+git branch -M main
+git remote add origin https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1.git
+git push -u origin main</pre></div>
+    <p>Now Maya opens her GitHub repo page and sees these files online:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>JOURNAL.md
+public/index.html
+screenshots/
+server.js
+tours.json
+user-data.sh</pre></div>
+    <p>The download link EC2 will use is now this:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1/archive/refs/heads/main.zip</pre></div>
+  </div>
+
+  <div class="card good">
+    <h3>Part 7: Maya is ready for AWS</h3>
+    <p>This is Maya's finished pre-AWS status.</p>
+    <table>
+      <tr><th>Question</th><th>Maya's answer</th></tr>
+      <tr><td>Does the repo exist?</td><td>Yes: <code class="inline">https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1</code></td></tr>
+      <tr><td>Is the repo public?</td><td>Yes</td></tr>
+      <tr><td>Does <code class="inline">user-data.sh</code> have the GitHub zip URL?</td><td>Yes</td></tr>
+      <tr><td>Does the app run locally?</td><td>Yes</td></tr>
+      <tr><td>Does <code class="inline">JOURNAL.md</code> exist?</td><td>Yes</td></tr>
+    </table>
+    <p>The next tab, <strong>EC2 Click Example</strong>, starts from this exact repo.</p>
+  </div>
+</section>
+
+<section class="tab" id="tab-ec2">
+  <h2>EC2 Click Example: Maya Builds The Whole Thing</h2>
+  <div class="card story">
+    <p><strong>This tab is the slow version.</strong> It uses the normal AWS console. Maya is a fake student. She has no app, so she uses Pelican Tours. Every name below is fake, but it is shaped exactly like a real submission.</p>
+    <div class="bad"><strong>Cost note:</strong> this uses real AWS resources. Maya deletes the load balancer and extra instances after grading. She never creates NAT Gateways, GPUs, or large instances.</div>
+    <div class="aws-strip" aria-label="Official AWS visual legend">
+      <div class="aws-tile"><img src="assets/aws-icons/aws-cloud-logo.png" alt="AWS Cloud logo">AWS Console</div>
+      <div class="aws-tile"><img src="assets/aws-icons/amazon-ec2.png" alt="Amazon EC2 icon">EC2</div>
+      <div class="aws-tile"><img src="assets/aws-icons/firewall.png" alt="Firewall icon">Security Group</div>
+      <div class="aws-tile"><img src="assets/aws-icons/application-load-balancer.png" alt="Application Load Balancer icon">ALB</div>
+      <div class="aws-tile"><img src="assets/aws-icons/ec2-auto-scaling.png" alt="Amazon EC2 Auto Scaling icon">Auto Scaling</div>
+    </div>
+    <p class="aws-note">Images are official AWS Architecture Icons from Amazon's <a href="https://aws.amazon.com/architecture/icons/">AWS Architecture Icons</a> package.</p>
+  </div>
+
+  <div class="card">
+    <h3>Part 0: Maya's files before AWS</h3>
+    <p>Maya's computer has one folder. That folder is pushed to GitHub. EC2 will download this folder when it boots.</p>
+    <table>
+      <tr><th>Thing on Maya's screen</th><th>Finished example</th></tr>
+      <tr><td>GitHub repo name</td><td><code class="inline">pelican-tours-m1</code></td></tr>
+      <tr><td>GitHub repo URL</td><td><code class="inline">https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1</code></td></tr>
+      <tr><td>GitHub zip URL</td><td><code class="inline">https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1/archive/refs/heads/main.zip</code></td></tr>
+      <tr><td>Main file EC2 runs</td><td><code class="inline">server.js</code></td></tr>
+      <tr><td>Boot script EC2 receives</td><td><code class="inline">user-data.sh</code></td></tr>
+    </table>
+    <p>Maya's <code class="inline">user-data.sh</code> has this one line changed. This is the line that tells EC2 where the app lives.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>APP_ZIP_URL="https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1/archive/refs/heads/main.zip"</pre></div>
+    <p>Her repo contains these files.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>pelican-tours-m1/
+  JOURNAL.md
+  server.js
+  tours.json
+  user-data.sh
+  public/
+    index.html
+  screenshots/</pre></div>
+    <p>When Maya gets to the EC2 <strong>User data</strong> box, this is the full script she pastes.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>#!/bin/bash
+set -eux
+
+APP_ZIP_URL="https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1/archive/refs/heads/main.zip"
+
+dnf install -y nodejs unzip
+
+mkdir -p /opt/pelican
+cd /opt/pelican
+curl -fsSL "$APP_ZIP_URL" -o app.zip
+unzip -o app.zip
+
+APP_DIR=$(dirname "$(find /opt/pelican -name server.js | head -1)")
+
+cat &gt;/etc/systemd/system/pelican.service &lt;&lt;EOF
+[Unit]
+Description=Pelican Tours booking app
+After=network.target
+
+[Service]
+WorkingDirectory=${APP_DIR}
+ExecStart=/usr/bin/node server.js
+Environment=PORT=80
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable --now pelican</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Part 1: Maya opens EC2</h3>
+    <div class="aws-strip">
+      <div class="aws-tile"><img src="assets/aws-icons/aws-cloud-logo.png" alt="AWS Cloud logo">1. AWS Console</div>
+      <div class="aws-tile"><img src="assets/aws-icons/amazon-ec2.png" alt="Amazon EC2 icon">2. EC2 Service</div>
+    </div>
+    <p>Maya signs in at <code class="inline">https://console.aws.amazon.com</code>. In the top-right region menu, her finished screen says <strong>United States, N. Virginia, us-east-1</strong>. In the search box at the top, she types <strong>EC2</strong>. She opens the EC2 service.</p>
+    <div class="mini"><strong>What Maya sees next:</strong> an EC2 dashboard with a big orange button named <strong>Launch instance</strong>.</div>
+  </div>
+
+  <div class="card">
+    <h3>Part 2: Maya fills out Launch Instance</h3>
+    <div class="aws-strip">
+      <div class="aws-tile"><img src="assets/aws-icons/amazon-ec2.png" alt="Amazon EC2 icon">EC2 instance</div>
+      <div class="aws-tile"><img src="assets/aws-icons/public-subnet.png" alt="Public subnet icon">Public subnet</div>
+      <div class="aws-tile"><img src="assets/aws-icons/firewall.png" alt="Firewall icon">Security group</div>
+    </div>
+    <p>Maya's Launch instance page is filled out like this.</p>
+    <table>
+      <tr><th>Launch instance section</th><th>Maya's finished value</th><th>Plain meaning</th></tr>
+      <tr><td>Name and tags</td><td><code class="inline">maya-pelican-single</code></td><td>The name shown in the EC2 instance list.</td></tr>
+      <tr><td>Application and OS Images</td><td>Amazon Linux 2023 AMI</td><td>The operating system on the computer.</td></tr>
+      <tr><td>Architecture</td><td>64-bit x86</td><td>The normal processor choice.</td></tr>
+      <tr><td>Instance type</td><td><code class="inline">t3.micro</code></td><td>A tiny cloud computer.</td></tr>
+      <tr><td>Key pair</td><td><code class="inline">maya-ec2-key</code>, RSA, <code class="inline">.pem</code></td><td>A downloaded file for emergency SSH access.</td></tr>
+      <tr><td>VPC</td><td>Default VPC</td><td>The default AWS network.</td></tr>
+      <tr><td>Subnet</td><td>No preference</td><td>A public subnet AWS chooses.</td></tr>
+      <tr><td>Auto-assign public IP</td><td>Enabled</td><td>The instance gets an internet address.</td></tr>
+      <tr><td>Firewall</td><td>Create security group</td><td>A small wall around the instance.</td></tr>
+      <tr><td>Security group name</td><td><code class="inline">maya-pelican-web-sg</code></td><td>The firewall's name.</td></tr>
+      <tr><td>Inbound rule 1</td><td>SSH · port 22 · source <code class="inline">My IP</code></td><td>Only Maya's computer can SSH.</td></tr>
+      <tr><td>Inbound rule 2</td><td>HTTP · port 80 · source <code class="inline">0.0.0.0/0</code></td><td>Browsers can see the website.</td></tr>
+      <tr><td>Storage</td><td>8 GiB gp3 root volume</td><td>The instance's small hard drive.</td></tr>
+      <tr><td>IAM instance profile</td><td>No IAM role</td><td>This app downloads from public GitHub, so it does not need AWS permissions.</td></tr>
+      <tr><td>User data</td><td>Full edited <code class="inline">user-data.sh</code></td><td>The startup recipe that installs Node and runs the app.</td></tr>
+    </table>
+    <div class="mini"><strong>Key pair popup example:</strong> Maya clicks <strong>Create new key pair</strong>. Name: <code class="inline">maya-ec2-key</code>. Type: RSA. Format: <code class="inline">.pem</code>. The file downloads. Maya leaves it in Downloads and does not email it or upload it anywhere.</div>
+    <p>At the bottom of the page, Maya's Summary says one instance will launch. The orange button says <strong>Launch instance</strong>. After launch, Maya clicks the new instance ID.</p>
+  </div>
+
+  <div class="card">
+    <h3>Part 3: Maya waits for the instance to become alive</h3>
+    <p>Maya is now on EC2 → Instances. Her row slowly changes until it looks like this.</p>
+    <table>
+      <tr><th>Column</th><th>Finished value</th></tr>
+      <tr><td>Name</td><td><code class="inline">maya-pelican-single</code></td></tr>
+      <tr><td>Instance state</td><td>Running</td></tr>
+      <tr><td>Status checks</td><td>2/2 checks passed</td></tr>
+      <tr><td>Public IPv4 address</td><td><code class="inline">54.211.10.25</code></td></tr>
+      <tr><td>Private IPv4 address</td><td><code class="inline">172.31.18.44</code></td></tr>
+    </table>
+    <div class="callout"><strong>Important tiny detail:</strong> Maya copies the <strong>Public IPv4 address</strong>. The private address starts with <code class="inline">172.31</code> and is not the one she opens in her browser.</div>
+  </div>
+
+  <div class="card">
+    <h3>Part 4: Maya proves the EC2 website works</h3>
+    <div class="aws-strip">
+      <div class="aws-tile"><img src="assets/aws-icons/ec2-instance-contents.png" alt="EC2 instance contents icon">One running server</div>
+      <div class="aws-tile"><img src="assets/aws-icons/amazon-ec2.png" alt="Amazon EC2 icon">Pelican app on EC2</div>
+    </div>
+    <p>Maya opens this URL in Chrome:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>http://54.211.10.25</pre></div>
+    <p>The browser shows the Pelican Tours booking page. Maya saves this screenshot:</p>
+    <div class="mini"><strong>Screenshot file:</strong> <code class="inline">screenshots/02-single-instance-site.png</code></div>
+    <p>Then Maya opens the health check:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>http://54.211.10.25/api/health</pre></div>
+    <p>The browser shows something like this:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>{
+  "ok": true,
+  "service": "pelican-tours",
+  "served_by": "ip-172-31-18-44.ec2.internal",
+  "uptime": 184
+}</pre></div>
+    <div class="mini"><strong>Screenshot file:</strong> <code class="inline">screenshots/03-single-instance-health.png</code></div>
+  </div>
+
+  <div class="card">
+    <h3>Part 5: Maya writes the EC2 part of the journal</h3>
+    <p>This is exactly what Maya's EC2 journal section looks like.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>## Single EC2 instance
+Instance name: maya-pelican-single
+Region: us-east-1
+AMI: Amazon Linux 2023
+Instance type: t3.micro
+Security group: maya-pelican-web-sg
+HTTP rule: port 80 from 0.0.0.0/0
+SSH rule: port 22 from My IP only
+IAM role: none
+
+Working site:
+http://54.211.10.25
+
+Health check:
+http://54.211.10.25/api/health
+
+Screenshots:
+- screenshots/02-single-instance-site.png
+- screenshots/03-single-instance-health.png
+
+What I learned:
+EC2 is IaaS. I had to choose the operating system, instance size, firewall rules,
+startup script, and storage. A SaaS user would not normally choose these things.</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Part 6: Maya makes a launch template from the working setup</h3>
+    <div class="aws-strip">
+      <div class="aws-tile"><img src="assets/aws-icons/amazon-ec2.png" alt="Amazon EC2 icon">Working EC2 settings</div>
+      <div class="aws-tile"><img src="assets/aws-icons/ec2-instance-contents.png" alt="EC2 instance contents icon">Reusable recipe</div>
+    </div>
+    <p>Maya needs AWS to create more copies later. A launch template is the cookie cutter.</p>
+    <table>
+      <tr><th>AWS page</th><th>Maya's finished value</th></tr>
+      <tr><td>EC2 → Launch templates → Create launch template</td><td>Opened</td></tr>
+      <tr><td>Launch template name</td><td><code class="inline">maya-pelican-template</code></td></tr>
+      <tr><td>AMI</td><td>Amazon Linux 2023</td></tr>
+      <tr><td>Instance type</td><td><code class="inline">t3.micro</code></td></tr>
+      <tr><td>Key pair</td><td><code class="inline">maya-ec2-key</code></td></tr>
+      <tr><td>Security group</td><td><code class="inline">maya-pelican-web-sg</code></td></tr>
+      <tr><td>IAM instance profile</td><td>No IAM role</td></tr>
+      <tr><td>User data</td><td>The same edited <code class="inline">user-data.sh</code></td></tr>
+    </table>
+    <p>Maya creates the template. Nothing new is running yet. She has only saved a recipe.</p>
+  </div>
+
+  <div class="card">
+    <h3>Part 7: Maya creates a target group</h3>
+    <p>The target group is the load balancer's list of healthy servers.</p>
+    <table>
+      <tr><th>AWS page</th><th>Maya's finished value</th></tr>
+      <tr><td>EC2 → Target groups → Create target group</td><td>Opened</td></tr>
+      <tr><td>Target type</td><td>Instances</td></tr>
+      <tr><td>Target group name</td><td><code class="inline">maya-pelican-tg</code></td></tr>
+      <tr><td>Protocol</td><td>HTTP</td></tr>
+      <tr><td>Port</td><td>80</td></tr>
+      <tr><td>VPC</td><td>Default VPC</td></tr>
+      <tr><td>Health check path</td><td><code class="inline">/api/health</code></td></tr>
+      <tr><td>Registered targets at creation</td><td>None, because the Auto Scaling group will add them</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Part 8: Maya creates the load balancer</h3>
+    <div class="aws-strip">
+      <div class="aws-tile"><img src="assets/aws-icons/elastic-load-balancing.png" alt="Elastic Load Balancing icon">Elastic Load Balancing</div>
+      <div class="aws-tile"><img src="assets/aws-icons/application-load-balancer.png" alt="Application Load Balancer icon">Application Load Balancer</div>
+    </div>
+    <p>The load balancer gives Maya one public URL. Later it sends traffic to healthy EC2 instances.</p>
+    <table>
+      <tr><th>AWS page</th><th>Maya's finished value</th></tr>
+      <tr><td>EC2 → Load balancers → Create load balancer</td><td>Application Load Balancer</td></tr>
+      <tr><td>Load balancer name</td><td><code class="inline">maya-pelican-alb</code></td></tr>
+      <tr><td>Scheme</td><td>Internet-facing</td></tr>
+      <tr><td>IP address type</td><td>IPv4</td></tr>
+      <tr><td>VPC</td><td>Default VPC</td></tr>
+      <tr><td>Mappings</td><td>Two public Availability Zones selected</td></tr>
+      <tr><td>Security group</td><td><code class="inline">maya-pelican-web-sg</code></td></tr>
+      <tr><td>Listener</td><td>HTTP port 80</td></tr>
+      <tr><td>Default action</td><td>Forward to <code class="inline">maya-pelican-tg</code></td></tr>
+    </table>
+    <p>After creation, Maya's load balancer has a DNS name like this:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>maya-pelican-alb-123456789.us-east-1.elb.amazonaws.com</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Part 9: Maya creates the Auto Scaling group</h3>
+    <div class="aws-strip">
+      <div class="aws-tile"><img src="assets/aws-icons/ec2-auto-scaling.png" alt="Amazon EC2 Auto Scaling icon">EC2 Auto Scaling</div>
+      <div class="aws-tile"><img src="assets/aws-icons/ec2-instance-contents.png" alt="EC2 instance contents icon">Makes replacement instances</div>
+    </div>
+    <p>The Auto Scaling group creates EC2 instances from the launch template and attaches them to the target group.</p>
+    <table>
+      <tr><th>AWS page</th><th>Maya's finished value</th></tr>
+      <tr><td>EC2 → Auto Scaling groups → Create Auto Scaling group</td><td>Opened</td></tr>
+      <tr><td>Auto Scaling group name</td><td><code class="inline">maya-pelican-asg</code></td></tr>
+      <tr><td>Launch template</td><td><code class="inline">maya-pelican-template</code></td></tr>
+      <tr><td>VPC</td><td>Default VPC</td></tr>
+      <tr><td>Subnets</td><td>Two public subnets selected</td></tr>
+      <tr><td>Load balancing</td><td>Attach to existing load balancer target group</td></tr>
+      <tr><td>Target group</td><td><code class="inline">maya-pelican-tg</code></td></tr>
+      <tr><td>Health checks</td><td>ELB health checks enabled</td></tr>
+      <tr><td>Desired capacity</td><td>2</td></tr>
+      <tr><td>Minimum capacity</td><td>1</td></tr>
+      <tr><td>Maximum capacity</td><td>3</td></tr>
+    </table>
+    <p>A few minutes later, Maya sees two new EC2 instances. In the target group, both targets become <strong>healthy</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>Part 10: Maya proves the load balancer works</h3>
+    <div class="aws-flow" aria-label="Maya final AWS architecture">
+      <div class="node"><img src="assets/aws-icons/aws-cloud-logo.png" alt="AWS Cloud logo"><strong>Browser</strong><span>opens one public URL</span></div>
+      <div class="node"><img src="assets/aws-icons/application-load-balancer.png" alt="Application Load Balancer icon"><strong>Application Load Balancer</strong><span>receives port 80 traffic</span></div>
+      <div class="node"><img src="assets/aws-icons/ec2-auto-scaling.png" alt="Amazon EC2 Auto Scaling icon"><strong>Auto Scaling Group</strong><span>keeps 1-3 servers alive</span></div>
+      <div class="node"><img src="assets/aws-icons/amazon-ec2.png" alt="Amazon EC2 icon"><strong>EC2 instances</strong><span>run Pelican Tours</span></div>
+    </div>
+    <p>Maya opens this URL. It is the ALB DNS name, not an EC2 public IP.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>http://maya-pelican-alb-123456789.us-east-1.elb.amazonaws.com/api/health</pre></div>
+    <p>Refresh one:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>{
+  "ok": true,
+  "served_by": "ip-172-31-18-44.ec2.internal"
+}</pre></div>
+    <p>Refresh two:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>{
+  "ok": true,
+  "served_by": "ip-172-31-26-91.ec2.internal"
+}</pre></div>
+    <div class="done"><strong>Maya's proof:</strong> one URL is being answered by two different EC2 instances.</div>
+  </div>
+
+  <div class="card">
+    <h3>Part 11: Maya proves self-healing</h3>
+    <p>Maya opens EC2 → Instances. She selects one instance that belongs to <code class="inline">maya-pelican-asg</code>. She chooses Instance state → Terminate instance. That instance starts shutting down.</p>
+    <table>
+      <tr><th>Time</th><th>What Maya sees</th><th>Screenshot</th></tr>
+      <tr><td>2:14 PM</td><td>One ASG instance is terminating</td><td><code class="inline">screenshots/05-before-termination.png</code></td></tr>
+      <tr><td>2:22 PM</td><td>The ASG created a new instance and the target is healthy</td><td><code class="inline">screenshots/06-replacement-healthy.png</code></td></tr>
+    </table>
+    <p>Maya's journal sentence is:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>The Auto Scaling group noticed that one instance disappeared. It launched a replacement automatically. I did not rebuild the server by hand.</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Part 12: Maya scales down and submits the ALB URL</h3>
+    <p>Maya changes the Auto Scaling group desired capacity from <strong>2</strong> to <strong>1</strong>. One instance remains. The ALB URL still works. Maya submits the ALB URL, not the EC2 public IP.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>Final live app URL:
+http://maya-pelican-alb-123456789.us-east-1.elb.amazonaws.com
+
+Final health check:
+http://maya-pelican-alb-123456789.us-east-1.elb.amazonaws.com/api/health
+
+Final capacity:
+Auto Scaling group desired capacity is 1.</pre></div>
+  </div>
+
+  <div class="card warn">
+    <h3>Part 13: Maya cleans up after grading</h3>
+    <p>Maya keeps the ALB URL alive until grading is finished. After grading, she removes the expensive pieces in this order.</p>
+    <table>
+      <tr><th>AWS page</th><th>Maya's finished action</th></tr>
+      <tr><td>EC2 → Auto Scaling groups</td><td>Select <code class="inline">maya-pelican-asg</code>, set desired/min/max to 0, then delete the Auto Scaling group.</td></tr>
+      <tr><td>EC2 → Load balancers</td><td>Select <code class="inline">maya-pelican-alb</code>, delete it.</td></tr>
+      <tr><td>EC2 → Target groups</td><td>Select <code class="inline">maya-pelican-tg</code>, delete it.</td></tr>
+      <tr><td>EC2 → Instances</td><td>Terminate any leftover <code class="inline">maya-pelican</code> instances.</td></tr>
+      <tr><td>EC2 → Launch templates</td><td>Delete <code class="inline">maya-pelican-template</code> if the course no longer needs it.</td></tr>
+      <tr><td>EC2 → Security groups</td><td>Delete <code class="inline">maya-pelican-web-sg</code> after no resources use it.</td></tr>
+    </table>
+    <p>Maya's cleanup journal line is: <strong>After grading, I deleted the ASG, ALB, target group, leftover instances, launch template, and security group.</strong></p>
+  </div>
+</section>
+
+<section class="tab" id="tab-maya">
+  <h2>Example A: Maya Has Nothing To Start With</h2>
+  <div class="card story">
+    <p><strong>Maya's situation:</strong> Maya does not have an app. She uses the provided Pelican Tours starter app. By Monday, Maya has a GitHub repo, a live AWS load balancer URL, screenshots, and a journal. Her work uses fake data only.</p>
+    <table>
+      <tr><th>Maya's item</th><th>Finished example value</th></tr>
+      <tr><td>Repo</td><td><code class="inline">https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1</code></td></tr>
+      <tr><td>App zip URL in user data</td><td><code class="inline">https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1/archive/refs/heads/main.zip</code></td></tr>
+      <tr><td>Single EC2 instance</td><td><code class="inline">maya-pelican-single</code></td></tr>
+      <tr><td>Security group</td><td><code class="inline">maya-pelican-web-sg</code></td></tr>
+      <tr><td>Launch template</td><td><code class="inline">maya-pelican-template</code></td></tr>
+      <tr><td>Target group</td><td><code class="inline">maya-pelican-tg</code></td></tr>
+      <tr><td>Load balancer</td><td><code class="inline">maya-pelican-alb</code></td></tr>
+      <tr><td>Auto Scaling group</td><td><code class="inline">maya-pelican-asg</code></td></tr>
+      <tr><td>Live app URL</td><td><code class="inline">http://maya-pelican-alb-123456789.us-east-1.elb.amazonaws.com</code></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Maya's repo looks like this</h3>
+    <p>Maya's GitHub repo is just the starter app plus her journal and screenshots folder. Nothing fancy. The important part is that EC2 can download it.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>pelican-tours-m1/
+  JOURNAL.md
+  server.js
+  tours.json
+  user-data.sh
+  public/
+    index.html
+  screenshots/
+    01-aws-region.png
+    02-single-instance-site.png
+    03-single-instance-health.png
+    04-alb-health-rotation.png
+    05-before-termination.png
+    06-replacement-healthy.png
+    07-phone-cellular-booking.png</pre></div>
+    <p>Maya edits one line in <code class="inline">user-data.sh</code>. The finished line in her file looks like this:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>APP_ZIP_URL="https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1/archive/refs/heads/main.zip"</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Maya's first AWS moment</h3>
+    <p>Maya opens <code class="inline">https://console.aws.amazon.com</code> and signs in. The AWS console opens. The top-right region menu says <strong>N. Virginia / us-east-1</strong>. She searches for EC2 and opens the EC2 dashboard.</p>
+    <div class="done"><strong>Maya's first screenshot:</strong> <code class="inline">screenshots/01-aws-region.png</code> shows the AWS console region and the EC2 dashboard.</div>
+    <p>Maya's first journal sentence is short and plain:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>AWS owns the physical servers. I am renting a small piece of shared cloud capacity through my AWS account. This shows resource pooling and measured service.</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Maya's single EC2 instance</h3>
+    <p>Maya launches one EC2 instance. Her Launch instance screen has these values when she is finished filling it out.</p>
+    <table>
+      <tr><th>Screen area</th><th>Maya's value</th></tr>
+      <tr><td>Name</td><td><code class="inline">maya-pelican-single</code></td></tr>
+      <tr><td>AMI</td><td>Amazon Linux 2023</td></tr>
+      <tr><td>Instance type</td><td><code class="inline">t3.micro</code></td></tr>
+      <tr><td>Key pair</td><td><code class="inline">maya-ec2-key</code>, RSA, <code class="inline">.pem</code></td></tr>
+      <tr><td>Network</td><td>Default VPC, public subnet</td></tr>
+      <tr><td>Security group</td><td><code class="inline">maya-pelican-web-sg</code></td></tr>
+      <tr><td>Inbound rule 1</td><td>HTTP · TCP · port 80 · source <code class="inline">0.0.0.0/0</code></td></tr>
+      <tr><td>Inbound rule 2</td><td>SSH · TCP · port 22 · source <code class="inline">My IP</code></td></tr>
+      <tr><td>IAM instance profile</td><td>No IAM role</td></tr>
+      <tr><td>User data</td><td>Her edited <code class="inline">user-data.sh</code> pasted into the box</td></tr>
+    </table>
+    <p>Five minutes later, Maya opens her instance public IP in a browser. The page says Pelican Tours. Then she opens the health URL.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>http://54.211.10.25/api/health</pre></div>
+    <p>The health page looks like this:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>{
+  "ok": true,
+  "service": "pelican-tours",
+  "served_by": "ip-172-31-18-44.ec2.internal",
+  "uptime": 184
+}</pre></div>
+    <div class="done"><strong>Maya now has:</strong> <code class="inline">02-single-instance-site.png</code> and <code class="inline">03-single-instance-health.png</code>.</div>
+  </div>
+
+  <div class="card">
+    <h3>Maya's sizing memo</h3>
+    <p>Maya's sizing memo is not long. It proves she knows why she picked a small machine.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>## Sizing memo
+I used t3.micro because this is a small Node booking app with fictional class traffic. The app mostly serves simple HTML, JSON tour data, and small booking requests.
+
+t3.micro facts I recorded:
+- vCPU: 2
+- Memory: 1 GiB
+- Type: burstable general-purpose instance
+- Price: I copied the current us-east-1 Linux on-demand price from the AWS pricing page on submission day.
+
+If Pelican Tours had 10x more traffic, I would first test a larger general-purpose instance and watch CPU, memory, and request latency. I would not jump to a huge instance without measurements.</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Maya's load balancer and Auto Scaling group</h3>
+    <p>Maya's AWS console now has four important pieces.</p>
+    <div class="grid">
+      <div class="mini"><strong>Launch template</strong><code class="inline">maya-pelican-template</code><br>Same AMI, t3.micro, security group, no IAM role, and user data as the working instance.</div>
+      <div class="mini"><strong>Target group</strong><code class="inline">maya-pelican-tg</code><br>Instance targets, HTTP port 80, health check path <code class="inline">/api/health</code>.</div>
+      <div class="mini"><strong>Load balancer</strong><code class="inline">maya-pelican-alb</code><br>Internet-facing Application Load Balancer, HTTP listener on port 80, two Availability Zones selected.</div>
+      <div class="mini"><strong>Auto Scaling group</strong><code class="inline">maya-pelican-asg</code><br>Min 1, desired 2, max 3, attached to <code class="inline">maya-pelican-tg</code>.</div>
+    </div>
+    <p>When both targets are healthy, Maya opens the load balancer health URL and refreshes. First refresh:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>{
+  "ok": true,
+  "served_by": "ip-172-31-18-44.ec2.internal"
+}</pre></div>
+    <p>Second refresh:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>{
+  "ok": true,
+  "served_by": "ip-172-31-26-91.ec2.internal"
+}</pre></div>
+    <div class="done"><strong>That is Maya's load-balancing proof:</strong> the same ALB URL is answered by two different EC2 instances.</div>
+  </div>
+
+  <div class="card">
+    <h3>Maya's self-healing proof</h3>
+    <p>Maya manually terminates one of the two Auto Scaling instances. Her first screenshot shows one instance terminating. Eight minutes later, her second screenshot shows a new instance running and healthy in the target group.</p>
+    <table>
+      <tr><th>Time</th><th>What Maya sees</th><th>Screenshot</th></tr>
+      <tr><td>2:14 PM</td><td>One ASG instance is terminating</td><td><code class="inline">05-before-termination.png</code></td></tr>
+      <tr><td>2:22 PM</td><td>A replacement instance is running and healthy</td><td><code class="inline">06-replacement-healthy.png</code></td></tr>
+    </table>
+    <p>Maya writes: <strong>The Auto Scaling group noticed the missing instance and created another one. I did not manually rebuild the app.</strong></p>
+  </div>
+
+  <div class="card">
+    <h3>Maya's lost-state example</h3>
+    <p>Maya books a tour with the fake name <code class="inline">Maya Test</code>. The booking appears. Then traffic moves to another instance after scaling/replacement. The booking is missing.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>## Lost-state experiment
+I booked a fake tour as Maya Test. The booking existed for the instance that handled it. After scaling/replacing instances, the booking was gone.
+
+Reason:
+The starter app stores bookings in memory. Memory belongs to one running EC2 instance. A second instance does not share that memory, and a replaced instance loses it completely.
+
+Real fix:
+Bookings need shared persistent storage. DynamoDB is the AWS service we will use later for that.</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Maya's phone proof and shutdown</h3>
+    <p>Maya turns off Wi-Fi on her phone. Her phone uses cellular data. She opens the ALB URL and books one fake tour. The confirmation appears. Her screenshot is <code class="inline">07-phone-cellular-booking.png</code>.</p>
+    <p>At the end, Maya changes her Auto Scaling group desired capacity back to <strong>1</strong>. Her live URL still works, but she is no longer running two or three instances for no reason.</p>
+    <div class="bad"><strong>Maya does not submit an instance IP.</strong> She submits the ALB DNS name because instance IPs can change.</div>
+  </div>
+</section>
+
+<section class="tab" id="tab-jordan">
+  <h2>Example B: Jordan Already Has An App</h2>
+  <div class="card own">
+    <p><strong>Jordan's situation:</strong> Jordan already has a simple app called Campus Pantry. It has a React frontend and a Node API. For Monday, Jordan deploys the API backend to AWS behind an ALB. The frontend can run locally or on a phone, but it points to the AWS backend.</p>
+    <table>
+      <tr><th>Jordan's item</th><th>Finished example value</th></tr>
+      <tr><td>App name</td><td>Campus Pantry</td></tr>
+      <tr><td>Repo</td><td><code class="inline">https://github.com/YOUR-GITHUB-USERNAME/campus-pantry-cloud-copy</code></td></tr>
+      <tr><td>Approved proposal</td><td><code class="inline">JOURNAL.md</code> includes instructor approval screenshot/email text</td></tr>
+      <tr><td>Backend health route</td><td><code class="inline">GET /health</code></td></tr>
+      <tr><td>Backend API route</td><td><code class="inline">GET /api/items</code></td></tr>
+      <tr><td>Load balancer URL</td><td><code class="inline">http://jordan-pantry-alb-123456789.us-east-1.elb.amazonaws.com</code></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Jordan's approved proposal looks like this</h3>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>## Approved BYOA proposal
+App: Campus Pantry
+What it does: Students can see a list of available pantry items.
+Stack: React frontend, Node API backend, JSON file for fake seed data.
+Owner: I wrote this app for class practice.
+Data: Fake pantry items only. No real student names, IDs, or personal data.
+AWS plan for M1: Deploy the Node API to EC2. Put an ALB and Auto Scaling group in front of it. Point the React frontend to the ALB DNS name.
+Approval: Instructor approved by email on July 10, 2026.</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Jordan's component inventory</h3>
+    <table>
+      <tr><th>Component</th><th>What it is</th><th>Cloud model</th><th>Who manages what</th></tr>
+      <tr><td>React frontend</td><td>Student-facing web/mobile UI</td><td>Client app / later static hosting</td><td>Jordan manages the code. Browser runs it.</td></tr>
+      <tr><td>Node API</td><td>Returns pantry items and accepts fake requests</td><td>IaaS for M1</td><td>Jordan manages app, runtime, and EC2 setup.</td></tr>
+      <tr><td>Fake JSON data</td><td>Seed pantry items</td><td>Local app file for M1</td><td>Jordan owns data and app behavior.</td></tr>
+      <tr><td>GitHub</td><td>Stores code</td><td>SaaS</td><td>GitHub manages the platform. Jordan manages repo contents.</td></tr>
+      <tr><td>Future auth</td><td>Not built yet</td><td>Possible IDaaS/SaaS later</td><td>Jordan will compare Cognito or another service later.</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Jordan adds one tiny health route</h3>
+    <p>Jordan's API needs to prove which instance answered. His finished health response contains the hostname.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>app.get('/health', (req, res) =&gt; {
+  res.json({
+    ok: true,
+    app: 'campus-pantry',
+    served_by: require('os').hostname(),
+    time: new Date().toISOString()
+  });
+});</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Jordan's EC2 and ALB example</h3>
+    <table>
+      <tr><th>AWS resource</th><th>Jordan's finished value</th></tr>
+      <tr><td>Single EC2 instance</td><td><code class="inline">jordan-pantry-single</code></td></tr>
+      <tr><td>Security group</td><td>HTTP 80 from anywhere, SSH 22 from My IP only</td></tr>
+      <tr><td>IAM instance profile</td><td>No IAM role</td></tr>
+      <tr><td>Launch template</td><td><code class="inline">jordan-pantry-template</code></td></tr>
+      <tr><td>Target group</td><td><code class="inline">jordan-pantry-tg</code>, HTTP 80, health path <code class="inline">/health</code></td></tr>
+      <tr><td>Load balancer</td><td><code class="inline">jordan-pantry-alb</code>, internet-facing, HTTP 80</td></tr>
+      <tr><td>Auto Scaling group</td><td><code class="inline">jordan-pantry-asg</code>, min 1 / desired 2 / max 3</td></tr>
+    </table>
+    <p>Jordan's ALB health URL returns two different hostnames when refreshed:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>Refresh 1:
+{
+  "ok": true,
+  "app": "campus-pantry",
+  "served_by": "ip-172-31-9-12.ec2.internal"
+}
+
+Refresh 2:
+{
+  "ok": true,
+  "app": "campus-pantry",
+  "served_by": "ip-172-31-30-87.ec2.internal"
+}</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Jordan's broken-state example</h3>
+    <p>Jordan's app lets a user add a fake pantry item, but the item is stored in memory. When the ALB sends traffic to another instance, the new item is missing.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>## Broken-state experiment
+I added a fake item named "Rice Bags - Test Item" through the Campus Pantry frontend.
+
+What broke:
+The item appeared when one instance answered, but disappeared when another instance answered.
+
+Why:
+The API stores added items in memory. Each EC2 instance has its own memory, so the two instances do not share the same item list.
+
+Real fix:
+The item list needs a shared database. DynamoDB or another managed database would make every instance read and write the same durable data.</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Jordan's second-device proof</h3>
+    <p>Jordan opens the React app on his phone browser. The frontend has this API base:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>VITE_API_BASE=http://jordan-pantry-alb-123456789.us-east-1.elb.amazonaws.com</pre></div>
+    <p>The phone screen shows pantry items loaded from AWS. Jordan's screenshot is <code class="inline">screenshots/07-phone-aws-api.png</code>.</p>
+  </div>
+</section>
+
+<section class="tab" id="tab-screenshots">
+  <h2>Real Screenshots: Yes, This Is The Clean Way</h2>
+  <div class="card story">
+    <p><strong>Yes, real screenshots are possible.</strong> The best version is not copied screenshots from AWS docs. The best version is one real instructor/demo AWS account going through the example once, then saving those screenshots into this course page.</p>
+    <div class="callout"><strong>Important:</strong> the screenshots should not show account IDs, email addresses, access keys, billing pages, or real student data. Crop or blur those parts before publishing.</div>
+  </div>
+
+  <div class="card">
+    <h3>Screenshot folder Maya would use</h3>
+    <p>The page can display screenshots from this local folder if you add them later:</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>assets/aws-screenshots/
+  01-github-new-repo.png
+  02-repo-files-online.png
+  03-aws-ec2-dashboard.png
+  04-launch-instance-name-ami.png
+  05-launch-instance-network-sg.png
+  06-launch-instance-user-data.png
+  07-instance-running-2-checks.png
+  08-site-on-ec2-public-ip.png
+  09-health-on-ec2-public-ip.png
+  10-launch-template-summary.png
+  11-target-group-health-check.png
+  12-alb-listener-target-group.png
+  13-asg-capacity-settings.png
+  14-targets-healthy.png
+  15-alb-health-served-by-a.png
+  16-alb-health-served-by-b.png
+  17-instance-terminating.png
+  18-replacement-healthy.png
+  19-asg-desired-capacity-1.png</pre></div>
+  </div>
+
+  <div class="card">
+    <h3>Real screenshot map</h3>
+    <p>This is the exact screenshot plan. One person can run the example once and capture these images.</p>
+    <div class="shotgrid">
+      <div class="shot"><strong>1. GitHub new repo</strong><code class="inline">01-github-new-repo.png</code><br>Shows repo name <code class="inline">pelican-tours-m1</code>, public selected.</div>
+      <div class="shot"><strong>2. Repo files online</strong><code class="inline">02-repo-files-online.png</code><br>Shows <code class="inline">server.js</code>, <code class="inline">user-data.sh</code>, <code class="inline">JOURNAL.md</code>.</div>
+      <div class="shot"><strong>3. EC2 dashboard</strong><code class="inline">03-aws-ec2-dashboard.png</code><br>Shows region <code class="inline">us-east-1</code> and Launch instance button.</div>
+      <div class="shot"><strong>4. Name + AMI</strong><code class="inline">04-launch-instance-name-ami.png</code><br>Shows <code class="inline">maya-pelican-single</code> and Amazon Linux 2023.</div>
+      <div class="shot"><strong>5. Network + firewall</strong><code class="inline">05-launch-instance-network-sg.png</code><br>Shows public IP enabled, HTTP 80 open, SSH from My IP.</div>
+      <div class="shot"><strong>6. User data</strong><code class="inline">06-launch-instance-user-data.png</code><br>Shows the pasted script with the GitHub zip URL.</div>
+      <div class="shot"><strong>7. Instance running</strong><code class="inline">07-instance-running-2-checks.png</code><br>Shows instance running and 2/2 checks passed.</div>
+      <div class="shot"><strong>8. Website works</strong><code class="inline">08-site-on-ec2-public-ip.png</code><br>Shows Pelican Tours at the EC2 public IP.</div>
+      <div class="shot"><strong>9. Health works</strong><code class="inline">09-health-on-ec2-public-ip.png</code><br>Shows <code class="inline">/api/health</code> JSON.</div>
+      <div class="shot"><strong>10. Launch template</strong><code class="inline">10-launch-template-summary.png</code><br>Shows <code class="inline">maya-pelican-template</code>.</div>
+      <div class="shot"><strong>11. Target group</strong><code class="inline">11-target-group-health-check.png</code><br>Shows HTTP 80 and health path <code class="inline">/api/health</code>.</div>
+      <div class="shot"><strong>12. ALB listener</strong><code class="inline">12-alb-listener-target-group.png</code><br>Shows HTTP 80 forwarding to the target group.</div>
+      <div class="shot"><strong>13. ASG capacity</strong><code class="inline">13-asg-capacity-settings.png</code><br>Shows min 1, desired 2, max 3.</div>
+      <div class="shot"><strong>14. Healthy targets</strong><code class="inline">14-targets-healthy.png</code><br>Shows two healthy targets.</div>
+      <div class="shot"><strong>15-16. Rotation</strong><code class="inline">15-alb-health-served-by-a.png</code><br><code class="inline">16-alb-health-served-by-b.png</code><br>Shows two different <code class="inline">served_by</code> values.</div>
+      <div class="shot"><strong>17-18. Self-healing</strong><code class="inline">17-instance-terminating.png</code><br><code class="inline">18-replacement-healthy.png</code><br>Shows termination and replacement.</div>
+      <div class="shot"><strong>19. Scale down</strong><code class="inline">19-asg-desired-capacity-1.png</code><br>Shows desired capacity back to 1.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>How I can help with real screenshots</h3>
+    <p>There are two realistic ways to get real screenshots into this page.</p>
+    <table>
+      <tr><th>Option</th><th>How it works</th><th>Best when</th></tr>
+      <tr><td>Manual capture</td><td>You or the instructor runs the AWS example once, saves screenshots using the filenames above, and drops them into <code class="inline">assets/aws-screenshots/</code>. I then wire them into the page.</td><td>You want clean course materials without sharing account access.</td></tr>
+      <tr><td>Guided browser session</td><td>You sign into AWS in your browser. I can help drive the browser and capture screenshots, but you handle login/MFA and I avoid secrets.</td><td>You want me to help produce the screenshot set from a live account.</td></tr>
+    </table>
+    <div class="bad"><strong>Do not send access keys or passwords.</strong> If a browser session is used, the human signs in and handles MFA.</div>
+  </div>
+</section>
+
+<section class="tab" id="tab-journal">
+  <h2>A Finished Journal Example</h2>
+  <div class="card good">
+    <p>This is Maya's finished <code class="inline">JOURNAL.md</code> in one piece. It reads like evidence, not like a vague promise.</p>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre># CEN4086 AWS M1 Journal
+
+Student: Maya Example
+Track: A - Pelican Tours starter app
+Repo: https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1
+Live app URL: http://maya-pelican-alb-123456789.us-east-1.elb.amazonaws.com
+Health URL: http://maya-pelican-alb-123456789.us-east-1.elb.amazonaws.com/api/health
+
+## First AWS console screenshot
+Region: us-east-1
+Screenshot: screenshots/01-aws-region.png
+
+AWS owns the physical servers. I am renting a small piece of shared cloud capacity through my AWS account. This shows resource pooling and measured service.
+
+## Single EC2 instance
+Instance name: maya-pelican-single
+Instance type: t3.micro
+AMI: Amazon Linux 2023
+IAM instance profile: none
+Security group: maya-pelican-web-sg
+HTTP: port 80 from 0.0.0.0/0
+SSH: port 22 from My IP only
+
+Screenshots:
+- screenshots/02-single-instance-site.png
+- screenshots/03-single-instance-health.png
+
+Decision a SaaS user would not make:
+I had to choose the AMI, instance type, security group, IAM profile, and user-data boot script.
+
+## Sizing memo
+I used t3.micro because the app is a small Node booking demo with fictional class traffic. It serves simple HTML and JSON. I recorded the current us-east-1 Linux on-demand t3.micro price from AWS on submission day.
+
+If traffic grew 10x, I would test a larger general-purpose instance and compare CPU, memory, and request latency before changing the architecture.
+
+## ALB and Auto Scaling proof
+Launch template: maya-pelican-template
+Target group: maya-pelican-tg
+Load balancer: maya-pelican-alb
+Auto Scaling group: maya-pelican-asg
+Capacity during test: min 1 / desired 2 / max 3
+
+Traffic rotation:
+- screenshots/04-alb-health-rotation.png
+- served_by changed between ip-172-31-18-44.ec2.internal and ip-172-31-26-91.ec2.internal
+
+Self-healing:
+- screenshots/05-before-termination.png
+- screenshots/06-replacement-healthy.png
+- I terminated one instance at 2:14 PM.
+- A replacement was healthy at 2:22 PM.
+- Replacement time: about 8 minutes.
+
+Final capacity after test: desired 1
+
+## Lost-state experiment
+I booked a fake tour as Maya Test. The booking existed at first. After scaling/replacing instances, the booking disappeared.
+
+The booking disappeared because the starter app stores bookings in memory. Memory belongs to one EC2 instance. Another EC2 instance cannot see it, and a replacement instance loses it completely. A real fix is shared persistent storage such as DynamoDB.
+
+## Phone/cellular test
+Screenshot: screenshots/07-phone-cellular-booking.png
+I turned off Wi-Fi, opened the ALB URL on cellular data, and booked a fake tour from my phone.
+
+## Build vs buy
+I compared this custom build with a booking SaaS such as FareHarbor or Peek.
+
+SaaS advantage:
+The company gets booking features, hosting, updates, and support without managing EC2, load balancers, or deployments.
+
+Custom build advantage:
+The company gets more control over the exact workflow and data model.
+
+Lock-in:
+A SaaS tool may make it hard to leave later if all bookings and customer workflows live there.
+
+Multi-tenancy:
+A SaaS booking system usually serves many companies from one shared platform. My AWS build is just for this one client.
+
+Recommendation:
+For a tiny tour company that needs bookings immediately, I would start with SaaS. I would build custom only if the business has a special workflow or needs control the SaaS cannot provide.
+
+PaaS lens:
+The ALB and ASG managed health checks, traffic distribution, replacement, and capacity rules. A full PaaS would also hide more of the OS, runtime, deployment, and process management.
+
+## Cost ledger
+Resource | Why it exists | Running at submission? | Price source
+EC2 t3.micro | Runs the app | Yes, 1 desired instance | AWS EC2 pricing page
+Application Load Balancer | Public stable URL and traffic distribution | Yes | AWS ELB pricing page
+EBS volume | Instance disk | Yes | AWS EBS pricing page
+Target group / ASG | Health and replacement control | Yes | no separate major hourly compute charge noted
+
+Budget at end: shown in final lab screenshot
+M2 burn prediction: still low if I keep only one instance running and shut down experiments.</pre></div>
+  </div>
+</section>
+
+<section class="tab" id="tab-submit">
+  <h2>Final Submission Examples</h2>
+  <div class="card story">
+    <h3>Maya's final submission text</h3>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>M1 Submission - Track A, Pelican Tours
+
+Repo:
+https://github.com/YOUR-GITHUB-USERNAME/pelican-tours-m1
+
+Live app URL:
+http://maya-pelican-alb-123456789.us-east-1.elb.amazonaws.com
+
+Health check:
+http://maya-pelican-alb-123456789.us-east-1.elb.amazonaws.com/api/health
+
+Evidence:
+Screenshots are saved in the screenshots/ folder. JOURNAL.md links or embeds those screenshots and contains the AWS region screenshot, single-instance screenshots, sizing memo, ALB rotation screenshot, ASG self-healing screenshots, lost-state explanation, phone/cellular screenshot, build-vs-buy write-up, and cost ledger.
+
+Budget note:
+Auto Scaling desired capacity is back to 1.</pre></div>
+  </div>
+
+  <div class="card own">
+    <h3>Jordan's final submission text</h3>
+    <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">Copy</button><pre>M1 Submission - Track B, Bring Your Own App
+
+App:
+Campus Pantry
+
+Repo:
+https://github.com/YOUR-GITHUB-USERNAME/campus-pantry-cloud-copy
+
+Live backend URL:
+http://jordan-pantry-alb-123456789.us-east-1.elb.amazonaws.com
+
+Health check:
+http://jordan-pantry-alb-123456789.us-east-1.elb.amazonaws.com/health
+
+Client proof:
+My phone screenshot shows the Campus Pantry frontend loading data from the AWS backend.
+
+Evidence:
+Screenshots are saved in the screenshots/ folder. JOURNAL.md links or embeds those screenshots and contains instructor approval, component inventory, EC2 deployment proof, sizing memo, ALB rotation screenshot, ASG self-healing screenshots, broken-state explanation, second-device screenshot, build-vs-buy write-up, and metering baseline.
+
+Budget note:
+Auto Scaling desired capacity is back to 1.</pre></div>
+  </div>
+</section>
+
+<section class="tab" id="tab-grader">
+  <h2>What Gets Graded</h2>
+  <div class="card good">
+    <h3>Track A: no app, Pelican Tours</h3>
+    <table>
+      <tr><th>Evidence in Maya's example</th><th>Points</th></tr>
+      <tr><td>Single EC2 app works, user data works, security group is reasonable, sizing memo exists</td><td>6</td></tr>
+      <tr><td>ALB and ASG show rotation, self-healing, and final scale-down</td><td>8</td></tr>
+      <tr><td>Lost-state experiment is shown and explained correctly</td><td>4</td></tr>
+      <tr><td>Build-vs-buy write-up uses SaaS/PaaS/IaaS correctly</td><td>4</td></tr>
+      <tr><td>Journal and cost ledger are complete</td><td>3</td></tr>
+    </table>
+  </div>
+
+  <div class="card own">
+    <h3>Track B: existing app</h3>
+    <table>
+      <tr><th>Evidence in Jordan's example</th><th>Points</th></tr>
+      <tr><td>Component inventory correctly classifies the real app stack</td><td>6</td></tr>
+      <tr><td>Backend or minimal API is deployed on EC2 with reasoned sizing</td><td>7</td></tr>
+      <tr><td>ALB/ASG demo works and broken-state analysis is specific to the app</td><td>6</td></tr>
+      <tr><td>Build-vs-buy appraisal compares one component to a managed/SaaS option</td><td>3</td></tr>
+      <tr><td>Journal, repo hygiene, and metering baseline are complete</td><td>3</td></tr>
+    </table>
+  </div>
+
+  <div class="card warn">
+    <h3>The obvious red flags</h3>
+    <table>
+      <tr><th>Bad submission</th><th>What the example does instead</th></tr>
+      <tr><td>Only an EC2 public IP</td><td>Maya and Jordan submit the ALB DNS name.</td></tr>
+      <tr><td>No proof of two instances</td><td>Both examples show <code class="inline">served_by</code> changing.</td></tr>
+      <tr><td>No self-healing evidence</td><td>Both examples include before/after termination screenshots.</td></tr>
+      <tr><td>"It disappeared" with no explanation</td><td>The examples explain instance memory and persistent storage.</td></tr>
+      <tr><td>Desired capacity left at 2 or 3</td><td>The examples end at desired capacity 1.</td></tr>
+      <tr><td>Real user data</td><td>The examples use fake names and fake records only.</td></tr>
+    </table>
+  </div>
+</section>
+
+<div style="display:flex;justify-content:space-between;margin-top:26px;flex-wrap:wrap;gap:10px">
+  <a class="btn ghost" href="index.html">Back to Pelican Tours brief</a>
+  <a class="btn" href="starter-app/readme.html">Starter app guide</a>
+  <a class="btn" href="../bring-your-own-app/index.html">BYOA brief</a>
+</div>
+
+</main>
+<script>
+function showTab(name){
+  document.querySelectorAll('.tab').forEach(tab=>tab.classList.toggle('active',tab.id==='tab-'+name));
+  document.querySelectorAll('.tabbtn').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===name));
+  try{localStorage.setItem('cen4086:monday-example-tab:v3',name);}catch(e){}
+}
+(function(){
+  var tab='start';
+  try{tab=localStorage.getItem('cen4086:monday-example-tab:v3')||'start';}catch(e){}
+  if(!document.getElementById('tab-'+tab)) tab='start';
+  showTab(tab);
+})();
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='Copied';setTimeout(()=>btn.textContent='Copy',1400);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+</script>
+</body>
+</html>

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Due Monday — M1 Checklist (AWS Tracks)</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--pri2:#22214f;--blue:#1273a8;--blue2:#0b4460;--vio:#7b5ea7;--vio2:#4d3a70;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--teal:#0f8b8d}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--pri);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri2);text-decoration:none;font-weight:600}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#22214f 100%);color:#fff;border-radius:16px;padding:30px 28px;margin:14px 0 18px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:28px}
+.hero .sub{opacity:.92;margin:0 0 10px}
+.chip{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:#fff}
+.datenote{font-size:13px;opacity:.85;margin-top:10px}
+.jump{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:0 0 20px;font-size:13px}
+.jump a{color:var(--pri2);background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px;text-decoration:none;font-weight:600}
+.jump a:hover{border-color:var(--pri)}
+h2{font-size:22px;margin:36px 0 10px;padding-left:12px;border-left:6px solid var(--pri)}
+h2.ta{border-color:var(--blue)}
+h2.tb{border-color:var(--vio)}
+h3{font-size:17.5px;margin:16px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:14px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+section.trackA .card{border-top:6px solid var(--blue)}
+section.trackB .card{border-top:6px solid var(--vio)}
+.pkg{border:2px solid var(--ok);background:#eefaf2}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.step{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;border-radius:8px;margin:6px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--pri);width:16px;height:16px;flex-shrink:0}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.step ul{margin:6px 0 2px;padding-left:20px}
+.step li{margin:3px 0;font-size:14.5px;color:var(--mut)}
+.pkglist{margin:6px 0;padding-left:0;list-style:none}
+.pkglist li{margin:8px 0;padding:8px 10px 8px 34px;position:relative;font-size:14.5px;background:#fff;border:1px solid #d5e8dc;border-radius:8px}
+.pkglist li::before{content:"✓";position:absolute;left:10px;top:8px;color:var(--ok);font-weight:800}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--pri);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.btn{display:inline-block;background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--pri2);border:1.5px solid var(--pri)}
+.note{font-size:13.5px;color:var(--mut)}
+.due{display:inline-block;background:var(--bad);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800;letter-spacing:.4px}
+.pts{display:inline-block;background:var(--pri);color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800}
+ul.tight li{margin:6px 0}
+.warn{background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.danger{background:#fbeae8;border-left:4px solid var(--bad);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.ok{background:#e9f4ee;border-left:4px solid var(--ok);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+code.inline{background:#ecebe4;border-radius:5px;padding:1px 6px;font-size:13.5px}
+/* chooser */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:14px 0}
+.tcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 2px 10px rgba(29,36,51,.05);display:flex;flex-direction:column}
+.tcard.a{border-top:6px solid var(--blue)}
+.tcard.b{border-top:6px solid var(--vio)}
+.tcard h3{margin:0 0 8px}
+.tcard p{margin:0 0 14px;font-size:14.5px;flex-grow:1}
+.filterbar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:16px 0 6px}
+.trackbtn{padding:9px 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-weight:700;cursor:pointer;font-size:13.5px;color:var(--ink);font-family:inherit}
+.trackbtn.active{background:var(--pri);color:#fff;border-color:var(--pri)}
+/* body-level track filter */
+body[data-track="a"] .trackB{display:none}
+body[data-track="b"] .trackA{display:none}
+.gateband{background:linear-gradient(135deg,#4d3a70,#7b5ea7);color:#fff;border-radius:12px;padding:14px 18px;margin:10px 0;font-size:14.5px}
+@media print{.topnav,.btn,.copybtn,.filterbar,.jump{display:none}body{background:#fff}}
+</style>
+</head>
+<body data-track="both">
+<nav class="topnav">
+  <a href="../index.html">⌂ Course Hub</a>
+  <span style="font-weight:700">📅 Due Monday — M1 Checklist</span>
+  <span>
+    <a href="index.html">🏗️ Project Hub</a> &nbsp;·&nbsp;
+    <a href="aws-pelican-tours/index.html">🌊 Pelican Tours brief</a> &nbsp;·&nbsp;
+    <a href="bring-your-own-app/index.html">📱 BYOA brief</a>
+  </span>
+</nav>
+<main>
+
+<header class="hero">
+  <h1>📅 What's Due Monday — M1, the AWS Tracks</h1>
+  <p class="sub">One page, two paths. Whether you're standing up the provided Pelican Tours booking app from zero or pushing your own app onto AWS, this is the exact, no-guessing list of what to build and what to hand in for Milestone 1 — worth 25 points either way.</p>
+  <div>
+    <span class="chip">M1 · 25 pts</span><span class="chip">Due Monday · Class 4</span><span class="chip">AWS Academy Learner Lab</span><span class="chip">Covers both starter-app &amp; bring-your-own-app</span>
+  </div>
+  <p class="datenote">📆 Assuming Class 3 already met, the coming Monday is <strong>July 13, 2026</strong>. If your section's calendar runs differently, go by "Class 4" on your syllabus, not this date.</p>
+</header>
+
+<div class="jump">
+  <a href="#tldr">TL;DR</a><a href="#prereqs">Before Monday</a><a href="#tracka">🌊 Starter app</a><a href="#trackb">📱 My own app</a><a href="#compare">Side-by-side</a><a href="#timeline">Weekend plan</a>
+</div>
+
+<div class="card" id="tldr" style="border-top:6px solid var(--teal)">
+  <h3>📌 TL;DR — what you're actually handing in Monday</h3>
+  <p>Regardless of track, Class 4 wants five things sitting in one place (your repo, <code class="inline">JOURNAL.md</code>, and a <code class="inline">screenshots/</code> folder):</p>
+  <ol>
+    <li><strong>A working cloud deployment</strong> reachable by URL right now — not a screenshot from three days ago.</li>
+    <li><strong>Proof it survives a load balancer + Auto Scaling group</strong> — traffic rotating across instances, and one instance dying and getting replaced automatically.</li>
+    <li><strong>A journal</strong> with your sizing reasoning, your "what broke when I scaled" finding, and your budget numbers — in your own words, not just checkboxes.</li>
+    <li><strong>A build-vs-buy appraisal</strong> using real SaaS/PaaS/IaaS vocabulary.</li>
+    <li><strong>Everything scaled back down to desired capacity 1</strong> before you close the laptop — an unattended budget burn is its own kind of failing grade.</li>
+  </ol>
+  <p class="note">The two sections below (🌊 starter app vs 📱 your own app) turn each of those five into exact, track-specific steps and an exact submission checklist. Pick your card.</p>
+</div>
+
+<h2>Which student are you?</h2>
+<div class="grid2">
+  <div class="tcard a">
+    <h3>🌊 Starting from zero</h3>
+    <p>You have no app of your own yet — you're using the provided Pelican Tours booking app as your raw material. Everything you need (code, endpoints, deploy scripts) is already written; your job is the cloud engineering.</p>
+    <button class="trackbtn" data-t="a" onclick="setTrack('a')">Show me this path only →</button>
+  </div>
+  <div class="tcard b">
+    <h3>📱 I already have an app</h3>
+    <p>You built something — a mobile app, a website with an app behind it, a side project. You're taking <em>that</em> to AWS instead of the fictional client. Requires an approved proposal before Class 4.</p>
+    <button class="trackbtn" data-t="b" onclick="setTrack('b')">Show me this path only →</button>
+  </div>
+</div>
+<div class="filterbar">
+  <button class="trackbtn" data-t="both" onclick="setTrack('both')">👀 Show both tracks</button>
+  <button class="trackbtn" data-t="a" onclick="setTrack('a')">🌊 Starter app only</button>
+  <button class="trackbtn" data-t="b" onclick="setTrack('b')">📱 My own app only</button>
+</div>
+
+<h2 id="prereqs">Before Monday: the same for everyone</h2>
+<div class="card">
+  <p>These apply no matter which card you picked above. Do them <strong>before</strong> the weekend build session — several are blocking.</p>
+  <label class="step"><input type="checkbox" data-step="pre1"><span><strong>AWS Academy Learner Lab access confirmed.</strong> Accept the invite, create your Academy account, open the lab, press <strong>▶ Start Lab</strong>, wait for the green AWS dot, open the console. Confirm the region reads <strong>us-east-1 (N. Virginia)</strong> and you can see your remaining budget on the lab page. Screenshot both — that budget number is your first "measured service" reading and an actual M1 journal item.</span></label>
+  <label class="step"><input type="checkbox" data-step="pre2"><span><strong>Repo + journal exist.</strong> Create your repo (GitHub — public for the starter-app track is simplest; private with instructor access if you'd rather) and start <code class="inline">JOURNAL.md</code> with today's date as the first entry.</span></label>
+  <label class="step"><input type="checkbox" data-step="pre3"><span><strong>Read the lab's house rules once, fully.</strong> $100 budget with a hard stop (no appeal if you hit it); sessions time out and stop instances (new public IPs on restart — bookmark the ALB DNS name, never an instance IP); <code class="inline">us-east-1</code> only; only <code class="inline">LabRole</code> / <code class="inline">LabInstanceProfile</code> exist, you can't create IAM roles; only t3.micro/t3.small are allowed. Full detail: <a href="aws-pelican-tours/setup.html">Learner Lab setup guide</a>.</span></label>
+  <label class="step"><input type="checkbox" data-step="pre4"><span><strong>Know the end-of-session ritual before you need it:</strong> Auto Scaling desired capacity → 1 (or 0), terminate anything experimental, confirm nothing is running in <code class="inline">us-west-2</code>, End Lab, journal what ran and the budget reading. Do this every single time you stop working — including partway through the weekend, not just Monday morning.</span></label>
+  <div class="gateband">🚦 <strong>Bring-your-own-app students:</strong> none of Track B below counts until your one-page proposal is <em>approved</em>. If you haven't emailed it yet, stop reading and send it now — see the gate at the top of Track B.</div>
+</div>
+
+<!-- ================= TRACK A ================= -->
+<section class="trackA">
+<h2 class="ta" id="tracka">🌊 Track A — Starting from Zero (Pelican Tours Starter App)</h2>
+<div class="card">
+  <p>Marissa's booking app moves from "vanished web kid's laptop" to real AWS infrastructure, then proves it can survive a viral video. Full brief: <a href="aws-pelican-tours/index.html">Pelican Tours project page</a> · Starter code: <a href="aws-pelican-tours/starter-app/readme.html">starter-app guide</a>.</p>
+</div>
+
+<div class="card pkg">
+  <h3>📦 Exactly what you submit Monday</h3>
+  <ul class="pkglist">
+    <li><strong>Repo link</strong> containing the starter app (your fork/copy), your edited <code class="inline">user-data.sh</code>, <code class="inline">JOURNAL.md</code>, and a <code class="inline">screenshots/</code> folder with every screenshot used as evidence.</li>
+    <li><strong>A live URL</strong> — your Application Load Balancer's DNS name — that resolves to the working booking app <em>at submission time</em>.</li>
+    <li><strong>Journal entry: budget &amp; NIST trait</strong> — your first budget-page screenshot + one sentence naming who actually owns the hardware under your $100, and which NIST trait that illustrates.</li>
+    <li><strong>Screenshot: working site + <code class="inline">/api/health</code></strong> from your first single instance, plus one sentence on a decision you had to make (AMI, security group, instance profile) that a SaaS user would never see.</li>
+    <li><strong>Sizing memo (written)</strong> — t3.micro's vCPU/RAM/burst-credit numbers and on-demand price/hr, plus the instance type (and its price) you'd move to at 10× traffic.</li>
+    <li><strong>Screenshot: <code class="inline">served_by</code> rotating</strong> — several reloads of <code class="inline">/api/health</code> through the ALB DNS name showing different instance IDs answering.</li>
+    <li><strong>Screenshot pair: self-healing</strong> — before/after of manually terminating one instance and the Auto Scaling group replacing it, with a timeline note (how long did it take?).</li>
+    <li><strong>Lost-state journal entry</strong> — place a booking, scale/replace instances, show the booking is gone; explain <em>why</em> in-memory state breaks under elasticity and which AWS service(s) would fix it (you implement the fix in M4).</li>
+    <li><strong>Phone screenshot</strong> — one tour booked from your phone over <strong>cellular data</strong> (not Wi-Fi) via the ALB URL, plus one sentence.</li>
+    <li><strong>Build-vs-buy write-up (half page)</strong> — booking SaaS (FareHarbor, Peek, etc.) vs. your build, compared on cost model / control / lock-in / multi-tenancy, plus a PaaS-lens paragraph on what the ALB+ASG just did for you.</li>
+    <li><strong>Cost ledger table</strong> — every resource currently running, its hourly price, and your measured burn for the week, plus a predicted M2 burn number.</li>
+    <li><strong>Proof the budget is respected</strong> — Auto Scaling desired capacity back down to 1 before you submit.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3>🔧 Step-by-step build guide</h3>
+  <label class="step"><input type="checkbox" data-step="a1"><span><strong>Lab orientation + first budget reading.</strong>
+    <ul>
+      <li>Work through the <a href="aws-pelican-tours/setup.html">setup guide</a> end to end once before touching EC2.</li>
+      <li>Screenshot the lab page's remaining budget and the console showing <code class="inline">us-east-1</code>.</li>
+      <li>Journal: who is paying for the physical hardware under your $100 — and name the NIST trait that describes it (resource pooling / measured service).</li>
+    </ul></span></label>
+  <label class="step"><input type="checkbox" data-step="a2"><span><strong>Get the starter app running locally first (2 minutes).</strong>
+    <ul>
+      <li>Download/clone <code class="inline">starter-app/</code>, run <code class="inline">node server.js</code>, confirm <code class="inline">http://localhost:3000</code> loads. Zero dependencies — Node's standard library only.</li>
+      <li>Push the folder to a <strong>public GitHub repo</strong> (simplest option) so <code class="inline">user-data.sh</code> can download it on boot. Your zip URL: <code class="inline">https://github.com/YOUR-USERNAME/YOUR-REPO/archive/refs/heads/main.zip</code>.</li>
+    </ul></span></label>
+  <label class="step"><input type="checkbox" data-step="a3"><span><strong>Launch the single instance (IaaS).</strong>
+    <ul>
+      <li>EC2 → Launch instance → Amazon Linux 2023 → <strong>t3.micro</strong> → IAM instance profile: <code class="inline">LabInstanceProfile</code>.</li>
+      <li>Paste your edited <code class="inline">user-data.sh</code> (with your zip URL) into the User data field.</li>
+      <li>Security group: HTTP 80 from anywhere (0.0.0.0/0); SSH 22 from <strong>your IP only</strong> — never "anywhere."</li>
+      <li>Once running, open the public IP in a browser, then hit <code class="inline">/api/health</code> directly. Screenshot both.</li>
+    </ul></span></label>
+  <label class="step"><input type="checkbox" data-step="a4"><span><strong>Write the sizing memo.</strong>
+    <ul>
+      <li>Pull t3.micro's vCPU count, RAM, and "burstable" credit behavior plus its on-demand $/hr from the EC2 pricing page.</li>
+      <li>State explicitly what you'd upsize to (and its $/hr) if traffic went 10×.</li>
+    </ul></span></label>
+  <label class="step"><input type="checkbox" data-step="a5"><span><strong>Build the viral-video drill (ALB + ASG).</strong>
+    <ul>
+      <li>EC2 → Launch templates → create from your working instance (same AMI, t3.micro, LabInstanceProfile, user data).</li>
+      <li>EC2 → Target groups → HTTP:80, health check path <code class="inline">/api/health</code>.</li>
+      <li>EC2 → Load balancers → create an internet-facing ALB across 2+ AZs, pointed at your target group.</li>
+      <li>EC2 → Auto Scaling groups → min 1 / desired 2 / max 3, attached to the target group.</li>
+      <li>Reload <code class="inline">http://ALB-DNS-NAME/api/health</code> repeatedly — screenshot <code class="inline">served_by</code> changing between instances.</li>
+      <li>Manually terminate one instance in the console; watch and screenshot the ASG launching a replacement (note the timestamps).</li>
+      <li>Set desired capacity back to <strong>1</strong> — this is a budget rule, not optional.</li>
+    </ul></span></label>
+  <label class="step"><input type="checkbox" data-step="a6"><span><strong>Run the lost-state experiment.</strong>
+    <ul>
+      <li>Place a booking through the live site, note it in <code class="inline">/api/bookings</code>.</li>
+      <li>Scale out/replace instances and check again — the booking is gone.</li>
+      <li>Journal: why does in-memory state break under elasticity, and which AWS service(s) would actually fix it? (You wire this up for real in M4 with DynamoDB — name it now.)</li>
+    </ul></span></label>
+  <label class="step"><input type="checkbox" data-step="a7"><span><strong>Prove broad network access.</strong> Book a tour from your phone on cellular data (Wi-Fi off) using the ALB URL. One photo, one sentence in the journal.</span></label>
+  <label class="step"><input type="checkbox" data-step="a8"><span><strong>Write the build-vs-buy appraisal.</strong>
+    <ul>
+      <li>Half page: should Marissa just use a booking SaaS (FareHarbor, Peek, etc.) instead of what you built? Compare cost model, control, lock-in, and multi-tenancy; say when you'd advise each path.</li>
+      <li>One paragraph, PaaS lens: what did the ALB + ASG just manage <em>for</em> you, and what would a full PaaS platform have taken off your plate on top of that?</li>
+    </ul></span></label>
+  <label class="step"><input type="checkbox" data-step="a9"><span><strong>Open the cost ledger.</strong> Table every resource currently running (instances, ALB, EBS volumes) with its hourly price and your measured burn for the week. Add a predicted M2 burn number — you'll grade your own prediction next milestone.</span></label>
+  <label class="step"><input type="checkbox" data-step="a10"><span><strong>Run the end-of-session ritual before you submit.</strong> Desired capacity → 1, terminate stray experiments, End Lab, final journal entry with the budget reading.</span></label>
+
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># M1 target architecture
+#
+#   phone/browser ──▶ ALB (port 80) ──▶ Auto Scaling group (1–3 × t3.micro)
+#                                        each runs starter-app via user-data
+#
+# Order of operations (console, us-east-1):
+# 1. EC2 → Launch templates → create from your working single instance
+#    (AMI: Amazon Linux 2023 · t3.micro · LabInstanceProfile · user-data)
+# 2. EC2 → Target groups → HTTP:80, health check path /api/health
+# 3. EC2 → Load balancers → ALB, internet-facing, 2+ AZs, your target group
+# 4. EC2 → Auto Scaling groups → min 1 / desired 2 / max 3, attach target group
+# 5. Visit http://ALB-DNS-NAME/api/health repeatedly → served_by rotates
+# 6. Terminate an instance → watch ASG replace it (screenshot before/after)
+# 7. Desired capacity → 1, then End Lab. Budget line in journal.</pre></div>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># Where user-data downloads your app from (pick ONE, before you launch):
+#
+# Option A — public GitHub repo (simplest, most reliable):
+#   1. Push the starter-app folder to a public repo you create
+#   2. Zip URL: https://github.com/YOUR-USERNAME/YOUR-REPO/archive/refs/heads/main.zip
+#   3. Paste that into APP_ZIP_URL in user-data.sh
+#
+# Option B — S3 bucket in your lab account:
+#   1. Zip the folder:  zip -r starter-app.zip starter-app
+#   2. S3 → Create bucket → Upload starter-app.zip
+#   3. Select the object → Presigned URL (12 hours) → paste into APP_ZIP_URL
+#      (an instance relaunching after the URL expires will fail — Option A avoids that)</pre></div>
+</div>
+
+<div class="card">
+  <h3>📋 Rubric — where the 25 points come from</h3>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Instance + user-data deploy works; security group and sizing reasoned like an engineer</td><td>6</td></tr>
+    <tr><td>ALB/ASG demo: rotation shown, self-healing shown, scaled back down</td><td>8</td></tr>
+    <tr><td>Lost-state experiment run and correctly explained</td><td>4</td></tr>
+    <tr><td>Build-vs-buy appraisal uses SaaS/PaaS/IaaS distinctions correctly</td><td>4</td></tr>
+    <tr><td>Journal + cost ledger complete, budget lines present</td><td>3</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>⚠️ Where students lose easy points</h3>
+  <table>
+    <tr><th>Mistake</th><th>Fix</th></tr>
+    <tr><td>Bookmarked an instance's public IP</td><td>IPs change every time the lab session restarts instances. Use the ALB DNS name everywhere — journal, screenshots, submission link.</td></tr>
+    <tr><td>"user-data didn't run"</td><td>It only runs on first boot. Check <code class="inline">/var/log/cloud-init-output.log</code>, fix <code class="inline">APP_ZIP_URL</code>, and relaunch a fresh instance rather than debugging a running one.</td></tr>
+    <tr><td>SSH open to 0.0.0.0/0</td><td>Restrict port 22 to your IP only before you screenshot the security group — this is graded, not cosmetic.</td></tr>
+    <tr><td>Presigned S3 URL expired</td><td>It's only valid 12 hours; any instance that relaunches after that fails silently. Use the GitHub option instead.</td></tr>
+    <tr><td>Left desired capacity at 2–3 over the weekend</td><td>Burns budget for nothing and is itself a rubric line. Scale to 1 every time you step away.</td></tr>
+    <tr><td>Lost-state journal entry just says "it disappeared"</td><td>Name <em>why</em> (in-memory storage isn't shared across instances) and <em>which service fixes it</em> (DynamoDB, coming in M4) — the explanation is what's graded, not the observation.</td></tr>
+  </table>
+</div>
+</section>
+
+<!-- ================= TRACK B ================= -->
+<section class="trackB">
+<h2 class="tb" id="trackb">📱 Track B — You Already Have an App (Bring Your Own App, AWS)</h2>
+<div class="card">
+  <div class="gateband">🚦 <strong>Hard gate:</strong> everything below only counts with an <em>approved</em> proposal on file. Email your one-pager right after Class 3; if it isn't approved before Class 4, you submit under Track A (Pelican Tours) instead — no penalty, but decide that <em>before</em> Monday, not during class. Eligibility &amp; proposal template: <a href="bring-your-own-app/setup.html">Eligibility &amp; Setup page</a>.</div>
+  <p>Same milestone, same 25 points, same deadline as Track A — the raw material is your own app instead of a fictional client. Full brief: <a href="bring-your-own-app/index.html">Bring Your Own App project page</a>.</p>
+</div>
+
+<div class="card pkg">
+  <h3>📦 Exactly what you submit Monday</h3>
+  <ul class="pkglist">
+    <li><strong>Your approved proposal</strong> (the email you sent + the instructor's approval) referenced or attached in your journal — this is the grading contract for your whole semester.</li>
+    <li><strong>Private repo link</strong> with a course copy of your app on its own branch/fork (never your live version), plus <code class="inline">JOURNAL.md</code> and a <code class="inline">screenshots/</code> folder with every screenshot used as evidence.</li>
+    <li><strong>Component inventory table</strong> — every piece of your app (client, server, database, media/files, third-party services) mapped to the cloud service model it uses (IaaS / PaaS / SaaS / BaaS).</li>
+    <li><strong>A live cloud URL</strong> — your backend running on EC2 behind an ALB, reachable right now.</li>
+    <li><strong>Sizing justification (written)</strong> — measurements or reasoned estimates defending t3.micro (or your chosen size) for your workload.</li>
+    <li><strong>Screenshot: load distributing</strong> across 2–3 instances of your backend behind the ALB (add an instance-id/hostname field to a health endpoint if you don't already have one).</li>
+    <li><strong>Broken-state journal entry</strong> — what state (sessions, uploads, caches, in-memory data) broke when your backend scaled to multiple instances, specific to your app.</li>
+    <li><strong>Second-device screenshot</strong> — your app's actual client (phone, emulator, or another browser) talking to the cloud-hosted backend, plus one sentence on what had to change (URLs, ports, CORS).</li>
+    <li><strong>Metering baseline</strong> — requests served, CloudWatch resource metrics + a budget reading, and a projected monthly cost at your current traffic on a real provider.</li>
+    <li><strong>Build-vs-buy write-up</strong> — one component of your app (auth, media hosting, database, push notifications, or payments) appraised keep-vs-replace with a managed/SaaS alternative, with a decision and reasons.</li>
+    <li><strong>Proof the budget is respected</strong> — Auto Scaling desired capacity back down before you submit.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3>🔧 Step-by-step build guide</h3>
+  <label class="step"><input type="checkbox" data-step="b1"><span><strong>Proposal emailed and approved.</strong>
+    <ul>
+      <li>Send your one-pager right after Class 3: app + screenshot, component list, stack, ownership statement, users/data statement (no real user data, ever), gaps &amp; your plan for them, and platform = AWS with why.</li>
+      <li>Environment set up per the <a href="aws-pelican-tours/setup.html">Learner Lab setup guide</a> — same house rules, same $100 budget, same <code class="inline">LabRole</code>/<code class="inline">LabInstanceProfile</code> conventions as Track A.</li>
+      <li>Private repo created with a course copy of your app on its own branch, plus <code class="inline">JOURNAL.md</code> and a <code class="inline">screenshots/</code> folder with every screenshot used as evidence.</li>
+    </ul></span></label>
+  <label class="step"><input type="checkbox" data-step="b2"><span><strong>Build the component inventory &amp; service-model map.</strong>
+    <ul>
+      <li>Table: every piece of your app (client, server, database, media/files, third-party services) → the cloud service model it uses or maps to (IaaS / PaaS / SaaS / BaaS).</li>
+      <li>If any piece runs on Firebase, Supabase, a hosted database, or an app-store service, classify it explicitly and explain who manages what layer.</li>
+    </ul></span></label>
+  <label class="step"><input type="checkbox" data-step="b3"><span><strong>Get your backend running on AWS.</strong>
+    <ul>
+      <li>t3.micro, Amazon Linux 2023, <code class="inline">LabInstanceProfile</code>, and a user-data script that pulls and starts your app (adapt the pattern in the starter app's <code class="inline">user-data.sh</code> — clone/download your repo, install dependencies, start via systemd).</li>
+      <li>Justify the sizing with real measurements or reasoned estimates, not a guess.</li>
+      <li>No backend yet? Building the minimal API your app needs <em>is</em> this deliverable — keep it small (the sibling starter apps show how small "small" can be).</li>
+    </ul></span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span><strong>Run the elasticity demo.</strong>
+    <ul>
+      <li>ALB + Auto Scaling group in front of your backend, scaled to 2–3 instances.</li>
+      <li>If your app has no way to show which instance answered, add a one-line hostname/instance-id field to a health endpoint so the rotation is provable.</li>
+      <li>Screenshot requests distributing, then scale back down.</li>
+      <li>Journal: what state broke when instances multiplied (sessions? file uploads? an in-memory cache?) — specific to your app, not generic. This finding drives your M2 and M4 work.</li>
+    </ul></span></label>
+  <label class="step"><input type="checkbox" data-step="b5"><span><strong>Reach it from a second device.</strong> Your actual client (phone, emulator, or a browser on another machine) talking to the cloud-hosted backend. Screenshot plus one sentence on what had to change — hard-coded URLs, ports, CORS headers.</span></label>
+  <label class="step"><input type="checkbox" data-step="b6"><span><strong>Start the metering baseline.</strong> Log requests served and resource use (CloudWatch metrics + a budget-page reading), then estimate what this would cost per month on a real provider at your current traffic.</span></label>
+  <label class="step"><input type="checkbox" data-step="b7"><span><strong>Write the build-vs-buy appraisal.</strong> Pick one component of your app — auth, media hosting, database, push notifications, or payments — and appraise keeping it self-managed vs. replacing it with a managed/SaaS service: cost model, control, lock-in, and your decision with reasons.</span></label>
+  <label class="step"><input type="checkbox" data-step="b8"><span><strong>Run the end-of-session ritual before you submit.</strong> Desired capacity → 1, terminate stray experiments, End Lab, final journal entry with the budget reading.</span></label>
+
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre># A generic user-data pattern for YOUR app (adapt commands to your stack —
+# this mirrors the shape of the starter app's user-data.sh):
+#
+# 1. Install your runtime (node, python3, etc.) via the package manager
+# 2. Clone or download your repo (same APP_ZIP_URL / git-clone approach
+#    as the Pelican Tours starter app — public repo zip is simplest)
+# 3. Install dependencies (npm install / pip install -r requirements.txt)
+# 4. Write a systemd unit so the app survives reboots and restarts on crash
+# 5. Start the service, confirm it's listening, open port 80/8080 in the SG
+#
+# Same rule as Track A: SSH 22 from your IP only, HTTP from anywhere,
+# LabInstanceProfile as the instance profile, t3.micro only.</pre></div>
+</div>
+
+<div class="card">
+  <h3>📋 Rubric — where the 25 points come from</h3>
+  <table>
+    <tr><th>Criterion</th><th>Pts</th></tr>
+    <tr><td>Inventory complete; service-model classification of your real stack is correct</td><td>6</td></tr>
+    <tr><td>Backend deployed with reasoned sizing (or minimal API built and deployed)</td><td>7</td></tr>
+    <tr><td>Elasticity demo works; broken-state analysis is specific to your app</td><td>6</td></tr>
+    <tr><td>Build-vs-buy appraisal uses the service models correctly</td><td>3</td></tr>
+    <tr><td>Journal, repo hygiene, metering baseline</td><td>3</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>⚠️ Where students lose easy points</h3>
+  <table>
+    <tr><th>Mistake</th><th>Fix</th></tr>
+    <tr><td>Proposal sent late, or never followed up on</td><td>No approval by Monday = default to Track A, but that decision has to be made before class, not discovered during it.</td></tr>
+    <tr><td>App is 100% Firebase/Supabase with nothing to move</td><td>Scope a small replaceable slice in your proposal — a single API endpoint you re-implement — and classify the rest honestly in the inventory table.</td></tr>
+    <tr><td>Client still hard-codes <code class="inline">localhost</code></td><td>Point it at your ALB DNS name and handle CORS on the server before you screenshot the second-device test.</td></tr>
+    <tr><td>Real user data anywhere in the course copy</td><td>Test/generated data only — in the database, the backups, and every screenshot. This is non-negotiable, not a style note.</td></tr>
+    <tr><td>Broken-state journal is generic ("state was lost")</td><td>Name the actual thing that broke in <em>your</em> app (session store, uploaded file, cache) — specificity is what's graded.</td></tr>
+  </table>
+</div>
+</section>
+
+<h2 id="compare">Side-by-side: same deadline, two paths</h2>
+<div class="card">
+  <table>
+    <tr><th>Deliverable</th><th>🌊 Starter app (Track A)</th><th>📱 Your own app (Track B)</th></tr>
+    <tr><td>Gate before you can start</td><td>Learner Lab access confirmed</td><td>Proposal <strong>approved</strong> + Learner Lab access confirmed</td></tr>
+    <tr><td>What gets deployed</td><td>Pelican Tours booking app (provided)</td><td>Your app's backend (or a minimal API if it has none)</td></tr>
+    <tr><td>Compute</td><td>t3.micro via <code class="inline">user-data.sh</code></td><td>t3.micro via a user-data script adapted to your stack</td></tr>
+    <tr><td>Elasticity proof</td><td>ALB + ASG, <code class="inline">served_by</code> rotates, manual terminate → self-heal</td><td>ALB + ASG, 2–3 instances, load distributing (add a hostname field if needed)</td></tr>
+    <tr><td>State lesson</td><td>Booking placed, then lost on scale/replace — explain why + the fix</td><td>Whatever breaks in <em>your</em> app when it scales — explain why + the fix</td></tr>
+    <tr><td>Reachability proof</td><td>Book a tour from your phone on cellular data</td><td>Your real client (phone/emulator/browser) hitting the cloud backend</td></tr>
+    <tr><td>Written appraisal</td><td>Booking SaaS vs. build, + PaaS lens on ALB/ASG</td><td>One component of your app: keep vs. managed/SaaS replacement</td></tr>
+    <tr><td>Extra deliverable</td><td>Cost ledger + M2 burn prediction</td><td>Component inventory &amp; service-model map</td></tr>
+    <tr><td>Points</td><td>25 (6 / 8 / 4 / 4 / 3)</td><td>25 (6 / 7 / 6 / 3 / 3)</td></tr>
+  </table>
+</div>
+
+<h2 id="timeline">Suggested weekend timeline</h2>
+<div class="card">
+  <table>
+    <tr><th>When</th><th>Do this</th></tr>
+    <tr><td><strong>Thu, right after class</strong></td><td>Accept the AWS Academy invite, press Start Lab once just to confirm the green dot and see your budget. <span style="color:var(--vio2);font-weight:700">Track B: send your proposal email tonight</span> — approval takes time.</td></tr>
+    <tr><td><strong>Fri</strong></td><td>Create your repo + <code class="inline">JOURNAL.md</code>. Read the setup guide's house rules fully. <span style="color:var(--vio2);font-weight:700">Track B: follow up if you haven't heard back on your proposal.</span></td></tr>
+    <tr><td><strong>Sat (main build day)</strong></td><td>Get the app/backend serving from a single EC2 instance; screenshot the health check; write the sizing memo while the numbers are fresh.</td></tr>
+    <tr><td><strong>Sun</strong></td><td>Build the ALB + ASG, run the rotation and self-heal demo, run the lost-state / broken-state experiment, do the phone/second-device test, write the build-vs-buy appraisal and cost ledger. Run the end-of-session ritual before you log off.</td></tr>
+    <tr><td><strong>Mon, before class</strong></td><td>Final check: the ALB URL still resolves, desired capacity is 1, screenshots are saved in <code class="inline">screenshots/</code>, <code class="inline">JOURNAL.md</code> embeds or links every screenshot, and the repo is pushed.</td></tr>
+  </table>
+  <p class="note">Pacing follows the course's own calendar note: "Monday items carry the weekend's work." Don't start Sunday night — the ALB/ASG steps alone typically take 60–90 minutes once you know the console flow, longer the first time.</p>
+</div>
+
+<div style="display:flex;justify-content:space-between;margin-top:26px;flex-wrap:wrap;gap:10px">
+  <a class="btn ghost" href="index.html">🏗️ Project Hub</a>
+  <a class="btn ghost" href="aws-pelican-tours/setup.html">🎓 Learner Lab Setup</a>
+  <a class="btn" href="aws-pelican-tours/index.html">🌊 Full Pelican Tours Brief →</a>
+  <a class="btn" href="bring-your-own-app/index.html">📱 Full Bring Your Own App Brief →</a>
+</div>
+
+</main>
+<script>
+// track filter
+function setTrack(t){
+  document.body.dataset.track = t;
+  document.querySelectorAll('.trackbtn').forEach(b=>b.classList.toggle('active', b.dataset.t===t));
+  try{localStorage.setItem('cen4086v3:monday-track', t);}catch(e){}
+}
+(function(){
+  var t='both';
+  try{t=localStorage.getItem('cen4086v3:monday-track')||'both';}catch(e){}
+  setTrack(t);
+})();
+
+// checkbox progress-save (matches the rest of the course pages)
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'page');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+</script>
+</body>
+</html>
