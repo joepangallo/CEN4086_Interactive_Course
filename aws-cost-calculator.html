@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AWS Monthly Cost Calculator</title>
+<style>
+  :root{
+    --navy:#232F3E;
+    --navy-light:#33475C;
+    --orange:#FF9900;
+    --orange-dark:#CC7A00;
+    --bg:#F2F5F8;
+    --card:#FFFFFF;
+    --border:#E3E7EC;
+    --text:#1A1F27;
+    --muted:#66707A;
+    --ec2:#FF9900;
+    --ebs:#2E7D32;
+    --s3:#1565C0;
+    --dt:#6A1B9A;
+    --rds:#C62828;
+    --alb:#00838F;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);}
+  header{background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;padding:26px 24px 22px;}
+  header h1{margin:0 0 6px;font-size:1.55rem;letter-spacing:-0.01em;}
+  header p{margin:0;color:#C9D3DE;font-size:0.88rem;max-width:820px;line-height:1.4;}
+
+  .presets{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:14px 24px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:30;}
+  .presets .ptitle{font-size:0.75rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700;margin-right:4px;}
+  .preset-btn{border:1px solid var(--border);background:#fff;padding:7px 14px;border-radius:20px;font-size:0.82rem;cursor:pointer;transition:.15s;color:var(--navy);font-weight:600;white-space:nowrap;}
+  .preset-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .preset-btn.reset{color:var(--muted);border-style:dashed;}
+  .preset-btn.reset:hover{background:var(--muted);color:#fff;border-color:var(--muted);}
+  .region-wrap{display:flex;align-items:center;gap:8px;margin-right:10px;padding-right:14px;border-right:1px solid var(--border);}
+  #regionSelect{border:1px solid var(--navy);background:var(--navy);color:#fff;padding:7px 12px;border-radius:20px;font-size:0.82rem;font-weight:700;cursor:pointer;width:auto;}
+  #regionSelect:focus{outline:2px solid var(--orange);outline-offset:1px;}
+  #regionHint{font-size:0.74rem;color:var(--muted);white-space:nowrap;}
+
+  .wrap{display:grid;grid-template-columns:1.55fr 1fr;gap:20px;padding:22px 24px 60px;max-width:1300px;margin:0 auto;align-items:start;}
+  @media (max-width:960px){
+    .wrap{grid-template-columns:1fr;padding:16px 14px 50px;}
+    .summary{order:-1;position:static !important;}
+    header{padding:20px 16px;}
+    .presets{padding:12px 14px;}
+  }
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden;box-shadow:0 1px 3px rgba(20,30,40,.05);}
+  .card-head{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;background:#FAFBFC;border-bottom:1px solid var(--border);gap:12px;}
+  .card-head h2{margin:0;font-size:0.98rem;display:flex;align-items:center;gap:10px;}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0;}
+  .card-head .subtotal-mini{font-weight:800;font-size:1rem;color:var(--navy);}
+  .card-body{padding:16px 18px 18px;}
+  .card-body.disabled-section{opacity:.42;pointer-events:none;}
+
+  .field{margin-bottom:14px;}
+  .field:last-child{margin-bottom:0;}
+  label.flabel{display:block;font-size:0.75rem;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.03em;}
+  select, input[type=number]{width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:8px;font-size:0.9rem;font-family:inherit;background:#fff;color:var(--text);}
+  select:focus, input:focus{outline:2px solid var(--orange);outline-offset:1px;}
+  .slider-row{display:flex;align-items:center;gap:12px;}
+  input[type=range]{flex:1;accent-color:var(--orange);height:20px;}
+  .num-mini{width:92px;flex-shrink:0;}
+  .spec-row{font-size:0.8rem;color:var(--muted);margin-top:8px;background:#F7F9FA;border-radius:8px;padding:8px 10px;}
+  .spec-row b{color:var(--text);}
+  .subtotal{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);}
+  .subtotal .stlabel{font-size:0.82rem;color:var(--muted);font-weight:600;}
+  .subtotal .stval{font-weight:800;font-size:1.05rem;color:var(--navy);}
+
+  .toggle-row{display:flex;align-items:center;gap:12px;}
+  .switch{position:relative;width:42px;height:24px;flex-shrink:0;}
+  .switch input{opacity:0;width:0;height:0;position:absolute;}
+  .slider-toggle{position:absolute;cursor:pointer;inset:0;background:#CBD3DA;border-radius:24px;transition:.2s;}
+  .slider-toggle:before{content:"";position:absolute;height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.2);}
+  .switch input:checked + .slider-toggle{background:var(--orange);}
+  .switch input:checked + .slider-toggle:before{transform:translateX(18px);}
+
+  .quick-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+  .quick-btn{font-size:0.7rem;padding:4px 9px;border-radius:12px;border:1px solid var(--border);background:#fff;cursor:pointer;color:var(--muted);}
+  .quick-btn:hover{background:var(--bg);color:var(--text);}
+
+  .summary{position:sticky;top:66px;}
+  .summary .card-body{padding:22px 20px;}
+  .grand-total{text-align:center;padding:4px 0 16px;}
+  .grand-total .amt{font-size:2.5rem;font-weight:800;color:var(--navy);line-height:1;letter-spacing:-0.02em;}
+  .grand-total .lbl{font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:8px;font-weight:700;}
+  .annual{text-align:center;padding-bottom:16px;border-bottom:1px solid var(--border);margin-bottom:16px;color:var(--muted);font-size:0.86rem;}
+  .annual b{color:var(--text);font-size:1.02rem;}
+  .bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:#EEF1F4;margin-bottom:16px;}
+  .bar span{transition:width .35s ease;height:100%;}
+  .legend{display:flex;flex-direction:column;gap:9px;}
+  .legend-item{display:flex;align-items:center;justify-content:space-between;font-size:0.84rem;}
+  .legend-item .left{display:flex;align-items:center;gap:8px;color:var(--muted);}
+  .legend-item .right{font-weight:700;color:var(--text);white-space:nowrap;}
+  .summary-note{margin-top:18px;padding-top:14px;border-top:1px solid var(--border);font-size:0.74rem;color:var(--muted);line-height:1.4;}
+
+  footer{text-align:center;padding:22px 20px 34px;color:var(--muted);font-size:0.76rem;line-height:1.5;}
+  footer a{color:var(--navy);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>AWS Monthly Cost Calculator</h1>
+  <p>On-Demand pricing, compiled July 2026 · Pick a region, then adjust compute, storage, data transfer, database, and load balancer settings below — your bill recalculates instantly.</p>
+</header>
+
+<div class="presets">
+  <div class="region-wrap">
+    <span class="ptitle">Region:</span>
+    <select id="regionSelect"></select>
+    <span id="regionHint"></span>
+  </div>
+  <span class="ptitle">Try a scenario:</span>
+  <button class="preset-btn" data-preset="web">Small Web App</button>
+  <button class="preset-btn" data-preset="ml">ML Training Job</button>
+  <button class="preset-btn" data-preset="enterprise">Enterprise Database</button>
+  <button class="preset-btn" data-preset="archive">Media Archive</button>
+  <button class="preset-btn reset" data-preset="reset">Reset</button>
+</div>
+
+<div class="wrap">
+  <div class="inputs">
+
+    <!-- EC2 -->
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="dot" style="background:var(--ec2)"></span>1. EC2 Compute — CPU / GPU / RAM</h2>
+        <span class="subtotal-mini" id="ec2CostMini">$0</span>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label class="flabel">Instance type</label>
+          <select id="ec2Type"></select>
+          <div class="spec-row" id="ec2Specs">—</div>
+        </div>
+        <div class="field">
+          <label class="flabel">Quantity (# instances)</label>
+          <input type="number" id="ec2Qty" min="0" max="200" value="1">
+        </div>
+        <div class="field">
+          <label class="flabel">Hours running / month (0–730)</label>
+          <div class="slider-row">
+            <input type="range" id="ec2HoursRange" min="0" max="730" value="730">
+            <input type="number" class="num-mini" id="ec2HoursNum" min="0" max="730" value="730">
+          </div>
+          <div class="quick-btns">
+            <button class="quick-btn" data-target="ec2Hours" data-val="0">Off</button>
+            <button class="quick-btn" data-target="ec2Hours" data-val="173">~8h/day</button>
+            <button class="quick-btn" data-target="ec2Hours" data-val="260">Business hrs</button>
+            <button class="quick-btn" data-target="ec2Hours" data-val="730">24 / 7</button>
+          </div>
+        </div>
+        <div class="subtotal"><span class="stlabel">EC2 monthly cost</span><span class="stval" id="ec2Cost">$0.00</span></div>
+      </div>
+    </div>
+
+    <!-- EBS -->
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="dot" style="background:var(--ebs)"></span>2. Block Storage — EBS</h2>
+        <span class="subtotal-mini" id="ebsCostMini">$0</span>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label class="flabel">Volume type</label>
+          <select id="ebsType"></select>
+        </div>
+        <div class="field">
+          <label class="flabel">Size (GB)</label>
+          <div class="slider-row">
+            <input type="range" id="ebsGBRange" min="0" max="2000" step="10" value="100">
+            <input type="number" class="num-mini" id="ebsGBNum" min="0" value="100">
+          </div>
+        </div>
+        <div class="subtotal"><span class="stlabel">EBS monthly cost</span><span class="stval" id="ebsCost">$0.00</span></div>
+      </div>
+    </div>
+
+    <!-- S3 -->
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="dot" style="background:var(--s3)"></span>3. Object Storage — S3</h2>
+        <span class="subtotal-mini" id="s3CostMini">$0</span>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label class="flabel">Storage class</label>
+          <select id="s3Type"></select>
+        </div>
+        <div class="field">
+          <label class="flabel">Size (GB)</label>
+          <div class="slider-row">
+            <input type="range" id="s3GBRange" min="0" max="5000" step="10" value="500">
+            <input type="number" class="num-mini" id="s3GBNum" min="0" value="500">
+          </div>
+        </div>
+        <div class="subtotal"><span class="stlabel">S3 monthly cost</span><span class="stval" id="s3Cost">$0.00</span></div>
+      </div>
+    </div>
+
+    <!-- Data Transfer -->
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="dot" style="background:var(--dt)"></span>4. Data Transfer Out (Internet)</h2>
+        <span class="subtotal-mini" id="dtCostMini">$0</span>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label class="flabel">GB out / month <span style="text-transform:none;font-weight:400;">(first 100 GB free)</span></label>
+          <div class="slider-row">
+            <input type="range" id="dtGBRange" min="0" max="5000" step="10" value="200">
+            <input type="number" class="num-mini" id="dtGBNum" min="0" value="200">
+          </div>
+        </div>
+        <div class="subtotal"><span class="stlabel">Data transfer monthly cost</span><span class="stval" id="dtCost">$0.00</span></div>
+      </div>
+    </div>
+
+    <!-- RDS -->
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="dot" style="background:var(--rds)"></span>5. Managed Database — RDS</h2>
+        <span class="subtotal-mini" id="rdsCostMini">$0</span>
+      </div>
+      <div class="card-body">
+        <div class="field toggle-row">
+          <label class="switch"><input type="checkbox" id="rdsEnabled"><span class="slider-toggle"></span></label>
+          <label class="flabel" style="margin:0;">Enable managed database</label>
+        </div>
+        <div id="rdsFields">
+          <div class="field">
+            <label class="flabel">Instance type</label>
+            <select id="rdsType"></select>
+          </div>
+          <div class="field toggle-row">
+            <label class="switch"><input type="checkbox" id="rdsMultiAZ"><span class="slider-toggle"></span></label>
+            <label class="flabel" style="margin:0;">Multi-AZ (standby replica, ~2× instance cost)</label>
+          </div>
+          <div class="field">
+            <label class="flabel">Storage (GB)</label>
+            <div class="slider-row">
+              <input type="range" id="rdsGBRange" min="0" max="2000" step="10" value="100">
+              <input type="number" class="num-mini" id="rdsGBNum" min="0" value="100">
+            </div>
+          </div>
+        </div>
+        <div class="subtotal"><span class="stlabel">RDS monthly cost</span><span class="stval" id="rdsCost">$0.00</span></div>
+      </div>
+    </div>
+
+    <!-- ALB -->
+    <div class="card">
+      <div class="card-head">
+        <h2><span class="dot" style="background:var(--alb)"></span>6. Load Balancer — ALB</h2>
+        <span class="subtotal-mini" id="albCostMini">$0</span>
+      </div>
+      <div class="card-body">
+        <div class="field toggle-row">
+          <label class="switch"><input type="checkbox" id="albEnabled"><span class="slider-toggle"></span></label>
+          <label class="flabel" style="margin:0;">Enable load balancer</label>
+        </div>
+        <div id="albFields">
+          <div class="field">
+            <label class="flabel">Number of ALBs</label>
+            <input type="number" id="albCount" min="0" max="50" value="1">
+          </div>
+          <div class="field">
+            <label class="flabel">Avg LCUs per ALB</label>
+            <div class="slider-row">
+              <input type="range" id="albLCURange" min="0" max="50" value="1">
+              <input type="number" class="num-mini" id="albLCUNum" min="0" value="1">
+            </div>
+          </div>
+        </div>
+        <div class="subtotal"><span class="stlabel">ALB monthly cost</span><span class="stval" id="albCost">$0.00</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary card">
+    <div class="card-head"><h2>Your Estimated Bill</h2></div>
+    <div class="card-body">
+      <div style="text-align:center;font-size:0.8rem;color:var(--muted);font-weight:600;margin-bottom:2px;" id="regionLabel">—</div>
+      <div class="grand-total">
+        <div class="amt" id="grandTotal">$0</div>
+        <div class="lbl">per month</div>
+      </div>
+      <div class="annual">≈ <b id="annualTotal">$0</b> per year</div>
+      <div class="bar" id="bar">
+        <span style="background:var(--ec2);width:0%" id="barEc2"></span>
+        <span style="background:var(--ebs);width:0%" id="barEbs"></span>
+        <span style="background:var(--s3);width:0%" id="barS3"></span>
+        <span style="background:var(--dt);width:0%" id="barDt"></span>
+        <span style="background:var(--rds);width:0%" id="barRds"></span>
+        <span style="background:var(--alb);width:0%" id="barAlb"></span>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="left"><span class="dot" style="background:var(--ec2)"></span>EC2 Compute</span><span class="right" id="legEc2">$0.00 · 0%</span></div>
+        <div class="legend-item"><span class="left"><span class="dot" style="background:var(--ebs)"></span>EBS Storage</span><span class="right" id="legEbs">$0.00 · 0%</span></div>
+        <div class="legend-item"><span class="left"><span class="dot" style="background:var(--s3)"></span>S3 Storage</span><span class="right" id="legS3">$0.00 · 0%</span></div>
+        <div class="legend-item"><span class="left"><span class="dot" style="background:var(--dt)"></span>Data Transfer</span><span class="right" id="legDt">$0.00 · 0%</span></div>
+        <div class="legend-item"><span class="left"><span class="dot" style="background:var(--rds)"></span>RDS Database</span><span class="right" id="legRds">$0.00 · 0%</span></div>
+        <div class="legend-item"><span class="left"><span class="dot" style="background:var(--alb)"></span>Load Balancer</span><span class="right" id="legAlb">$0.00 · 0%</span></div>
+      </div>
+      <div class="summary-note">Estimates only — see footer for pricing basis. Toggle scenarios above to see how workload shape changes the bill.</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Prices are approximate, gathered from AWS public pricing pages and third-party pricing trackers (Vantage/EC2Instances.info, Economize.cloud) in July 2026, baselined on US East (N. Virginia) On-Demand rates. Other regions are modeled by applying that region's typical AWS price differential (a blended estimate from published cost benchmarks) to the baseline rates — actual per-service rates vary by region, OS, and account-specific discounts.
+  Confirm final numbers with the official <a href="https://calculator.aws" target="_blank" rel="noopener">AWS Pricing Calculator</a>.
+</footer>
+
+<script>
+const EC2 = [
+ {cat:"General Purpose — Burstable (T3)", t:"t3.micro", vcpu:2, ram:1, gpu:"", price:0.0104},
+ {cat:"General Purpose — Burstable (T3)", t:"t3.small", vcpu:2, ram:2, gpu:"", price:0.0208},
+ {cat:"General Purpose — Burstable (T3)", t:"t3.medium", vcpu:2, ram:4, gpu:"", price:0.0416},
+ {cat:"General Purpose — Burstable (T3)", t:"t3.large", vcpu:2, ram:8, gpu:"", price:0.0832},
+ {cat:"General Purpose — Burstable (T3)", t:"t3.xlarge", vcpu:4, ram:16, gpu:"", price:0.1664},
+ {cat:"General Purpose — Burstable (T3)", t:"t3.2xlarge", vcpu:8, ram:32, gpu:"", price:0.3328},
+ {cat:"General Purpose (M6i)", t:"m6i.large", vcpu:2, ram:8, gpu:"", price:0.096},
+ {cat:"General Purpose (M6i)", t:"m6i.xlarge", vcpu:4, ram:16, gpu:"", price:0.192},
+ {cat:"General Purpose (M6i)", t:"m6i.2xlarge", vcpu:8, ram:32, gpu:"", price:0.384},
+ {cat:"General Purpose (M6i)", t:"m6i.4xlarge", vcpu:16, ram:64, gpu:"", price:0.768},
+ {cat:"General Purpose (M6i)", t:"m6i.8xlarge", vcpu:32, ram:128, gpu:"", price:1.536},
+ {cat:"General Purpose (M6i)", t:"m6i.12xlarge", vcpu:48, ram:192, gpu:"", price:2.304},
+ {cat:"General Purpose (M6i)", t:"m6i.16xlarge", vcpu:64, ram:256, gpu:"", price:3.072},
+ {cat:"General Purpose (M6i)", t:"m6i.24xlarge", vcpu:96, ram:384, gpu:"", price:4.608},
+ {cat:"Compute Optimized (C6i)", t:"c6i.large", vcpu:2, ram:4, gpu:"", price:0.085},
+ {cat:"Compute Optimized (C6i)", t:"c6i.xlarge", vcpu:4, ram:8, gpu:"", price:0.170},
+ {cat:"Compute Optimized (C6i)", t:"c6i.2xlarge", vcpu:8, ram:16, gpu:"", price:0.340},
+ {cat:"Compute Optimized (C6i)", t:"c6i.4xlarge", vcpu:16, ram:32, gpu:"", price:0.680},
+ {cat:"Compute Optimized (C6i)", t:"c6i.8xlarge", vcpu:32, ram:64, gpu:"", price:1.360},
+ {cat:"Compute Optimized (C6i)", t:"c6i.12xlarge", vcpu:48, ram:96, gpu:"", price:2.040},
+ {cat:"Memory Optimized (R6i)", t:"r6i.large", vcpu:2, ram:16, gpu:"", price:0.126},
+ {cat:"Memory Optimized (R6i)", t:"r6i.xlarge", vcpu:4, ram:32, gpu:"", price:0.252},
+ {cat:"Memory Optimized (R6i)", t:"r6i.2xlarge", vcpu:8, ram:64, gpu:"", price:0.504},
+ {cat:"Memory Optimized (R6i)", t:"r6i.4xlarge", vcpu:16, ram:128, gpu:"", price:1.008},
+ {cat:"Memory Optimized (R6i)", t:"r6i.8xlarge", vcpu:32, ram:256, gpu:"", price:2.016},
+ {cat:"GPU — NVIDIA T4 (G4dn)", t:"g4dn.xlarge", vcpu:4, ram:16, gpu:"1× T4 16GB", price:0.526},
+ {cat:"GPU — NVIDIA T4 (G4dn)", t:"g4dn.2xlarge", vcpu:8, ram:32, gpu:"1× T4 16GB", price:0.752},
+ {cat:"GPU — NVIDIA T4 (G4dn)", t:"g4dn.4xlarge", vcpu:16, ram:64, gpu:"1× T4 16GB", price:1.204},
+ {cat:"GPU — NVIDIA T4 (G4dn)", t:"g4dn.8xlarge", vcpu:32, ram:128, gpu:"1× T4 16GB", price:2.176},
+ {cat:"GPU — NVIDIA A10G (G5)", t:"g5.xlarge", vcpu:4, ram:16, gpu:"1× A10G 24GB", price:1.006},
+ {cat:"GPU — NVIDIA A10G (G5)", t:"g5.2xlarge", vcpu:8, ram:32, gpu:"1× A10G 24GB", price:1.212},
+ {cat:"GPU — NVIDIA A10G (G5)", t:"g5.4xlarge", vcpu:16, ram:64, gpu:"1× A10G 24GB", price:1.624},
+ {cat:"GPU — NVIDIA A10G (G5)", t:"g5.12xlarge", vcpu:48, ram:192, gpu:"4× A10G 96GB", price:5.672},
+ {cat:"GPU — NVIDIA V100 (P3)", t:"p3.2xlarge", vcpu:8, ram:61, gpu:"1× V100 16GB", price:3.06},
+ {cat:"GPU — NVIDIA V100 (P3)", t:"p3.8xlarge", vcpu:32, ram:244, gpu:"4× V100 64GB", price:12.24},
+ {cat:"GPU — NVIDIA A100 (P4d)", t:"p4d.24xlarge", vcpu:96, ram:1152, gpu:"8× A100 320GB", price:21.96},
+ {cat:"GPU — NVIDIA H100 (P5)", t:"p5.48xlarge", vcpu:192, ram:2048, gpu:"8× H100 640GB", price:55.04},
+];
+
+const EBS = [
+ {t:"gp3 — General Purpose SSD", price:0.08},
+ {t:"gp2 — General Purpose SSD (previous gen)", price:0.10},
+ {t:"io2 — Provisioned IOPS SSD", price:0.125},
+];
+
+const S3 = [
+ {t:"S3 Standard", price:0.023},
+ {t:"S3 Standard-IA", price:0.0125},
+ {t:"S3 Glacier Instant Retrieval", price:0.004},
+ {t:"S3 Glacier Deep Archive", price:0.00099},
+];
+
+const RDS = [
+ {cat:"Burstable (T3)", t:"db.t3.micro", vcpu:2, ram:1, price:0.017},
+ {cat:"Burstable (T3)", t:"db.t3.small", vcpu:2, ram:2, price:0.034},
+ {cat:"Burstable (T3)", t:"db.t3.medium", vcpu:2, ram:4, price:0.068},
+ {cat:"Burstable (T3)", t:"db.t3.large", vcpu:2, ram:8, price:0.136},
+ {cat:"General Purpose (M6i)", t:"db.m6i.large", vcpu:2, ram:8, price:0.178},
+ {cat:"General Purpose (M6i)", t:"db.m6i.xlarge", vcpu:4, ram:16, price:0.356},
+ {cat:"General Purpose (M6i)", t:"db.m6i.2xlarge", vcpu:8, ram:32, price:0.712},
+ {cat:"General Purpose (M6i)", t:"db.m6i.4xlarge", vcpu:16, ram:64, price:1.424},
+ {cat:"Memory Optimized (R6i)", t:"db.r6i.large", vcpu:2, ram:16, price:0.240},
+ {cat:"Memory Optimized (R6i)", t:"db.r6i.xlarge", vcpu:4, ram:32, price:0.480},
+ {cat:"Memory Optimized (R6i)", t:"db.r6i.2xlarge", vcpu:8, ram:64, price:0.960},
+ {cat:"Memory Optimized (R6i)", t:"db.r6i.4xlarge", vcpu:16, ram:128, price:1.920},
+];
+const RDS_STORAGE_PRICE = 0.115;
+const ALB_HOURLY = 0.0225, ALB_LCU = 0.008;
+
+function dataTransferCost(gb){
+  const t1 = Math.max(Math.min(gb,10100)-100,0)*0.09;
+  const t2 = Math.max(Math.min(gb,50100)-10100,0)*0.085;
+  const t3 = Math.max(Math.min(gb,150100)-50100,0)*0.07;
+  const t4 = Math.max(gb-150100,0)*0.05;
+  return t1+t2+t3+t4;
+}
+
+// Regional price differentials, modeled relative to US East (N. Virginia) = 1.00.
+// Blended estimate from published AWS regional cost benchmarks (EC2/S3/RDS averages);
+// applied uniformly across all cost categories below. Actual per-service rates vary by region.
+const REGIONS = [
+ {code:"us-east-1", label:"US East (N. Virginia)", area:"North America", mult:1.00},
+ {code:"us-east-2", label:"US East (Ohio)", area:"North America", mult:1.00},
+ {code:"us-west-2", label:"US West (Oregon)", area:"North America", mult:1.00},
+ {code:"us-west-1", label:"US West (N. California)", area:"North America", mult:1.16},
+ {code:"ca-central-1", label:"Canada (Central)", area:"North America", mult:1.08},
+ {code:"eu-west-1", label:"EU (Ireland)", area:"Europe", mult:1.09},
+ {code:"eu-central-1", label:"EU (Frankfurt)", area:"Europe", mult:1.14},
+ {code:"eu-west-2", label:"EU (London)", area:"Europe", mult:1.17},
+ {code:"eu-west-3", label:"EU (Paris)", area:"Europe", mult:1.17},
+ {code:"eu-north-1", label:"EU (Stockholm)", area:"Europe", mult:1.09},
+ {code:"ap-southeast-1", label:"Asia Pacific (Singapore)", area:"Asia Pacific", mult:1.19},
+ {code:"ap-northeast-1", label:"Asia Pacific (Tokyo)", area:"Asia Pacific", mult:1.22},
+ {code:"ap-southeast-2", label:"Asia Pacific (Sydney)", area:"Asia Pacific", mult:1.21},
+ {code:"ap-south-1", label:"Asia Pacific (Mumbai)", area:"Asia Pacific", mult:1.06},
+ {code:"sa-east-1", label:"South America (São Paulo)", area:"South America", mult:1.55},
+];
+
+const $ = id => document.getElementById(id);
+const fmt = n => n.toLocaleString('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt0 = n => n.toLocaleString('en-US',{style:'currency',currency:'USD',minimumFractionDigits:0,maximumFractionDigits:0});
+
+function populateSelect(sel, items, grouped){
+  sel.innerHTML = '';
+  if(!grouped){
+    items.forEach(it=>{
+      const opt = document.createElement('option');
+      opt.value = it.t; opt.textContent = `${it.t}  ($${it.price.toFixed(4)}/GB-mo)`;
+      sel.appendChild(opt);
+    });
+    return;
+  }
+  const groups = [];
+  const seen = {};
+  items.forEach(it=>{
+    if(!seen[it.cat]){ seen[it.cat]=[]; groups.push(it.cat); }
+    seen[it.cat].push(it);
+  });
+  groups.forEach(g=>{
+    const og = document.createElement('optgroup');
+    og.label = g;
+    seen[g].forEach(it=>{
+      const opt = document.createElement('option');
+      opt.value = it.t;
+      const gpu = it.gpu ? `, ${it.gpu}` : '';
+      opt.textContent = `${it.t} — ${it.vcpu} vCPU, ${it.ram} GiB${gpu} ($${it.price.toFixed(4)}/hr)`;
+      og.appendChild(opt);
+    });
+    sel.appendChild(og);
+  });
+}
+
+populateSelect($('ec2Type'), EC2, true);
+populateSelect($('ebsType'), EBS, false);
+populateSelect($('s3Type'), S3, false);
+populateSelect($('rdsType'), RDS, true);
+
+function populateRegionSelect(){
+  const sel = $('regionSelect');
+  sel.innerHTML = '';
+  const areas = [];
+  const seen = {};
+  REGIONS.forEach(r=>{
+    if(!seen[r.area]){ seen[r.area]=[]; areas.push(r.area); }
+    seen[r.area].push(r);
+  });
+  areas.forEach(area=>{
+    const og = document.createElement('optgroup');
+    og.label = area;
+    seen[area].forEach(r=>{
+      const opt = document.createElement('option');
+      opt.value = r.code;
+      opt.textContent = r.label;
+      og.appendChild(opt);
+    });
+    sel.appendChild(og);
+  });
+}
+populateRegionSelect();
+
+function currentRegion(){
+  return REGIONS.find(r=>r.code===$('regionSelect').value) || REGIONS[0];
+}
+
+const byT = (arr,t) => arr.find(x=>x.t===t);
+
+function pairSliderNumber(sliderId, numberId, onChange){
+  const slider = $(sliderId), number = $(numberId);
+  slider.addEventListener('input', ()=>{ number.value = slider.value; onChange(); });
+  number.addEventListener('input', ()=>{
+    let v = parseFloat(number.value);
+    if(isNaN(v)) v = 0;
+    if(v < 0) v = 0;
+    if(v > +slider.max) slider.max = v;
+    slider.value = v;
+    onChange();
+  });
+}
+function setPair(sliderId, numberId, value){
+  const slider = $(sliderId), number = $(numberId);
+  if(value > +slider.max) slider.max = value;
+  slider.value = value;
+  number.value = value;
+}
+
+['ec2Qty','albCount'].forEach(id=> $(id).addEventListener('input', recalc));
+$('regionSelect').addEventListener('change', recalc);
+$('ec2Type').addEventListener('change', recalc);
+$('ebsType').addEventListener('change', recalc);
+$('s3Type').addEventListener('change', recalc);
+$('rdsType').addEventListener('change', recalc);
+$('rdsEnabled').addEventListener('change', recalc);
+$('rdsMultiAZ').addEventListener('change', recalc);
+$('albEnabled').addEventListener('change', recalc);
+
+pairSliderNumber('ec2HoursRange','ec2HoursNum', recalc);
+pairSliderNumber('ebsGBRange','ebsGBNum', recalc);
+pairSliderNumber('s3GBRange','s3GBNum', recalc);
+pairSliderNumber('dtGBRange','dtGBNum', recalc);
+pairSliderNumber('rdsGBRange','rdsGBNum', recalc);
+pairSliderNumber('albLCURange','albLCUNum', recalc);
+
+document.querySelectorAll('.quick-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = btn.dataset.target;
+    setPair(target+'Range', target+'Num', +btn.dataset.val);
+    recalc();
+  });
+});
+
+document.querySelectorAll('.preset-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=> applyPreset(btn.dataset.preset));
+});
+
+function setSection(enabledId, fieldsId){
+  const on = $(enabledId).checked;
+  $(fieldsId).parentElement.querySelector('.card-body').classList.toggle('disabled-section', false);
+  const fieldsWrap = $(fieldsId);
+  if(fieldsWrap) fieldsWrap.classList.toggle('disabled-section', !on);
+}
+
+function recalc(){
+  const region = currentRegion();
+  const mult = region.mult;
+  $('regionLabel').textContent = region.label;
+  $('regionHint').textContent = mult===1 ? '(baseline)' : `(+${Math.round((mult-1)*100)}% vs. baseline)`;
+
+  const ec2 = byT(EC2, $('ec2Type').value);
+  const ec2Qty = parseFloat($('ec2Qty').value)||0;
+  const ec2Hours = parseFloat($('ec2HoursNum').value)||0;
+  const ec2HourRate = ec2.price * mult;
+  const ec2Cost = ec2HourRate * ec2Hours * ec2Qty;
+  const gpu = ec2.gpu ? ` · ${ec2.gpu}` : '';
+  $('ec2Specs').innerHTML = `<b>${ec2.vcpu} vCPU</b> · <b>${ec2.ram} GiB RAM</b>${gpu} · $${ec2HourRate.toFixed(4)}/hr on-demand in ${region.label}`;
+
+  const ebs = byT(EBS, $('ebsType').value);
+  const ebsGB = parseFloat($('ebsGBNum').value)||0;
+  const ebsCost = ebs.price * mult * ebsGB;
+
+  const s3 = byT(S3, $('s3Type').value);
+  const s3GB = parseFloat($('s3GBNum').value)||0;
+  const s3Cost = s3.price * mult * s3GB;
+
+  const dtGB = parseFloat($('dtGBNum').value)||0;
+  const dtCost = dataTransferCost(dtGB) * mult;
+
+  const rdsOn = $('rdsEnabled').checked;
+  $('rdsFields').classList.toggle('disabled-section', !rdsOn);
+  const rds = byT(RDS, $('rdsType').value);
+  const rdsMultiAZ = $('rdsMultiAZ').checked;
+  const rdsGB = parseFloat($('rdsGBNum').value)||0;
+  const rdsCost = rdsOn ? (rds.price*mult*730*(rdsMultiAZ?2:1) + rdsGB*RDS_STORAGE_PRICE*mult) : 0;
+
+  const albOn = $('albEnabled').checked;
+  $('albFields').classList.toggle('disabled-section', !albOn);
+  const albCount = parseFloat($('albCount').value)||0;
+  const albLCU = parseFloat($('albLCUNum').value)||0;
+  const albCost = albOn ? albCount*(ALB_HOURLY*mult + albLCU*ALB_LCU*mult)*730 : 0;
+
+  const total = ec2Cost+ebsCost+s3Cost+dtCost+rdsCost+albCost;
+
+  $('ec2Cost').textContent = fmt(ec2Cost); $('ec2CostMini').textContent = fmt0(ec2Cost);
+  $('ebsCost').textContent = fmt(ebsCost); $('ebsCostMini').textContent = fmt0(ebsCost);
+  $('s3Cost').textContent = fmt(s3Cost); $('s3CostMini').textContent = fmt0(s3Cost);
+  $('dtCost').textContent = fmt(dtCost); $('dtCostMini').textContent = fmt0(dtCost);
+  $('rdsCost').textContent = fmt(rdsCost); $('rdsCostMini').textContent = fmt0(rdsCost);
+  $('albCost').textContent = fmt(albCost); $('albCostMini').textContent = fmt0(albCost);
+
+  $('grandTotal').textContent = fmt0(total);
+  $('annualTotal').textContent = fmt0(total*12);
+
+  const pct = v => total>0 ? (v/total*100) : 0;
+  $('barEc2').style.width = pct(ec2Cost)+'%';
+  $('barEbs').style.width = pct(ebsCost)+'%';
+  $('barS3').style.width = pct(s3Cost)+'%';
+  $('barDt').style.width = pct(dtCost)+'%';
+  $('barRds').style.width = pct(rdsCost)+'%';
+  $('barAlb').style.width = pct(albCost)+'%';
+
+  $('legEc2').textContent = `${fmt(ec2Cost)} · ${pct(ec2Cost).toFixed(0)}%`;
+  $('legEbs').textContent = `${fmt(ebsCost)} · ${pct(ebsCost).toFixed(0)}%`;
+  $('legS3').textContent = `${fmt(s3Cost)} · ${pct(s3Cost).toFixed(0)}%`;
+  $('legDt').textContent = `${fmt(dtCost)} · ${pct(dtCost).toFixed(0)}%`;
+  $('legRds').textContent = `${fmt(rdsCost)} · ${pct(rdsCost).toFixed(0)}%`;
+  $('legAlb').textContent = `${fmt(albCost)} · ${pct(albCost).toFixed(0)}%`;
+}
+
+function applyPreset(name){
+  const presets = {
+    web:{ec2:'t3.medium',qty:2,hours:730,ebs:'gp3 — General Purpose SSD',ebsGB:50,s3:'S3 Standard',s3GB:20,dt:50,
+          rds:true,rdsType:'db.t3.medium',multiAZ:false,rdsGB:20, alb:true,albCount:1,albLCU:1},
+    ml:{ec2:'p4d.24xlarge',qty:1,hours:100,ebs:'gp3 — General Purpose SSD',ebsGB:500,s3:'S3 Standard',s3GB:1000,dt:100,
+          rds:false,rdsType:'db.t3.medium',multiAZ:false,rdsGB:0, alb:false,albCount:0,albLCU:0},
+    enterprise:{ec2:'m6i.4xlarge',qty:3,hours:730,ebs:'gp3 — General Purpose SSD',ebsGB:200,s3:'S3 Standard',s3GB:500,dt:1000,
+          rds:true,rdsType:'db.r6i.2xlarge',multiAZ:true,rdsGB:500, alb:true,albCount:2,albLCU:5},
+    archive:{ec2:'t3.small',qty:1,hours:730,ebs:'gp3 — General Purpose SSD',ebsGB:20,s3:'S3 Glacier Deep Archive',s3GB:50000,dt:50,
+          rds:false,rdsType:'db.t3.medium',multiAZ:false,rdsGB:0, alb:false,albCount:0,albLCU:0},
+    reset:{ec2:'m6i.large',qty:1,hours:730,ebs:'gp3 — General Purpose SSD',ebsGB:100,s3:'S3 Standard',s3GB:500,dt:200,
+          rds:false,rdsType:'db.t3.medium',multiAZ:false,rdsGB:100, alb:false,albCount:1,albLCU:1},
+  };
+  const p = presets[name];
+  if(!p) return;
+  if(name==='reset') $('regionSelect').value = 'us-east-1';
+  $('ec2Type').value = p.ec2;
+  $('ec2Qty').value = p.qty;
+  setPair('ec2HoursRange','ec2HoursNum', p.hours);
+  $('ebsType').value = p.ebs;
+  setPair('ebsGBRange','ebsGBNum', p.ebsGB);
+  $('s3Type').value = p.s3;
+  setPair('s3GBRange','s3GBNum', p.s3GB);
+  setPair('dtGBRange','dtGBNum', p.dt);
+  $('rdsEnabled').checked = p.rds;
+  $('rdsType').value = p.rdsType;
+  $('rdsMultiAZ').checked = p.multiAZ;
+  setPair('rdsGBRange','rdsGBNum', p.rdsGB);
+  $('albEnabled').checked = p.alb;
+  $('albCount').value = p.albCount;
+  setPair('albLCURange','albLCUNum', p.albLCU);
+  recalc();
+}
+
+applyPreset('reset');
+</script>
+</body>
+</html>
