@@ -4,13 +4,13 @@
 #  Paste into: Launch instance → Advanced details → User data
 #  AMI: Amazon Linux 2023 · Type: t3.micro · Profile: LabInstanceProfile
 #
-#  Replace APP_ZIP_URL with YOUR copy of starter-app (see below).
-#  Easiest: upload starter-app.zip to an S3 bucket in your lab
-#  account, or use your public GitHub repo's zip URL.
+#  APP_ZIP_URL is pre-set to the course copy of starter-app.
+#  To use YOUR copy instead: upload starter-app.zip to an S3 bucket
+#  in your lab account, or use your public GitHub repo's zip URL.
 # ============================================================
 set -eux
 
-APP_ZIP_URL="REPLACE_ME_https://your-bucket.s3.amazonaws.com/starter-app.zip"
+APP_ZIP_URL="https://github.com/joepangallo/pelican-tours-m1/archive/refs/heads/main.zip"
 
 dnf install -y nodejs unzip
 
