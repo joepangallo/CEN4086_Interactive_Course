@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CEN4086 Homework 1 — step-by-step instructions: trace an SSO login, answer token questions, enable MFA, plan offboarding.">
+<title>CEN4086 · Homework 1 — Step-by-Step Instructions</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--amb:#e0a437;--acc:#0f8b8d;--bad:#c04f43;--ok:#3e8e5a}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--amb);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+main{max-width:860px;margin:0 auto;padding:20px 16px 80px}
+header.head{margin:18px 0 6px}
+header.head h1{margin:0 0 6px;font-size:27px}
+header.head p{margin:0;color:var(--mut)}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:10px 6px 0 0;color:var(--ink)}
+h2{font-size:21px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--amb)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:12px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card>:first-child{margin-top:0}.card>:last-child{margin-bottom:0}
+.concept{background:#f2f1fa;border:1px solid #d8d5ee;border-left:6px solid var(--pri);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.concept b:first-child{color:var(--pri)}
+.warn{background:#fbeeec;border:1px solid #e8c5c0;border-left:6px solid var(--bad);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.deliver{background:#e9f4f4;border:1px solid #c5dede;border-left:6px solid var(--acc);border-radius:10px;padding:11px 15px;margin:12px 0 2px;font-size:14.5px}
+.deliver b:first-child{color:var(--acc)}
+ul.tight li,ol.tight li{margin:7px 0}
+code{background:#efede6;border-radius:5px;padding:1px 6px;font-size:.92em}
+pre{background:#1d2433;color:#e8e6f0;border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:13.5px;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:9px 13px;margin:8px 0;background:#fbfaf7}
+.check input{margin-top:4px;width:17px;height:17px;flex:none;accent-color:var(--pri);cursor:pointer}
+.check label{cursor:pointer}
+.note{font-size:13.5px;color:var(--mut)}
+@media print{.topnav{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="../index.html">⌂ Course Hub</a>
+  <span style="font-weight:700">📝 Homework 1 · Step-by-Step Instructions</span>
+  <span><a href="../week2-session4.html">Session 4</a> · <a href="../sso-token-deep-dive.html">Token Lab</a> · <a href="../project/index.html">Project Hub</a></span>
+</nav>
+<main>
+
+<header class="head">
+  <h1>Homework 1 · Lock the Front Door</h1>
+  <p>Four parts, one <code>answers.docx</code>, one journal, and one screenshot.</p>
+  <div>
+    <span class="chip">Individual</span><span class="chip">Due at the start of Class 5</span><span class="chip">Submit your GitHub repo link</span><span class="chip">Everything free</span>
+  </div>
+</header>
+
+<div class="card">
+  <p><b>You will hand in exactly three things</b>, all in the same project repo you used for Milestone 1:</p>
+  <ul class="tight">
+    <li><code>hw1/answers.docx</code> — the written work for all four parts</li>
+    <li><code>screenshots/hw1-mfa-enabled.png</code> — proof that two-factor authentication is on</li>
+    <li>A dated entry in <code>JOURNAL.docx</code></li>
+  </ul>
+  <p><b>You will need:</b> a browser, your GitHub account, a phone with the GitHub Mobile app installed and able to receive SMS text messages, and the <a href="../sso-token-deep-dive.html">Inside the SSO Token</a> interactive.</p>
+  <p><b>Write your answers in one Word document using headings, paragraphs, numbered lists, and tables. You never need to draw a diagram or create a Markdown file.</b></p>
+</div>
+
+<h2>Part 1 · Trace a real SSO login</h2>
+<div class="card">
+  <div class="concept"><b>The concept — federation:</b> one organization (the <b>identity provider</b>) checks who you are; another (the <b>service provider</b> — the app you want) accepts that answer because the two organizations agreed to trust each other before you ever showed up.</div>
+  <ol class="tight">
+    <li>Pick a site you actually use that has a <b>Sign in with Google / GitHub / Apple / Microsoft</b> button.</li>
+    <li>Sign in once, slowly, and watch the address bar. Write down each <b>domain</b> you see, in order. You will usually see two different organizations' domains — that is federation happening. If the provider redirects you back too quickly to notice its page, it may have reused an existing signed-in session; record that observation instead of assuming no federation occurred.</li>
+    <li>In <code>hw1/answers.docx</code>, write the login as a <b>numbered list</b> of about six steps: click the button → redirect to the provider → provider authenticates you → redirect back to the app → app verifies the result → app starts its own session. For each step, name who is acting: your browser, the app, or the login provider. A numbered list is all that's required — <b>do not draw a diagram</b>.</li>
+    <li>Some steps (token verification) are invisible in the address bar. Include them anyway and mark them <em>(inferred)</em>.</li>
+    <li>Label three things in your write-up: the <b>identity provider</b> (who checked your password), the <b>service provider</b> (who trusted the answer), and the <b>trust relationship</b> between them.</li>
+    <li>Finish with 3–5 sentences: why does the app believe the provider's answer, and what would the app have to build, store, and protect if that button didn't exist?</li>
+  </ol>
+  <div class="warn">⚠️ Record <b>domain names only</b> (like <code>github.com</code>). Never copy full URLs, query strings, codes, cookies, or tokens into your repo — a URL can contain a short-lived secret.</div>
+  <div class="deliver"><b>Hand in:</b> the numbered trace with actors, the three labels, and the trust explanation — in <code>hw1/answers.docx</code>.</div>
+</div>
+
+<h2>Part 2 · Inside the token</h2>
+<div class="card">
+  <div class="concept"><b>The concept — tokens:</b> the trust in Part 1 ultimately reaches the app in a signed message from the identity provider: "this is who the user is, valid until this time." In a common authorization-code flow, your browser carries a short-lived login response back to the app, then the app's server exchanges that response for tokens directly. The <b>signature</b> makes an identity token trustworthy; the <b>expiry</b> limits the damage if it is stolen.</div>
+  <ol class="tight">
+    <li>Work through every tab of the <a href="../sso-token-deep-dive.html">Inside the SSO Token</a> interactive: anatomy, tamper lab, lifetimes, kill switch.</li>
+    <li>Answer these three questions in <code>hw1/answers.docx</code>, one short paragraph each:
+      <ul class="tight">
+        <li><b>Roles:</b> for the login you traced in Part 1 — who <em>mints</em> the token, who carries the browser-visible <em>login response</em>, and who <em>verifies</em> the token? If the token exchange was invisible, label your answer as inferred.</li>
+        <li><b>Tampering:</b> in the tamper lab, you changed a claim and verification failed even though you never touched the signature. Why?</li>
+        <li><b>Lifetime:</b> what specifically gets worse with a 30-day token? What specifically gets worse with a 5-minute token?</li>
+      </ul>
+    </li>
+    <li><b>Write a token policy for Pelican Tours' guide app.</b> The facts: nine guides, phones on boats, spotty signal; Saturday 2 PM a logged-in phone is stolen from a dock. Your policy must state: the access-token lifetime, whether/how it silently renews, and the exact kill-switch sequence — what the office does, in which system, and the longest time the thief realistically keeps access. Justify each number against the boat-and-bad-signal reality.</li>
+  </ol>
+  <div class="deliver"><b>Hand in:</b> the three answers + the token policy — in <code>hw1/answers.docx</code>.</div>
+</div>
+
+<h2>Part 3 · Turn on real MFA</h2>
+<div class="card">
+  <div class="concept"><b>The concept — MFA:</b> a second, <em>different kind</em> of proof. The three kinds: something you <b>know</b> (password), something you <b>have</b> (phone, key), something you <b>are</b> (fingerprint). Two of the same kind is not MFA.</div>
+  <ol class="tight">
+    <li>On GitHub: avatar → <b>Settings → Password and authentication</b>. The final setup for this course is <b>GitHub Mobile as your preferred method</b>, with <b>SMS/Text message as a backup</b>.</li>
+    <li>If you see an <b>Enable two-factor authentication</b> button, GitHub requires you to begin with an authenticator app or SMS before GitHub Mobile becomes available. Choose <b>SMS/Text message</b> for this initial enrollment, enter your phone number, and confirm the code GitHub texts you.</li>
+    <li>Install the <b>GitHub Mobile</b> app, sign in to the same GitHub account, and allow push notifications. Once 2FA is enabled and you are signed in to the app, GitHub Mobile appears under <b>Two-factor methods</b>.</li>
+    <li>Back on <b>Password and authentication</b>, set <b>Preferred 2FA method</b> to <b>GitHub Mobile</b>. Keep <b>SMS/Text message</b> configured as the backup method. If the page already said <b>Enabled</b>, add whichever of these two methods is missing before setting GitHub Mobile as preferred.</li>
+    <li>Under <b>Recovery options</b>, view your recovery codes and save them somewhere private — a password manager, or printed and put away.</li>
+    <li>Sign out, sign back in, and confirm the second factor is actually asked for.</li>
+    <li>Screenshot the settings page showing two-factor is <b>enabled</b> → save as <code>screenshots/hw1-mfa-enabled.png</code>.</li>
+    <li>Answer two questions in <code>hw1/answers.docx</code>, one short paragraph each:
+      <ul class="tight">
+        <li><b>Classify:</b> password, the login code texted to your phone, fingerprint — which of the three factor kinds is each?</li>
+        <li><b>Rank:</b> order these from weakest to strongest against an attacker using today's AI tools — <b>SMS code · TOTP app · voice verification · passkey/hardware key</b> — and justify your top and bottom pick. Hint: which can an AI <em>imitate</em>, and which would it have to <em>physically possess</em>?</li>
+      </ul>
+    </li>
+  </ol>
+  <div class="warn">⚠️ Recovery codes are secrets. Never screenshot, paste, or commit them — even to a private repo. Your screenshot must show only the "enabled" state: no codes, no QR codes.</div>
+  <div class="deliver"><b>Hand in:</b> <code>screenshots/hw1-mfa-enabled.png</code> + the two answers in <code>hw1/answers.docx</code>.</div>
+</div>
+
+<h2>Part 4 · Plan for the guide who quits</h2>
+<div class="card">
+  <div class="concept"><b>The concept — identity lifecycle:</b> every identity system lives or dies on three moments — <b>joiner</b> (grant exactly what the role needs), <b>mover</b> (adjust, don't accumulate), <b>leaver</b> (revoke everything, fast, completely). Forgotten leaver access is how breaches happen.</div>
+  <p>The scenario: Friday 5 PM, peak season, one of Pelican Tours' nine guides quits on bad terms, effective immediately. The ex-guide still has: a login to the admin panel, the shared photo-archive password, and membership in the group chat where customer manifests are posted.</p>
+  <ol class="tight">
+    <li>In <code>hw1/answers.docx</code>, build a table comparing two worlds:
+      <ul class="tight">
+        <li><b>World A</b> — every tool has its own accounts (or shared passwords).</li>
+        <li><b>World B</b> — every tool trusts one central identity provider.</li>
+      </ul>
+    </li>
+    <li>One row per access the ex-guide holds — admin panel, photo archive, group chat at minimum; add anything else a real guide would have accumulated. For each row and each world: what must be done, who does it, in which system, and what happens if that row is forgotten.</li>
+  </ol>
+  <table>
+    <tr><th style="width:22%">Access held</th><th style="width:29%">World A: revoke how?</th><th style="width:29%">World B: revoke how?</th><th style="width:20%">If forgotten</th></tr>
+    <tr><td>Admin panel login + live sessions</td><td><em>you fill in…</em></td><td><em>you fill in…</em></td><td><em>…</em></td></tr>
+    <tr><td>Photo archive (shared password)</td><td><em>…</em></td><td><em>…</em></td><td><em>…</em></td></tr>
+    <tr><td>Group chat / manifests</td><td><em>…</em></td><td><em>…</em></td><td><em>…</em></td></tr>
+  </table>
+  <ol class="tight" start="3">
+    <li>Finish with <b>one recommendation paragraph</b>: which world should Marissa run at 9 guides — and does the answer change at 900 employees? Be honest about cost and effort, not just security.</li>
+  </ol>
+  <div class="deliver"><b>Hand in:</b> the two-world table + the 9-vs-900 recommendation — in <code>hw1/answers.docx</code>.</div>
+</div>
+
+<h2>Submit</h2>
+<div class="card">
+  <p>Final repo layout:</p>
+<pre>your-project-repo/
+├── JOURNAL.docx          ← add a dated entry for this homework
+├── screenshots/
+│   └── hw1-mfa-enabled.png
+└── hw1/
+    └── answers.docx      ← all four parts</pre>
+  <p>Open <code>answers.docx</code> and <code>JOURNAL.docx</code> locally to confirm both are readable and complete. Then commit, push, confirm both files appear in the repository, and <b>submit your repo link</b>.</p>
+  <div class="check"><input type="checkbox" id="c1"><label for="c1">Part 1: numbered SSO trace with actors, three labels, trust explanation — no full URLs or secrets anywhere</label></div>
+  <div class="check"><input type="checkbox" id="c2"><label for="c2">Part 2: mint/carry/verify, tamper answer, lifetime trade-off, Pelican Tours token policy with justified numbers</label></div>
+  <div class="check"><input type="checkbox" id="c3"><label for="c3">Part 3: 2FA actually enabled and tested; screenshot shows enabled state and zero codes; classify + ranking answered</label></div>
+  <div class="check"><input type="checkbox" id="c4"><label for="c4">Part 4: two-world leaver table with "if forgotten" for every row, plus the 9-vs-900 paragraph</label></div>
+  <div class="check"><input type="checkbox" id="c5"><label for="c5"><code>answers.docx</code> and <code>JOURNAL.docx</code> open locally; everything is pushed; repository link is submitted</label></div>
+  <p class="note">Checkboxes are saved only in this browser.</p>
+</div>
+
+</main>
+<script>
+(function(){
+  var KEY='cen4086:hw1_2-v1';
+  var boxes=[].slice.call(document.querySelectorAll('.check input'));
+  var saved={};
+  try{saved=JSON.parse(localStorage.getItem(KEY))||{}}catch(e){}
+  boxes.forEach(function(b){
+    if(saved[b.id])b.checked=true;
+    b.addEventListener('change',function(){
+      saved[b.id]=b.checked;
+      try{localStorage.setItem(KEY,JSON.stringify(saved))}catch(e){}
+    });
+  });
+})();
+</script>
+</body>
+</html>
