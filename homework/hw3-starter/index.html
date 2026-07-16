@@ -30,6 +30,10 @@
   <h1>🌊 Sandpiper Surf Supply — Support Bot (starter)</h1>
   <div class="status">Embedding model: <b id="status">loading… (~25 MB, first visit only — it caches)</b></div>
 
+  <!-- PART 1: this line is the bot's ENTIRE knowledge — the DOCS array in the
+       script below. Replace the surf-shop docs with yours and it updates itself. -->
+  <div class="status">It knows exactly these documents: <b id="docList">…</b></div>
+
   <!-- PART 2 (your work): this box is displayed but IGNORED by the starter code.
        Your job is to make the bot actually obey it: persona wording in replies,
        plus at least one boundary rule enforced from here — configuration, not code. -->
@@ -103,6 +107,9 @@ const statusEl = document.getElementById('status');
 const chatEl   = document.getElementById('chat');
 const qEl      = document.getElementById('q');
 const sendEl   = document.getElementById('send');
+
+// List the bot's entire knowledge on the page, so nobody has to wonder.
+document.getElementById('docList').textContent = DOCS.map(d => d.title).join(' · ');
 
 // Load the embedding model. 'feature-extraction' means "text in → vector out".
 // The first visit downloads ~25 MB; the browser caches it for next time.
