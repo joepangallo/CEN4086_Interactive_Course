@@ -167,7 +167,7 @@ cd cen4086-hw3</pre>
   <ol class="tight">
     <li>Make the bot's replies open with the persona defined in the box (e.g., greeting style, sign-off, tone words) — the reply template should read its values instead of hard-coding them.</li>
     <li>Add at least one <b>boundary rule</b> the bot enforces from configuration: for example, a list of off-limits topics that always get the polite refusal, no matter what the retrieval finds.</li>
-    <li>Demonstrate it: change the system prompt text <em>only</em> (no other code) and screenshot the same question answered in two different personas.</li>
+    <li>Demonstrate it: change the system prompt text <em>only</em> (no other code) and ask the same question in both personas — quote the two replies in your write-up.</li>
   </ol>
   <div class="concept"><b>Why this matters:</b> this is exactly how a vendor ships one shared model to hundreds of businesses that each get their own bot personality — the configuration layer, not a different model. You built the mechanism you studied in Session 2.</div>
 </div>
@@ -177,7 +177,7 @@ cd cen4086-hw3</pre>
   <ol class="tight">
     <li>The starter keeps the whole chat history. Add a <code>CONTEXT_LIMIT</code> (a character budget). Before answering, trim the <b>oldest</b> turns until the kept history fits the budget — exactly how a real model's finite attention window behaves.</li>
     <li>Show the user what's happening: display how many characters of history are "in the window" and gray out the messages that fell outside it.</li>
-    <li>Demonstrate the failure you studied: tell the bot your name, paste two long paragraphs of filler, then ask <i>"what's my name?"</i> Screenshot the bot failing — and explain in your write-up why it still answers <em>document</em> questions perfectly even after "forgetting" your name. (Hint: which store did your name live in, and which store do the documents live in?)</li>
+    <li>Demonstrate the failure you studied: tell the bot your name, paste two long paragraphs of filler, then ask <i>"what's my name?"</i> — and explain in your write-up why it fails that, yet still answers <em>document</em> questions perfectly even after "forgetting" your name. (Hint: which store did your name live in, and which store do the documents live in?)</li>
   </ol>
 </div>
 
@@ -199,7 +199,7 @@ cd cen4086-hw3</pre>
 
 <h2>Part 5 — The cost memo (no code)</h2>
 <div class="card">
-  <p>Your browser bot is free because <em>your</em> laptop does the inference. Real deployments pay one of two ways. Write a one-page memo, <code>memo.md</code>, pricing both for your business:</p>
+  <p>Your browser bot is free because <em>your</em> laptop does the inference. Real deployments pay one of two ways. Write a one-page memo — <code>memo.pdf</code>, <code>memo.docx</code>, or <code>memo.txt</code> (no Markdown files) — pricing both for your business:</p>
   <ol class="tight">
     <li><b>Per-token API:</b> assume $0.60 per million input tokens and $2.40 per million output tokens, and that an average exchange uses 900 input + 250 output tokens. Price a quiet month (600 customer questions) and a busy month (45,000 questions). Show the calculations.</li>
     <li><b>Always-on rented GPU:</b> a g4dn.xlarge at $0.526/hour running 730 hours. Price the month — and note that the price doesn't change whether it answers 600 questions or 45,000.</li>
@@ -218,9 +218,8 @@ cd cen4086-hw3</pre>
   <div class="deliver"><b>Submit one thing on Blackboard: the link to your GitHub repository.</b> It must contain:
     <ul class="tight">
       <li><code>index.html</code> — your finished chatbot (Parts 1–4 working)</li>
-      <li><code>memo.md</code> — the Part 5 cost memo and classification calls</li>
-      <li><code>writeup.md</code> — the short written answers from Parts 1, 3, and 4 (including your adversarial test table)</li>
-      <li><code>screenshots/</code> — two personas (Part 2), the forgotten name (Part 3), one refusal with the score visible (Part 4)</li>
+      <li><code>memo.pdf</code> (or <code>.docx</code> / <code>.txt</code>) — the Part 5 cost memo and classification calls</li>
+      <li><code>writeup.pdf</code> (or <code>.docx</code> / <code>.txt</code>) — the short written answers from Parts 1–4, including the two-persona replies and your adversarial test table</li>
     </ul>
   </div>
   <p class="note">Test your own repo link in a private browser window before submitting — if the graders can't open it, they can't grade it. Commit as you go; a repo with one giant final commit tells its own story.</p>

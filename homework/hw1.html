@@ -76,24 +76,24 @@ pre{background:#1d2433;color:#e8e6f0;border-radius:10px;padding:14px 16px;overfl
   <p>Pick any website or app where you sign in with a <strong>"Sign in with Google"</strong> / <strong>"Sign in with GitHub"</strong> / <strong>"Sign in with Apple"</strong> button — Spotify, Canva, Duolingo, a game, anything you genuinely use. You're going to log in once, slowly, and write down what actually happens.</p>
   <ol class="tight">
     <li><strong>Do the login and watch the address bar.</strong> Note every domain the browser visits between clicking the button and landing back inside the app. There will be at least two different organizations' domains in that journey — that's the federation happening in front of you.</li>
-    <li><strong>Write the flow as a numbered play-by-play</strong> in <code>hw1/answers.md</code> — one line per step, in order, from clicking the button to landing back inside the app signed in (redirect out → authenticate → token minted → redirect back → token verified → session begins). For each step, name who is acting: your browser, the app you were signing into, or the login provider.</li>
+    <li><strong>Write the flow as a numbered play-by-play</strong> in <code>hw1/answers.txt</code> (<code>.pdf</code> or <code>.docx</code> also fine — just not <code>.md</code>) — one line per step, in order, from clicking the button to landing back inside the app signed in (redirect out → authenticate → token minted → redirect back → token verified → session begins). For each step, name who is acting: your browser, the app you were signing into, or the login provider.</li>
     <li><strong>Label three things explicitly in your write-up:</strong> the <strong>identity provider</strong> (who checked your password), the <strong>service provider</strong> (who trusted the answer), and the <strong>trust relationship</strong> (the agreement between the two organizations that existed before you ever showed up).</li>
     <li><strong>Explain it in your own words:</strong> why does the service provider believe the identity provider? What would the service provider have to build, store, and protect if that button didn't exist?</li>
   </ol>
   <div class="tip">💡 Paste the actual domains you saw in the address bar next to each step — real evidence beats a textbook answer here.</div>
-  <div class="deliver"><b>Hand in:</b> the numbered login trace with the three labels, plus your explanation, in <code>hw1/answers.md</code>.</div>
+  <div class="deliver"><b>Hand in:</b> the numbered login trace with the three labels, plus your explanation, in <code>hw1/answers.txt</code>.</div>
 </div>
 
 <h2>Part 2 · Inside the token</h2>
 <div class="card part">
-  <p>In Part 1, "token minted" was one arrow. This part zooms into that arrow. Work through the <a href="../sso-token-deep-dive.html">Inside the SSO Token</a> interactive — anatomy, tamper lab, lifetimes, and kill switch — then answer the following in <code>hw1/answers.md</code>:</p>
+  <p>In Part 1, "token minted" was one arrow. This part zooms into that arrow. Work through the <a href="../sso-token-deep-dive.html">Inside the SSO Token</a> interactive — anatomy, tamper lab, lifetimes, and kill switch — then answer the following in <code>hw1/answers.txt</code>:</p>
   <ol class="tight">
     <li><strong>The three roles.</strong> For the login you traced in Part 1: who <em>mints</em> the token, who <em>carries</em> it, and who <em>verifies</em> it? One sentence each.</li>
     <li><strong>The tamper question.</strong> In the tamper lab, you changed a claim inside the token and verification failed — even though you never touched the signature. Explain exactly why, in plain English, as if to a classmate who missed the session.</li>
     <li><strong>The lifetime trade-off.</strong> A token that lives 30 days is convenient; a token that lives 5 minutes is safe. What specifically gets worse at each extreme?</li>
   </ol>
   <div class="story">🌊 <strong>Design task — Pelican Tours.</strong> Marissa is planning an admin panel for her nine tour guides. Guides log in from their phones, on boats, with spotty cellular signal. On Saturday at 2&nbsp;PM, a guide's phone is stolen from a dock — logged in, session live. Write a short <strong>token policy</strong> for the guide app: how long an access token lives, whether/how it silently renews, and the exact kill-switch sequence — what the office does, which system does it, and how long the thief realistically keeps access under your policy. Justify each number with the boat-and-bad-signal reality; a policy that logs guides out mid-tour every five minutes will simply get disabled.</div>
-  <div class="deliver"><b>Hand in:</b> answers to the three questions + the token policy, all in <code>hw1/answers.md</code>.</div>
+  <div class="deliver"><b>Hand in:</b> answers to the three questions + the token policy, all in <code>hw1/answers.txt</code>.</div>
 </div>
 
 <h2>Part 3 · Turn on real MFA — on an account that matters</h2>
@@ -108,12 +108,12 @@ pre{background:#1d2433;color:#e8e6f0;border-radius:10px;padding:14px 16px;overfl
     <li>Log out, log back in, and experience the second factor doing its job.</li>
   </ol>
   <div class="warn">⚠️ <strong>Recovery codes are secrets.</strong> Never screenshot them, never paste them in your journal, never commit them to a repo — public or private. Your screenshot below must show only the settings page saying two-factor is <em>enabled</em>, with no codes visible.</div>
-  <p><strong>Then write two short paragraphs</strong> in <code>hw1/answers.md</code>:</p>
+  <p><strong>Then write two short paragraphs</strong> in <code>hw1/answers.txt</code>:</p>
   <ol class="tight">
     <li><strong>Classify the factors.</strong> Your password, the login code texted to your phone, and a fingerprint are three different <em>kinds</em> of proof. Name the three factor categories and place each example in one.</li>
     <li><strong>The AI attacker.</strong> Session 4's AI Spotlight covered deepfakes and voice cloning. Rank these four second factors from weakest to strongest against an attacker armed with today's AI tools — <strong>SMS codes · TOTP authenticator app · voice verification ("say your passphrase") · passkey/hardware key</strong> — and justify the top and bottom of your ranking. Hint: think about which factors an AI can <em>imitate</em> versus which it would have to <em>physically possess</em>.</li>
   </ol>
-  <div class="deliver"><b>Hand in:</b> <code>screenshots/hw1-mfa-enabled.png</code> (no codes visible!) + the two paragraphs in <code>hw1/answers.md</code>.</div>
+  <div class="deliver"><b>Hand in:</b> <code>screenshots/hw1-mfa-enabled.png</code> (no codes visible!) + the two paragraphs in <code>hw1/answers.txt</code>.</div>
 </div>
 
 <h2>Part 4 · The guide who quits</h2>
@@ -124,7 +124,7 @@ pre{background:#1d2433;color:#e8e6f0;border-radius:10px;padding:14px 16px;overfl
     <li><strong>World A — passwords live in the app.</strong> Every tool (admin panel, photo archive, chat) has its own account per guide, or worse, shared passwords.</li>
     <li><strong>World B — one central identity.</strong> Every tool trusts a single identity provider; guides sign in to everything through it.</li>
   </ul>
-  <p>Build a table in <code>hw1/answers.md</code> (markdown table is fine) with one row per access the ex-guide holds, and for <strong>each world</strong>: what must be done, who does it, in which system, and what happens if that row is forgotten. Then finish with <strong>one recommendation paragraph</strong>: which world should Marissa run at 9 guides — and does your answer change at 900 employees? Be honest about cost and effort, not just security.</p>
+  <p>Build a table in <code>hw1/answers.txt</code> (plain-text columns are fine; a real table if you chose <code>.docx</code> or <code>.pdf</code>) with one row per access the ex-guide holds, and for <strong>each world</strong>: what must be done, who does it, in which system, and what happens if that row is forgotten. Then finish with <strong>one recommendation paragraph</strong>: which world should Marissa run at 9 guides — and does your answer change at 900 employees? Be honest about cost and effort, not just security.</p>
   <table>
     <tr><th style="width:24%">Access held</th><th style="width:38%">World A: revoke how?</th><th style="width:38%">World B: revoke how?</th></tr>
     <tr><td>Admin panel login</td><td><em>you fill in…</em></td><td><em>you fill in…</em></td></tr>
@@ -132,7 +132,7 @@ pre{background:#1d2433;color:#e8e6f0;border-radius:10px;padding:14px 16px;overfl
     <tr><td>Group chat / manifests</td><td><em>…</em></td><td><em>…</em></td></tr>
   </table>
   <p class="note">Rows above are the minimum — add any other access you think a real guide would have accumulated.</p>
-  <div class="deliver"><b>Hand in:</b> the two-world leaver table + recommendation paragraph in <code>hw1/answers.md</code>.</div>
+  <div class="deliver"><b>Hand in:</b> the two-world leaver table + recommendation paragraph in <code>hw1/answers.txt</code>.</div>
 </div>
 
 <h2>Hand it in</h2>
@@ -143,7 +143,7 @@ pre{background:#1d2433;color:#e8e6f0;border-radius:10px;padding:14px 16px;overfl
 ├── screenshots/
 │   └── hw1-mfa-enabled.png
 └── hw1/
-    └── answers.md        ← all four parts' written work</pre>
+    └── answers.txt       ← all four parts' written work (.pdf/.docx also fine)</pre>
   <p>Commit, push, and <strong>submit your GitHub repo link</strong>.</p>
   <h3>Checklist before you submit</h3>
   <div class="check"><input type="checkbox" id="c1"><label for="c1">SSO login traced as a numbered play-by-play with identity provider, service provider, and trust labeled, plus my own-words explanation</label></div>

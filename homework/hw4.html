@@ -74,7 +74,7 @@ th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
     <li>Start your <b>AWS Academy Learner Lab</b> exactly as in the <a href="../project/aws-monday-checklist.html">project setup guide</a>: Start Lab, wait for the green dot, then open the AWS Console. Confirm the region says <b>N. Virginia (us-east-1)</b> — everything in this homework happens there.</li>
     <li>Create a new public GitHub repo <code>cen4086-hw4</code> and clone it. Copy your HW3 <code>index.html</code> into it — you'll modify it here.</li>
   </ul>
-  <div class="warn"><b>Learner Lab facts to plan around:</b> the lab session ends after a few hours (click Start Lab again — your bucket and objects survive between sessions). Bucket names are <b>globally unique</b> across all of AWS, so use the pattern <code>cen4086-hw4-yourinitials-mmdd</code>. S3 for this assignment costs a few cents of your lab credits at most.</li></div>
+  <div class="warn"><b>Learner Lab facts to plan around:</b> the lab session ends after a few hours (click Start Lab again — your bucket and objects survive between sessions). Bucket names are <b>globally unique</b> across all of AWS, so use the pattern <code>cen4086-hw4-yourinitials-mmdd</code>. S3 for this assignment costs a few cents of your lab credits at most.</div>
 </div>
 
 <h2>Part 1 — From laptop to cloud</h2>
@@ -97,7 +97,7 @@ th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
     ]
   }]
 }</pre></li>
-    <li>Open the website endpoint URL in a <b>private/incognito window</b>. Your chatbot is now served by object storage to anyone on the internet. Screenshot it with the URL visible.</li>
+    <li>Open the website endpoint URL in a <b>private/incognito window</b>. Your chatbot is now served by object storage to anyone on the internet. That URL goes on the first line of your write-up — it is how this gets graded.</li>
   </ol>
   <div class="concept"><b>What you just proved:</b> a "website" can be nothing but objects behind HTTP — no server you manage, no OS to patch. Compare that to the Pelican Tours EC2 instance: which side of the responsibility line did all the patching duties just move to?</div>
 </div>
@@ -111,7 +111,7 @@ th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
 // after:   fetch the master copy that lives NEXT TO this page in the bucket
 const DOCS = await (await fetch('./docs.json')).json();</pre></li>
     <li>Upload both files to the bucket (overwriting <code>index.html</code>), reload the site, and confirm the bot still answers.</li>
-    <li>Now the payoff. <b>Without touching index.html</b>: download <code>docs.json</code>, change one policy (shorten the return window, add an 11th document — your choice), and upload it back. Reload the live site and ask about that policy. <b>The deployed bot changed and no code did.</b> Screenshot the same question before and after.</li>
+    <li>Now the payoff. <b>Without touching index.html</b>: download <code>docs.json</code>, change one policy (shorten the return window, add an 11th document — your choice), and upload it back. Reload the live site and ask about that policy. <b>The deployed bot changed and no code did.</b> Record the before-and-after answers to that question in your write-up.</li>
   </ol>
   <div class="concept"><b>This is Session 6's whole argument in one exercise.</b> If each teammate kept their own copy of the policies, every edit would fork the truth — someone answers customers from the stale copy. One master copy in shared storage means everyone (including the bot) reads the same current version. What email attachments were to documents, hard-coded arrays are to application data.</div>
 </div>
@@ -121,8 +121,8 @@ const DOCS = await (await fetch('./docs.json')).json();</pre></li>
   <ol class="tight">
     <li>Bucket → <b>Properties</b> → <b>Bucket Versioning</b> → Enable. From this moment, S3 keeps every version of every object instead of overwriting.</li>
     <li>Upload one more revision of <code>docs.json</code> (another small policy change) so history has something in it.</li>
-    <li>Now the disaster, on purpose: <b>Objects</b> → select <code>docs.json</code> → <b>Delete</b> (type the confirmation). Reload your live site: the bot should now show its missing-documents error. Screenshot the broken bot.</li>
-    <li>Time-travel: in the Objects list, flip on <b>Show versions</b>. You'll see your docs.json versions still there, topped by a <b>delete marker</b>. Select the delete marker → Delete it. Reload the site — the bot is back, answering from the latest surviving version. Screenshot the version list and the healed bot.</li>
+    <li>Now the disaster, on purpose: <b>Objects</b> → select <code>docs.json</code> → <b>Delete</b> (type the confirmation). Reload your live site: the bot should now show its missing-documents error — note the exact message in your write-up.</li>
+    <li>Time-travel: in the Objects list, flip on <b>Show versions</b>. You'll see your docs.json versions still there, topped by a <b>delete marker</b>. Select the delete marker → Delete it. Reload the site — the bot is back, answering from the latest surviving version. Describe in your write-up what the version list showed before you removed the marker.</li>
     <li>In your write-up, answer precisely: S3 keeps multiple replicas of every object across availability zones — why didn't <em>that</em> save you here, and what did instead? (You answered this on paper on the midterm; now you've run it.)</li>
   </ol>
 </div>
@@ -130,15 +130,15 @@ const DOCS = await (await fetch('./docs.json')).json();</pre></li>
 <h2>Part 4 — Share a private draft, properly</h2>
 <div class="card">
   <ol class="tight">
-    <li>Upload <code>private-draft.txt</code> — a one-paragraph "unannounced sale" policy draft. Try to open it in your incognito window via the website endpoint: <b>Access Denied</b>. Why? Reread your Part 1 bucket policy — the draft isn't one of the two allowed objects. That denial is least privilege working, not a bug. Screenshot it.</li>
-    <li>Now share it without making it public and without creating an account for anyone: select the object → <b>Actions (or Object actions) → Share with a presigned URL</b> → set an expiry (e.g., 60 minutes) → create, and open the long URL in incognito: it works. Screenshot it.</li>
+    <li>Upload <code>private-draft.txt</code> — a one-paragraph "unannounced sale" policy draft. Try to open it in your incognito window via the website endpoint: <b>Access Denied</b>. Why? Reread your Part 1 bucket policy — the draft isn't one of the two allowed objects. That denial is least privilege working, not a bug.</li>
+    <li>Now share it without making it public and without creating an account for anyone: select the object → <b>Actions (or Object actions) → Share with a presigned URL</b> → set an expiry (e.g., 60 minutes) → create, and open the long URL in incognito: it works.</li>
     <li>Write-up, three short answers: (a) Using Session 6's tool-selection lens, when is link-sharing the right model and when do you need account-based sharing with real identity? (b) What are the credentials hiding inside that long presigned URL, and what does its expiry remind you of from the token deep-dive? (c) Learner Lab twist: your lab session's credentials are themselves temporary — what happens to your presigned link after the lab session ends, even if you set a longer expiry, and why is that the same lesson?</li>
   </ol>
 </div>
 
 <h2>Part 5 — The collaboration memo (no console)</h2>
 <div class="card">
-  <p>Your two-person business is about to become four people and someone said the words "let's have a weekly all-hands." Write <code>memo.md</code>:</p>
+  <p>Your two-person business is about to become four people and someone said the words "let's have a weekly all-hands." Write your memo as <code>memo.pdf</code>, <code>memo.docx</code>, or <code>memo.txt</code> (no Markdown files):</p>
   <ol class="tight">
     <li><b>Price the meeting</b> with Session 6's formula: 4 attendees × a $40/hour loaded rate × 45 minutes, weekly — what does that meeting cost per year? Propose the async alternative for at least half of its agenda (shared doc + comments on your one master copy) and state what the remaining synchronous half is genuinely <em>for</em>.</li>
     <li><b>Pick the stack:</b> using the six selection criteria from Session 6 (cost and free-tier edges, identity/SSO fit, data export, integration, and the rest), choose chat + docs + meetings tooling for the four-person team, one sentence of justification each.</li>
@@ -153,12 +153,11 @@ const DOCS = await (await fetch('./docs.json')).json();</pre></li>
       <li><code>index.html</code> — the deployed version (fetching <code>docs.json</code>, HW3 features intact)</li>
       <li><code>docs.json</code> — your master copy, latest version</li>
       <li><code>bucket-policy.json</code> — the exact policy you used</li>
-      <li><code>memo.md</code> — Part 5</li>
-      <li><code>writeup.md</code> — the written answers from Parts 3 and 4, plus your bucket's website endpoint URL on the first line</li>
-      <li><code>screenshots/</code> — live site with URL, before/after policy answer, broken bot, version list with delete marker, healed bot, the Access Denied, the working presigned link</li>
+      <li><code>memo.pdf</code> (or <code>.docx</code> / <code>.txt</code>) — Part 5</li>
+      <li><code>writeup.pdf</code> (or <code>.docx</code> / <code>.txt</code>) — the written answers from Parts 2–4, with your bucket's website endpoint URL on the first line</li>
     </ul>
   </div>
-  <p class="note">Your Learner Lab may be reset after grading ends — the repo is the permanent record, which is why the screenshots matter. Leave the bucket up until grades post.</p>
+  <p class="note">Your live site is the evidence for this assignment, and your Learner Lab may be reset after grading ends — leave the bucket and website up until grades post.</p>
 </div>
 
 </main>
