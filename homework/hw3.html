@@ -71,19 +71,83 @@ th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
 </div>
 
 <h2>Setup — from nothing to running (15 minutes)</h2>
+<p class="note">Five steps. Each one tells you what you're doing, exactly what to type, and what you should see before moving on. If something doesn't match, jump to the <b>troubleshooting table</b> at the end of this section — your problem is almost certainly in it.</p>
+
 <div class="card">
+  <p><b>Step 1 — Open a terminal and check your tools</b> <span class="note">· ~2 min</span></p>
+  <p>The terminal is a window where you type commands instead of clicking. This whole assignment needs it exactly twice — both times right here in setup.</p>
+  <ul class="tight">
+    <li><b>macOS:</b> press <code>⌘&nbsp;+&nbsp;Space</code>, type <i>Terminal</i>, press Enter.</li>
+    <li><b>Windows:</b> press the Windows key, type <i>PowerShell</i>, press Enter.</li>
+  </ul>
+  <p>Type each line below and press Enter after each. You're asking two tools to identify themselves:</p>
+<pre>git --version
+python3 --version</pre>
+  <p><b>You should see:</b> a version number from each, like <code>git version 2.44.0</code> and <code>Python 3.12.4</code>. Any version is fine — you only care that they answer.</p>
+  <ul class="tight">
+    <li><b>Git missing?</b> Install it from <a href="https://git-scm.com/downloads">git-scm.com/downloads</a>, accept every default, then close and reopen the terminal and try again.</li>
+    <li><b>Python missing?</b> On Windows, first try <code>py --version</code> — Python often lives under that name. If it's truly absent, install from <a href="https://www.python.org/downloads/">python.org/downloads</a> and <b>check the "Add python.exe to PATH" box</b> on the installer's first screen — skipping that checkbox is the #1 cause of "python is not recognized." Then close and reopen the terminal.</li>
+  </ul>
+</div>
+
+<div class="card">
+  <p><b>Step 2 — Create your GitHub repository and clone it</b> <span class="note">· ~4 min</span></p>
+  <p>The repository is where your work lives, and its link is the one thing you submit. You create it on the GitHub website first, then <b>clone</b> it — cloning downloads a linked copy into a folder on your machine, so the changes you make locally can be pushed back up.</p>
   <ol class="tight">
-    <li>Make sure you have <b>Git</b> and a modern browser (Chrome, Edge, or Firefox). You also need <b>Python 3</b> (already on macOS; Windows: <a href="https://www.python.org/downloads/">python.org/downloads</a>, check "Add to PATH").</li>
-    <li>Create a new <b>public GitHub repository</b> named <code>cen4086-hw3</code> and clone it:
+    <li>Sign in at <a href="https://github.com">github.com</a> → click the <b>+</b> in the top-right corner → <b>New repository</b>.</li>
+    <li>Repository name: <code>cen4086-hw3</code> · visibility: <b>Public</b> · check <b>"Add a README file"</b> → click <b>Create repository</b>.</li>
+    <li>On your new repo's page, click the green <b>Code</b> button and copy the <b>HTTPS</b> URL it shows.</li>
+    <li>Back in the terminal, run these two lines, pasting <em>your</em> URL in place of the example:
 <pre>git clone https://github.com/YOUR-USERNAME/cen4086-hw3.git
-cd cen4086-hw3</pre></li>
-    <li>Download the starter app from the course site: open <a href="hw3-starter/index.html">the starter</a>, then use your browser's <b>File → Save Page As…</b> (or right-click → Save As) to save it as <code>index.html</code> inside your repo folder. (Or copy the file if you cloned the course materials.)</li>
-    <li>Start a tiny local web server from inside the repo folder — the app must be served over <code>http://</code>, not opened as a file:
-<pre>python3 -m http.server 8080</pre>
-    Then visit <b>http://localhost:8080</b> in your browser.</li>
-    <li>The first load downloads the embedding model (about 25&nbsp;MB) from a free public CDN — watch the status line. When it says <b>ready</b>, type <i>"can I return a wetsuit?"</i> and press Send. You should get an answer with a source citation. That's the starter working; everything you build extends it.</li>
+cd cen4086-hw3</pre>
+    The first line downloads the repo into a new folder named <code>cen4086-hw3</code>. The second moves your terminal <em>into</em> that folder — everything else in setup happens from there.</li>
+  </ol>
+  <p><b>You should see:</b> <code>Cloning into 'cen4086-hw3'...</code> ending in <code>done.</code></p>
+</div>
+
+<div class="card">
+  <p><b>Step 3 — Put the starter app in your repo folder</b> <span class="note">· ~2 min</span></p>
+  <p>The starter is a single self-contained HTML file. Get it into the folder you just cloned:</p>
+  <!-- hw3-starter.zip is generated from hw3-starter/index.html; after editing the starter, regenerate:
+       cd homework/hw3-starter && zip -X ../hw3-starter.zip index.html -->
+  <ol class="tight">
+    <li>Click this link: <a href="hw3-starter.zip"><b>⬇ Download the HW3 starter (zip)</b></a>. It lands in your <b>Downloads</b> folder.</li>
+    <li>Unzip it — macOS: double-click; Windows: right-click → <b>Extract All…</b> — and move the <code>index.html</code> inside <b>into your <code>cen4086-hw3</code> folder</b>.</li>
+  </ol>
+  <div class="warn"><b>Never use File → Save Page As… on an open tab.</b> Browsers save a <em>snapshot</em> (".mhtml" / "Webpage, Complete") — a rewritten file full of <code>MultipartBoundary</code> and <code>=3D</code> garbage that will never run. If your bot ever renders as a wall of that text, you saved a snapshot: delete it and use the download link above.</div>
+  <p><b>You should see:</b> <code>ls</code> (macOS) or <code>dir</code> (Windows) in the terminal lists <code>index.html</code> and <code>README.md</code> — and if you open <code>index.html</code> in a text editor, its very first line is <code>&lt;!DOCTYPE html&gt;</code>.</p>
+</div>
+
+<div class="card">
+  <p><b>Step 4 — Start a tiny local web server</b> <span class="note">· ~1 min</span></p>
+  <p>Why not just double-click the file? Because a page opened straight from disk runs as <code>file://</code>, and browsers put those pages in a security straitjacket — they're not allowed to fetch the AI model. Served over <code>http://</code>, they are. Python ships with a one-line web server for exactly this. From inside the <code>cen4086-hw3</code> folder, run:</p>
+<pre>python3 -m http.server 8089</pre>
+  <p class="note">Windows: <code>py -m http.server 8089</code> (or <code>python</code> — whichever name answered in Step 1).</p>
+  <p><b>You should see:</b> <code>Serving HTTP on :: port 8089</code> — and then the terminal appears to freeze. <b>That's it working.</b> Your machine is now a tiny web server: <code>localhost</code> is your machine's address as seen from itself, and <code>8089</code> is the door number the server is listening at. Leave this window open the whole time you work; when you're done for the day, stop the server with <code>Ctrl+C</code>.</p>
+  <p>Now open <b>http://localhost:8089</b> in your browser.</p>
+</div>
+
+<div class="card">
+  <p><b>Step 5 — Watch the model arrive, then talk to your bot</b> <span class="note">· ~5 min</span></p>
+  <ol class="tight">
+    <li>On first load, the status line reports it's <b>downloading the embedding model (about 25&nbsp;MB)</b> from a free public CDN. This is a one-time cost — the browser caches the model, so every later reload is instant. On slow Wi-Fi, give it a minute or two; on fast Wi-Fi it may flash to <b>ready</b> almost instantly. The model goes into the browser's cache, not your Downloads folder — don't expect to see a download bar.</li>
+    <li>When the status line says <b>ready</b>, type <i>"can I return a wetsuit?"</i> and press Send.</li>
+    <li><b>Definition of done:</b> the bot answers from the sample surf-shop documents, names which document it used, and shows a similarity score. See all three and setup is finished — every part you build below extends this one file.</li>
   </ol>
   <div class="concept"><b>What just happened?</b> Your browser downloaded and ran a real neural network (<code>all-MiniLM-L6-v2</code>, an embedding model) — <b>inference</b>, on your own hardware, for free. Nobody's server saw your question. Keep that in mind for Part 5, where you'll price what this would cost if it <em>did</em> run on someone's server.</div>
+</div>
+
+<div class="card">
+  <p><b>Troubleshooting — if something doesn't match</b></p>
+  <table>
+    <tr><th>Symptom</th><th>Fix</th></tr>
+    <tr><td><code>python3: command not found</code> / <code>'python3' is not recognized</code></td><td>Windows names it differently: try <code>py -m http.server 8089</code>, then <code>python -m http.server 8089</code>. Still nothing? Reinstall Python with the PATH checkbox ticked (Step 1) and reopen the terminal.</td></tr>
+    <tr><td><code>Address already in use</code></td><td>Something else is using door 8089. Pick another: <code>python3 -m http.server 8090</code>, then visit <code>http://localhost:8090</code>.</td></tr>
+    <tr><td>Blank page or "404" at localhost:8089</td><td>The server serves whatever folder it was started in. Make sure you ran it <em>inside</em> <code>cen4086-hw3</code> (Step 2's <code>cd</code>) and the file is named exactly <code>index.html</code>.</td></tr>
+    <tr><td>The model never gets past "downloading"</td><td>The first load needs internet. Check the address bar starts with <code>http://localhost</code> — if it starts with <code>file://</code>, you double-clicked the file; go back to Step 4. Then hard-refresh: <code>Ctrl+Shift+R</code> (Windows) / <code>⌘+Shift+R</code> (macOS).</td></tr>
+    <tr><td>The page renders as a wall of text full of <code>MultipartBoundary</code>, <code>Snapshot-Content-Location</code>, or <code>=3D</code>/<code>=F0</code> codes</td><td>That file is a browser <em>snapshot</em> (.mhtml), not the starter — it happens when you use File → Save Page As on an open tab. Delete it and get a clean copy with the Step 3 download link.</td></tr>
+    <tr><td>None of the above</td><td>Bring the <em>exact</em> error text (screenshot or copy-paste) to class or office hours. "It doesn't work" can't be debugged; the exact message is half the fix.</td></tr>
+  </table>
 </div>
 
 <h2>Part 1 — Make it your business</h2>
