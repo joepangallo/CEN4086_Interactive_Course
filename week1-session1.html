@@ -98,6 +98,7 @@ h3{font-size:18px;margin:20px 0 8px}
 .scoreline{font-weight:700;margin:6px 0 0}
 .btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px}
 .btn:hover{filter:brightness(1.12)}
+.btn:disabled{background:#9aa0ab;cursor:not-allowed;filter:none}
 .btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
 .btn.small{padding:5px 12px;font-size:13px}
 .kpis{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
@@ -784,13 +785,25 @@ function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.v
 /* ===== quiz submission to instructor ===== */
 (function(){
   const QUIZ_ENDPOINT='https://quiz.metaltorque.dev/submit';
+  const QUIZ_ID=(location.pathname.split('/').pop()||'page').replace(/\.html$/,'');
   const NAME_KEY='cen4086v3:studentName';
+  const DONE_KEY='cen4086v3:submitted:'+QUIZ_ID;
   const nameInput=document.getElementById('studentName');
   const btn=document.getElementById('submitQuizBtn');
   const statusEl=document.getElementById('submitStatus');
   if(!btn)return;
   try{const saved=localStorage.getItem(NAME_KEY);if(saved&&nameInput)nameInput.value=saved;}catch(e){}
   if(nameInput)nameInput.addEventListener('input',()=>{try{localStorage.setItem(NAME_KEY,nameInput.value);}catch(e){}});
+
+  /* One submission per browser: once the server confirms receipt, the button
+     stays disabled — including across reloads — so accidental double
+     submissions can't happen. */
+  function lockSubmitted(when){
+    btn.disabled=true;
+    btn.textContent='✓ Submitted';
+    if(when){statusEl.textContent='You already submitted this quiz on '+new Date(when).toLocaleString()+'.';statusEl.style.color='var(--ok)';}
+  }
+  try{const done=localStorage.getItem(DONE_KEY);if(done){lockSubmitted(done);}}catch(e){}
 
   function collectQuizData(){
     // Only the chosen option index is sent — correctness is decided
@@ -835,13 +848,26 @@ function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.v
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
-          quizId:(location.pathname.split('/').pop()||'page').replace(/\.html$/,''),
+          quizId:QUIZ_ID,
           quizTitle:document.title,
           studentName:name,
           answers
         })
       });
+      if(res.status===409){
+        // The server already has a submission under this name (one per
+        // student, enforced server-side) — lock this browser too.
+        let msg='A submission for this quiz has already been received under this name. If you believe this is an error, contact your instructor.';
+        try{const data=await res.json();if(data&&data.error)msg=data.error;}catch(e){}
+        try{localStorage.setItem(DONE_KEY,new Date().toISOString());}catch(e){}
+        lockSubmitted(null);
+        statusEl.textContent=msg;
+        statusEl.style.color='var(--bad)';
+        return;
+      }
       if(!res.ok)throw new Error('server returned '+res.status);
+      try{localStorage.setItem(DONE_KEY,new Date().toISOString());}catch(e){}
+      lockSubmitted(null);
       const answeredCount=answers.filter(a=>a.response!=='(not answered)').length;
       statusEl.textContent='✓ Submitted! You answered '+answeredCount+'/'+answers.length+' questions. You can keep working or close this page.';
       statusEl.style.color='var(--ok)';

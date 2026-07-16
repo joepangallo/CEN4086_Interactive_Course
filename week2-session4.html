@@ -163,45 +163,25 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
 <main>
 
 
-<!-- ============ WARM-UP ============ -->
-<section class="card warmup">
-  <h3>🔥 Warm-Up Polls <span class="note">(no wrong answers — vote, then we discuss)</span></h3>
-  <div class="poll" id="poll1">
-    <p><strong>Poll 1:</strong> Counting honestly — streaming, shopping, school, games, that forum from 2019 — how many online accounts do you think you own?</p>
-    <button class="popt">Under 25</button><button class="popt">25–75</button><button class="popt">75–150</button><button class="popt">150+ and rising</button>
-    <div class="pollwhy">Password-manager vendors who can actually count report the average user holds well over 100 accounts — and studies keep finding that most people reuse a handful of passwords across them. That's not laziness; no human can memorize 100 unique strong secrets. It's a <strong>design failure</strong>: every app demanding its own credentials doesn't scale. Today's session is the industry's answer — move identity itself into the cloud (IDaaS) so you authenticate once, well, instead of a hundred times, badly.</div>
-  </div>
-  <div class="poll" id="poll2">
-    <p><strong>Poll 2:</strong> You click "Sign in with Google" on a brand-new recipe site. Who actually checked your password?</p>
-    <button class="popt">The recipe site</button><button class="popt">Google only</button><button class="popt">Both of them</button><button class="popt">Neither — it's cached somewhere</button>
-    <div class="pollwhy"><strong>Google only.</strong> The recipe site never sees your password — it receives a cryptographically signed token from Google saying "this person is who they claim." That's <em>federated identity</em>, and you've been using it for years without the vocabulary. By the end of today you'll be able to draw exactly what happened in the two seconds after you clicked that button — it's the SSO flow in Segment 1.</div>
-  </div>
-  <div class="poll" id="poll3">
-    <p><strong>Poll 3:</strong> An employee is terminated at 4 p.m. Friday. In real audits, when is their LAST account typically found still active?</p>
-    <button class="popt">Same hour</button><button class="popt">Next business day</button><button class="popt">Within a week</button><button class="popt">Months later — if anyone ever checks</button>
-    <div class="pollwhy">Auditors will tell you: <strong>months later</strong> is the depressingly common finding. Email gets disabled Monday, but the POS login, the VPN token, the third-party portal invited to a personal address? Those become <em>orphaned accounts</em> — active credentials with no living owner, one of the most common audit findings and a classic breach entry point. Segment 3's lifecycle simulator shows exactly how it happens and how automated deprovisioning kills every door with one event.</div>
-  </div>
-</section>
-
 <!-- ============ SEGMENT 1 ============ -->
 <section class="segment">
   <h2><span class="segno">1</span> The Identity Problem &amp; How SSO Works</h2>
   <div class="card">
     <h3>One employee, twenty-three passwords</h3>
-    <p><strong>Identity management</strong> is the set of processes and technology an organization uses to answer two questions for every system, every second: <em>who is this user?</em> (authentication) and <em>what are they allowed to do?</em> (authorization). Before cloud identity, every application answered those questions alone. Picture Harbor Lane Books' 240 employees: a store associate touches the POS register, email, the scheduling app, the HR portal, and the inventory system — five separate username/password databases, five places to forget a password, five databases a thief could steal. Multiply by 240 people and the costs get very real: <strong>password fatigue</strong> drives reuse, so one phished credential unlocks many systems; industry surveys consistently attribute somewhere between a fifth and half of all help-desk tickets to password resets, at tens of dollars of staff time each; and when someone quits, IT must <em>remember</em> every system that ever knew them. This is the core challenge that <strong>Identity as a Service</strong> exists to solve: move the "who are you?" function out of every individual app and into one professionally run cloud service.</p>
+    <p><strong>Identity management</strong> is the set of processes and technology an organization uses to answer two questions for every system, every second: <em>who is this user?</em> (authentication) and <em>what are they allowed to do?</em> (authorization). Before cloud identity, every application answered those questions alone. Picture a 12-store retail chain with 240 employees: a store associate touches the POS register, email, the scheduling app, the HR portal, and the inventory system — five separate username/password databases, five places to forget a password, five databases a thief could steal. Multiply by 240 people and the costs get very real: <strong>password fatigue</strong> drives reuse, so one phished credential unlocks many systems; industry surveys consistently attribute somewhere between a fifth and half of all help-desk tickets to password resets, at tens of dollars of staff time each; and when someone quits, IT must <em>remember</em> every system that ever knew them. This is the core challenge that <strong>Identity as a Service</strong> exists to solve: move the "who are you?" function out of every individual app and into one professionally run cloud service.</p>
     <h3>Single sign-on (SSO), defined</h3>
     <p><strong>SSO</strong> means a user authenticates <em>once</em> to a trusted <strong>identity provider (IdP)</strong>, and every connected application (each a <em>service provider</em>) accepts the IdP's cryptographically signed token instead of running its own login. Why it matters: users juggle one strong credential instead of dozens; security teams get one choke point to enforce MFA, lockouts, and instant revocation; and the apps themselves <em>stop storing passwords entirely</em>, which shrinks the attack surface dramatically. You already live this: log into your university portal once, and email, the LMS, and the library all open without new logins.</p>
     <p><strong>Common misconception:</strong> "SSO means one password to lose — that's weaker!" In practice it's the opposite: SSO concentrates defense where it's strongest. The IdP does MFA, anomaly detection, and a one-click kill switch; the alternative is 23 weak passwords scattered across 23 amateur login systems. The honest trade-off is different: if the IdP goes <em>down</em>, many doors stick at once — which is why Objective 5 says <em>appraise</em> IDaaS solutions: uptime SLA and outage history are evaluation criteria, not fine print.</p>
     <h3>🎬 Interactive: The SSO Flow, Step by Step</h3>
-    <p>Meet <strong>Maya</strong>, Harbor Lane's new events coordinator, on her first Monday. Use <strong>Next ▸</strong> and <strong>◀ Prev</strong> to walk the login flow — watch which arrow lights up and read what's really happening:</p>
+    <p>Meet <strong>Maya</strong>, the new events coordinator at a 12-store retail chain, on her first Monday. Use <strong>Next ▸</strong> and <strong>◀ Prev</strong> to walk the login flow — watch which arrow lights up and read what's really happening:</p>
     <div class="svgwrap">
     <svg viewBox="0 0 750 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Single sign-on flow diagram: Maya's browser, the CloudGate identity provider, and three applications">
       <g class="ssoB" id="bUser"><rect x="18" y="128" width="118" height="70" rx="12"/><text x="77" y="158" text-anchor="middle">👩 Maya</text><text x="77" y="178" text-anchor="middle" style="font-size:11px;fill:#5c6474">her browser</text></g>
       <g class="ssoB" id="bIdp"><rect x="300" y="128" width="150" height="70" rx="12"/><text x="375" y="158" text-anchor="middle">🛡️ CloudGate</text><text x="375" y="178" text-anchor="middle" style="font-size:11px;fill:#5c6474">identity provider (IdP)</text></g>
-      <g class="ssoB" id="bApp1"><rect x="590" y="24" width="142" height="58" rx="12"/><text x="661" y="50" text-anchor="middle">📧 HarborMail</text><text x="661" y="68" text-anchor="middle" style="font-size:11px;fill:#5c6474">app 1</text></g>
+      <g class="ssoB" id="bApp1"><rect x="590" y="24" width="142" height="58" rx="12"/><text x="661" y="50" text-anchor="middle">📧 StaffMail</text><text x="661" y="68" text-anchor="middle" style="font-size:11px;fill:#5c6474">app 1</text></g>
       <g class="ssoB" id="bApp2"><rect x="590" y="134" width="142" height="58" rx="12"/><text x="661" y="160" text-anchor="middle">💵 PayrollPro</text><text x="661" y="178" text-anchor="middle" style="font-size:11px;fill:#5c6474">app 2</text></g>
       <g class="ssoB" id="bApp3"><rect x="590" y="244" width="142" height="58" rx="12"/><text x="661" y="270" text-anchor="middle">📅 ShiftBoard</text><text x="661" y="288" text-anchor="middle" style="font-size:11px;fill:#5c6474">app 3</text></g>
-      <g class="ssoA" id="ar1"><path d="M136 132 C 300 36, 460 26, 586 42"/><polygon points="588,43 574,38 577,49"/><text x="270" y="44">1 · “open HarborMail”</text></g>
+      <g class="ssoA" id="ar1"><path d="M136 132 C 300 36, 460 26, 586 42"/><polygon points="588,43 574,38 577,49"/><text x="270" y="44">1 · “open StaffMail”</text></g>
       <g class="ssoA" id="ar2"><path d="M592 74 C 510 100, 468 112, 454 126"/><polygon points="452,128 462,117 466,125"/><text x="478" y="99">2 · redirect</text></g>
       <g class="ssoA" id="ar3"><path d="M140 146 L 296 146"/><polygon points="298,146 286,141 286,151"/><text x="164" y="139">3 · login + MFA</text></g>
       <g class="ssoA" id="ar4"><path d="M296 182 L 140 182"/><polygon points="138,182 150,177 150,187"/><text x="162" y="200">4 · signed token</text></g>
@@ -217,6 +197,17 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     </div>
     <div class="ssocap" id="ssoCap"></div>
     <p class="note">Count carefully as you click: across three apps, how many times did Maya type a password? You'll need that number in Lab A.</p>
+    <p class="note">🔎 <strong>Go deeper:</strong> the companion page <a href="sso-token-deep-dive.html">Inside the SSO Token</a> replays this same Monday in 13 frames with the tokens visibly moving, opens a real token up claim by claim, and lets you try to sneak a tampered one past PayrollPro. Highly recommended before the midterm.</p>
+    <h3>🛠️ Hands-On Exercises — walk the flow, then account for it</h3>
+    <p>Four drills you answer by driving the animator above — click through, watch which boxes light up, and read the captions. Type each answer and check it; the page tells you if you're right.</p>
+    <p><strong>Exercise 1 · Find the only door.</strong> Step through all seven steps and watch for the one moment Maya's password is actually typed. The step counter under the diagram tells you where you are. At which step number does she authenticate?</p>
+    <div class="checkfield">→ Step number: <input type="number" id="hx1a"> <button class="btn small" onclick="checkHX('1a')">Check</button> <span class="fb" id="fbHX1a"></span></div>
+    <p><strong>Exercise 2 · Follow the traffic.</strong> The IdP is the busiest box on the diagram even when Maya never sees it. Walk steps 1 through 7 again and count: in how many of the seven steps does the <strong>🛡️ CloudGate</strong> box light up?</p>
+    <div class="checkfield">→ Steps involving the IdP: <input type="number" id="hx1b"> <button class="btn small" onclick="checkHX('1b')">Check</button> <span class="fb" id="fbHX1b"></span></div>
+    <p><strong>Exercise 3 · The kill switch.</strong> Maya quits. Read step 7's caption carefully. With SSO in place, how many accounts must IT disable to close her access to <em>all three</em> apps at once?</p>
+    <div class="checkfield">→ Accounts to disable: <input type="number" id="hx1c"> <button class="btn small" onclick="checkHX('1c')">Check</button> <span class="fb" id="fbHX1c"></span></div>
+    <p><strong>Exercise 4 · Name the move.</strong> In step 2, StaffMail does <em>not</em> show a password form. Instead it bounces Maya's browser to the identity provider it trusts. What is the one-word name for that bounce? (It's in the step-2 caption.)</p>
+    <div class="checkfield">→ Step 2's move: <input type="text" id="hx1d" placeholder="one word"> <button class="btn small" onclick="checkHX('1d')">Check</button> <span class="fb" id="fbHX1d"></span></div>
   </div>
 </section>
 
@@ -225,7 +216,7 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
   <h2><span class="segno">2</span> Federation, OpenID Connect &amp; Multi-Factor Authentication</h2>
   <div class="card">
     <h3>Federated identity: trust that crosses company lines</h3>
-    <p>SSO inside one company is powerful; <strong>federated identity management</strong> extends it <em>across organizations</em>. Federation means independent domains agree to trust each other's identity assertions: Harbor Lane's payroll is processed by a completely separate company, but employees reach the payroll site using Harbor Lane's own IdP — the payroll firm honors CloudGate's signed tokens and never stores a single Harbor Lane password. Consumer-scale federation is the "Sign in with Google / Apple" button from Poll 2: the recipe site outsources its entire login problem to an IdP with a thousand-person security team.</p>
+    <p>SSO inside one company is powerful; <strong>federated identity management</strong> extends it <em>across organizations</em>. Federation means independent domains agree to trust each other's identity assertions: a retail chain's payroll is processed by a completely separate company, but employees reach the payroll site using the retailer's own IdP — the payroll firm honors CloudGate's signed tokens and never stores a single retailer password. Consumer-scale federation is the "Sign in with Google / Apple" button you've clicked a hundred times: a brand-new recipe site outsources its entire login problem to an IdP with a thousand-person security team, and never sees your password at all.</p>
     <p>Three protocol names you must be able to place: <strong>SAML</strong> is the older XML-based enterprise federation standard (still everywhere in corporate apps). <strong>OAuth 2.0</strong> is a protocol for <em>delegated authorization</em> — "this app may read my calendar" — not for proving who you are. <strong>OpenID Connect (OIDC)</strong> adds the identity layer on top of OAuth 2.0 and is the modern descendant of the original OpenID standard; it's what actually powers "Sign in with Google" today. <strong>Common misconception:</strong> "OAuth logs you in." By itself it doesn't — OAuth grants an app access to resources; OIDC is what asserts <em>who you are</em>. Interviewers love that distinction.</p>
     <h3>Multi-factor authentication: know · have · are</h3>
     <p>Passwords are <em>something you know</em> — and the knowable can be phished, guessed, or bought in bulk from a breach dump. <strong>MFA</strong> requires proof from <em>different categories</em>: something you <strong>know</strong> (password, PIN), something you <strong>have</strong> (a phone with an authenticator app, a hardware security key), something you <strong>are</strong> (fingerprint, face). Real two-factor means two <em>different</em> categories — password + PIN is still just two "knows," one category, one phishing email away from gone. Microsoft's much-quoted research finding is that MFA blocks the overwhelming majority (~99%) of <em>automated</em> account-compromise attacks. The factor ladder matters too: <strong>SMS codes</strong> are the weakest "have" (SIM-swap attacks steal your number), <strong>TOTP app codes</strong> are stronger, and <strong>FIDO2 security keys / passkeys</strong> are strongest because they're <em>origin-bound</em>: a fake login page on the wrong domain simply gets no answer, so real-time phishing relays fail.</p>
@@ -251,7 +242,7 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     <p class="note">Note the trap cards: the TOTP <em>code</em> looks like a "know," but it proves possession of the enrolled device — it's a "have." And the SMS code is a "have" too, just the weakest one: it really proves control of a phone <em>number</em>, which SIM-swap fraud can steal from a carrier store without ever touching your phone.</p>
     <h3>🧮 Interactive: Why passwords alone lose — the entropy demo</h3>
     <p>Entropy measures how many guesses an attacker needs. Formula: <em>length × log₂(pool)</em>, where the pool is how many characters could appear in each position. Type any candidate password (not a real one you use!) and watch:</p>
-    <input class="bigin" id="pwIn" type="text" value="harbor2026" autocomplete="off" spellcheck="false" aria-label="Candidate password to analyze">
+    <input class="bigin" id="pwIn" type="text" value="autumn2026" autocomplete="off" spellcheck="false" aria-label="Candidate password to analyze">
     <div class="kpis">
       <div class="kpi"><b id="kPool">36</b><small>character pool</small></div>
       <div class="kpi"><b id="kBits">51.7</b><small>entropy (bits)</small></div>
@@ -260,7 +251,16 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     </div>
     <div class="bar" style="height:14px"><span id="pwBar"></span></div>
     <p class="note" id="pwVerdict"></p>
-    <p class="note">🔒 <strong>Privacy:</strong> this demo is pure in-page JavaScript — nothing you type leaves this page. (Skeptical? Good, that's the right instinct: open DevTools ▸ Network and watch — zero requests.) ⚠️ The math assumes <em>random</em> characters; humans pick patterns, so <code>Harbor2026!</code> is far weaker than its bits suggest — dictionary-plus-rules attacks try "word + year + !" early. Two honest lessons: <strong>length beats complexity theater</strong>, and past ~80 bits the password stops being the weak point — phishing is. That's why MFA, not a 30-character password, is the real answer.</p>
+    <p class="note">🔒 <strong>Privacy:</strong> this demo is pure in-page JavaScript — nothing you type leaves this page. (Skeptical? Good, that's the right instinct: open DevTools ▸ Network and watch — zero requests.) ⚠️ The math assumes <em>random</em> characters; humans pick patterns, so <code>Autumn2026!</code> is far weaker than its bits suggest — dictionary-plus-rules attacks try "word + year + !" early. Two honest lessons: <strong>length beats complexity theater</strong>, and past ~80 bits the password stops being the weak point — phishing is. That's why MFA, not a 30-character password, is the real answer.</p>
+    <h3>🛠️ Hands-On Exercises — length beats complexity theater</h3>
+    <p>Four drills on the entropy box above. Type each candidate exactly as written, read the KPIs, and check your answer — the page grades you.</p>
+    <p><strong>Exercise 1 · Read the pool.</strong> Type the classic "strong" password <code>Tr0ub4dor&amp;3</code> — uppercase, lowercase, digits, and a symbol. What character pool does the demo report?</p>
+    <div class="checkfield">→ Character pool: <input type="number" id="hx2a"> <button class="btn small" onclick="checkHX('2a')">Check</button> <span class="fb" id="fbHX2a"></span></div>
+    <p><strong>Exercise 2 · Score the symbol soup.</strong> Same string still in the box — now read the entropy KPI. How many bits does all that punctuation actually buy? (Nearest whole bit is fine.)</p>
+    <div class="checkfield">→ Entropy (bits): <input type="number" step="0.1" id="hx2b"> <button class="btn small" onclick="checkHX('2b')">Check</button> <span class="fb" id="fbHX2b"></span></div>
+    <p><strong>Exercise 3 · Score the passphrase.</strong> Now clear the box and type <code>correcthorsebatterystaple</code> — 25 plain lowercase letters, no digits, no symbols, and far easier to remember. Entropy?</p>
+    <div class="checkfield">→ Entropy (bits): <input type="number" step="0.1" id="hx2c"> <button class="btn small" onclick="checkHX('2c')">Check</button> <span class="fb" id="fbHX2c"></span></div>
+    <label class="step"><input type="checkbox" data-step="hx2d"><span><strong>Exercise 4 · Watch the two clocks separate.</strong> Type <code>bookcase</code> — 8 lowercase letters, about 37.6 bits. Now compare the last two KPIs: the <em>online</em> attacker (throttled to 100 guesses/sec at a login page) needs <strong>decades</strong>; the <em>offline</em> GPU rig, chewing through a stolen password database at 10 billion guesses/sec, needs <strong>about twenty seconds</strong>. Same secret, same math, a factor of 100 million between them. That gap is the whole reason a breach at some other company is <em>your</em> emergency — and the reason apps that never store your password (Segment 1) are structurally safer.</span></label>
   </div>
 </section>
 
@@ -289,6 +289,32 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
       <div class="provcol"><h5>🔻 REVOKED / ⚠️ PROBLEMS</h5><div id="provOff"></div></div>
     </div>
     <p class="note" id="provNote"></p>
+    <h3>🛠️ Hands-On Exercises — read the two universes like an auditor</h3>
+    <p>Four drills on the lifecycle simulator above. Switch modes, click through the four stages, and read both columns — every answer is sitting right there on the screen.</p>
+    <p><strong>Exercise 1 · Time-to-productive.</strong> Set the simulator to <strong>🐢 Manual IT tickets</strong>, stage <strong>1 · Hired</strong>. Maya cannot ring up a single customer until her POS register login exists. Which day does it finally arrive?</p>
+    <div class="checkfield">→ POS login arrives on day: <input type="number" id="hx3a"> <button class="btn small" onclick="checkHX('3a')">Check</button> <span class="fb" id="fbHX3a"></span></div>
+    <p><strong>Exercise 2 · Time-to-revoke.</strong> Now switch to <strong>⚡ Automated IDaaS</strong> and click to stage <strong>4 · The audit</strong>. Read the right-hand <strong>🔻 REVOKED</strong> column: how many <em>minutes</em> after HR's termination entry was revocation logged?</p>
+    <div class="checkfield">→ Minutes to full revocation: <input type="number" id="hx3b"> <button class="btn small" onclick="checkHX('3b')">Check</button> <span class="fb" id="fbHX3b"></span></div>
+    <p><strong>Exercise 3 · The audit, the other way round.</strong> Stay in <strong>⚡ Automated IDaaS</strong> at stage <strong>4 · The audit</strong> and count the ⚠️ findings in the right-hand column. (Lab A makes you count the manual mode's findings — this is the control group.)</p>
+    <div class="checkfield">→ ⚠️ findings in automated mode: <input type="number" id="hx3c"> <button class="btn small" onclick="checkHX('3c')">Check</button> <span class="fb" id="fbHX3c"></span></div>
+    <p><strong>Exercise 4 · Diagnose the failure.</strong> Every horror story in 🐢 Manual mode is a failure at one specific point in the lifecycle. Sort each one onto the stage — <strong>J</strong>oiner, <strong>M</strong>over, or <strong>L</strong>eaver — where it was born:</p>
+    <div class="matcher" id="jmlMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="join">Her ticket sits in a queue: no email until day 4, and she is idle her whole first morning</button>
+        <button class="mcard" data-match="join">The POS register login lands on day 6 — she cannot ring up a customer until then</button>
+        <button class="mcard" data-match="move">Two years in, she still holds the associate-only rights she stopped needing at her promotion</button>
+        <button class="mcard" data-match="move">Payroll approvals arrive only after two reminder emails — the adds happen, the removals never do</button>
+        <button class="mcard" data-match="leave">A VPN token nobody collected; the auditors dial in with it during the exit briefing</button>
+        <button class="mcard" data-match="leave">A file share invited to her personal email is still syncing price lists six months later</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="join">🚪 Joiner<small>access arrives late — the loud failure</small></button>
+        <button class="mzone" data-zone="move">🔀 Mover<small>rights added, never removed — privilege creep</small></button>
+        <button class="mzone" data-zone="leave">🏁 Leaver<small>doors left open — orphaned accounts</small></button>
+      </div>
+      <p class="mstatus">0/6 placed</p>
+    </div>
+    <p class="note">Notice the pattern the zones expose: joiner failures cost <em>money</em> (a paid employee waiting a week for a login) and get fixed, because people complain. Mover and leaver failures cost <em>security</em> — and nobody complains, ever, which is exactly why they show up in the audit instead.</p>
     <h3>The IDaaS market — and how to appraise it</h3>
     <p><strong>IDaaS</strong> is the identity function delivered as SaaS: a cloud directory, SSO, MFA, provisioning connectors, and reporting, sold per user per month. Objective 5 says <em>appraise</em>, so here is your evaluation checklist: protocol support (SAML <em>and</em> OIDC), size of the pre-built app catalog, HR-system connectors for JML automation, MFA options including phishing-resistant factors, uptime SLA and outage history, admin/reporting quality, and per-user price at your headcount. Meet the market:</p>
     <div class="tabs" id="idpTabs">
@@ -300,8 +326,8 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
       </div>
       <div class="tabpane on" data-p="v1"><strong>Okta</strong> — the best-known independent IDaaS: huge pre-integrated app catalog (thousands of SaaS apps), strong JML workflow automation, vendor-neutral (plays equally well with Google or Microsoft shops). Priced per user/month, which a 240-employee retailer must budget line by line. Appraisal note: independence is the selling point — and, after publicized incidents, so is scrutinizing any vendor's breach transparency.</div>
       <div class="tabpane" data-p="v2"><strong>Microsoft Entra ID</strong> (the renamed Azure Active Directory) — the default gravity well for organizations already on Microsoft 365: identity is bundled into licenses many businesses own anyway, with deep Windows/Office integration and conditional-access policies (the risk-based rules in today's AI concept section). Appraisal note: superb value <em>if</em> you live in Microsoft's world; less neutral outside it.</div>
-      <div class="tabpane" data-p="v3"><strong>Google Cloud Identity</strong> — identity from the Google Workspace side: if Harbor Lane ran Gmail/Docs, every employee already has a Google-managed identity that can SSO into third-party apps via SAML/OIDC. Free tier exists; premium adds device management. Appraisal note: same story as Microsoft — strongest when it's the suite you already pay for.</div>
-      <div class="tabpane" data-p="v4"><strong>Auth0</strong> (owned by Okta) — developer-focused: login-as-an-API for the apps <em>you build</em>, with a generous free tier students can try. Also in the market: Ping Identity, JumpCloud, Cisco Duo (MFA-centric). Appraisal note: "workforce identity" (employees → apps, today's topic) and "customer identity" (your app's users) are different products — Harbor Lane needs both eventually: workforce IDaaS now, customer login for the web store in Week 4.</div>
+      <div class="tabpane" data-p="v3"><strong>Google Cloud Identity</strong> — identity from the Google Workspace side: if a company already runs Gmail/Docs, every employee <em>already has</em> a Google-managed identity that can SSO into third-party apps via SAML/OIDC. Free tier exists; premium adds device management. Appraisal note: same story as Microsoft — strongest when it's the suite you already pay for.</div>
+      <div class="tabpane" data-p="v4"><strong>Auth0</strong> (owned by Okta) — developer-focused: login-as-an-API for the apps <em>you build</em>, with a generous free tier students can try. Also in the market: Ping Identity, JumpCloud, Cisco Duo (MFA-centric). Appraisal note: "workforce identity" (employees → apps, today's topic) and "customer identity" (your app's users) are different products — a retailer with an online store needs both eventually: workforce IDaaS now, customer login for the storefront in Week 4. Your own project's app will need the customer flavor too.</div>
     </div>
     <h3>Mobile identity management</h3>
     <p>Identity management's last frontier is mobile, and the phone has become <em>both</em> the biggest identity risk and the strongest identity anchor. Risk: a lost, unlocked phone holds your email — the master key to every "reset my password" flow. Anchor: that same device is your "something you have" — push-approval MFA, TOTP apps, and passkeys all live there, and companies use <strong>MDM (mobile device management)</strong> to require screen locks and remotely wipe corporate data from lost devices. <strong>Misconception worth killing:</strong> "Face ID uploads my face to the company." No — device biometrics match against a template stored in the phone's secure hardware; what leaves the device is only a cryptographic "yes, it's really them." Your face never crosses the network. That design — biometric unlocks a local private key — is exactly how passkeys make phishing-proof login feel like a glance.</p>
@@ -316,7 +342,7 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
   <p><strong>The countermeasures come in two layers.</strong> First, <strong>liveness detection</strong> tries to prove a live human is present, not a replay or a render: <em>challenge-response</em> ("turn your head left," "read this random phrase" — a pre-rendered fake can't comply instantly), <em>depth sensing</em> (Face ID projects thousands of infrared dots to map 3-D facial structure; a flat screen has none), and artifact analysis hunting for the statistical fingerprints synthesis leaves behind. Second — and this is where IDaaS earns its subscription — AI plays <strong>defense</strong> through <strong>behavioral anomaly detection</strong>: the platform learns each user's normal (login hours, devices, geography, even <em>typing cadence</em>) and challenges whatever deviates — the famous <em>impossible travel</em> rule, a payroll page opened at 3 AM, a password typed in a stranger's rhythm. Security teams call this the emerging fourth factor: <strong>something you do</strong>. Behavior is continuous and hard to imitate at length, unlike a face on a screen. Even the humble CAPTCHA is caught in this arms race: AI now solves classic squiggly-letter tests <em>better than humans do</em>, so bot-vs-human proof has shifted toward invisible, risk-based checks (mouse paths, device fingerprints, interaction history) that only surface a puzzle when risk runs high.</p>
   <p><strong>The misconception to kill: "biometrics can't be faked."</strong> A biometric is not a secret — your face is public and your voice is recorded every time you leave a voicemail. It's a <em>measurement</em>, and measurements can be synthesized. What actually holds is narrower: a biometric checked <em>locally, with liveness detection, unlocking a cryptographic key</em> (exactly how passkeys work — Segment 3) stays strong, because an attacker needs your physical presence, not your likeness. A biometric judged by a human over a remote channel — a voice on a phone, a face in a video call — has been demoted to a <em>vibe</em>, and vibes now spoof at scale. That's why the real answer to deepfakes is procedural: out-of-band verification and step-up MFA for any request that moves money or credentials.</p>
   <p>Identity is now an AI-versus-AI battlefield, and both sides matter for Objective 5. <strong>On defense</strong>, IDaaS platforms run machine-learning models on every single login: device fingerprint, network, geography, time of day, and typing cadence get compressed into a <em>risk score</em>. Low risk — Maya, usual laptop, usual store, Tuesday morning — sails through. Medium risk triggers a <em>step-up</em>: prove a second factor before continuing. High risk gets blocked outright, like the famous <strong>impossible travel</strong> pattern: a login from Tampa followed forty minutes later by the "same user" from another continent — no airplane explains that, but a stolen password does. This adaptive, risk-based authentication is why modern MFA doesn't have to nag you every five minutes: the model spends friction only where risk lives.</p>
-  <p><strong>On offense</strong>, attackers use AI to write flawless phishing pages, run credential-stuffing bots that solve CAPTCHAs, and — the new frontier — clone voices and faces. In a widely reported 2024 Hong Kong case, an employee wired roughly US$25 million after a video call with what turned out to be deepfaked colleagues. Moral for your capstone: any factor an AI can <em>imitate</em> (a voice on the phone, a face on a video call) is weakening; factors bound to cryptography and origin (security keys, passkeys) are not imitable at a distance. High-stakes requests deserve out-of-band verification — call back on a known number.</p>
+  <p><strong>On offense</strong>, attackers use AI to write flawless phishing pages, run credential-stuffing bots that solve CAPTCHAs, and — the new frontier — clone voices and faces. In a widely reported 2024 Hong Kong case, an employee wired roughly US$25 million after a video call with what turned out to be deepfaked colleagues. Moral for your course project: any factor an AI can <em>imitate</em> (a voice on the phone, a face on a video call) is weakening; factors bound to cryptography and origin (security keys, passkeys) are not imitable at a distance. High-stakes requests deserve out-of-band verification — call back on a known number.</p>
   <p><strong>⚔️ Sort the battlefield — is AI the attacker or the defender here?</strong> Click a card, then a zone:</p>
   <div class="matcher" id="atkDefMatcher">
     <div class="mcards">
@@ -366,7 +392,7 @@ total. After each of my answers, tell me exactly what I got right or wrong
 before asking the next one. Finish with a summary of my weak spots and
 which of those topics I should restudy first.</pre></div>
   <p><strong>Drill 2 · Incident roleplay</strong> — the AI plays the phishing victim; you play the responder:</p>
-  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Roleplay a security incident with me. You play Dana, a bookstore employee
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Roleplay a security incident with me. You play Dana, a retail store employee
 who just typed her password into a pixel-perfect FAKE login page linked
 from a phishing email. I play the IT responder. Stay in character for
 4 exchanges (ONE message per turn, under 120 words, wait for my reply)
@@ -416,7 +442,7 @@ then ask the next. 6 questions, track my score, get harder as I improve.</pre></
   <p>Use the three interactives above to answer these. Type your answers and check them — the page tells you if you're right:</p>
   <label class="step"><input type="checkbox" data-step="a1"><span>Step through <strong>all 7 steps</strong> of the SSO animator. Across all three apps, how many times did Maya type her password?</span></label>
   <div class="checkfield">→ Password entries: <input type="number" id="labA1"> <button class="btn small" onclick="checkA(1)">Check</button> <span class="fb" id="fbA1"></span></div>
-  <label class="step"><input type="checkbox" data-step="a2"><span>Entropy demo: type <code>harbor2026</code> exactly (all lowercase). Record the entropy in bits (round to the nearest whole number if you like).</span></label>
+  <label class="step"><input type="checkbox" data-step="a2"><span>Entropy demo: type <code>autumn2026</code> exactly (all lowercase). Record the entropy in bits (round to the nearest whole number if you like).</span></label>
   <div class="checkfield">→ Entropy (bits): <input type="number" step="0.1" id="labA2"> <button class="btn small" onclick="checkA(2)">Check</button> <span class="fb" id="fbA2"></span></div>
   <label class="step"><input type="checkbox" data-step="a3"><span>Using ONLY lowercase letters, find the <strong>shortest length</strong> that reaches at least <strong>60 bits</strong>. (Try <code>aaaaaaaaaaaa</code>, then add letters.)</span></label>
   <div class="checkfield">→ Shortest all-lowercase length ≥ 60 bits: <input type="number" id="labA3"> <button class="btn small" onclick="checkA(3)">Check</button> <span class="fb" id="fbA3"></span></div>
@@ -428,8 +454,8 @@ then ask the next. 6 questions, track my score, get harder as I improve.</pre></
 <section class="card lab">
   <p class="labno">LAB B · FREE AI CHATBOT · ~15 MIN · 🆓 ChatGPT / Gemini / Claude / Copilot (any free tier)</p>
   <h3>The MFA Rollout FAQ — with an AI Junior Analyst</h3>
-  <p>Harbor Lane is rolling out SSO + MFA next month, and 240 employees — many part-time, many not technical — will have questions. Open any free AI chatbot and paste:</p>
-  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>You are helping the IT director of Harbor Lane Books, a 12-store bookstore
+  <p>Your client — a 12-store retail chain with 240 employees, many part-time, many not technical — is rolling out SSO + MFA next month, and every one of them will have questions. Open any free AI chatbot and paste:</p>
+  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>You are helping the IT director of a 12-store retail
 chain (240 employees, many part-time, high turnover). Next month we roll out
 single sign-on plus multi-factor authentication. Draft a one-page FAQ for
 skeptical employees that answers, in plain friendly language:
@@ -443,7 +469,7 @@ Keep it under 400 words, warm in tone, and translate any jargon you use.</pre></
   <p><strong>What to look for:</strong> a good answer explains the IdP "kill switch" logic for Q1, backup codes or help-desk re-enrollment for Q3, that a TOTP app only stores a secret seed and reads nothing else for Q4, and SIM-swap risk for Q5.</p>
   <label class="step"><input type="checkbox" data-step="b1"><span>Run the prompt and read the FAQ critically. Would a 19-year-old part-time bookseller actually understand Q4's answer?</span></label>
   <label class="step"><input type="checkbox" data-step="b2"><span><strong>Verify the AI (required):</strong> fact-check its Q5 claim against Segment 2 of this session. The correct reason is SIM-swap/interception risk — if the AI said something vague ("texts are less encrypted") or wrong, write the correction. AI assistants also love recommending SMS as a "backup factor" without flagging its weakness — did yours?</span></label>
-  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — verify before you comply:</strong> with the AI's help, draft a 3-rule "verify before you comply" protocol for Harbor Lane covering any phone/video request that moves money, credentials, or gift cards (think: call back on a number already on file; urgency is never a bypass; payment changes need a second approver). Then stress-test it — ask the AI: <em>"You are a scammer with a perfect voice clone of the owner. How would you still get around these three rules?"</em> — and tighten the ONE rule its best attack exposed.</span></label>
+  <label class="step"><input type="checkbox" data-step="b4"><span>🧠 <strong>Concept check — verify before you comply:</strong> with the AI's help, draft a 3-rule "verify before you comply" protocol for the chain covering any phone/video request that moves money, credentials, or gift cards (think: call back on a number already on file; urgency is never a bypass; payment changes need a second approver). Then stress-test it — ask the AI: <em>"You are a scammer with a perfect voice clone of the owner. How would you still get around these three rules?"</em> — and tighten the ONE rule its best attack exposed.</span></label>
 </section>
 
 <section class="card lab">
@@ -462,7 +488,7 @@ Keep it under 400 words, warm in tone, and translate any jargon you use.</pre></
   <p><strong>Part 2 — Enable MFA on one REAL personal account</strong> (your choice: email is highest-value — protect it first). Free authenticator apps: Google Authenticator, Microsoft Authenticator, or Aegis (Android, open source). No credit card, ever.</p>
   <label class="step"><input type="checkbox" data-step="c2"><span>In the account's security settings, find "Two-factor authentication" / "2-Step Verification" and choose the <strong>authenticator app</strong> option (not SMS) if offered. Scan the QR code with your app.</span></label>
   <label class="step"><input type="checkbox" data-step="c3"><span>Save the <strong>backup codes</strong> somewhere that is not that same phone (write them down; store offline). This is your lose-my-phone answer from Lab B.</span></label>
-  <label class="step"><input type="checkbox" data-step="c4"><span>Log out, log back in, and experience the flow you'll be rolling out to 240 booksellers. In your notebook: one sentence on the friction, one on the payoff.</span></label>
+  <label class="step"><input type="checkbox" data-step="c4"><span>Log out, log back in, and experience the flow you'll be rolling out to 240 store employees — and the one you'll build into your own project app at Milestone 2. In your notebook: one sentence on the friction, one on the payoff.</span></label>
   <p class="note">⚖️ Do this on your <strong>own personal</strong> account only — never enroll MFA on someone else's account, and never disable MFA you didn't enable.</p>
 </section>
 
@@ -483,12 +509,12 @@ Keep it under 400 words, warm in tone, and translate any jargon you use.</pre></
 
   <div class="q" data-a="0">
     <h4>Q2 · <em>The charter partner</em></h4>
-    <p class="stem">Gulf Coast Charters books fishing trips through BookingHarbor, a portal run by a completely separate company. The contract says Gulf Coast's 85 employees must reach BookingHarbor using their existing Gulf Coast logins, and BookingHarbor may never store a Gulf Coast password. BookingHarbor's engineer shrugs: "Standard setup, we do it weekly." What is being described?</p>
-    <button class="opt">A. Federated identity — BookingHarbor is configured to trust signed identity assertions from Gulf Coast's identity provider</button>
+    <p class="stem">Gulf Coast Charters books fishing trips through Dockline, a portal run by a completely separate company. The contract says Gulf Coast's 85 employees must reach Dockline using their existing Gulf Coast logins, and Dockline may never store a Gulf Coast password. Dockline's engineer shrugs: "Standard setup, we do it weekly." What is being described?</p>
+    <button class="opt">A. Federated identity — Dockline is configured to trust signed identity assertions from Gulf Coast's identity provider</button>
     <button class="opt">B. Multi-tenancy — the two companies agree to share one user database</button>
-    <button class="opt">C. Password vaulting — BookingHarbor keeps an encrypted copy of each Gulf Coast password</button>
-    <button class="opt">D. Deprovisioning — BookingHarbor deletes each account after every booking</button>
-    <div class="expl"><strong>Answer: A.</strong> ✔ Trust that crosses organizational lines is the definition of federation: Gulf Coast's IdP authenticates its own people and issues signed tokens (via SAML or OIDC); BookingHarbor verifies the signature and lets them in — no Gulf Coast password ever exists on BookingHarbor's side, exactly as the contract demands. ✘ B — multi-tenancy is one provider serving many customers on shared infrastructure (Session 2); sharing a user database between two companies is neither multi-tenancy nor a good idea. ✘ C — vaulting stored passwords is precisely what the contract forbids; federation exists so partners never need your secrets. ✘ D — deprovisioning is revoking access when people <em>leave</em>; deleting accounts after each booking would force constant re-provisioning and has nothing to do with how login trust works.</div>
+    <button class="opt">C. Password vaulting — Dockline keeps an encrypted copy of each Gulf Coast password</button>
+    <button class="opt">D. Deprovisioning — Dockline deletes each account after every booking</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Trust that crosses organizational lines is the definition of federation: Gulf Coast's IdP authenticates its own people and issues signed tokens (via SAML or OIDC); Dockline verifies the signature and lets them in — no Gulf Coast password ever exists on Dockline's side, exactly as the contract demands. ✘ B — multi-tenancy is one provider serving many customers on shared infrastructure (Session 2); sharing a user database between two companies is neither multi-tenancy nor a good idea. ✘ C — vaulting stored passwords is precisely what the contract forbids; federation exists so partners never need your secrets. ✘ D — deprovisioning is revoking access when people <em>leave</em>; deleting accounts after each booking would force constant re-provisioning and has nothing to do with how login trust works.</div>
   </div>
 
   <div class="q" data-a="3">
@@ -513,22 +539,22 @@ Keep it under 400 words, warm in tone, and translate any jargon you use.</pre></
 
   <div class="q" data-a="2">
     <h4>Q5 · <em>The weekend project</em></h4>
-    <p class="stem">Harbor Lane's only sysadmin, Owen, pushes back on the consultants: "IDaaS at $6 per user per month is about $17,000 a year for our 240 people. I can build a login system in a weekend — a password table and a form." The owner asks you for the STRONGEST argument in the IDaaS column. Which is it?</p>
-    <button class="opt">A. IDaaS transfers all security responsibility to the vendor, so Harbor Lane can stop thinking about identity</button>
+    <p class="stem">Ridgeline Hardware's only sysadmin, Owen, pushes back on the consultants: "IDaaS at $6 per user per month is about $17,000 a year for our 240 people. I can build a login system in a weekend — a password table and a form." The owner asks you for the STRONGEST argument in the IDaaS column. Which is it?</p>
+    <button class="opt">A. IDaaS transfers all security responsibility to the vendor, so Ridgeline can stop thinking about identity</button>
     <button class="opt">B. In-house systems are always cheaper over the long run</button>
     <button class="opt">C. Identity is a specialist, high-stakes function: $17k/yr buys SSO, MFA, HR-driven provisioning connectors, anomaly detection, and an uptime SLA — a stack one generalist cannot build, patch, and monitor alone</button>
     <button class="opt">D. IDaaS products work perfectly with zero configuration</button>
-    <div class="expl"><strong>Answer: C.</strong> ✔ Owen's weekend project delivers a password table — none of the rest: no MFA, no federation to their SaaS apps, no JML automation, no 24/7 monitoring, and its security patches arrive only when Owen isn't fixing a POS terminal in Sarasota. $17k/yr against one breach or one Owen-shaped single point of failure is the whole argument. ✘ A misstates shared responsibility: Harbor Lane still owns role design, access policy, MFA rules, and offboarding discipline — the vendor runs the machinery, not the decisions. ✘ B — "always cheaper" ignores Owen's loaded hours, breach exposure, and opportunity cost; sometimes in-house wins, but never on "always." ✘ D — connectors, role bundles, and policies are genuine configuration work; pretending otherwise sets the project up to fail in week one.</div>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Owen's weekend project delivers a password table — none of the rest: no MFA, no federation to their SaaS apps, no JML automation, no 24/7 monitoring, and its security patches arrive only when Owen isn't fixing a POS terminal in Sarasota. $17k/yr against one breach or one Owen-shaped single point of failure is the whole argument. ✘ A misstates shared responsibility: Ridgeline still owns role design, access policy, MFA rules, and offboarding discipline — the vendor runs the machinery, not the decisions. ✘ B — "always cheaper" ignores Owen's loaded hours, breach exposure, and opportunity cost; sometimes in-house wins, but never on "always." ✘ D — connectors, role bundles, and policies are genuine configuration work; pretending otherwise sets the project up to fail in week one.</div>
   </div>
 
   <div class="q" data-a="0">
     <h4>Q6 · <em>The perfect fake</em></h4>
-    <p class="stem">A phishing email steers Harbor Lane staff to <code>harbormail.example-support.net</code> — a pixel-perfect proxy of the real login page that instantly relays whatever victims type to the genuine site: password AND the 6-digit authenticator code. Three employees fell for it and their accounts were taken over within seconds. Accountant Renata also clicked, also "logged in" — but the attackers got nothing usable. She signs in with a FIDO2 hardware security key. Why did her account survive?</p>
+    <p class="stem">A phishing email steers Vantage Freight staff to <code>vantagemail.example-support.net</code> — a pixel-perfect proxy of the real login page that instantly relays whatever victims type to the genuine site: password AND the 6-digit authenticator code. Three employees fell for it and their accounts were taken over within seconds. Accountant Renata also clicked, also "logged in" — but the attackers got nothing usable. She signs in with a FIDO2 hardware security key. Why did her account survive?</p>
     <button class="opt">A. The key's cryptographic response is bound to the genuine site's origin — on the fake domain it produces nothing the attacker can replay anywhere</button>
     <button class="opt">B. Her password was longer than her coworkers' passwords</button>
     <button class="opt">C. Hardware keys automatically rotate the password every 30 seconds</button>
     <button class="opt">D. The phishing proxy happened to crash on her older browser</button>
-    <div class="expl"><strong>Answer: A.</strong> ✔ Origin binding is the superpower: a FIDO2 key signs a challenge that includes the domain it's talking to. On <code>example-support.net</code> the signature is for the wrong origin — worthless at the real site — so a real-time relay has nothing to relay. This is why security keys and passkeys are called <em>phishing-resistant</em> while TOTP is merely phishing-<em>slowing</em> (her coworkers' 30-second codes were relayed comfortably inside their validity window). ✘ B — length is irrelevant here; the proxy captured passwords perfectly at any length. ✘ C — nothing rotates passwords; that garbles TOTP's mechanism, and TOTP demonstrably fell to this attack anyway. ✘ D — luck is not a control, and incident reports that credit luck get rewritten by the next incident.</div>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Origin binding is the superpower: a FIDO2 key signs a challenge that includes the domain it's talking to. On <code>vantagemail.example-support.net</code> the signature is for the wrong origin — worthless at the real site — so a real-time relay has nothing to relay. This is why security keys and passkeys are called <em>phishing-resistant</em> while TOTP is merely phishing-<em>slowing</em> (her coworkers' 30-second codes were relayed comfortably inside their validity window). ✘ B — length is irrelevant here; the proxy captured passwords perfectly at any length. ✘ C — nothing rotates passwords; that garbles TOTP's mechanism, and TOTP demonstrably fell to this attack anyway. ✘ D — luck is not a control, and incident reports that credit luck get rewritten by the next incident.</div>
   </div>
 
   <div class="q" data-a="1">
@@ -543,7 +569,7 @@ Keep it under 400 words, warm in tone, and translate any jargon you use.</pre></
 
   <div class="q" data-a="3">
     <h4>Q8 · <em>Sixty elves for December</em></h4>
-    <p class="stem">Harbor Lane hires 60 seasonal associates every November for the holiday rush. Last year onboarding took IT two full weeks of account tickets — and in January, an internal review found 19 seasonal accounts still active, one of which had processed a suspicious refund on December 26th. Four proposals are on the table for this year. As the consultant, which do you endorse?</p>
+    <p class="stem">Marigold Home Goods hires 60 seasonal associates every November for the holiday rush. Last year onboarding took IT two full weeks of account tickets — and in January, an internal review found 19 seasonal accounts still active, one of which had processed a suspicious refund on December 26th. Four proposals are on the table for this year. As the consultant, which do you endorse?</p>
     <button class="opt">A. Create one shared "seasonal2026" login that all 60 temps use</button>
     <button class="opt">B. Clone the store manager's account as a template for each temp — fastest setup</button>
     <button class="opt">C. Keep manual creation but add a laminated spreadsheet checklist for January deletions</button>
@@ -553,7 +579,7 @@ Keep it under 400 words, warm in tone, and translate any jargon you use.</pre></
 
   <div class="q" data-a="2">
     <h4>Q9 · <em>The voice on line two</em> 🧠 AI concept</h4>
-    <p class="stem">Friday, 4:52 PM. Harbor Lane bookkeeper Nadia answers a call. It is unmistakably the owner's voice — his cadence, his little cough, the nickname only he uses for her — and caller ID shows his cell number. "A rare-book estate deal closes at 5:30. Wire the $18,000 deposit to this new account, and keep it quiet until Monday." Nadia went through this session's training. Which control ACTUALLY defeats this attack?</p>
+    <p class="stem">Friday, 4:52 PM. Bellweather Antiques bookkeeper Nadia answers a call. It is unmistakably the owner's voice — his cadence, his little cough, the nickname only he uses for her — and caller ID shows his cell number. "A rare-clock estate deal closes at 5:30. Wire the $18,000 deposit to this new account, and keep it quiet until Monday." Nadia went through this session's training. Which control ACTUALLY defeats this attack?</p>
     <button class="opt">A. Caller ID verification — the phone network already confirmed it was his number</button>
     <button class="opt">B. Voice recognition — she has known his voice for six years and it matched perfectly</button>
     <button class="opt">C. Out-of-band verification with a step-up rule: hang up, call the owner back on the number already saved in her contacts, and require the standing second-channel approval for any payment change — no exceptions for urgency</button>
@@ -563,7 +589,7 @@ Keep it under 400 words, warm in tone, and translate any jargon you use.</pre></
 
   <div class="q" data-a="1">
     <h4>Q10 · <em>Blocked at 2:14 AM</em> 🧠 AI concept</h4>
-    <p class="stem">Sunday, 2:14 AM: Harbor Lane's IDaaS console blocks a login to store manager Bree's account even though the password AND the TOTP code were both correct. The event log reads: "Active session in Tampa since 1:58 AM; this attempt from an IP 5,100 miles away at 2:14 AM. Password typed 40% slower than stored rhythm profile. First login ever attempted on this account between 1 and 5 AM." Monday morning the owner asks what the platform actually saw. The accurate answer:</p>
+    <p class="stem">Sunday, 2:14 AM: Palmetto Provisions' IDaaS console blocks a login to store manager Bree's account even though the password AND the TOTP code were both correct. The event log reads: "Active session in Tampa since 1:58 AM; this attempt from an IP 5,100 miles away at 2:14 AM. Password typed 40% slower than stored rhythm profile. First login ever attempted on this account between 1 and 5 AM." Monday morning the owner asks what the platform actually saw. The accurate answer:</p>
     <button class="opt">A. The attacker mistyped the password, which tripped the failed-attempt lockout counter</button>
     <button class="opt">B. Behavioral anomaly detection: impossible travel across two live sessions, a typing cadence off Bree's profile, and an unprecedented login hour — "something you do" signals that stolen credentials cannot reproduce</button>
     <button class="opt">C. The IDaaS platform blocks all weekend logins by default policy</button>
@@ -577,18 +603,18 @@ Keep it under 400 words, warm in tone, and translate any jargon you use.</pre></
 <!-- ============ DISCUSSION ============ -->
 <section class="card disc">
   <h3>💬 Discussion Forum Prompts <span class="note">(syllabus: Discussion Forums = 15%)</span></h3>
-  <p><strong>Prompt 1:</strong> "SSO is a single point of failure — one outage or one compromised IdP and EVERYTHING is down or breached." Argue both sides in a paragraph each: why the concern is legitimate, and why security teams overwhelmingly choose SSO anyway (how do IDaaS vendors and their customers mitigate the risk?). End with your verdict for Harbor Lane. Reply to two classmates.</p>
+  <p><strong>Prompt 1:</strong> "SSO is a single point of failure — one outage or one compromised IdP and EVERYTHING is down or breached." Argue both sides in a paragraph each: why the concern is legitimate, and why security teams overwhelmingly choose SSO anyway (how do IDaaS vendors and their customers mitigate the risk?). End with your verdict for a 240-employee retail chain running two dozen SaaS apps — and for the app you're building on your own project track. Reply to two classmates.</p>
   <p><strong>Prompt 2:</strong> A bank proposes voiceprint verification for phone-based password resets: "My voice is my password." Given what you learned about AI voice cloning in today's AI concept section, attack or defend this design in two paragraphs, and propose the reset flow you would build instead. Concepts, not vibes.</p>
 </section>
 
-<!-- ============ CAPSTONE ============ -->
+<!-- ============ COURSE PROJECT ============ -->
 <section class="card capstone">
-  <h3>🏗️ Capstone · Harbor Lane Books — Checkpoint 4 of 12</h3>
-  <p>Your client has 240 employees, 12 stores, high seasonal turnover, and — as of your Week 1 audit — no identity strategy beyond "the manager knows the passwords." This session's slice is the <strong>identity third of Deliverable D2</strong> (D2, the full Identity + Data + Collaboration plan, is due at the end of Week 2 — Session 6). Full brief and rubric: <a href="project.html"><strong>open the Project Brief →</strong></a></p>
-  <p><strong>Due before Session 5 (individual):</strong></p>
-  <label class="step"><input type="checkbox" data-step="cap1"><span><strong>IDaaS recommendation:</strong> pick a product direction (independent IDaaS vs. suite-bundled identity) and justify it against at least 3 appraisal criteria from Segment 3 (protocols, app catalog, HR connectors, MFA options, SLA, price at 240 users).</span></label>
-  <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Provisioning policy:</strong> a JML table for three roles (store associate, store manager, HQ finance): for each lifecycle event, which systems are granted/revoked and the deadline in hours. Seasonal staff get auto-expiry — you saw why in Q8.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap3"><span><strong>MFA policy:</strong> which factor(s) you'll require, what you'll allow as backup, the lost-phone recovery flow, and one sentence on why you did or didn't allow SMS.</span></label>
+  <h3>🏗️ Course Project · Milestone 1 due today → Milestone 2 starts now <span class="note">(M1: 25 pts, submitted this session · M2: 25 pts, due Session 7)</span></h3>
+  <p><strong>Milestone 1 is due today.</strong> Whichever track you chose — <strong>☁️ Pocket Cloud</strong> (stand up the cloud: tenants, scaling, metering), <strong>🌊 Pelican Tours</strong> (rehost: EC2 → ALB + Auto Scaling), or <strong>📱 Bring Your Own App</strong> (assess and deploy your backend, prove it scales) — today is the deadline for that first 25 points. Submit it before you leave.</p>
+  <p>And today's material is not a detour from the project — it is <em>literally the first half of the next milestone</em>. <strong>Milestone 2 (due Session 7) is "Identity (SSO/MFA) &amp; storage, 3-2-1 backups."</strong> Everything in this session — the IdP that issues tokens, the know/have/are factor rules, the JML lifecycle that keeps orphaned accounts out of your system — is the identity half of M2, in your hands, today. Session 5's storage material is the other half. Start the identity work tonight while the SSO flow is still fresh, and M2 becomes a two-week job instead of a panic. Full briefs, milestone checklists, and rubrics: <a href="project/index.html"><strong>open the Project Hub →</strong></a> (AWS-track students: the <a href="project/aws-monday-checklist.html">Monday checklist</a> is your fastest path.)</p>
+  <label class="step"><input type="checkbox" data-step="cap1"><span><strong>Submit Milestone 1 today</strong> (25 pts). Check it against your track's M1 checklist on the Project Hub before you hand it in — the rubric is the grading sheet, not a suggestion.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Open Milestone 2 tonight</strong> (due Session 7): read your track's identity requirements and decide <em>now</em> which identity approach you'll use — an IdP/SSO integration, or your platform's own identity service — and which MFA factor you'll require. Justify it with 3 appraisal criteria from Segment 3 (protocols, app catalog, HR/user connectors, MFA options, SLA, price).</span></label>
+  <label class="step"><input type="checkbox" data-step="cap3"><span><strong>Write the lifecycle rules before you write the code:</strong> for your project's users (or tenants), sketch the JML table — what a joiner gets, what a mover swaps, what a leaver loses, and how fast. Q8 and the lifecycle simulator show what happens to the team that skips this step.</span></label>
 </section>
 
 <!-- ============ EXIT TICKET ============ -->
@@ -605,7 +631,7 @@ Keep it under 400 words, warm in tone, and translate any jargon you use.</pre></
 
 <footer>
   <div class="card" style="background:#f0eee6">
-    <strong>📚 Before Session 5:</strong> preview <strong>Session 5 (Data Storage in the Cloud)</strong> by skimming its opening segment; finish Lab C (MFA enabled on one real account — we'll ask for a show of hands); post to both discussion prompts; complete Capstone Checkpoint 4. Reminder: <strong>Deliverable D2 is due at the end of Session 6</strong>, and the midterm is at the start of Week 3.
+    <strong>📚 Before Session 5:</strong> preview <strong>Session 5 (Data Storage in the Cloud)</strong> by skimming its opening segment; finish Lab C (MFA enabled on one real account — we'll ask for a show of hands); post to both discussion prompts. Project: <strong>Milestone 1 is submitted today</strong> — then open your track's <strong>Milestone 2</strong> brief on the <a href="project/index.html">Project Hub</a> and start the identity half tonight (M2 is due at <strong>Session 7</strong>; Session 5's storage material completes it). The midterm is at the start of Week 3.
   </div>
   <div class="footer-nav">
     <a class="btn ghost" href="index.html">⌂ Course Hub</a>
@@ -721,12 +747,12 @@ function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.v
 /* ===== Session 4 custom interactives ===== */
 /* SSO step-through animator */
 const SSO_STEPS=[
- {arr:[],box:[],cap:'Meet Maya, Harbor Lane’s new events coordinator: three cloud apps, one identity provider (IdP). No arrows lit yet — it’s 8:59 AM and nothing has happened. Click Next ▸ to start her Monday.'},
- {arr:['ar1'],box:['bUser','bApp1'],cap:'STEP 1 — Maya opens HarborMail. The app has no idea who she is — and notice what it does NOT do: it shows no password form of its own. HarborMail doesn’t store passwords at all.'},
- {arr:['ar2'],box:['bApp1','bIdp'],cap:'STEP 2 — HarborMail redirects her browser to the identity provider it trusts (CloudGate): “Don’t tell ME who you are — go tell the IdP.” Every connected app makes the same move.'},
+ {arr:[],box:[],cap:'Meet Maya, the retail chain’s new events coordinator: three cloud apps, one identity provider (IdP). No arrows lit yet — it’s 8:59 AM and nothing has happened. Click Next ▸ to start her Monday.'},
+ {arr:['ar1'],box:['bUser','bApp1'],cap:'STEP 1 — Maya opens StaffMail. The app has no idea who she is — and notice what it does NOT do: it shows no password form of its own. StaffMail doesn’t store passwords at all.'},
+ {arr:['ar2'],box:['bApp1','bIdp'],cap:'STEP 2 — StaffMail redirects her browser to the identity provider it trusts (CloudGate): “Don’t tell ME who you are — go tell the IdP.” That bounce is called a redirect, and every connected app makes the same move.'},
  {arr:['ar3'],box:['bUser','bIdp'],cap:'STEP 3 — Maya authenticates ONCE, at the IdP only: password + an MFA push to her phone. This is the single place in the whole company where her password exists — one door to defend, defended well.'},
  {arr:['ar4'],box:['bIdp','bUser'],cap:'STEP 4 — CloudGate hands her browser a signed, expiring token: “This is Maya, verified at 9:02, valid for this session.” Think of a tamper-evident wristband from the one bouncer who actually checked ID.'},
- {arr:['ar5'],box:['bUser','bApp1'],cap:'STEP 5 — Her browser presents the token to HarborMail, which checks the IdP’s signature and lets her in. HarborMail never saw a password — it saw proof that the IdP did.'},
+ {arr:['ar5'],box:['bUser','bApp1'],cap:'STEP 5 — Her browser presents the token to StaffMail, which checks the IdP’s signature and lets her in. StaffMail never saw a password — it saw proof that the IdP did.'},
  {arr:['ar6'],box:['bUser','bIdp','bApp2'],cap:'STEP 6 — 10:15 AM: Maya opens PayrollPro. Same redirect to CloudGate — but the IdP already has her live session, so it issues a fresh token instantly. No login screen. To Maya it feels like magic; to security it’s one controlled gate.'},
  {arr:['ar7'],box:['bUser','bIdp','bApp3'],cap:'STEP 7 — ShiftBoard, and every other connected app, all day: one authentication, many doors — that is single sign-on. The bonus nobody advertises: disable Maya at the IdP and EVERY door locks at once. Remember that for Segment 3.'}
 ];
@@ -818,10 +844,38 @@ function checkA(i){
   const val=+document.getElementById('labA'+i).value,fb=document.getElementById('fbA'+i);
   let ok=false,msg='';
   if(i===1){ok=(val===1);msg=ok?'✔ Exactly once — at the IdP in step 3. Every app after that received tokens, never passwords.':'✘ Step through all 7 steps again and count PASSWORD prompts (token handoffs don’t count).';}
-  if(i===2){ok=(val>=51&&val<=52);msg=ok?'✔ Right: lowercase+digits = pool of 36, so 10 × log₂36 ≈ 51.7 bits.':'✘ Type harbor2026 exactly — all lowercase, no symbols — and read the bits KPI (≈51.7).';}
+  if(i===2){ok=(val>=51&&val<=52);msg=ok?'✔ Right: lowercase+digits = pool of 36, so 10 × log₂36 ≈ 51.7 bits.':'✘ Type autumn2026 exactly — all lowercase, no symbols — and read the bits KPI (≈51.7).';}
   if(i===3){ok=(val===13);msg=ok?'✔ Yes: 12 lowercase ≈ 56.4 bits, 13 ≈ 61.1 bits. Each lowercase letter adds ~4.7 bits — length is the cheapest entropy there is.':'✘ Not yet. Each lowercase character adds ~4.7 bits; find the smallest n with 4.7 × n ≥ 60.';}
   if(i===4){ok=(val===3);msg=ok?'✔ Three ghosts: the POS login, the VPN token, and the invisible Dropbox share — three doors nobody locked.':'✘ Switch to 🐢 Manual mode, click stage “4 · The audit,” and count the ⚠️ AUDIT FINDING rows.';}
   fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
+}
+
+/* Hands-on exercise checks (separate from the Lab A checker above) */
+const HX={
+  '1a':{a:3,ok:'✔ Step 3 — the only step in the whole flow with a password form, and it belongs to the IdP, not to any app. One door to defend, defended well: MFA, lockout, and anomaly detection all live at that single step.',no:'✘ Not that one. Click Next ▸ until the caption says Maya authenticates, then read the “Step N of 7” counter under the diagram.'},
+  '1b':{a:5,ok:'✔ Five: steps 2, 3, 4, 6 and 7. Maya only *sees* the IdP once (step 3) — but every app she opens all day quietly checks in with it. That is why the IdP’s uptime SLA is an appraisal criterion, not fine print: when it is down, every door sticks.',no:'✘ Recount. Walk steps 1→7 and watch the 🛡️ CloudGate box border light up — it participates in more steps than Maya ever notices.'},
+  '1c':{a:1,ok:'✔ One. Disable her at the IdP and every connected app stops accepting her tokens — the SSO kill switch from step 7. Without SSO you would be hunting down three separate accounts (and, as Segment 3 shows, missing one).',no:'✘ Too many. Read step 7’s caption: with SSO, the apps trust the IdP’s tokens, so revocation happens in exactly one place.'},
+  '1d':{a:'redirect',alt:['redirects','redirected','redirection','http redirect','a redirect'],ok:'✔ A redirect. The app’s entire login logic reduces to “go ask the IdP, then come back with a signed token.” That is why an SSO-connected app stores no passwords at all — there is nothing there to steal.',no:'✘ Not quite. Re-read step 2: StaffMail does not check her password, it bounces her browser to CloudGate. One word for that bounce.'},
+  '2a':{a:95,ok:'✔ 95 = 26 lowercase + 26 uppercase + 10 digits + 33 symbols. Every character class you add widens the pool for EVERY position — that is the theory the “must contain a symbol” rule is built on.',no:'✘ Type Tr0ub4dor&3 exactly and read the pool KPI. It sums the classes present: lowercase 26, uppercase 26, digits 10, symbols 33.'},
+  '2b':{a:72.3,tol:1,ok:'✔ About 72.3 bits (11 × log₂95). Strong — but hold that number: you are about to beat it with a password you can actually remember.',no:'✘ Read the entropy KPI with Tr0ub4dor&3 in the box: length × log₂(pool) = 11 × log₂95. Nearest whole bit is fine.'},
+  '2c':{a:117.5,tol:1,ok:'✔ About 117.5 bits (25 × log₂26) — roughly 45 bits MORE than the symbol soup, from nothing but length, with zero punctuation to forget. This is the whole argument for passphrases: length is the cheapest entropy there is, and the only kind humans will actually adopt. (Caveat from the note above: the math assumes randomness — pick uncommon words, not a movie quote.)',no:'✘ Clear the box and type correcthorsebatterystaple — 25 lowercase letters, pool 26. Entropy = 25 × log₂26. Nearest whole bit is fine.'},
+  '3a':{a:6,ok:'✔ Day 6. Six days of a paid employee who cannot ring up a customer, because her account lives at the back of a ticket queue. In ⚡ Automated mode she has POS, email, Wi-Fi, and the HR portal at 8:00 AM on day one — provisioned from her role template before her first coffee.',no:'✘ Switch to 🐢 Manual IT tickets, stage 1 · Hired, and read the green ACTIVE ACCESS column — each line names the day it arrived.'},
+  '3b':{a:7,ok:'✔ Seven minutes. HR marks her terminated; connectors fan that one event out to every app; short token lifetimes kill even the sessions already open. Compare the manual universe, where her email survived 2.5 days and her VPN token survived forever.',no:'✘ Switch to ⚡ Automated IDaaS, click stage 4 · The audit, and read the struck-through line in the right-hand 🔻 REVOKED column — it timestamps the revocation.'},
+  '3c':{a:0,ok:'✔ Zero. Same employee, same four stages, same auditors — and nothing to find, because access died from a database event instead of from someone’s memory. Manual mode leaves three (Lab A makes you count them). That gap, not the software, is what the IDaaS subscription actually buys.',no:'✘ Make sure you are in ⚡ Automated IDaaS (not 🐢 Manual) at stage 4 · The audit, then count the ⚠️ rows in the right-hand column.'}
+};
+function checkHX(k){
+  const el=document.getElementById('hx'+k),e=HX[k],fb=document.getElementById('fbHX'+k);
+  if(!el||!e||!fb)return;
+  const raw=String(el.value).trim();
+  if(raw===''){fb.textContent='✘ Type an answer first, then check it.';fb.className='fb no';return;}
+  let ok;
+  if(typeof e.a==='string'){
+    const got=raw.toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();
+    ok=(got===e.a)||((e.alt||[]).indexOf(got)>=0);
+  }else{
+    ok=(e.tol!=null)?Math.abs(+raw-e.a)<=e.tol:(+raw===e.a);
+  }
+  fb.textContent=ok?e.ok:e.no;fb.className='fb '+(ok?'ok':'no');
 }
 </script>
 <script type="module">

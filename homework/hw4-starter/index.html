@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HW3 Starter · Grounded FAQ Chatbot</title>
+<style>
+  /* Simple, readable styling — you may restyle freely; the assignment grades behavior, not looks. */
+  :root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--bad:#c04f43;--ok:#3e8e5a}
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  main{max-width:760px;margin:0 auto;padding:18px 14px 60px}
+  h1{font-size:22px;margin:10px 0 2px}
+  .status{font-size:13px;color:var(--mut);margin-bottom:12px}
+  .status b.ready{color:var(--ok)}
+  .sys{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;font:inherit;font-size:13.5px;background:#fffdf5;margin-bottom:10px}
+  #chat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;min-height:260px;margin-bottom:10px}
+  .msg{margin:8px 0;padding:9px 13px;border-radius:12px;max-width:85%}
+  .msg.user{background:#edeaf7;margin-left:auto}
+  .msg.bot{background:#e9f4f4}
+  .msg .src{display:block;margin-top:6px;font-size:12px;color:var(--mut)}
+  .row{display:flex;gap:8px}
+  #q{flex:1;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit}
+  button{border:0;background:var(--pri);color:#fff;font-weight:700;border-radius:10px;padding:10px 18px;cursor:pointer;font:inherit}
+  button:disabled{opacity:.5;cursor:default}
+</style>
+</head>
+<body>
+<main>
+  <h1>🌊 Sandpiper Surf Supply — Support Bot (starter)</h1>
+  <div class="status">Embedding model: <b id="status">loading… (~25 MB, first visit only — it caches)</b></div>
+
+  <!-- PART 2 (your work): this box is displayed but IGNORED by the starter code.
+       Your job is to make the bot actually obey it: persona wording in replies,
+       plus at least one boundary rule enforced from here — configuration, not code. -->
+  <textarea class="sys" id="systemPrompt" rows="2">You are the friendly support assistant for Sandpiper Surf Supply. Greet customers warmly, keep answers short, and never discuss anything but the shop.</textarea>
+
+  <div id="chat"></div>
+  <div class="row">
+    <input id="q" placeholder="Ask a customer question… (try: can I return a wetsuit?)" disabled>
+    <button id="send" disabled>Send</button>
+  </div>
+</main>
+
+<script type="module">
+/* ============================================================================
+   HW4 STARTER — the HW3 chatbot with its documents externalized.
+   Deploy this (or better: your own finished HW3 bot with this same change)
+   to an S3 static website per the assignment.
+
+   WHO does the work: a real neural network (all-MiniLM-L6-v2, an *embedding*
+   model) that your browser downloads once from a free public CDN and then
+   runs locally. This is INFERENCE on your own hardware — no cloud bill.
+
+   WHAT it does: converts any piece of text into a 384-number vector — its
+   coordinates in "meaning space." Texts that mean similar things land close
+   together, even with zero words in common. That is the entire trick behind
+   retrieval-augmented answering (Session 5's RAG pipeline).
+
+   HOW answering works, step by step (find each step below):
+     [INDEX]     at page load, embed every document once  → our "vector database"
+     [EMBED]     embed the customer's question
+     [RETRIEVE]  find the stored vector nearest in meaning (cosine similarity)
+     [GROUND]    take that document's text as the evidence
+     [ANSWER]    reply by quoting the evidence, WITH a citation
+
+   WHAT'S MISSING (your assignment): a similarity threshold so weak matches
+   get an honest refusal (Part 4), a working system prompt (Part 2), and a
+   context-window limit on chat history (Part 3). The starter answers with
+   the closest document even when the match is terrible — that flaw is the
+   point; you will fix it.
+   ========================================================================= */
+
+// Import the transformers.js library from a free CDN. Pinned to one version
+// so the assignment behaves the same on every machine.
+import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
+
+/* ----------------------------------------------------------------------------
+   THE DOCUMENTS — your "object storage."
+   PART 1 (your work): delete these six samples and write ~ten documents for
+   YOUR business. Each entry: a human-readable title (the citation the customer
+   sees) and 2–4 sentences of text. In production the files would live in
+   object storage and only their vectors in a vector database; here one array
+   plays both roles — your write-up should call that out.
+----------------------------------------------------------------------------*/
+/* ----------------------------------------------------------------------------
+   THE DOCUMENTS — now ONE MASTER COPY in the cloud (HW4's whole point).
+   WHAT changed from HW3: the array no longer lives in this file. It lives in
+   docs.json — a separate object that sits NEXT TO this page (same folder
+   locally, same bucket on S3) — and is fetched fresh on every page load.
+   WHY: any authorized teammate can now update the documents by replacing one
+   cloud object, and every visitor's bot updates instantly — no code edits,
+   no redeploy, no forked copies of the truth (Session 6's master-copy rule).
+   The relative './docs.json' path is what makes the SAME file work on
+   localhost and on the S3 website endpoint without any changes.
+----------------------------------------------------------------------------*/
+let DOCS = [];
+try {
+  const res = await fetch('./docs.json', { cache: 'no-store' });   // no-store: always read the CURRENT master copy
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  DOCS = await res.json();
+} catch (err) {
+  // A VISIBLE failure state, on purpose: in Part 3 you will delete docs.json
+  // from the bucket and this is exactly what your customers would see.
+  document.getElementById('status').textContent =
+    'could not load docs.json (' + err.message + ') — the master copy is missing or broken';
+  document.getElementById('status').style.color = 'var(--bad)';
+  throw err;   // stop here; there is nothing to answer from
+}
+
+/* ----------------------------------------------------------------------------
+   MODEL SETUP — happens once per page load.
+----------------------------------------------------------------------------*/
+const statusEl = document.getElementById('status');
+const chatEl   = document.getElementById('chat');
+const qEl      = document.getElementById('q');
+const sendEl   = document.getElementById('send');
+
+// Load the embedding model. 'feature-extraction' means "text in → vector out".
+// The first visit downloads ~25 MB; the browser caches it for next time.
+const embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+
+// embed(text) → a plain array of 384 numbers, normalized to length 1.
+// WHY normalize: with unit-length vectors, cosine similarity — "how close in
+// meaning are these two texts" — reduces to a simple dot product.
+async function embed(text) {
+  const out = await embedder(text, { pooling: 'mean', normalize: true });
+  return Array.from(out.data);
+}
+
+// [INDEX] Embed every document once, up front. This array-of-vectors is your
+// vector database. Real ones (pgvector, Pinecone) answer the same question at
+// millions-of-vectors scale: "which stored items are nearest in meaning?"
+statusEl.textContent = 'embedding the documents…';
+for (const doc of DOCS) doc.vector = await embed(doc.title + '. ' + doc.text);
+
+statusEl.textContent = 'ready';
+statusEl.className = 'ready';
+qEl.disabled = false; sendEl.disabled = false; qEl.focus();
+
+/* ----------------------------------------------------------------------------
+   RETRIEVAL — cosine similarity via dot product (vectors are normalized).
+   Scores land between roughly 0 (unrelated) and 1 (same meaning).
+----------------------------------------------------------------------------*/
+function dot(a, b) {
+  let s = 0;
+  for (let i = 0; i < a.length; i++) s += a[i] * b[i];
+  return s;
+}
+
+// [RETRIEVE] Score every document against the question vector; keep the best.
+function retrieve(questionVector) {
+  let best = null;
+  for (const doc of DOCS) {
+    const score = dot(questionVector, doc.vector);
+    if (!best || score > best.score) best = { doc, score };
+  }
+  return best; // { doc, score }
+}
+
+/* ----------------------------------------------------------------------------
+   CHAT — history, rendering, and the answer template.
+----------------------------------------------------------------------------*/
+// Every turn is stored here. PART 3 (your work): this grows forever — add a
+// CONTEXT_LIMIT character budget, trim the OLDEST turns to fit before each
+// answer, and show the user which messages fell outside the window.
+const history = [];
+
+function addMessage(who, text, srcNote) {
+  history.push({ who, text });
+  const div = document.createElement('div');
+  div.className = 'msg ' + who;
+  div.textContent = text;
+  if (srcNote) {
+    const s = document.createElement('span');
+    s.className = 'src';
+    s.textContent = srcNote;
+    div.appendChild(s);
+  }
+  chatEl.appendChild(div);
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+async function answer(question) {
+  // [EMBED] the question into the same meaning-space as the documents.
+  const qv = await embed(question);
+
+  // [RETRIEVE] the nearest document and its similarity score.
+  const { doc, score } = retrieve(qv);
+
+  // PART 4 (your work): there is NO THRESHOLD here. Even a nonsense question
+  // gets the closest document, stated confidently — a hallucination with a
+  // citation. Add: if (score < THRESHOLD) → honest refusal, no citation.
+
+  // [GROUND] + [ANSWER]: reply by quoting the evidence, citing the source.
+  // PART 2 (your work): this template ignores the system prompt box — make
+  // the persona and boundary rules come from that configuration instead.
+  const reply = 'Here is what our "' + doc.title + '" policy says: ' + doc.text;
+  addMessage('bot', reply, 'source: ' + doc.title + ' · similarity ' + score.toFixed(3));
+}
+
+sendEl.addEventListener('click', async () => {
+  const q = qEl.value.trim();
+  if (!q) return;
+  qEl.value = '';
+  addMessage('user', q);
+  sendEl.disabled = true;
+  await answer(q);
+  sendEl.disabled = false;
+  qEl.focus();
+});
+qEl.addEventListener('keydown', e => { if (e.key === 'Enter') sendEl.click(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CEN4086 Homework 4 — deploy your HW3 chatbot to AWS S3, turn its documents into one shared master copy, survive a deletion with versioning, and share privately with presigned URLs.">
+<title>CEN4086 · Homework 4 — One Master Copy</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--amb:#e0a437;--acc:#0f8b8d;--bad:#c04f43;--ok:#3e8e5a}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--amb);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+main{max-width:860px;margin:0 auto;padding:20px 16px 80px}
+header.head{margin:18px 0 6px}
+header.head h1{margin:0 0 6px;font-size:27px}
+header.head p{margin:0;color:var(--mut)}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:10px 6px 0 0;color:var(--ink)}
+h2{font-size:21px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--amb)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:12px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card>:first-child{margin-top:0}.card>:last-child{margin-bottom:0}
+.concept{background:#f2f1fa;border:1px solid #d8d5ee;border-left:6px solid var(--pri);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.concept b:first-child{color:var(--pri)}
+.warn{background:#fbeeec;border:1px solid #e8c5c0;border-left:6px solid var(--bad);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.deliver{background:#e9f4f4;border:1px solid #c5dede;border-left:6px solid var(--acc);border-radius:10px;padding:11px 15px;margin:12px 0 2px;font-size:14.5px}
+.deliver b:first-child{color:var(--acc)}
+ul.tight li,ol.tight li{margin:7px 0}
+code{background:#efede6;border-radius:5px;padding:1px 6px;font-size:.92em}
+pre{background:#1d2433;color:#e8e6f0;border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:13.5px;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.note{font-size:13.5px;color:var(--mut)}
+@media print{.topnav{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="../index.html">⌂ Course Hub</a>
+  <span style="font-weight:700">📝 Homework 4 · One Master Copy</span>
+  <span><a href="../week2-session5.html">Session 5</a> · <a href="../week2-session6.html">Session 6</a> · <a href="../project/aws-monday-checklist.html">Learner Lab Setup</a> · <a href="hw4-starter/index.html">Starter</a></span>
+</nav>
+<main>
+
+<header class="head">
+  <h1>Homework 4 · One Master Copy</h1>
+  <p>Your HW3 chatbot leaves your laptop. Deploy it to real AWS object storage, turn its documents into one shared, versioned master copy, break it on purpose, bring it back, and share a private draft the right way.</p>
+  <div>
+    <span class="chip">Individual</span><span class="chip">Submit your GitHub repo link</span><span class="chip">Runs in your AWS Academy Learner Lab — no credit card, no new accounts</span>
+  </div>
+</header>
+
+<div class="card">
+  <p><b>The scenario, continued.</b> Your business from HW3 just hired a second employee. Two problems appeared overnight: the bot's policy documents are hard-coded into the page (so every policy change means editing code and redeploying), and "the website" currently means "whatever is running on your laptop." This week you fix both the way real teams do: the site moves to cloud object storage, and the documents become <b>one master copy in the cloud</b> that any authorized teammate can update — with version history as the safety net.</p>
+</div>
+
+<h2>What you'll practice (from class)</h2>
+<div class="card">
+  <table>
+    <tr><th>You will…</th><th>Which is…</th></tr>
+    <tr><td>Host a real website from an S3 bucket</td><td>Object storage serving whole objects over HTTP — Session 5, plus broad network access from Session 1</td></tr>
+    <tr><td>Replace hard-coded data with one fetched cloud object</td><td>Session 6's core lesson: one master copy vs. emailed-copy forks</td></tr>
+    <tr><td>Enable versioning, delete the master copy, and restore it</td><td>Replication vs. versioning — the "intern's script" scenario from Session 5, on real infrastructure</td></tr>
+    <tr><td>Write a bucket policy that exposes exactly two objects</td><td>Least-privilege access control — Session 4's authorization, applied to storage</td></tr>
+    <tr><td>Share a private object with an expiring link</td><td>Presigned URLs — link-sharing vs. account-sharing (Session 6), with a token-lifetime twist from the SSO deep dive</td></tr>
+    <tr><td>Price a weekly meeting and your bucket</td><td>Session 6's meeting-cost math and Week 1's measured service</td></tr>
+  </table>
+</div>
+
+<h2>Before you start</h2>
+<div class="card">
+  <ul class="tight">
+    <li>You need your finished <b>HW3 chatbot</b>. If yours isn't working yet, the <a href="hw4-starter/index.html">HW4 starter</a> is a working baseline — but your HW3 features (threshold, system prompt, context limit) are still expected in what you deploy.</li>
+    <li>Start your <b>AWS Academy Learner Lab</b> exactly as in the <a href="../project/aws-monday-checklist.html">project setup guide</a>: Start Lab, wait for the green dot, then open the AWS Console. Confirm the region says <b>N. Virginia (us-east-1)</b> — everything in this homework happens there.</li>
+    <li>Create a new public GitHub repo <code>cen4086-hw4</code> and clone it. Copy your HW3 <code>index.html</code> into it — you'll modify it here.</li>
+  </ul>
+  <div class="warn"><b>Learner Lab facts to plan around:</b> the lab session ends after a few hours (click Start Lab again — your bucket and objects survive between sessions). Bucket names are <b>globally unique</b> across all of AWS, so use the pattern <code>cen4086-hw4-yourinitials-mmdd</code>. S3 for this assignment costs a few cents of your lab credits at most.</li></div>
+</div>
+
+<h2>Part 1 — From laptop to cloud</h2>
+<div class="card">
+  <ol class="tight">
+    <li>In the AWS Console, open <b>S3</b> → <b>Create bucket</b>. Name: <code>cen4086-hw4-yourinitials-mmdd</code>. Region: US East (N. Virginia). <b>Uncheck "Block all public access"</b> and tick the acknowledgment — this bucket is going to be a public website on purpose.</li>
+    <li>Open the bucket → <b>Properties</b> → scroll to <b>Static website hosting</b> → Edit → Enable → Index document: <code>index.html</code> → Save. Note the <b>bucket website endpoint</b> URL it shows you.</li>
+    <li><b>Objects</b> tab → Upload → your <code>index.html</code>.</li>
+    <li>Public buckets still deny everything until a policy says otherwise. Go to <b>Permissions</b> → <b>Bucket policy</b> → Edit, and paste this — replacing <code>YOUR-BUCKET-NAME</code> in both places. Notice what it does <em>not</em> allow: it grants public read on exactly two objects, not on <code>/*</code>:
+<pre>{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "PublicReadExactlyTwoObjects",
+    "Effect": "Allow",
+    "Principal": "*",
+    "Action": "s3:GetObject",
+    "Resource": [
+      "arn:aws:s3:::YOUR-BUCKET-NAME/index.html",
+      "arn:aws:s3:::YOUR-BUCKET-NAME/docs.json"
+    ]
+  }]
+}</pre></li>
+    <li>Open the website endpoint URL in a <b>private/incognito window</b>. Your chatbot is now served by object storage to anyone on the internet. Screenshot it with the URL visible.</li>
+  </ol>
+  <div class="concept"><b>What you just proved:</b> a "website" can be nothing but objects behind HTTP — no server you manage, no OS to patch. Compare that to the Pelican Tours EC2 instance: which side of the responsibility line did all the patching duties just move to?</div>
+</div>
+
+<h2>Part 2 — One master copy</h2>
+<div class="card">
+  <ol class="tight">
+    <li>Right now your documents are trapped inside <code>index.html</code>. Create <code>docs.json</code> — just your <code>DOCS</code> array, as JSON (the <a href="hw4-starter/docs.json">starter's docs.json</a> shows the exact shape).</li>
+    <li>Change your <code>index.html</code> to fetch it instead of hard-coding it (the <a href="hw4-starter/index.html">starter</a> shows the change — about four lines, including a visible error message if the file is missing; you will want that message in Part 3):
+<pre>// before:  const DOCS = [ …hard-coded array… ];
+// after:   fetch the master copy that lives NEXT TO this page in the bucket
+const DOCS = await (await fetch('./docs.json')).json();</pre></li>
+    <li>Upload both files to the bucket (overwriting <code>index.html</code>), reload the site, and confirm the bot still answers.</li>
+    <li>Now the payoff. <b>Without touching index.html</b>: download <code>docs.json</code>, change one policy (shorten the return window, add an 11th document — your choice), and upload it back. Reload the live site and ask about that policy. <b>The deployed bot changed and no code did.</b> Screenshot the same question before and after.</li>
+  </ol>
+  <div class="concept"><b>This is Session 6's whole argument in one exercise.</b> If each teammate kept their own copy of the policies, every edit would fork the truth — someone answers customers from the stale copy. One master copy in shared storage means everyone (including the bot) reads the same current version. What email attachments were to documents, hard-coded arrays are to application data.</div>
+</div>
+
+<h2>Part 3 — Break it, then time-travel</h2>
+<div class="card">
+  <ol class="tight">
+    <li>Bucket → <b>Properties</b> → <b>Bucket Versioning</b> → Enable. From this moment, S3 keeps every version of every object instead of overwriting.</li>
+    <li>Upload one more revision of <code>docs.json</code> (another small policy change) so history has something in it.</li>
+    <li>Now the disaster, on purpose: <b>Objects</b> → select <code>docs.json</code> → <b>Delete</b> (type the confirmation). Reload your live site: the bot should now show its missing-documents error. Screenshot the broken bot.</li>
+    <li>Time-travel: in the Objects list, flip on <b>Show versions</b>. You'll see your docs.json versions still there, topped by a <b>delete marker</b>. Select the delete marker → Delete it. Reload the site — the bot is back, answering from the latest surviving version. Screenshot the version list and the healed bot.</li>
+    <li>In your write-up, answer precisely: S3 keeps multiple replicas of every object across availability zones — why didn't <em>that</em> save you here, and what did instead? (You answered this on paper on the midterm; now you've run it.)</li>
+  </ol>
+</div>
+
+<h2>Part 4 — Share a private draft, properly</h2>
+<div class="card">
+  <ol class="tight">
+    <li>Upload <code>private-draft.txt</code> — a one-paragraph "unannounced sale" policy draft. Try to open it in your incognito window via the website endpoint: <b>Access Denied</b>. Why? Reread your Part 1 bucket policy — the draft isn't one of the two allowed objects. That denial is least privilege working, not a bug. Screenshot it.</li>
+    <li>Now share it without making it public and without creating an account for anyone: select the object → <b>Actions (or Object actions) → Share with a presigned URL</b> → set an expiry (e.g., 60 minutes) → create, and open the long URL in incognito: it works. Screenshot it.</li>
+    <li>Write-up, three short answers: (a) Using Session 6's tool-selection lens, when is link-sharing the right model and when do you need account-based sharing with real identity? (b) What are the credentials hiding inside that long presigned URL, and what does its expiry remind you of from the token deep-dive? (c) Learner Lab twist: your lab session's credentials are themselves temporary — what happens to your presigned link after the lab session ends, even if you set a longer expiry, and why is that the same lesson?</li>
+  </ol>
+</div>
+
+<h2>Part 5 — The collaboration memo (no console)</h2>
+<div class="card">
+  <p>Your two-person business is about to become four people and someone said the words "let's have a weekly all-hands." Write <code>memo.md</code>:</p>
+  <ol class="tight">
+    <li><b>Price the meeting</b> with Session 6's formula: 4 attendees × a $40/hour loaded rate × 45 minutes, weekly — what does that meeting cost per year? Propose the async alternative for at least half of its agenda (shared doc + comments on your one master copy) and state what the remaining synchronous half is genuinely <em>for</em>.</li>
+    <li><b>Pick the stack:</b> using the six selection criteria from Session 6 (cost and free-tier edges, identity/SSO fit, data export, integration, and the rest), choose chat + docs + meetings tooling for the four-person team, one sentence of justification each.</li>
+    <li><b>Price the bucket</b> honestly: your site is roughly 1 MB and might transfer 5 GB out in a busy month. Using the course calculator's model prices (S3 $0.023/GB-month; transfer free for the first 100 GB), what does hosting cost per month? Compare it to three seats of a $6/user/month collaboration SaaS, and answer like a consultant: what is that SaaS seat price actually buying, given that the storage itself is nearly free?</li>
+  </ol>
+</div>
+
+<h2>What you hand in</h2>
+<div class="card">
+  <div class="deliver"><b>Submit one thing on Blackboard: the link to your GitHub repository.</b> It must contain:
+    <ul class="tight">
+      <li><code>index.html</code> — the deployed version (fetching <code>docs.json</code>, HW3 features intact)</li>
+      <li><code>docs.json</code> — your master copy, latest version</li>
+      <li><code>bucket-policy.json</code> — the exact policy you used</li>
+      <li><code>memo.md</code> — Part 5</li>
+      <li><code>writeup.md</code> — the written answers from Parts 3 and 4, plus your bucket's website endpoint URL on the first line</li>
+      <li><code>screenshots/</code> — live site with URL, before/after policy answer, broken bot, version list with delete marker, healed bot, the Access Denied, the working presigned link</li>
+    </ul>
+  </div>
+  <p class="note">Your Learner Lab may be reset after grading ends — the repo is the permanent record, which is why the screenshots matter. Leave the bucket up until grades post.</p>
+</div>
+
+</main>
+</body>
+</html>

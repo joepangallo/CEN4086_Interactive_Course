@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CEN4086 Homework 1: trace SSO, inspect identity tokens, enable MFA, and design an offboarding plan.">
+<title>CEN4086 · Homework 1 — Lock the Front Door</title>
+<style>
+:root{
+  --bg:#f4f1ea;--paper:#fffdf9;--ink:#172033;--muted:#5f6878;--line:#ddd8ce;
+  --navy:#25236b;--violet:#6256c7;--teal:#087f7b;--gold:#d99b22;--red:#b9453b;
+  --green:#2d8050;--blue-bg:#eeeffb;--teal-bg:#e7f5f2;--gold-bg:#fff5dc;
+  --red-bg:#fbedeb;--green-bg:#eaf5ee;--shadow:0 12px 35px rgba(25,31,51,.08)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:var(--navy)}
+button,input{font:inherit}
+.skip-link{position:fixed;left:12px;top:-60px;z-index:100;background:var(--navy);color:#fff;padding:10px 14px;border-radius:8px}
+.skip-link:focus{top:10px}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px max(16px,calc((100vw - 1040px)/2));background:rgba(255,253,249,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);font-size:14px}
+.topnav a{text-decoration:none;font-weight:750}
+.topnav-title{font-weight:850;text-align:center}
+.nav-links{display:flex;gap:12px}
+main{max-width:1040px;margin:0 auto;padding:22px 18px 88px}
+.hero{background:linear-gradient(135deg,#25236b 0%,#4e48aa 58%,#087f7b 130%);color:#fff;border-radius:22px;padding:38px 34px;margin:10px 0 24px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.hero:after{content:"";position:absolute;right:-70px;top:-85px;width:290px;height:290px;border-radius:50%;background:rgba(255,255,255,.08)}
+.eyebrow{margin:0 0 7px;color:#f1cd74;font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.12em}
+.hero h1{max-width:780px;margin:0 0 9px;font-size:clamp(30px,5vw,48px);line-height:1.08;letter-spacing:-.03em}
+.hero .sub{max-width:850px;margin:0 0 18px;color:#eeeffb;font-size:17px}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{display:inline-block;background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:750;color:#fff}
+.section-heading{display:flex;align-items:center;gap:12px;margin:40px 0 13px}
+.section-heading .number{display:grid;place-items:center;flex:0 0 auto;width:38px;height:38px;border-radius:12px;background:var(--navy);color:#fff;font-weight:900}
+h2{font-size:25px;line-height:1.2;margin:0;letter-spacing:-.015em}
+h3{font-size:18px;line-height:1.3;margin:20px 0 8px}
+p{margin:9px 0}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:17px;padding:23px 25px;margin:15px 0;box-shadow:0 5px 18px rgba(29,36,51,.05)}
+.card>:first-child{margin-top:0}.card>:last-child{margin-bottom:0}
+.part{border-top:5px solid var(--violet)}
+.overview{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+.overview .card{margin:0}
+.at-a-glance{display:grid;gap:8px;margin-top:12px}
+.glance-row{display:grid;grid-template-columns:95px 1fr;gap:9px;padding-bottom:8px;border-bottom:1px solid var(--line);font-size:14px}
+.glance-row:last-child{border:0;padding:0}.glance-row b{color:var(--navy)}
+.callout{border-radius:11px;padding:13px 16px;margin:14px 0;font-size:14.5px}
+.callout strong:first-child{color:inherit}
+.tip{background:var(--teal-bg);border-left:5px solid var(--teal);color:#174f4d}
+.warn{background:var(--red-bg);border-left:5px solid var(--red);color:#642c27}
+.note{background:var(--gold-bg);border-left:5px solid var(--gold);color:#5f491e}
+.deliver{background:var(--blue-bg);border-left:5px solid var(--violet);color:#35316f}
+ul.tight li,ol.tight li{margin:8px 0}
+code{background:#ece9e1;border-radius:5px;padding:1px 5px;font-size:.92em}
+pre{background:#172033;color:#eef0f8;border-radius:12px;padding:16px 18px;overflow-x:auto;font-size:13.5px;line-height:1.55}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:12px 0;display:block;overflow-x:auto}
+th{background:#efede7;text-align:left;color:#343d4d}
+th,td{border:1px solid var(--line);padding:9px 11px;vertical-align:top}
+.flow-lab{border:1px solid #d1d0e7;border-radius:16px;background:var(--blue-bg);padding:18px;margin:18px 0}
+.flow-lab-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.flow-lab h3{margin:0 0 4px;color:var(--navy)}
+.flow-lab-head p{margin:0;color:var(--muted);font-size:14px}
+.step-count{white-space:nowrap;border-radius:999px;background:#fff;border:1px solid #d0d1e5;padding:4px 10px;color:var(--navy);font-size:12px;font-weight:850}
+.actors{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:15px 0 10px}
+.actor{border:2px solid transparent;border-radius:11px;background:#fff;padding:10px;text-align:center;color:var(--muted);font-size:13px;transition:.2s}
+.actor b{display:block;color:var(--ink);font-size:15px}.actor.active{border-color:var(--violet);box-shadow:0 5px 14px rgba(98,86,199,.13);transform:translateY(-2px)}
+.address-bar{display:flex;gap:8px;align-items:center;background:#fff;border:1px solid #d0d1e5;border-radius:10px;padding:8px 11px;margin:10px 0;font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;overflow-wrap:anywhere}
+.lock{color:var(--green);font-family:inherit;font-weight:900}.domain{color:var(--navy);font-weight:850}.path{color:var(--muted)}
+.step-panel{min-height:150px;border-radius:12px;background:#fff;padding:15px 17px;border-left:5px solid var(--violet)}
+.step-panel h4{margin:0 0 5px;color:var(--navy);font-size:18px}.step-panel p{margin:5px 0}.step-label{font-size:11px;color:var(--violet);font-weight:850;text-transform:uppercase;letter-spacing:.08em}
+.flow-controls{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:12px}
+.dots{display:flex;gap:5px}.dot{width:9px;height:9px;border:0;border-radius:50%;padding:0;background:#c8c7d6}.dot.active{background:var(--violet);transform:scale(1.25)}
+.btn{border:0;border-radius:9px;padding:8px 13px;background:var(--navy);color:#fff;font-weight:800;cursor:pointer}
+.btn:hover{filter:brightness(1.12)}.btn:disabled{opacity:.38;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--navy)}
+.btn:focus-visible,a:focus-visible,input:focus-visible,.dot:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0;color:var(--muted);font-size:12px}.legend b{color:var(--ink)}
+.template{border:1px dashed #b8b4aa;border-radius:12px;background:#faf8f3;padding:15px 17px;margin:12px 0}
+.template h3{margin:0 0 7px;color:var(--navy)}
+.template ol{margin-bottom:0}
+.story{background:#faf8f3;border:1px dashed #cfc9bc;border-radius:11px;padding:14px 17px;margin:14px 0}
+.rubric{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:13px 0}
+.rubric div{border:1px solid var(--line);border-radius:10px;background:#fff;padding:11px;font-size:13px}.rubric b{display:block;color:var(--navy);margin-bottom:3px}
+.check{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px 13px;margin:8px 0;background:#fbfaf7}
+.check input{margin-top:4px;width:18px;height:18px;flex:none;accent-color:var(--violet);cursor:pointer}.check label{cursor:pointer}
+.progress{position:sticky;bottom:0;z-index:40;background:rgba(255,253,249,.97);border-top:1px solid var(--line);padding:9px max(16px,calc((100vw - 1040px)/2));font-size:13px;display:flex;gap:12px;align-items:center;justify-content:space-between;backdrop-filter:blur(10px)}
+.bar{flex:1;height:9px;background:#e5e1d8;border-radius:99px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--green);border-radius:99px;transition:width .25s}
+.footer-note{color:var(--muted);font-size:13px;text-align:center;margin-top:22px}
+@media(max-width:760px){.topnav-title{display:none}.overview{grid-template-columns:1fr}.actors,.rubric{grid-template-columns:1fr}.hero{padding:29px 23px}.nav-links{gap:8px}.flow-lab-head{display:block}.step-count{display:inline-block;margin-top:8px}.progress>span:first-child{display:none}.card{padding:20px}.glance-row{grid-template-columns:85px 1fr}}
+@media(max-width:480px){main{padding-left:10px;padding-right:10px}.topnav{padding-left:10px;padding-right:10px}.nav-links a:first-child{display:none}.hero{border-radius:16px}.card{border-radius:14px;padding:18px 16px}.flow-lab{padding:14px}.progress .btn{font-size:12px;padding:7px 9px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
+@media print{.topnav,.flow-controls,.progress,.skip-link{display:none}body{background:#fff}.card,.hero{box-shadow:none}main{max-width:none}.hero{background:#fff;color:#000;border:2px solid #000}.hero .sub,.eyebrow{color:#000}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to assignment</a>
+<nav class="topnav" aria-label="Course navigation">
+  <a href="../index.html">← Course Hub</a>
+  <span class="topnav-title">Homework 1 · Lock the Front Door</span>
+  <span class="nav-links"><a href="../week2-session4.html">Session 4</a><a href="../sso-token-deep-dive.html">Token Lab</a><a href="../project/index.html">Project Hub</a></span>
+</nav>
+
+<main id="main">
+<header class="hero">
+  <p class="eyebrow">CEN4086 · Individual assignment</p>
+  <h1>Lock the Front Door</h1>
+  <p class="sub">Your app is on the internet. Now answer the question every real operator asks the morning after launch: <strong>who, exactly, can walk in?</strong> Trace a real SSO login, inspect the token that carries trust, protect an account with MFA, and plan what happens when access must end.</p>
+  <div class="chips" aria-label="Assignment facts">
+    <span class="chip">All three project tracks</span><span class="chip">Due at the start of Class 5</span><span class="chip">Submit your GitHub repo link</span><span class="chip">No paid tools required</span>
+  </div>
+</header>
+
+<section class="overview" aria-label="Assignment overview">
+  <div class="card">
+    <h2>Why this homework exists</h2>
+    <p>Milestone 1 deployments share one weakness: they have no identity story. Before Milestone 2 asks you to evaluate identity solutions professionally, this homework gives you direct experience with four building blocks: <strong>federation</strong>, <strong>tokens</strong>, <strong>MFA</strong>, and <strong>identity lifecycle</strong>.</p>
+    <p>You are not implementing authentication yet. Your job is to observe, explain, protect, and design.</p>
+  </div>
+  <aside class="card">
+    <h2>At a glance</h2>
+    <div class="at-a-glance">
+      <div class="glance-row"><b>Submit</b><span>One GitHub repository link</span></div>
+      <div class="glance-row"><b>Write</b><span><code>hw1/answers.docx</code></span></div>
+      <div class="glance-row"><b>Capture</b><span><code>screenshots/hw1-mfa-enabled.png</code></span></div>
+      <div class="glance-row"><b>Journal</b><span>One dated <code>JOURNAL.docx</code> entry</span></div>
+    </div>
+  </aside>
+</section>
+
+<div class="section-heading"><span class="number">1</span><h2>Trace a real SSO login</h2></div>
+<section class="card part" aria-labelledby="part1-goal">
+  <h3 id="part1-goal">Goal: turn “Sign in with…” into a sequence you can explain</h3>
+  <p>Choose a site you genuinely use that offers <strong>Sign in with Google, GitHub, Apple, or Microsoft</strong>. Your task is to observe one complete login and identify who controls each step.</p>
+
+  <div class="callout warn"><strong>Protect secrets while you observe.</strong> Record only domain names such as <code>github.com</code> or <code>canva.com</code>. Do not copy full URLs, query strings, authorization codes, cookies, tokens, passwords, or screenshots of the sign-in form into your repository. A URL can contain a short-lived secret even when it looks harmless.</div>
+  <div class="callout note"><strong>If login seems to happen instantly:</strong> you probably already have a session with the identity provider. That is still a valid observation. Note that the provider reused an existing session. If you want to see the password/MFA step, use a private window only if you are comfortable signing in there; do not log out of an important account just for this assignment.</div>
+
+  <div class="flow-lab" aria-labelledby="flow-title">
+    <div class="flow-lab-head">
+      <div><h3 id="flow-title">Reference walkthrough: a typical federated login</h3><p>Use the controls to rehearse the flow before observing your own. The domains are fictional; the roles are real.</p></div>
+      <span class="step-count" id="step-count" aria-live="polite">Step 1 of 6</span>
+    </div>
+    <div class="actors" aria-label="Actors in the current step">
+      <div class="actor active" data-actor="browser"><b>Your browser</b>carries redirects</div>
+      <div class="actor" data-actor="app"><b>Service provider</b>the app you want</div>
+      <div class="actor" data-actor="idp"><b>Identity provider</b>checks identity</div>
+    </div>
+    <div class="address-bar" aria-label="Example browser address bar"><span class="lock">●</span><span><span class="domain" id="flow-domain">app.example</span><span class="path" id="flow-path">/login</span></span></div>
+    <div class="step-panel" id="step-panel" aria-live="polite">
+      <span class="step-label" id="flow-label">Browser → service provider</span>
+      <h4 id="flow-heading">You click “Sign in with GitHub”</h4>
+      <p id="flow-copy">The app does not ask for your GitHub password. It starts a login request and prepares to send your browser to the provider it trusts.</p>
+      <p><strong>Evidence to notice:</strong> <span id="flow-evidence">The app’s domain is still in the address bar.</span></p>
+    </div>
+    <div class="flow-controls">
+      <button class="btn ghost" id="flow-prev" type="button" disabled>← Previous</button>
+      <div class="dots" id="flow-dots" aria-label="Choose walkthrough step"></div>
+      <button class="btn" id="flow-next" type="button">Next step →</button>
+    </div>
+  </div>
+
+  <div class="legend" aria-label="Role definitions"><span><b>Identity provider (IdP):</b> authenticates the person</span><span><b>Service provider / relying party:</b> accepts the result</span><span><b>Browser:</b> carries messages between them</span></div>
+
+  <h3>Observe your own login</h3>
+  <ol class="tight">
+    <li><strong>Before clicking:</strong> write down the service provider’s domain and the exact button label.</li>
+    <li><strong>Click once and watch the address bar.</strong> Record only each organization’s domain and what the page asks you to do. If consent appears, note what information the app requests.</li>
+    <li><strong>After the provider approves:</strong> watch for the browser returning to the original app. Note whether you land on a callback page briefly before the signed-in page appears.</li>
+    <li><strong>Reconstruct the invisible steps.</strong> You may not see the token exchange or signature verification in the address bar. Mark these as <em>inferred</em> and explain what observable event supports the inference.</li>
+  </ol>
+
+  <table aria-label="SSO evidence capture worksheet">
+    <thead><tr><th>Moment</th><th>Actor</th><th>Safe evidence to record</th><th>What it means</th></tr></thead>
+    <tbody>
+      <tr><td>Before redirect</td><td>Service provider</td><td>Domain + button label</td><td>The app chooses a provider it already trusts.</td></tr>
+      <tr><td>Provider page</td><td>Identity provider</td><td>Domain + password/MFA/consent prompt</td><td>The provider authenticates you or reuses its session.</td></tr>
+      <tr><td>Return to app</td><td>Browser</td><td>Original domain reappears</td><td>The provider sent the browser back with a login result.</td></tr>
+      <tr><td>Signed-in state</td><td>Service provider</td><td>Profile/avatar or account page</td><td>The app accepted the result and created its own session.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="template">
+    <h3>Use this structure in <code>hw1/answers.docx</code></h3>
+    <ol class="tight">
+      <li><strong>[Browser → service provider]</strong> I clicked … at <code>domain.example</code>.</li>
+      <li><strong>[Service provider → browser]</strong> The app redirected me to …</li>
+      <li><strong>[Identity provider]</strong> The provider authenticated me by … / reused my existing session.</li>
+      <li><strong>[Identity provider → browser]</strong> The provider returned me to …</li>
+      <li><strong>[Service provider, inferred]</strong> The app validated the login result because …</li>
+      <li><strong>[Service provider]</strong> The app created a session; I observed …</li>
+    </ol>
+  </div>
+
+  <h3>Explain the trust, not just the redirects</h3>
+  <p>After the numbered trace, label the <strong>identity provider</strong>, <strong>service provider</strong>, and <strong>pre-existing trust relationship</strong>. Then explain why the app accepts the provider’s signed result and what the app would need to build, store, recover, and protect if it managed passwords itself.</p>
+  <div class="callout tip"><strong>Precision bonus:</strong> “Sign in with…” commonly uses OpenID Connect on top of OAuth 2.0, but the address bar alone may not prove the exact protocol. Describe what you observed; label invisible steps as inferred instead of guessing.</div>
+  <div class="rubric" aria-label="Part 1 success criteria">
+    <div><b>Complete</b>Six-ish ordered steps cover redirect out, authentication, return, verification, and local session.</div>
+    <div><b>Evidence-based</b>Real domains support the trace, but no full URLs or secrets are submitted.</div>
+    <div><b>Role-aware</b>Every step names the actor, and all three identity roles are labeled correctly.</div>
+  </div>
+  <div class="callout deliver"><strong>Hand in:</strong> the numbered login trace, three role labels, evidence-versus-inference distinction, and your trust explanation in <code>hw1/answers.docx</code>.</div>
+</section>
+
+<div class="section-heading"><span class="number">2</span><h2>Look inside the token</h2></div>
+<section class="card part">
+  <p>In Part 1, “login result returned” was one step. Now zoom in. Complete the <a href="../sso-token-deep-dive.html">Inside the SSO Token interactive</a>—journey, anatomy, tamper lab, lifetimes, and kill switch—then answer:</p>
+  <ol class="tight">
+    <li><strong>The three roles.</strong> For your Part 1 login, who mints the identity token, who carries the front-channel response, and who verifies the token? Use one sentence each.</li>
+    <li><strong>The tamper question.</strong> You changed a claim and verification failed even though you did not edit the signature. Explain why in plain English.</li>
+    <li><strong>The lifetime trade-off.</strong> What specifically gets worse with a 30-day access token? What specifically gets worse with a 5-minute token?</li>
+  </ol>
+  <div class="story"><strong>Design task · Pelican Tours.</strong> Marissa is planning an admin panel for nine guides. Guides log in from phones on boats with spotty signal. Saturday at 2 PM, a guide’s phone is stolen from a dock—unlocked, logged in, session live. Write a short token policy: access-token lifetime, silent-renewal rules, refresh-token handling, and the exact kill-switch sequence. State what the office does, which system performs each action, and the longest realistic time the thief retains access. Justify every number using the boat-and-bad-signal reality.</div>
+  <div class="callout deliver"><strong>Hand in:</strong> the three answers and Pelican Tours token policy in <code>hw1/answers.docx</code>.</div>
+</section>
+
+<div class="section-heading"><span class="number">3</span><h2>Turn on real MFA</h2></div>
+<section class="card part">
+  <p>Your GitHub account guards your project repository, journal, and course deliverables. Protect it like it matters.</p>
+  <ol class="tight">
+    <li>In GitHub, open <strong>Settings → Password and authentication</strong>. Use <strong>GitHub Mobile</strong> or <strong>SMS/Text message</strong> — either is fine for this course.</li>
+    <li>If an <strong>Enable two-factor authentication</strong> button appears, click it and choose <strong>SMS/Text message</strong> as the setup method (the wizard suggests an authenticator app first — choose SMS instead). Enter your phone number and confirm the code GitHub texts you.</li>
+    <li>For <strong>GitHub Mobile</strong> (push approval on your phone instead of texted codes): install the GitHub app and sign in. It appears under <strong>Two-factor methods</strong> automatically once 2FA is on, and you can set it as your <strong>Preferred 2FA method</strong>.</li>
+    <li>If the page already says <strong>Enabled</strong> — GitHub requires 2FA for many accounts — set your <strong>Preferred 2FA method</strong> to GitHub Mobile or SMS/Text message and confirm that method works.</li>
+    <li>Store recovery codes (under <strong>Recovery options</strong>) privately in a password manager or printed in a secure place.</li>
+    <li>Sign out, sign back in, and verify the second factor works before assuming setup is complete.</li>
+  </ol>
+  <div class="callout warn"><strong>Recovery codes are credentials.</strong> Never screenshot, paste, or commit them—even to a private repository. Your submitted screenshot must show only that 2FA is enabled, with no codes, QR codes, email address, or other unnecessary personal data visible.</div>
+  <h3>Explain what you protected</h3>
+  <ol class="tight">
+    <li><strong>Factor categories:</strong> classify a password, the login code texted to your phone, and a fingerprint as knowledge, possession, or inherence.</li>
+    <li><strong>The AI attacker:</strong> rank SMS code, TOTP authenticator app, voice verification, and passkey/hardware key from weakest to strongest against an AI-equipped attacker. Justify the strongest and weakest.</li>
+  </ol>
+  <div class="callout deliver"><strong>Hand in:</strong> <code>screenshots/hw1-mfa-enabled.png</code> with no secrets or unnecessary personal data, plus the two short explanations in <code>hw1/answers.docx</code>.</div>
+</section>
+
+<div class="section-heading"><span class="number">4</span><h2>Plan for the guide who quits</h2></div>
+<section class="card part">
+  <div class="story"><strong>Friday, 5 PM, peak season.</strong> One of Marissa’s nine guides quits on bad terms, effective immediately. The ex-guide’s phone still has a login to the future admin panel, the shared photo-archive password taped to the office wall, and membership in the “Guides” group chat where tomorrow’s customer manifests are posted.</div>
+  <p>Compare two identity worlds:</p>
+  <ul class="tight">
+    <li><strong>World A · accounts live in each app.</strong> Every tool has a separate guide account—or worse, a shared password.</li>
+    <li><strong>World B · one central identity.</strong> Every tool trusts one identity provider and receives centrally managed users/groups.</li>
+  </ul>
+  <p>Create a table in your Word document with one row per access type. For <strong>each world</strong>, state what must be done, who does it, which system they use, and the consequence if that row is forgotten.</p>
+  <table aria-label="Leaver planning starter table">
+    <thead><tr><th>Access held</th><th>World A: revoke how?</th><th>World B: revoke how?</th><th>If forgotten</th></tr></thead>
+    <tbody>
+      <tr><td>Admin panel login and live sessions</td><td><em>You complete…</em></td><td><em>You complete…</em></td><td><em>Consequence…</em></td></tr>
+      <tr><td>Photo archive / shared secret</td><td><em>You complete…</em></td><td><em>You complete…</em></td><td><em>Consequence…</em></td></tr>
+      <tr><td>Group chat / manifests</td><td><em>You complete…</em></td><td><em>You complete…</em></td><td><em>Consequence…</em></td></tr>
+    </tbody>
+  </table>
+  <p>Add any access a real guide may have accumulated—email, cloud folders, scheduling, devices, API keys, physical keys, or vendor accounts. Finish with one recommendation: which world should Marissa use at 9 guides, and does the answer change at 900 employees? Address cost and operational effort as well as security.</p>
+  <div class="callout deliver"><strong>Hand in:</strong> the two-world leaver table and 9-versus-900 recommendation in <code>hw1/answers.docx</code>.</div>
+</section>
+
+<div class="section-heading"><span class="number">✓</span><h2>Package and submit</h2></div>
+<section class="card" style="border-top:5px solid var(--teal)">
+  <p>Keep everything in the same project repository used for Milestone 1:</p>
+<pre>your-project-repo/
+├── JOURNAL.docx          ← add a dated Homework 1 entry
+├── screenshots/
+│   └── hw1-mfa-enabled.png
+└── hw1/
+    └── answers.docx      ← all four written parts</pre>
+  <p>Open <code>answers.docx</code> and <code>JOURNAL.docx</code> locally to confirm both are readable and complete. Then commit, push, confirm both files appear in the repository, and submit the repository link.</p>
+  <h3>Submission checklist</h3>
+  <div class="check"><input type="checkbox" id="c1"><label for="c1">SSO trace is ordered, actor-labeled, evidence-based, and contains no full callback URLs or secrets.</label></div>
+  <div class="check"><input type="checkbox" id="c2"><label for="c2">Identity provider, service provider, and pre-existing trust relationship are labeled and explained.</label></div>
+  <div class="check"><input type="checkbox" id="c3"><label for="c3">Token roles, tamper behavior, lifetime trade-off, and Pelican Tours policy are complete.</label></div>
+  <div class="check"><input type="checkbox" id="c4"><label for="c4">GitHub 2FA works; the screenshot shows enabled status and exposes no recovery codes, QR codes, or unnecessary personal data.</label></div>
+  <div class="check"><input type="checkbox" id="c5"><label for="c5">Factor categories and AI-attacker ranking are explained.</label></div>
+  <div class="check"><input type="checkbox" id="c6"><label for="c6">Leaver table covers both worlds, live sessions, every known access, consequences, and the 9-versus-900 recommendation.</label></div>
+  <div class="check"><input type="checkbox" id="c7"><label for="c7"><code>answers.docx</code> and <code>JOURNAL.docx</code> open locally, all files appear in GitHub, and the repository link is submitted.</label></div>
+</section>
+<p class="footer-note">Your checklist progress is saved only in this browser on this device.</p>
+</main>
+
+<div class="progress" aria-label="Submission progress">
+  <span>Checklist progress</span><div class="bar" aria-hidden="true"><i id="bar"></i></div><span id="pct" aria-live="polite">0 of 7</span><button class="btn ghost" id="reset" type="button">Reset</button>
+</div>
+
+<script>
+(function(){
+  var flow=[
+    {actor:'browser',domain:'app.example',path:'/login',label:'Browser → service provider',heading:'You click “Sign in with GitHub”',copy:'The app does not ask for your GitHub password. It starts a login request and prepares to send your browser to the provider it trusts.',evidence:'The app’s domain is still in the address bar.'},
+    {actor:'app',domain:'github.com',path:'/login/oauth/authorize/…',label:'Service provider → identity provider',heading:'The app redirects your browser',copy:'The service provider creates an authorization request. Your browser carries that request to the identity provider; the two servers do not need to share your password.',evidence:'The organization in the address bar changes from the app to the provider.'},
+    {actor:'idp',domain:'github.com',path:'/login',label:'Identity provider',heading:'The provider authenticates you',copy:'The provider checks a password, passkey, or MFA—or reuses an existing provider session. It may also ask whether you consent to share basic identity information.',evidence:'The sign-in or consent screen belongs to the provider, not the app.'},
+    {actor:'browser',domain:'app.example',path:'/auth/callback?…',label:'Identity provider → browser → service provider',heading:'Your browser returns to the app',copy:'The provider sends the browser to the app’s pre-registered callback address with a short-lived result. The exact query string is sensitive and should never be submitted.',evidence:'The original app domain returns, sometimes on a callback path too briefly to read.'},
+    {actor:'app',domain:'app.example',path:'/auth/callback',label:'Service provider · usually invisible',heading:'The app validates the result',copy:'The app confirms the response belongs to this login, checks issuer and audience, and validates signatures. Depending on the flow, its server may exchange a one-time code for tokens.',evidence:'This is inferred from the successful login; it normally happens on the server.'},
+    {actor:'app',domain:'app.example',path:'/dashboard',label:'Service provider',heading:'The app starts its own session',copy:'After trusting the identity result, the app maps you to a local user and creates its own session. SSO got you through the front door; the app still decides what you can do inside.',evidence:'You see a signed-in page, profile image, account name, or other authenticated state.'}
+  ];
+  var index=0;
+  var dots=document.getElementById('flow-dots');
+  flow.forEach(function(_,i){
+    var dot=document.createElement('button');dot.type='button';dot.className='dot';dot.setAttribute('aria-label','Show step '+(i+1));
+    dot.addEventListener('click',function(){index=i;paintFlow();});dots.appendChild(dot);
+  });
+  function paintFlow(){
+    var s=flow[index];
+    document.getElementById('step-count').textContent='Step '+(index+1)+' of '+flow.length;
+    document.getElementById('flow-domain').textContent=s.domain;document.getElementById('flow-path').textContent=s.path;
+    document.getElementById('flow-label').textContent=s.label;document.getElementById('flow-heading').textContent=s.heading;
+    document.getElementById('flow-copy').textContent=s.copy;document.getElementById('flow-evidence').textContent=s.evidence;
+    [].slice.call(document.querySelectorAll('.actor')).forEach(function(a){a.classList.toggle('active',a.getAttribute('data-actor')===s.actor);});
+    [].slice.call(dots.children).forEach(function(d,i){d.classList.toggle('active',i===index);d.setAttribute('aria-current',i===index?'step':'false');});
+    document.getElementById('flow-prev').disabled=index===0;document.getElementById('flow-next').disabled=index===flow.length-1;
+  }
+  document.getElementById('flow-prev').addEventListener('click',function(){if(index>0){index--;paintFlow();}});
+  document.getElementById('flow-next').addEventListener('click',function(){if(index<flow.length-1){index++;paintFlow();}});
+  paintFlow();
+
+  var KEY='cen4086:hw1-v4';
+  var boxes=[].slice.call(document.querySelectorAll('.check input'));
+  var saved={};
+  try{saved=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){}
+  boxes.forEach(function(box){
+    box.checked=Boolean(saved[box.id]);
+    box.addEventListener('change',function(){saved[box.id]=box.checked;try{localStorage.setItem(KEY,JSON.stringify(saved));}catch(e){}paintProgress();});
+  });
+  function paintProgress(){var n=boxes.filter(function(box){return box.checked;}).length;document.getElementById('bar').style.width=(n/boxes.length*100)+'%';document.getElementById('pct').textContent=n+' of '+boxes.length;}
+  document.getElementById('reset').addEventListener('click',function(){if(!window.confirm('Clear the checklist saved for this page?'))return;saved={};try{localStorage.removeItem(KEY);}catch(e){}boxes.forEach(function(box){box.checked=false;});paintProgress();});
+  paintProgress();
+})();
+</script>
+</body>
+</html>

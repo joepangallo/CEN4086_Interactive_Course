@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CEN4086 Homework 3 — build a grounded FAQ chatbot in the browser: embeddings, retrieval, system prompt, context window, hallucination testing, and a cost memo.">
+<title>CEN4086 · Homework 3 — The Chatbot That Cites Its Sources</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--amb:#e0a437;--acc:#0f8b8d;--bad:#c04f43;--ok:#3e8e5a}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--amb);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+main{max-width:860px;margin:0 auto;padding:20px 16px 80px}
+header.head{margin:18px 0 6px}
+header.head h1{margin:0 0 6px;font-size:27px}
+header.head p{margin:0;color:var(--mut)}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:10px 6px 0 0;color:var(--ink)}
+h2{font-size:21px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--amb)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:12px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card>:first-child{margin-top:0}.card>:last-child{margin-bottom:0}
+.concept{background:#f2f1fa;border:1px solid #d8d5ee;border-left:6px solid var(--pri);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.concept b:first-child{color:var(--pri)}
+.warn{background:#fbeeec;border:1px solid #e8c5c0;border-left:6px solid var(--bad);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.deliver{background:#e9f4f4;border:1px solid #c5dede;border-left:6px solid var(--acc);border-radius:10px;padding:11px 15px;margin:12px 0 2px;font-size:14.5px}
+.deliver b:first-child{color:var(--acc)}
+ul.tight li,ol.tight li{margin:7px 0}
+code{background:#efede6;border-radius:5px;padding:1px 6px;font-size:.92em}
+pre{background:#1d2433;color:#e8e6f0;border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:13.5px;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0}
+th{background:#f0eee6;text-align:left}
+th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.note{font-size:13.5px;color:var(--mut)}
+@media print{.topnav{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="../index.html">⌂ Course Hub</a>
+  <span style="font-weight:700">📝 Homework 3 · The Chatbot That Cites Its Sources</span>
+  <span><a href="../week2-session5.html">Session 5</a> · <a href="../week2-session6.html">Session 6</a> · <a href="hw3-starter/index.html">Starter App</a></span>
+</nav>
+<main>
+
+<header class="head">
+  <h1>Homework 3 · The Chatbot That Cites Its Sources</h1>
+  <p>Build a working, grounded FAQ chatbot that runs entirely in your browser — then prove it doesn't make things up, and price what it would cost to run for real.</p>
+  <div>
+    <span class="chip">Individual</span><span class="chip">Submit your GitHub repo link</span><span class="chip">Everything free — no API keys, no accounts, no credit card</span>
+  </div>
+</header>
+
+<div class="card">
+  <p><b>The scenario.</b> You are building the product-support chatbot for a small business you invent (a bakery, a dive shop, a board-game café — your choice, but make it yours). The bot must answer customer questions <b>only</b> from the business's own policy documents, cite which document each answer came from, and — this is the hard part — <b>refuse to answer</b> when the documents don't contain the answer, instead of confidently making something up.</p>
+  <p>You are going to build the real thing. Not a diagram — a chatbot that runs in your browser using a genuine machine-learning embedding model, the same retrieval technique used by production AI systems.</p>
+</div>
+
+<h2>What you'll practice (from class)</h2>
+<div class="card">
+  <table>
+    <tr><th>You will…</th><th>Which is…</th></tr>
+    <tr><td>Convert documents and questions into embedding vectors and find the nearest in meaning</td><td>The RAG pipeline and vector search — Session 5</td></tr>
+    <tr><td>Keep source documents as files and embeddings as vectors, and explain why the two live in different stores</td><td>Object storage vs. the vector database — Session 5</td></tr>
+    <tr><td>Give the bot a persona and boundaries through configuration, not code</td><td>The system prompt — the SaaS configuration layer from Session 2</td></tr>
+    <tr><td>Cap the chat history and watch the bot "forget"</td><td>The context window — Sessions 1–2</td></tr>
+    <tr><td>Make the bot say "that's not in my documents" instead of guessing</td><td>Hallucination and grounded verification — Session 6</td></tr>
+    <tr><td>Price the per-token API path vs. an always-on rented GPU at two usage levels</td><td>Measured service and rent-vs-own economics — Sessions 1–3</td></tr>
+    <tr><td>Decide where customer transcripts and payment data may live</td><td>Classify first, then choose — Sessions 4–5</td></tr>
+    <tr><td>Run a real inference workload (the embedding model) on your own machine</td><td>Training vs. inference — Sessions 1 and 3</td></tr>
+  </table>
+</div>
+
+<h2>Setup — from nothing to running (15 minutes)</h2>
+<div class="card">
+  <ol class="tight">
+    <li>Make sure you have <b>Git</b> and a modern browser (Chrome, Edge, or Firefox). You also need <b>Python 3</b> (already on macOS; Windows: <a href="https://www.python.org/downloads/">python.org/downloads</a>, check "Add to PATH").</li>
+    <li>Create a new <b>public GitHub repository</b> named <code>cen4086-hw3</code> and clone it:
+<pre>git clone https://github.com/YOUR-USERNAME/cen4086-hw3.git
+cd cen4086-hw3</pre></li>
+    <li>Download the starter app from the course site: open <a href="hw3-starter/index.html">the starter</a>, then use your browser's <b>File → Save Page As…</b> (or right-click → Save As) to save it as <code>index.html</code> inside your repo folder. (Or copy the file if you cloned the course materials.)</li>
+    <li>Start a tiny local web server from inside the repo folder — the app must be served over <code>http://</code>, not opened as a file:
+<pre>python3 -m http.server 8080</pre>
+    Then visit <b>http://localhost:8080</b> in your browser.</li>
+    <li>The first load downloads the embedding model (about 25&nbsp;MB) from a free public CDN — watch the status line. When it says <b>ready</b>, type <i>"can I return a wetsuit?"</i> and press Send. You should get an answer with a source citation. That's the starter working; everything you build extends it.</li>
+  </ol>
+  <div class="concept"><b>What just happened?</b> Your browser downloaded and ran a real neural network (<code>all-MiniLM-L6-v2</code>, an embedding model) — <b>inference</b>, on your own hardware, for free. Nobody's server saw your question. Keep that in mind for Part 5, where you'll price what this would cost if it <em>did</em> run on someone's server.</div>
+</div>
+
+<h2>Part 1 — Make it your business</h2>
+<div class="card">
+  <p>The starter ships with six sample documents for a fictional surf shop. Replace them.</p>
+  <ol class="tight">
+    <li>Invent your business and write <b>ten short policy/product documents</b> (2–4 sentences each) in the <code>DOCS</code> array at the top of the file: returns, shipping, hours, warranties, a couple of product descriptions — whatever a real customer would ask about. Give each a clear <code>title</code>.</li>
+    <li>Reload and ask five questions a customer would actually type — <b>phrased differently from your documents' wording</b>. Watch which document the bot retrieves and the similarity score it displays.</li>
+    <li>In your write-up (see deliverables), explain in your own words why the bot can match <i>"do you take stuff back"</i> to a document titled <i>"Return Policy"</i> even though they share no words.</li>
+  </ol>
+  <div class="concept"><b>Where would these live in production?</b> The document <em>files</em> belong in object storage (cheap, whole-file reads over HTTP, the citable source of truth). Their <em>embeddings</em> belong in a vector database built for nearest-in-meaning search. Your <code>DOCS</code> array plays both roles at once — say so in your write-up, and name which real service type would take over each role.</div>
+</div>
+
+<h2>Part 2 — The system prompt (persona &amp; boundaries)</h2>
+<div class="card">
+  <p>The starter has a <b>System prompt</b> box that currently does nothing. Wire it up:</p>
+  <ol class="tight">
+    <li>Make the bot's replies open with the persona defined in the box (e.g., greeting style, sign-off, tone words) — the reply template should read its values instead of hard-coding them.</li>
+    <li>Add at least one <b>boundary rule</b> the bot enforces from configuration: for example, a list of off-limits topics that always get the polite refusal, no matter what the retrieval finds.</li>
+    <li>Demonstrate it: change the system prompt text <em>only</em> (no other code) and screenshot the same question answered in two different personas.</li>
+  </ol>
+  <div class="concept"><b>Why this matters:</b> this is exactly how a vendor ships one shared model to hundreds of businesses that each get their own bot personality — the configuration layer, not a different model. You built the mechanism you studied in Session 2.</div>
+</div>
+
+<h2>Part 3 — The context window (make it forget, on purpose)</h2>
+<div class="card">
+  <ol class="tight">
+    <li>The starter keeps the whole chat history. Add a <code>CONTEXT_LIMIT</code> (a character budget). Before answering, trim the <b>oldest</b> turns until the kept history fits the budget — exactly how a real model's finite attention window behaves.</li>
+    <li>Show the user what's happening: display how many characters of history are "in the window" and gray out the messages that fell outside it.</li>
+    <li>Demonstrate the failure you studied: tell the bot your name, paste two long paragraphs of filler, then ask <i>"what's my name?"</i> Screenshot the bot failing — and explain in your write-up why it still answers <em>document</em> questions perfectly even after "forgetting" your name. (Hint: which store did your name live in, and which store do the documents live in?)</li>
+  </ol>
+</div>
+
+<h2>Part 4 — The hallucination test (the whole point)</h2>
+<div class="card">
+  <ol class="tight">
+    <li>The starter answers with the closest document <em>no matter how bad the match is</em>. Fix that: add a <b>similarity threshold</b> — below it, the bot must reply <i>"That's not in my documents — let me connect you with a person."</i> and cite nothing.</li>
+    <li>Calibrate it: try thresholds until your five real questions from Part 1 still answer, but nonsense does not.</li>
+    <li>Run this <b>adversarial test protocol</b> and record all results in a table (question, top score, bot behavior, verdict):
+      <ul class="tight">
+        <li>three fair questions your documents <b>do</b> answer,</li>
+        <li>three questions your documents <b>do not</b> answer but sound plausible (<i>"do you price-match?"</i> when you have no price-match policy),</li>
+        <li>one question about a different business entirely.</li>
+      </ul></li>
+    <li>In your write-up: for a <b>customer-facing</b> bot, which is the worse failure — refusing a question it could have answered, or confidently citing the wrong policy? Connect your answer to the stakes-based verification idea from Session 6.</li>
+  </ol>
+  <div class="warn"><b>The bright line, restated:</b> a bot that answers from retrieved documents with citations can be checked. A bot that answers from vibes cannot. Your threshold is the difference.</div>
+</div>
+
+<h2>Part 5 — The cost memo (no code)</h2>
+<div class="card">
+  <p>Your browser bot is free because <em>your</em> laptop does the inference. Real deployments pay one of two ways. Write a one-page memo, <code>memo.md</code>, pricing both for your business:</p>
+  <ol class="tight">
+    <li><b>Per-token API:</b> assume $0.60 per million input tokens and $2.40 per million output tokens, and that an average exchange uses 900 input + 250 output tokens. Price a quiet month (600 customer questions) and a busy month (45,000 questions). Show the calculations.</li>
+    <li><b>Always-on rented GPU:</b> a g4dn.xlarge at $0.526/hour running 730 hours. Price the month — and note that the price doesn't change whether it answers 600 questions or 45,000.</li>
+    <li><b>The recommendation:</b> which usage pattern favors the API and which favors the rented GPU? At roughly how many exchanges per month do the two curves cross? Which cloud pricing trait from Week 1 does the API model exemplify, and which Week 1 warning does the always-on GPU deserve?</li>
+    <li><b>Classify first:</b> two short calls — (a) chat transcripts sometimes contain customers' personal details; if some customers are Canadian, what does that force about where transcripts are stored? (b) A teammate proposes letting the bot look up card numbers "to check payment status." Using the classification rule, say no properly: name the constraint and the design decision it forces.</li>
+  </ol>
+</div>
+
+<h2>Optional stretch — a real generator</h2>
+<div class="card">
+  <p class="note">Not required. If you want the bot to <em>write</em> answers instead of quoting documents: WebLLM (<a href="https://webllm.mlc.ai/">webllm.mlc.ai</a>) runs a small open language model entirely in your browser — free, no key. Feed it your retrieved document plus the question and let it phrase the reply, keeping your citation and threshold logic. Note the model download is large (over 1&nbsp;GB) and needs a recent GPU-capable machine. Your grounding, threshold, and citations must still work — the generator is a mouth, not a memory.</p>
+</div>
+
+<h2>What you hand in</h2>
+<div class="card">
+  <div class="deliver"><b>Submit one thing on Blackboard: the link to your GitHub repository.</b> It must contain:
+    <ul class="tight">
+      <li><code>index.html</code> — your finished chatbot (Parts 1–4 working)</li>
+      <li><code>memo.md</code> — the Part 5 cost memo and classification calls</li>
+      <li><code>writeup.md</code> — the short written answers from Parts 1, 3, and 4 (including your adversarial test table)</li>
+      <li><code>screenshots/</code> — two personas (Part 2), the forgotten name (Part 3), one refusal with the score visible (Part 4)</li>
+    </ul>
+  </div>
+  <p class="note">Test your own repo link in a private browser window before submitting — if the graders can't open it, they can't grade it. Commit as you go; a repo with one giant final commit tells its own story.</p>
+</div>
+
+</main>
+</body>
+</html>

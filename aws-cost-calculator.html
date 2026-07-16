@@ -581,14 +581,14 @@ function recalc(){
 
   const total = ec2Cost+ebsCost+s3Cost+dtCost+rdsCost+albCost;
 
-  $('ec2Cost').textContent = fmt(ec2Cost); $('ec2CostMini').textContent = fmt0(ec2Cost);
-  $('ebsCost').textContent = fmt(ebsCost); $('ebsCostMini').textContent = fmt0(ebsCost);
-  $('s3Cost').textContent = fmt(s3Cost); $('s3CostMini').textContent = fmt0(s3Cost);
-  $('dtCost').textContent = fmt(dtCost); $('dtCostMini').textContent = fmt0(dtCost);
-  $('rdsCost').textContent = fmt(rdsCost); $('rdsCostMini').textContent = fmt0(rdsCost);
-  $('albCost').textContent = fmt(albCost); $('albCostMini').textContent = fmt0(albCost);
+  $('ec2Cost').textContent = fmt(ec2Cost); $('ec2CostMini').textContent = fmt(ec2Cost);
+  $('ebsCost').textContent = fmt(ebsCost); $('ebsCostMini').textContent = fmt(ebsCost);
+  $('s3Cost').textContent = fmt(s3Cost); $('s3CostMini').textContent = fmt(s3Cost);
+  $('dtCost').textContent = fmt(dtCost); $('dtCostMini').textContent = fmt(dtCost);
+  $('rdsCost').textContent = fmt(rdsCost); $('rdsCostMini').textContent = fmt(rdsCost);
+  $('albCost').textContent = fmt(albCost); $('albCostMini').textContent = fmt(albCost);
 
-  $('grandTotal').textContent = fmt0(total);
+  $('grandTotal').textContent = fmt(total);
   $('annualTotal').textContent = fmt0(total*12);
 
   const pct = v => total>0 ? (v/total*100) : 0;
@@ -617,8 +617,8 @@ function applyPreset(name){
           rds:true,rdsType:'db.r6i.2xlarge',multiAZ:true,rdsGB:500, alb:true,albCount:2,albLCU:5},
     archive:{ec2:'t3.small',qty:1,hours:730,ebs:'gp3 — General Purpose SSD',ebsGB:20,s3:'S3 Glacier Deep Archive',s3GB:50000,dt:50,
           rds:false,rdsType:'db.t3.medium',multiAZ:false,rdsGB:0, alb:false,albCount:0,albLCU:0},
-    reset:{ec2:'m6i.large',qty:1,hours:730,ebs:'gp3 — General Purpose SSD',ebsGB:100,s3:'S3 Standard',s3GB:500,dt:200,
-          rds:false,rdsType:'db.t3.medium',multiAZ:false,rdsGB:100, alb:false,albCount:1,albLCU:1},
+    reset:{ec2:'t3.medium',qty:1,hours:10,ebs:'gp3 — General Purpose SSD',ebsGB:0,s3:'S3 Standard',s3GB:0,dt:0,
+          rds:false,rdsType:'db.t3.medium',multiAZ:false,rdsGB:0, alb:false,albCount:1,albLCU:1},
   };
   const p = presets[name];
   if(!p) return;

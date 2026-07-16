@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CEN4086 · Week 2 · Session 6 — Collaborating in the Cloud + Midterm Review</title>
+<title>CEN4086 · Week 2 · Session 6 — Collaborating in the Cloud</title>
 <style>
 :root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--wk:#e0a437}
 *{box-sizing:border-box}
@@ -36,6 +36,7 @@ h3{font-size:18px;margin:20px 0 8px}
 .bdg{display:inline-block;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
 .b-lec{background:#c9d4f5;color:#22307a}.b-int{background:#ffe3a3;color:#6b4d05}.b-lab{background:#bfe6e0;color:#0b5450}.b-quiz{background:#f3c9c2;color:#7a2417}.b-brk{background:#e4e4e4;color:#555}.b-cap{background:#ddd3f0;color:#432c73}
 .flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.section-lead{margin:0 0 12px;color:var(--mut)}.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.concept-card{border:1px solid var(--line);border-radius:12px;background:#fbfaf7;padding:13px}.concept-card h4{margin:0 0 5px;color:var(--pri);font-size:16px}.concept-card p{margin:5px 0;font-size:14px}.concept-card .use{color:var(--acc);font-weight:700}.concept-card .watch{color:var(--bad);font-size:13px}.mini-code{display:block;border-radius:7px;background:#f0eee7;padding:5px 7px;margin:7px 0;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:#455064}.definition-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}.definition-card{border-radius:10px;background:#f4f6fb;border:1px solid #dfe1eb;padding:11px}.definition-card b{display:block;color:var(--pri);margin-bottom:3px}.definition-card span{font-size:13px;color:#485164}.process-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:12px 0}.process-step{position:relative;border-radius:9px;background:#eef4f4;border:1px solid #cbe2de;padding:9px;text-align:center;font-size:12px}.process-step b{display:block;color:var(--acc)}.process-step:not(:last-child):after{content:"→";position:absolute;right:-8px;top:50%;z-index:2;transform:translateY(-50%);color:var(--amb);font-weight:900}.key-callout{border-left:5px solid var(--acc);border-radius:10px;background:#edf8f6;padding:11px 13px;margin:12px 0;font-size:14px}.key-callout strong{color:#0b5450}.warning-callout{border-left:5px solid var(--bad);border-radius:10px;background:#faece9;padding:11px 13px;margin:12px 0;font-size:14px}.warning-callout strong{color:#7a2417}.number-rule{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.number-box{border-radius:12px;background:#eef0fb;border:1px solid #d7d8ec;padding:12px;text-align:center}.number-box b{display:block;font-size:28px;color:var(--pri);line-height:1}.number-box span{font-size:12px;color:var(--mut)}.compact-list{margin:7px 0;padding-left:20px}.compact-list li{margin:4px 0;font-size:14px}.exercise-brief{border-radius:10px;background:#faf9f5;border:1px solid var(--line);padding:11px 13px;margin:9px 0}.exercise-brief p{margin:4px 0}.exercise-steps{margin:6px 0;padding-left:21px}.exercise-steps li{margin:3px 0}.track-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.track-card{border:1px solid var(--line);border-radius:10px;background:white;padding:10px;font-size:13px}.track-card b{display:block;color:var(--pri);margin-bottom:3px}
 .flip{border:1.5px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
 .flip h5{margin:0;font-size:15px;color:var(--pri)}
 .flip .back{display:none;margin-top:8px;font-size:14px;color:var(--ink)}
@@ -67,19 +68,6 @@ h3{font-size:18px;margin:20px 0 8px}
 .promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
 .promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
 .copybtn{position:absolute;top:8px;right:8px;background:var(--acc);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
-.aichat{margin-top:14px;border:1.5px solid var(--vio);border-radius:12px;background:#fff;overflow:hidden}
-.aichat-head{background:var(--vio);color:#fff;padding:8px 14px;font-weight:700;font-size:14px}
-.aichat-log{max-height:320px;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:#faf9fd}
-.aichat-msg{max-width:85%;padding:8px 12px;border-radius:12px;font-size:14.5px;line-height:1.5;white-space:pre-wrap}
-.aichat-msg.user{align-self:flex-end;background:var(--pri);color:#fff;border-bottom-right-radius:3px}
-.aichat-msg.bot{align-self:flex-start;background:#eee9f7;color:var(--ink);border-bottom-left-radius:3px}
-.aichat-msg.sys{align-self:center;background:none;color:var(--mut);font-size:12.5px;font-style:italic;max-width:100%;text-align:center}
-.aichat-row{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line);background:#fff}
-.aichat-row input{flex:1;border:1.5px solid var(--line);border-radius:8px;padding:8px 12px;font:inherit;font-size:14px}
-.aichat-load{padding:14px;text-align:center}
-.aichat-bar{height:8px;border-radius:999px;background:#e8e4f5;overflow:hidden;margin:10px 0 6px}
-.aichat-bar span{display:block;height:100%;width:0%;background:var(--vio);transition:width .2s}
-.aichat-status{font-size:13px;color:var(--mut)}
 .quiz .q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
 .quiz .q h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
 .stem{margin:6px 0 10px}
@@ -129,6 +117,7 @@ table.simple{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
 table.simple th{background:#f0eee6;text-align:left}
 table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
 @media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+@media(max-width:650px){.concept-grid,.definition-grid,.number-rule,.track-grid,.process-strip{grid-template-columns:1fr}.process-step:not(:last-child):after{content:"↓";right:50%;top:auto;bottom:-12px;transform:translateX(50%)}}
 </style>
 <style>
 /* ===== Session 6 additions ===== */
@@ -137,47 +126,35 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
 .pick{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit;font-size:13.5px}
 .pick.sel{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:700}
 .sliderrow{margin:12px 0 2px;font-weight:600;font-size:14.5px}
-.reviewbox{border:2px solid var(--wk);border-radius:14px;padding:6px 18px 18px;background:linear-gradient(180deg,#fdf6e6,#fff 150px);margin:18px 0}
 </style>
 </head>
 <body>
 <nav class="topnav">
   <a href="index.html">⌂ Course Hub</a>
-  <span class="mid">Week 2 · Session 6 — Collaboration + Midterm Review</span>
+  <span class="mid">Week 2 · Session 6 — Collaborating in the Cloud</span>
   <span><span id="scoreChip">Quiz: 0/0</span> &nbsp; <a href="week2-session5.html">← Session 5</a> · <a href="week3-session7.html">Session 7 →</a></span>
 </nav>
 <main>
 
 
-<!-- ============ WARM-UP ============ -->
-<section class="card warmup">
-  <h3>🔥 Warm-Up Polls <span class="note">(no wrong answers — vote, then we discuss)</span></h3>
-  <div class="poll" id="poll1">
-    <p><strong>Poll 1:</strong> How does your current group project actually share its main document?</p>
-    <button class="popt">Email attachments back and forth</button><button class="popt">One shared cloud doc</button><button class="popt">Files dumped in a group chat</button><button class="popt">The chat has nine versions and nobody knows which is real</button>
-    <div class="pollwhy">If you picked anything but "one shared cloud doc," you're re-living the exact problem Segment 1 opens with: <strong>web-based collaboration began with email</strong>, and email's attachment model breaks the moment two people edit at once — every send forks a new universe (<code>Final_v9_REALfinal2.docx</code>). Cloud collaboration's core move is keeping ONE master copy in the cloud that everyone edits. Today you'll feel the difference in Lab C, live, with a partner.</div>
-  </div>
-  <div class="poll" id="poll2">
-    <p><strong>Poll 2:</strong> Honestly — what fraction of the meetings you attend could have been a shared doc plus a comment thread?</p>
-    <button class="popt">Almost none</button><button class="popt">About a quarter</button><button class="popt">About half</button><button class="popt">Most of them</button>
-    <div class="pollwhy">Surveys of knowledge workers routinely find a third to half of meeting time judged unnecessary by the attendees themselves. Meetings aren't free: they cost attendees × hourly rate × duration, paid in the scarcest currency a business has — synchronized attention. Today's <strong>meeting cost calculator</strong> puts a dollar figure on that intuition, and the collaboration skill of the decade is choosing <em>sync vs async</em> deliberately instead of defaulting to a calendar invite.</div>
-  </div>
-  <div class="poll" id="poll3">
-    <p><strong>Poll 3:</strong> The midterm is at the start of next session. Gut check — how ready are you right now?</p>
-    <button class="popt">🔥 Ready today</button><button class="popt">Mostly ready</button><button class="popt">Shaky on a couple of sessions</button><button class="popt">…there's a midterm?</button>
-    <div class="pollwhy">Per the syllabus, the <strong>midterm exam happens at the START of Session 7</strong> — the first class of Week 3 — covering Sessions 1–6 (Objectives 1–6) in the same story-problem style as your quizzes. Whatever you answered, today's review section is built to move you up at least one notch: a 12-question mixed review quiz, a 16-card flash deck, and a traffic-light self-audit that tells you exactly which session to re-open tonight. No new material will ambush you — the exam tests what these six pages taught.</div>
-  </div>
-</section>
-
 <!-- ============ SEGMENT 1 ============ -->
 <section class="segment">
   <h2><span class="segno">1</span> From Email to Co-Editing</h2>
   <div class="card">
-    <h3>Web-based collaboration begins with email</h3>
-    <p>The story starts where collaboration actually started: <strong>email</strong> — the first killer app of the networked office. Email is <em>asynchronous</em> and <em>store-and-forward</em>: you send when convenient, they read when convenient, and the message waits patiently in between. For coordinating across time zones, that design is genuinely brilliant, which is why email refuses to die. But use email to co-produce a <em>document</em> and its greatest strength becomes the bug: every attachment is a <strong>fork</strong>. Send <code>Budget.xlsx</code> to five people and there are now six diverging copies of the truth; two of them edit simultaneously and someone gets the soul-crushing job of manually merging cell by cell. Add no presence (is anyone even working on this?), reply-all storms, and 25 MB attachment limits, and you have the pain that cloud collaboration was invented to end.</p>
-    <h3>The cloud's move: one master copy</h3>
-    <p>Cloud document collaboration (Google Docs/Sheets/Slides, Microsoft 365 web) inverts the model: instead of copies traveling to people, <strong>people travel to the single master copy</strong>, which lives in the cloud. Everyone edits THE document; the service merges keystroke-level changes in real time, shows colleagues' cursors (presence), tracks <strong>version history</strong> (a time machine — restore any earlier state), and layers on <strong>comments, @mentions, and suggesting mode</strong> so review happens <em>in</em> the artifact instead of around it. The same one-master-copy idea powers shared calendars (free/busy state instead of "when are you free?" email chains) and shared task boards. <strong>Why it matters for Objective 6:</strong> "differentiate collaboration solutions" starts with recognizing which model a tool uses — traveling copies (email attachments) or a shared master (cloud docs) — because everything else (version chaos or version history) follows from that choice.</p>
-    <p><strong>Common misconception:</strong> "real collaboration means everyone together, live." Often the opposite: across time zones and deep-work schedules, <strong>async</strong> collaboration — comments, suggesting mode, recorded video, written updates — produces better-thought-out input than forcing twelve people into one meeting. The professional skill is <em>choosing the mode on purpose</em>. Calibrate yourself:</p>
+    <h3>Two models: traveling copies vs one master copy</h3>
+    <p class="section-lead">Every collaboration tool answers one question first: <strong>where does the document live?</strong> Email sends copies to people; the cloud sends people to the copy.</p>
+    <div class="definition-grid">
+      <div class="definition-card"><b>📧 Email attachments — copies travel</b><span>Asynchronous, store-and-forward: send when convenient, read when convenient. Brilliant across time zones — but every attachment is a <strong>fork</strong>. Send <code>Budget.xlsx</code> to five people and six diverging copies of the truth exist; someone merges them by hand on a Saturday.</span></div>
+      <div class="definition-card"><b>☁️ Cloud docs — people travel</b><span>One master copy lives in the cloud (Google Docs/Sheets/Slides, Microsoft 365 web). Everyone edits THE document, and the service merges keystroke-level changes in real time. Forks become impossible because there are no copies to fork.</span></div>
+    </div>
+    <p><strong>What the one-master-copy model buys you:</strong></p>
+    <div class="concept-grid">
+      <article class="concept-card"><h4>👥 Co-editing + presence</h4><p>Simultaneous edits merge live; colored cursors show who is working where. No "file is locked," no overwrites.</p><p class="use">Kills: the Saturday cell-by-cell merge.</p></article>
+      <article class="concept-card"><h4>💬 Comments &amp; suggesting</h4><p>Comments, @mentions, and suggesting mode put review <em>in</em> the artifact instead of around it in reply-all threads.</p><p class="use">Kills: "see my notes in the email below."</p></article>
+      <article class="concept-card"><h4>🕰️ Version history</h4><p>A time machine — restore any earlier state, with names and timestamps attached to every change.</p><p class="use">Kills: <code>Final_v9_REALfinal2.docx</code>.</p></article>
+    </div>
+    <div class="key-callout"><strong>Objective 6 hinge:</strong> to differentiate collaboration solutions, first ask which model a tool uses — traveling copies or a shared master — because everything else (version chaos vs version history) follows from that one choice. The same master-copy idea powers shared calendars (live free/busy state) and shared task boards.</div>
+    <div class="warning-callout"><strong>"Real collaboration means everyone together, live" — often backwards.</strong> Across time zones and deep-work schedules, <strong>async</strong> collaboration — comments, suggesting mode, recorded video, written updates — produces better-thought-out input than forcing twelve people into one meeting. The professional skill is choosing the mode <em>on purpose</em>. Calibrate yourself:</div>
     <h3>⏱️ Interactive: Sync or Async?</h3>
     <div class="matcher" id="syncMatcher">
       <div class="mcards">
@@ -197,6 +174,29 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
       <p class="mstatus">0/8 placed</p>
     </div>
     <p class="note">Pattern worth memorizing: sync buys <em>speed of back-and-forth</em> (urgency, negotiation, creative riffing); async buys <em>flexibility and a written record</em> (status, review, documentation). Teams fail in both directions — meetings that should be docs, and week-long comment wars that needed a 10-minute call.</p>
+    <h3>🛠️ Hands-On Exercises — find the rule under the eight cards</h3>
+    <p>Five drills on the two sorters above. Place every card first, then answer — the page checks you.</p>
+    <p><strong>Exercise 1 · Count the sync half.</strong> Sort all eight cards into their zones. Of the eight, how many belong in <strong>⚡ Synchronous</strong>?</p>
+    <div class="checkfield">→ Synchronous cards: <input type="number" id="hx1a"> <button class="btn small" onclick="checkHX('1a')">Check</button> <span class="fb" id="fbHX1a"></span></div>
+    <p><strong>Exercise 2 · The borderline four.</strong> The eight cards above are easy on purpose. These four are the ones real teams get wrong — and each hinges on a single word in its description. Sort them, and notice what tips each one:</p>
+    <div class="matcher" id="edgeMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="sync">A hard performance conversation with a struggling employee — tone, pauses, and the chance to respond in the moment ARE the content</button>
+        <button class="mcard" data-match="async">A 20-page architecture proposal that needs careful, considered critique from six senior engineers</button>
+        <button class="mcard" data-match="sync">Production is down, three engineers each hold one piece of the puzzle, and every minute is billing customers for an outage</button>
+        <button class="mcard" data-match="async">Handing a half-finished task to a teammate whose workday starts when yours ends</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="sync">⚡ Synchronous<small>needs humans in the same minute</small></button>
+        <button class="mzone" data-zone="async">📬 Asynchronous<small>needs a record, not a room</small></button>
+      </div>
+      <p class="mstatus">0/4 placed</p>
+    </div>
+    <p><strong>Exercise 3 · The flip test.</strong> Look at the async card <em>"Comment thread on the budget doc, resolved over two days."</em> Nothing about the artifact changes — but the CFO now needs the budget signed in <strong>40 minutes</strong>. Which mode does the task flip to? (one word)</p>
+    <div class="checkfield">→ Mode: <input type="text" id="hx1b" placeholder="sync / async"> <button class="btn small" onclick="checkHX('1b')">Check</button> <span class="fb" id="fbHX1b"></span></div>
+    <p><strong>Exercise 4 · Total the record-keepers.</strong> Across BOTH sorters — all twelve cards — how many belong in <strong>📬 Asynchronous</strong>?</p>
+    <div class="checkfield">→ Asynchronous cards: <input type="number" id="hx1c"> of 12 <button class="btn small" onclick="checkHX('1c')">Check</button> <span class="fb" id="fbHX1c"></span></div>
+    <label class="step"><input type="checkbox" data-step="hx1d"><span><strong>Exercise 5 · Convert one meeting you actually attend.</strong> Pick a recurring meeting from your job, your club, or a group project. Write down, in your notes: (a) which minutes of it genuinely need synchronized humans — a decision, a negotiation, an unblocking — and (b) what artifact replaces the rest (a shared doc, a channel post, a 3-minute recorded walkthrough). Then name the shortest live meeting that still preserves (a). You just did what a team lead is paid to do, and you'll price it in Segment 3.</span></label>
   </div>
 </section>
 
@@ -205,10 +205,19 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
   <h2><span class="segno">2</span> Picking the Stack: Criteria &amp; the Completeness Meter</h2>
   <div class="card">
     <h3>Tool selection criteria — the checklist behind the demo gloss</h3>
-    <p>Every collaboration vendor's demo looks wonderful. The practical point is that selection is an <em>evaluation</em> exercise, and the criteria are mostly unglamorous: <strong>Cost</strong> — free tiers are real but have real edges (Zoom's free meetings cap at 40 minutes; Slack's free plan hides messages after 90 days). <strong>Integration &amp; SSO</strong> — Session 4 callback: can every tool federate with ONE identity provider? If a tool can't join your SSO, every hire and every termination now has a manual exception… you know from the lifecycle simulator exactly how that movie ends. <strong>Security &amp; compliance</strong> — where is data stored, who can export it, does it meet your retention rules (Session 5 callback)? <strong>Adoption &amp; training</strong> — the best tool nobody opens loses to the decent tool everyone already knows. <strong>Data export</strong> — vendor lock-in (Session 2 callback) applies to your chat history too: can you take it with you? <strong>Vendor viability</strong> — will this company exist in five years?</p>
-    <p><strong>Common misconception:</strong> "more tools = more collaboration." Each added tool is another place where truth can hide, another notification stream, another login (and another SSO integration to maintain). Consolidated suites (Google Workspace, Microsoft 365) win on integration; best-of-breed stacks win on individual features and lose on seams. There is no free lunch — only a deliberate trade.</p>
-    <h3>🧰 Interactive: Build Harbor Lane's Collaboration Stack</h3>
-    <p>One pick per need — every option below is genuinely free (or has a real free tier). The meter fills as you cover all five needs; the verdict reads your vendor mix like a consultant would:</p>
+    <p class="section-lead">Every vendor demo looks wonderful. Selection is an <strong>evaluation</strong> against six mostly-unglamorous criteria — and two of them are hard gates, not preferences.</p>
+    <div class="concept-grid">
+      <article class="concept-card"><h4>💵 Cost</h4><p>Free tiers are real but have real edges.</p><p class="watch">Zoom free caps meetings at 40 minutes; Slack free hides messages after 90 days.</p></article>
+      <article class="concept-card"><h4>🔑 Integration &amp; SSO</h4><p>Can every tool federate with ONE identity provider (Session 4)?</p><p class="use">HARD GATE</p><p class="watch">A non-SSO tool makes every hire and termination a manual exception — you know how that movie ends.</p></article>
+      <article class="concept-card"><h4>📦 Data export</h4><p>Can you take your messages, files, and recordings with you if you leave?</p><p class="use">HARD GATE</p><p class="watch">Vendor lock-in (Session 2) applies to your chat history too.</p></article>
+      <article class="concept-card"><h4>🛡️ Security &amp; compliance</h4><p>Where is data stored, who can export it, does it meet your retention rules (Session 5)?</p></article>
+      <article class="concept-card"><h4>👋 Adoption &amp; training</h4><p>The best tool nobody opens loses to the decent tool everyone already knows.</p></article>
+      <article class="concept-card"><h4>🏢 Vendor viability</h4><p>Will this company — and your data inside it — still exist in five years?</p></article>
+    </div>
+    <div class="warning-callout"><strong>"More tools = more collaboration" — no.</strong> Each added tool is another place truth can hide, another notification stream, another login to federate. Suites (Google Workspace, Microsoft 365) win on integration; best-of-breed stacks win on individual features and lose on seams. There is no free lunch — only a deliberate trade.</div>
+    <h3>🧰 Interactive: Build Wayfarer Studio's Collaboration Stack</h3>
+    <p class="section-lead"><strong>Your client:</strong> Wayfarer Studio — 34 people, fully remote, spread across four time zones. The purest test of a collaboration stack there is, because the tools <em>are</em> the office.</p>
+    <p>One pick per need — every option is genuinely free (or has a real free tier). The meter fills as you cover all five needs; the verdict reads your vendor mix like a consultant would:</p>
     <div class="pickrow" data-need="chat"><span class="lblneed">💬 Chat</span>
       <button class="pick" data-tool="Google Chat" data-vendor="google">Google Chat</button>
       <button class="pick" data-tool="Slack (free)" data-vendor="slack">Slack (free)</button>
@@ -237,6 +246,15 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     <div class="bar" style="height:14px;margin-top:10px"><span id="stackBar"></span></div>
     <p class="mstatus" id="stackStat">0/5 needs covered</p>
     <p class="note" id="stackVerdict">Pick one tool for each of the five needs.</p>
+    <h3>🛠️ Hands-On Exercises — build to the constraints, then find the seams</h3>
+    <p>Four drills on the builder above. Re-pick freely — the meter and the verdict line are your instruments, and the page checks your answers.</p>
+    <p><strong>Exercise 1 · How far does one suite actually reach?</strong> Build the maximum-integration stack: choose the same suite vendor in every row that offers it. Read the verdict line. Of Wayfarer's five needs, how many can a single vendor cover in this catalog?</p>
+    <div class="checkfield">→ Needs covered by one vendor: <input type="number" id="hx2a"> of 5 <button class="btn small" onclick="checkHX('2a')">Check</button> <span class="fb" id="fbHX2a"></span></div>
+    <p><strong>Exercise 2 · Name the seam.</strong> Scan the five rows. Exactly one need has <em>no</em> option from either big suite (Google or Microsoft) — which means even a devout single-vendor shop ends up with at least two vendors and at least one extra login to federate. Which need is it? (one word)</p>
+    <div class="checkfield">→ The seam: <input type="text" id="hx2b" placeholder="one word"> <button class="btn small" onclick="checkHX('2b')">Check</button> <span class="fb" id="fbHX2b"></span></div>
+    <div class="exercise-brief"><p><strong>Exercise 3 · Build to a client's hard constraints.</strong> Wayfarer's founder hands you four non-negotiables — build exactly that stack, then read the verdict line:</p><ol class="exercise-steps"><li>Meetings must work for outside clients with <strong>no account and no time cap</strong>.</li><li>The whiteboard must need <strong>no account</strong> either.</li><li>Docs and calendar must come from the <strong>same vendor — and it can't be Google</strong>.</li><li>Chat can be anything but Google.</li></ol><p>How many distinct vendors does your completed stack contain?</p></div>
+    <div class="checkfield">→ Distinct vendors: <input type="number" id="hx2c"> <button class="btn small" onclick="checkHX('2c')">Check</button> <span class="fb" id="fbHX2c"></span></div>
+    <label class="step"><input type="checkbox" data-step="hx2d"><span><strong>Exercise 4 · Run the two hard gates.</strong> Take the stack you just built and walk every tool in it through Segment 2's two disqualifying criteria, out loud: <em>Can it federate with ONE identity provider (Session 4), so a departure closes every door at once?</em> and <em>Can I export my data — messages, recordings, files — if I leave (Session 2)?</em> Any tool that fails both is vetoed no matter how good the feature chart looks. Write the verdict for each tool in your notes; that list is the evidence your Milestone 2 identity plan is built on.</span></label>
   </div>
 </section>
 
@@ -245,9 +263,21 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
   <h2><span class="segno">3</span> Meetings, Streaming &amp; the Price of Sync Time</h2>
   <div class="card">
     <h3>Web meetings and scheduling across organizations</h3>
-    <p>Cloud meeting tools (Meet, Zoom, Teams) beat the old conference call because they carry more than voice: <strong>screen sharing</strong> turns "go to slide 12" into showing slide 12; <strong>recording</strong> makes the meeting an artifact absent people can watch; <strong>live captions</strong> make it accessible and searchable. Cloud <strong>scheduling</strong> solved a quieter problem: calendars became shared state, so free/busy lookup replaces the seven-email "does Thursday work?" dance — and booking pages (Calendly-style, Cal.com free) extend that across organizational borders, which is why your dentist now sends you a link instead of playing phone tag.</p>
+    <p class="section-lead">Cloud meeting tools (Meet, Zoom, Teams) beat the old conference call because they carry more than voice — and cloud calendars turned scheduling into shared state.</p>
+    <div class="definition-grid">
+      <div class="definition-card"><b>🖥️ Screen sharing</b><span>"Go to slide 12" becomes <em>showing</em> slide 12.</span></div>
+      <div class="definition-card"><b>⏺️ Recording</b><span>The meeting becomes an artifact that absent people can watch later.</span></div>
+      <div class="definition-card"><b>💬 Live captions</b><span>Accessible in noisy rooms and second languages — and searchable afterward.</span></div>
+      <div class="definition-card"><b>📅 Free/busy + booking pages</b><span>Shared calendar state replaces the seven-email "does Thursday work?" dance. Booking pages (Calendly-style; Cal.com is free) extend it across company borders — why your dentist now sends a link instead of playing phone tag.</span></div>
+    </div>
     <h3>Streaming video as a collaboration tool</h3>
-    <p>Streaming video/TV grew up in entertainment and matured into three workplace forms: <strong>live streams</strong> (town halls, launch events — one-to-many, with chat Q&amp;A), <strong>webinars</strong> (structured presentations to outsiders), and — most useful per minute — the <strong>on-demand library</strong>: recorded trainings and demos employees watch at need. For Harbor Lane, a 12-store chain, that's the difference between flying a trainer to twelve stores and recording one excellent 15-minute POS training every new hire watches on day one. Live = shared moment and immediate questions; recorded = perfect repetition at zero marginal cost. Different tools, deliberately chosen — again.</p>
+    <p class="section-lead">Streaming grew up in entertainment and matured into three workplace forms. Choose by asking: does this content need a <strong>shared moment</strong> or <strong>perfect repetition</strong>?</p>
+    <div class="concept-grid">
+      <article class="concept-card"><h4>📡 Live stream</h4><p>One-to-many, everyone at once, with chat Q&amp;A.</p><p class="use">Use for: town halls, launch events, morale.</p></article>
+      <article class="concept-card"><h4>🎤 Webinar</h4><p>A structured presentation to outsiders — registration, slides, Q&amp;A.</p><p class="use">Use for: clients, prospects, training cohorts.</p></article>
+      <article class="concept-card"><h4>📚 On-demand library</h4><p>Recorded trainings and demos watched at need — the most useful minutes per dollar.</p><p class="use">Use for: onboarding, how-tos, product demos.</p></article>
+    </div>
+    <div class="key-callout"><strong>Tidewater Markets, 12 stores:</strong> one excellent recorded 15-minute POS training that every new hire watches on day one beats flying a trainer to twelve stores. Live buys a shared moment and immediate questions; recorded buys perfect repetition at zero marginal cost. Different tools, deliberately chosen — again.</div>
     <h3>💸 Interactive: The Meeting Cost Calculator</h3>
     <p>Meetings are purchases — they just never send an invoice. Set the sliders to a real recurring meeting you attend:</p>
     <p class="sliderrow">👥 Attendees: <span id="vAtt" style="color:var(--pri)">6</span></p>
@@ -262,7 +292,17 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
       <div class="kpi"><b id="kHours">6.0</b><small>person-hours consumed</small></div>
     </div>
     <p class="note" id="mVerdict"></p>
-    <p class="note">"Loaded rate" = salary + benefits + overhead — what an hour truly costs the employer. The calculator isn't anti-meeting; it's pro-<em>deliberate</em>: a $600 weekly status meeting that a doc could replace is a $31,000-a-year subscription nobody approved. A $600 decision meeting that prevents a $50,000 mistake is the best money the company spends all week.</p>
+    <div class="key-callout"><strong>"Loaded rate"</strong> = salary + benefits + overhead — what an hour truly costs the employer. The calculator isn't anti-meeting; it's pro-<em>deliberate</em>: a $600 weekly status meeting that a doc could replace is a <strong>$31,000-a-year subscription nobody approved</strong>. A $600 decision meeting that prevents a $50,000 mistake is the best money the company spends all week.</div>
+    <h3>🛠️ Hands-On Exercises — put a price tag on the calendar</h3>
+    <p>Four drills on the calculator above. Dial in every value, read the KPIs, and check yourself — the page grades you. Model: <em>cost = attendees × loaded rate × duration ÷ 60</em>; the yearly KPI assumes the meeting recurs weekly (× 52).</p>
+    <p><strong>Exercise 1 · Price the standing meeting.</strong> Wayfarer Studio's Monday "all-hands sync" pulls in <strong>14 people</strong> at an average loaded rate of <strong>$60/hr</strong> for <strong>60 minutes</strong>. Set all three sliders. What does one occurrence cost?</p>
+    <div class="checkfield">→ Cost per occurrence: $<input type="number" id="hx3a"> <button class="btn small" onclick="checkHX('3a')">Check</button> <span class="fb" id="fbHX3a"></span></div>
+    <p><strong>Exercise 2 · Read the invoice nobody sends.</strong> Same sliders, untouched. It runs every single Monday. What is the "per year, if weekly" KPI?</p>
+    <div class="checkfield">→ Annual cost: $<input type="number" id="hx3b"> <button class="btn small" onclick="checkHX('3b')">Check</button> <span class="fb" id="fbHX3b"></span></div>
+    <p><strong>Exercise 3 · Shrink the invite list.</strong> Review the recording and only <strong>6</strong> of the 14 ever speak; the rest are listening to status they could read. Cut the invite list to those 6 (same $60/hr, same 60 minutes) and post the notes for everyone else. How many dollars <em>per year</em> does that one edit to a calendar invite save?</p>
+    <div class="checkfield">→ Annual savings: $<input type="number" id="hx3c"> <button class="btn small" onclick="checkHX('3c')">Check</button> <span class="fb" id="fbHX3c"></span></div>
+    <p><strong>Exercise 4 · Find the six-figure headcount.</strong> A different meeting: a <strong>weekly 60-minute</strong> leadership review whose attendees are all senior — loaded rate <strong>$150/hr</strong>. Walk the attendee slider up. What is the <em>smallest</em> headcount at which this meeting's annual cost first exceeds <strong>$100,000</strong>?</p>
+    <div class="checkfield">→ Attendees: <input type="number" id="hx3d"> <button class="btn small" onclick="checkHX('3d')">Check</button> <span class="fb" id="fbHX3d"></span></div>
   </div>
 </section>
 
@@ -270,9 +310,22 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
 <section class="card ai">
   <h3>🧠 AI Concept of the Day · Hallucination — why fluent ≠ true, and how teams verify AI work</h3>
   <p class="note" style="margin-top:-4px"><strong>AI concepts track:</strong> every session teaches one real AI concept through that day's cloud objective. Today, while completing Objective 6's collaboration half (and prepping for the midterm), you learn why language models sometimes state falsehoods with total confidence — and the verification workflow that makes AI a safe collaborator anyway.</p>
-  <p>Collaboration tools were the first workplace software to get a visible AI upgrade, because meetings and documents are exactly what language models are good at chewing on. <strong>AI meeting assistants</strong> (built into Meet, Teams, Zoom, and add-ons) now produce live <strong>transcription</strong> with speaker attribution, a <strong>summary</strong>, and an extracted <strong>action-item list</strong> minutes after the call — which quietly changes the sync/async math from Segment 1: if a meeting auto-produces a readable artifact, people who skip it lose less, so fewer people need to attend live. <strong>AI in documents</strong> drafts, rewrites, translates, and tightens — a first-draft partner living inside the co-editing surface. Two cautions before you trust any of it: models still <strong>hallucinate</strong> (a summary can state a decision the meeting never made — and an unchallenged wrong summary becomes the official record), and <strong>consent matters</strong>: recording plus AI processing of colleagues' words is a policy decision, announced at the start of the call, not a default.</p>
-  <p><strong>The concept:</strong> a language model does not <em>look facts up</em> — it <em>generates the most plausible continuation</em> of the text in front of it, one token at a time, from patterns learned in training (Session 1). Most of the time the most plausible continuation happens to be true. But when grounding is thin — an obscure topic, a garbled transcript, a question about a document it never saw — the machinery doesn't stop; it keeps producing something <em>shaped like</em> an answer. That is a <strong>hallucination</strong> (researchers prefer <em>confabulation</em>): fluent, grammatical, specific, and wrong. Invented citations arrive with page numbers; invented people come with plausible job titles; invented statistics carry decimal points. This kills the intuition you bring from human colleagues — that confidence and specificity signal knowledge. In a text generator, a confident tone and precise detail are <em>style properties</em>, nearly free to produce, and exactly as easy to generate for a false statement as for a true one.</p>
-  <p><strong>Why meeting assistants raise the stakes — and the workflow that lowers them:</strong> an AI meeting assistant is a <em>pipeline</em>: a speech-to-text model produces the transcript, then a summarization pass compresses it. Errors compound across stages — a mumbled "fifteen percent" transcribed as "fifty percent" reaches the summarizer as clean text, gets restated as a confident decision, and the wrong number is now in the official minutes with nobody's name on the mistake. Teams that use AI well wrap it in a <strong>verification workflow</strong>: (1) <em>source-of-truth check</em> — verify claims against the recording, the document, the invoice, never against the AI's own restatement; (2) <em>"show your evidence" prompts</em> — ask where in the transcript a decision was made, and treat "no quote available" as your answer; (3) <em>sign-off tiers by stakes</em> — a brainstorm needs no review, anything that becomes a record, an obligation, or someone's to-do gets a human check, and client-facing numbers get sign-off, period. The trust matcher below is that policy in miniature.</p>
+  <p class="section-lead">Collaboration tools got the first visible AI upgrade, because meetings and documents are exactly what language models chew well:</p>
+  <div class="definition-grid">
+    <div class="definition-card"><b>🎙️ AI meeting assistants</b><span>Built into Meet, Teams, and Zoom: live transcription with speaker names, a summary, and an extracted action-item list minutes after the call. This quietly shifts the Segment 1 math — if a meeting auto-produces a readable artifact, people who skip it lose less, so fewer people need to attend live.</span></div>
+    <div class="definition-card"><b>📝 AI in documents</b><span>Drafts, rewrites, translates, and tightens — a first-draft partner living inside the co-editing surface.</span></div>
+  </div>
+  <div class="warning-callout"><strong>Two cautions before you trust any of it:</strong> models still <strong>hallucinate</strong> — a summary can state a decision the meeting never made, and an unchallenged wrong summary becomes the official record. And <strong>consent matters</strong>: recording plus AI processing of colleagues' words is a policy decision announced at the start of the call, not a default.</div>
+  <h4>The concept: generation, not lookup</h4>
+  <p class="section-lead">A language model does not <em>look facts up</em> — it <em>generates the most plausible continuation</em> of the text in front of it, one token at a time (Session 1).</p>
+  <div class="definition-grid">
+    <div class="definition-card"><b>When grounding is solid</b><span>The most plausible continuation usually happens to be true — which is why the model feels reliable day to day.</span></div>
+    <div class="definition-card"><b>When grounding is thin</b><span>An obscure topic, a garbled transcript, a document it never saw — the machinery doesn't stop; it produces something <em>shaped like</em> an answer: fluent, grammatical, specific, and wrong. That is a <strong>hallucination</strong> (researchers prefer <em>confabulation</em>).</span></div>
+  </div>
+  <div class="key-callout"><strong>The intuition to unlearn:</strong> with human colleagues, confidence and specificity signal knowledge. In a text generator they are <em>style properties</em> — invented citations arrive with page numbers, invented people with job titles, invented statistics with decimal points — exactly as easy to produce for a false statement as for a true one.</div>
+  <h4>The verification workflow that makes AI a safe collaborator</h4>
+  <p class="section-lead">A meeting assistant is a <strong>pipeline</strong> — speech-to-text, then summarization — and each stage trusts the previous one completely, so one early mishearing exits as a confident decision in the official minutes. Teams that use AI well wrap it in this workflow (the trust matcher below is the policy in miniature):</p>
+  <div class="process-strip"><div class="process-step"><b>1 · AI drafts</b>Transcript → summary → action items</div><div class="process-step"><b>2 · Check the source</b>Verify claims against the recording or invoice — never the AI's own restatement</div><div class="process-step"><b>3 · Demand evidence</b>"Where in the transcript?" — treat "no quote available" as your answer</div><div class="process-step"><b>4 · Sign off by stakes</b>Brainstorm: none · record or to-do: human check · client-facing number: sign-off, period</div></div>
   <p><strong>🃏 Where hallucinations come from — flip all four:</strong></p>
   <div class="flipgrid">
     <button class="flip"><h5>Plausibility over truth</h5><span class="hint">tap to flip</span><span class="back">The model is trained to predict the most likely next token, not to check claims against a database. Truth is a frequent <em>byproduct</em> of imitating text written by informed humans — it is not the optimization target, so nothing inside the model notices when plausible and true part ways.</span></button>
@@ -280,7 +333,7 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     <button class="flip"><h5>Transcription errors compound</h5><span class="hint">tap to flip</span><span class="back">In a meeting-assistant pipeline, the summarizer treats the transcript as ground truth. A mishearing ("fifteen" → "fifty") enters as clean text and exits as a confident minute. Each AI stage trusts the previous stage completely — so one early error survives, laundered, into the record.</span></button>
     <button class="flip"><h5>Leading questions steer</h5><span class="hint">tap to flip</span><span class="back">Ask "why did the client approve the budget?" and the model may accept your false premise and generate the approval story, reasons included. Models are tuned to helpfully continue YOUR text — so ask neutrally ("WHAT did the client decide?") and demand the supporting quote.</span></button>
   </div>
-  <p><strong>Academic integrity note for this course:</strong> AI quizzing you (Lab B), explaining concepts, or critiquing your draft = learning. AI writing your discussion posts or capstone justifications = misconduct per the syllabus. Same tool, different sides of a bright line.</p>
+  <div class="key-callout"><strong>Academic integrity note for this course:</strong> AI quizzing you (Lab B), explaining concepts, or critiquing your draft = learning. AI writing your discussion posts or project milestone justifications = misconduct per the syllabus. Same tool, different sides of a bright line.</div>
   <p><strong>Your turn — calibrate your trust.</strong> An AI assistant just processed a staff meeting at your workplace. Which outputs are safe to use as-is, and which demand verification first?</p>
   <div class="matcher" id="trustMatcher">
     <div class="mcards">
@@ -297,65 +350,11 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     </div>
     <p class="mstatus">0/6 placed</p>
   </div>
-</section>
-
-<!-- ============ LEARN IT WITH AI ============ -->
-<section class="card ai">
-  <h3>🎓 Learn Objective 6 with AI (part 2: collaboration) + Midterm Coach</h3>
-  <p><strong>Objective 6: Differentiate the different Data Storage and collaboration solutions in the Cloud.</strong> Session 5 drilled the storage half; today's drills complete the objective with collaboration — and add a full midterm coach, because the exam is the first thing in Session 7. Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these drills.</p>
-  <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you on this session's collaboration toolbox:</p>
-  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for my cloud computing course. Topic: Session 6 —
-Collaborating in the Cloud. Cover: why
-email attachments fork documents, the one-master-copy model (real-time
-co-editing, comments, version history), sync vs async collaboration, web
-meetings and streaming video at work, and the tool-selection criteria
-(cost, SSO/identity integration, security, adoption, data export, vendor
-viability). Ask me ONE question at a time, easy to hard, 10 questions
-total. After each of my answers, tell me exactly what I got right or
-wrong before asking the next one. Finish with a summary of my weak spots
-and which of those topics I should restudy first.</pre></div>
-  <p><strong>Drill 2 · Sync-or-async judge</strong> — six workplace calls; you decide, defend, and get scored:</p>
-  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Judgment drill: sync or async? Present me with 6 realistic workplace
-situations, ONE at a time (mix them: an urgent blocker, a routine status
-update, a creative brainstorm, a sensitive one-on-one conversation, a
-cross-time-zone project handoff, a decision with budget on the line).
-For each, I will choose synchronous (meeting / call) or asynchronous
-(shared doc / comments / recorded video), name a specific tool type, and
-defend my choice in 2–3 sentences. Score each defense 0–2 (0 = wrong
-mode, 1 = right mode but weak reasoning, 2 = right mode and strong
-reasoning) and explain your score using my course's logic about
-what synchronous time is actually for. Wait for my answer before the
-next situation. Total my score out of 12 at the end.</pre></div>
-  <p><strong>Drill 3 · MIDTERM COACH</strong> — the whole first half of the course, one question at a time:</p>
-  <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Be my midterm coach for my cloud computing course (the midterm covers
-the first six sessions). Quiz me across Objectives 1–6 — cloud
-basics and characteristics, SaaS, PaaS, IaaS, IDaaS/identity, and
-storage/collaboration — with workplace story problems, options A–D,
-ONE question at a time: 12 questions total, at least one per objective.
-After each answer tell me RIGHT or WRONG and explain in two sentences
-before asking the next. At the end: my score out of 12, a diagnosis of
-my WEAKEST objective, and a 20-minute study plan for tonight that
-targets that weakness, pointing me to which of my course's Sessions 1–6
-pages and topics to review.</pre></div>
-  <label class="step"><input type="checkbox" data-step="ai1"><span>Run at least one drill to completion.</span></label>
-  <label class="step"><input type="checkbox" data-step="ai2"><span><strong>Verify the tutor:</strong> before you trust the coach's diagnosis, cross-check one of its explanations against these session pages — free chatbots reliably blur PaaS vs SaaS and misstate the 3-2-1 rule. Note in your log whether it held up.</span></label>
-  <p class="note">Drill 3 is ideal midterm prep — the exam is at the START of Week 3, first thing in Session 7. Run the coach tonight, compare its diagnosis with the traffic-light self-audit below, and re-open whichever session page it flags. Free tier is plenty.</p>
-  <div class="aichat">
-    <div class="aichat-head">🧪 Pilot: chat with a free AI right here on the page — runs entirely offline in your browser</div>
-    <div class="aichat-load" id="aiLoadPane">
-      <p class="note">This loads a small AI model (~1 GB) that runs <strong>on your own device</strong> — nothing you type ever leaves your browser, and there's no account, no sign-in, and no cost, ever. First load takes a minute or two depending on your connection; after that it's cached and starts instantly. Needs a fairly modern Chrome or Edge (desktop works best).</p>
-      <button class="btn small" id="aiLoadBtn">Load the AI model</button>
-      <div class="aichat-bar" id="aiBar" style="display:none"><span id="aiBarFill"></span></div>
-      <p class="aichat-status" id="aiStatus"></p>
-    </div>
-    <div class="aichat-log" id="aiLog" style="display:none">
-      <div class="aichat-msg sys">Ask about today's cloud concepts — collaboration, sync vs. async, or midterm review.</div>
-    </div>
-    <div class="aichat-row" id="aiRow" style="display:none">
-      <input type="text" id="aiInput" placeholder="Ask about collaboration, sync vs. async, or anything from today…">
-      <button class="btn small" id="aiSendBtn">Send</button>
-    </div>
-  </div>
+  <h3>🛠️ Hands-On Exercises — read the policy off the widgets</h3>
+  <p><strong>Exercise 1 · Count the safe tier.</strong> Place all six outputs in the trust matcher above. How many are safe to <strong>use as-is</strong>?</p>
+  <div class="checkfield">→ Use as-is: <input type="number" id="hx4a"> of 6 <button class="btn small" onclick="checkHX('4a')">Check</button> <span class="fb" id="fbHX4a"></span></div>
+  <p><strong>Exercise 2 · Name the mechanism.</strong> Fluent, grammatical, specific, and wrong — what do researchers prefer to call a hallucination? (one word)</p>
+  <div class="checkfield">→ Term: <input type="text" id="hx4b" placeholder="one word"> <button class="btn small" onclick="checkHX('4b')">Check</button> <span class="fb" id="fbHX4b"></span></div>
 </section>
 
 <!-- ============ LABS ============ -->
@@ -365,9 +364,9 @@ pages and topics to review.</pre></div>
   <p class="labno">LAB A · IN-PAGE SIMULATOR · ~15 MIN</p>
   <h3>Stack &amp; Spend Challenge</h3>
   <p>Use the stack builder (Segment 2) and the meeting cost calculator (Segment 3):</p>
-  <label class="step"><input type="checkbox" data-step="a1"><span>Build a complete 5/5 stack for Harbor Lane and read your vendor-mix verdict. Then press Check:</span></label>
+  <label class="step"><input type="checkbox" data-step="a1"><span>Build a complete 5/5 stack for Wayfarer Studio and read your vendor-mix verdict. Then press Check:</span></label>
   <div class="checkfield">→ Stack complete? <button class="btn small" onclick="checkA(1)">Check my stack</button> <span class="fb" id="fbA1"></span></div>
-  <label class="step"><input type="checkbox" data-step="a2"><span>Calculator: Harbor Lane's Monday "all-managers sync" is <strong>8 people × $50/hr × 45 minutes</strong>. What does one occurrence cost?</span></label>
+  <label class="step"><input type="checkbox" data-step="a2"><span>Calculator: Tidewater Markets' Monday "all-managers sync" is <strong>8 people × $50/hr × 45 minutes</strong>. What does one occurrence cost?</span></label>
   <div class="checkfield">→ Cost per occurrence: $<input type="number" id="labA2"> <button class="btn small" onclick="checkA(2)">Check</button> <span class="fb" id="fbA2"></span></div>
   <label class="step"><input type="checkbox" data-step="a3"><span>Same meeting, held weekly: what does the "per year, if weekly" KPI read?</span></label>
   <div class="checkfield">→ Yearly cost: $<input type="number" id="labA3"> <button class="btn small" onclick="checkA(3)">Check</button> <span class="fb" id="fbA3"></span></div>
@@ -399,301 +398,139 @@ my score out of 5, my weakest topic, and the ONE thing to reread tonight.</pre><
   <p class="labno">LAB C · REAL FREE TOOL · ~20 MIN · 🆓 Google Docs (free account) · WORK IN PAIRS</p>
   <h3>Break a Document Together (Then Un-Break It)</h3>
   <p>This is the one-master-copy model as a contact sport — simultaneous editing, comments, suggesting mode, and the version-history time machine. Solo fallback: open the same doc in two browser windows (one in a private/incognito window).</p>
-  <label class="step"><input type="checkbox" data-step="c1"><span>Partner 1 creates a doc titled <code>HL-Collab-Test</code>, types three lines about Harbor Lane, and shares it with Partner 2 as <strong>Editor</strong>.</span></label>
+  <label class="step"><input type="checkbox" data-step="c1"><span>Partner 1 creates a doc titled <code>WS-Collab-Test</code>, types three lines about Wayfarer Studio's collaboration stack, and shares it with Partner 2 as <strong>Editor</strong>.</span></label>
   <label class="step"><input type="checkbox" data-step="c2"><span>Both partners type in DIFFERENT paragraphs <em>at the same time</em>. Watch the colored cursors — that's the one-master-copy model merging keystrokes live. Now both edit the SAME sentence and watch it still merge (no "file is locked" dialog — compare that to the email-attachment universe).</span></label>
   <label class="step"><input type="checkbox" data-step="c3"><span>Partner 2 highlights a phrase → Insert comment → <strong>@mention</strong> Partner 1 with a question. Partner 1 replies and clicks <strong>Resolve</strong>. Note where resolved threads go (they're not gone — check the comment history icon).</span></label>
-  <label class="step"><input type="checkbox" data-step="c4"><span>Partner 2 switches to <strong>Suggesting</strong> mode (pencil menu, top right) and rewrites a sentence; Partner 1 accepts one suggestion, rejects another. This is how you'll peer-review capstone drafts without trampling each other's text.</span></label>
+  <label class="step"><input type="checkbox" data-step="c4"><span>Partner 2 switches to <strong>Suggesting</strong> mode (pencil menu, top right) and rewrites a sentence; Partner 1 accepts one suggestion, rejects another. This is how you'll peer-review project milestone drafts without trampling each other's text.</span></label>
   <label class="step"><input type="checkbox" data-step="c5"><span>File → Version history → <strong>Name current version</strong>: "before chaos". Now Partner 1 deletes EVERYTHING. Breathe. File → Version history → restore "before chaos". The time machine works — sync mirrors chaos, version history rewinds it (Session 5 echo).</span></label>
 </section>
 
 <!-- ============ STORY QUIZ ============ -->
 <h2>📝 Session Quiz — Story Problems (Collaboration)</h2>
-<p>Ten scenarios on cloud collaboration — the last two test today's AI concept. The 12-question <strong>midterm review quiz</strong> is in the next section — this one counts toward the regular quiz grade (30%).</p>
+<p>Ten scenarios on cloud collaboration — the last two test today's AI concept <span class="note">(syllabus: quizzes = 30%)</span>.</p>
 <section class="quiz" id="quiz1">
 
-  <div class="q" data-a="2">
+  <div class="q" data-a="3">
     <h4>Q1 · <em>Final_v9_REALfinal2.xlsx</em></h4>
     <p class="stem">Malik coordinates next year's budget at Pelican Outfitters by emailing <code>Budget.xlsx</code> to six department heads. Two weeks later he has 14 reply-attachments; VP Susan edited an old copy, VP Marcus edited a different old copy, and their changes conflict in 30 cells. Malik spends a full Saturday merging by hand — and misses one of Susan's changes, which surfaces in the board meeting. What is the ROOT fix (not a bandage) for next year?</p>
     <button class="opt">A. A strict file-naming convention: Budget_v1, Budget_v2, with the date and initials appended</button>
-    <button class="opt">B. Larger attachment limits so the whole workbook always travels intact</button>
-    <button class="opt">C. One master spreadsheet in the cloud that every VP edits directly — with simultaneous editing, comments, and version history replacing the reply-all forks</button>
-    <button class="opt">D. A rule that only Malik may ever touch the file</button>
-    <div class="expl"><strong>Answer: C.</strong> ✔ The disease is the traveling-copy model itself: every email send forks the truth, and no naming discipline can merge forks after the fact. Move to one cloud-hosted master and the forks become impossible — VPs edit THE budget, conflicts merge at the keystroke level, comments hold the arguments, and version history preserves every state Malik might need to prove later. ✘ A is a bandage on the fork model — v7-Susan and v7-Marcus still diverge, just with tidier names; naming conventions collapse the first busy week. ✘ B mistakes the symptom (file size) for the problem (copies); a 10 GB limit forks truth exactly as fast. ✘ D creates a human bottleneck: six VPs dictating edits to one coordinator is slower than the Saturday merge, and Malik becomes the single point of failure for the entire budget.</div>
+    <button class="opt">B. Larger attachment limits so the whole workbook always travels intact in every reply</button>
+    <button class="opt">C. A rule that only Malik may ever touch the file — every VP emails him edits to key in himself</button>
+    <button class="opt">D. One master spreadsheet in the cloud that all six VPs edit directly</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ The disease is the traveling-copy model itself: every email send forks the truth, and no naming discipline can merge forks after the fact. Move to one cloud-hosted master and the forks become impossible — VPs edit THE budget simultaneously, conflicts merge at the keystroke level, comments hold the arguments instead of reply-all threads, and version history preserves every state Malik might need to prove later. ✘ A is a bandage on the fork model — v7-Susan and v7-Marcus still diverge, just with tidier names; naming conventions collapse the first busy week. ✘ B mistakes the symptom (file size) for the problem (copies); a 10 GB limit forks truth exactly as fast. ✘ C creates a human bottleneck: six VPs dictating edits to one coordinator is slower than the Saturday merge, and Malik becomes the single point of failure for the entire budget.</div>
   </div>
 
-  <div class="q" data-a="0">
+  <div class="q" data-a="1">
     <h4>Q2 · <em>Standup at 3 AM</em></h4>
     <p class="stem">Nova Analytics just hired engineers in Manila and Warsaw to join the Denver team. The daily 9:00 AM Denver video standup now lands at 11 PM in Manila and 5 PM in Warsaw; the Manila engineer has started sleeping through it, and honestly nobody blames her. The content is 90% "here's what I did / what I'll do / blockers." What should the team lead do?</p>
-    <button class="opt">A. Switch the daily standup to async: written updates in a shared doc/channel by each person's morning, with a short synchronous call only twice a week for discussion that genuinely needs back-and-forth</button>
-    <button class="opt">B. Rotate the meeting time so a different region suffers each month</button>
-    <button class="opt">C. Require Manila to attend and record absences in performance reviews</button>
-    <button class="opt">D. Cancel all standups — coordination will sort itself out organically</button>
-    <div class="expl"><strong>Answer: A.</strong> ✔ Status reporting is the classic async workload: it needs a written record more than it needs eye contact, and async makes time zones irrelevant — everyone reads and writes in their own morning. Keeping a lighter twice-weekly sync preserves what synchronous time is actually FOR: negotiation, unblocking, riffing. This is the Segment 1 principle — choose the mode deliberately. ✘ B distributes the pain instead of removing it; rotating misery is still misery, now with scheduling chaos on top. ✘ C manages the symptom with authority: mandating 11 PM attendance buys resentment and sleepy compliance, not coordination. ✘ D throws out coordination itself; the failure wasn't having standups, it was running an async-shaped ritual in sync mode. Teams that cancel without a replacement rediscover why standups existed — via a missed dependency.</div>
+    <button class="opt">A. Rotate the standup time each month so every region shares the late-night pain equally</button>
+    <button class="opt">B. Switch the daily standup to async written updates, plus a short sync call twice a week</button>
+    <button class="opt">C. Require Manila to attend the 9 AM Denver call and log absences in performance reviews</button>
+    <button class="opt">D. Cancel all standups entirely — engineers will coordinate organically when they need to</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Status reporting ("did / will do / blockers") is the classic async workload: it needs a written record more than it needs eye contact. Each person posts their update in a shared doc or channel by their own morning, which makes time zones irrelevant — everyone reads and writes on their own clock. Keeping a lighter twice-weekly sync preserves what synchronous time is actually FOR: negotiation, unblocking, riffing — discussion that genuinely needs back-and-forth. This is the Segment 1 principle — choose the mode deliberately. ✘ A distributes the pain instead of removing it; rotating misery is still misery, now with scheduling chaos on top. ✘ C manages the symptom with authority: mandating 11 PM attendance buys resentment and sleepy compliance, not coordination. ✘ D throws out coordination itself; the failure wasn't having standups, it was running an async-shaped ritual in sync mode. Teams that cancel without a replacement rediscover why standups existed — via a missed dependency.</div>
   </div>
 
   <div class="q" data-a="1">
     <h4>Q3 · <em>The seventeen-email Thursday</em></h4>
-    <p class="stem">Harbor Lane's events coordinator Maya must schedule author visits with publicists at five different publishing houses — outside companies whose calendars she cannot see. Last month's Tampa event took seventeen emails to find one mutually free hour. Her manager asks you, the consultant, for the cloud-native fix. Which do you recommend?</p>
-    <button class="opt">A. A shared spreadsheet where each publicist types their free hours every Monday</button>
-    <button class="opt">B. A booking page (Calendly-style; Cal.com has a free tier) tied to Maya's calendar: publicists pick from her live availability, and the slot books itself into both calendars</button>
-    <button class="opt">C. CC-ing all five publicists on one thread so everyone sees every reply</button>
-    <button class="opt">D. Standing weekly calls with each publishing house to discuss upcoming availability</button>
-    <div class="expl"><strong>Answer: B.</strong> ✔ The booking page extends free/busy logic across organizational borders — the exact boundary where shared calendars stop working. Maya's availability is computed live from her calendar, publicists self-serve a slot, and the confirmation writes to both sides. Seventeen emails become one link. ✘ A rebuilds the calendar as a stale, manually-maintained copy — free hours change hourly, so Monday's spreadsheet lies by Tuesday, and double-booking returns. ✘ C makes the seventeen emails more public: five publicists watching each other negotiate is more noise, not more signal, and reply-all scheduling is how threads reach fifty messages. ✘ D spends the most expensive resource (recurring sync time, Segment 3) to coordinate a task that needs no discussion at all — a weekly meeting to avoid… scheduling.</div>
+    <p class="stem">Cormorant Books' events coordinator Maya must schedule author visits with publicists at five different publishing houses — outside companies whose calendars she cannot see. Last month's Tampa event took seventeen emails to find one mutually free hour. Her manager asks you, the consultant, for the cloud-native fix. Which do you recommend?</p>
+    <button class="opt">A. One reply-all email thread CC-ing all five publicists so everyone sees every proposed time at once</button>
+    <button class="opt">B. A booking page tied to Maya's calendar where publicists pick a slot from her live availability</button>
+    <button class="opt">C. A shared cloud spreadsheet where each publicist types in their free hours every Monday morning</button>
+    <button class="opt">D. A standing 30-minute weekly call with each publishing house to review upcoming availability live</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ A Calendly-style booking page (Cal.com has a free tier) extends free/busy logic across organizational borders — the exact boundary where shared calendars stop working. Maya's availability is computed live from her calendar, publicists self-serve a slot, and the confirmation books itself into both calendars. Seventeen emails become one link. ✘ A makes the seventeen emails more public: five publicists watching each other negotiate is more noise, not more signal, and reply-all scheduling is how threads reach fifty messages. ✘ C rebuilds the calendar as a stale, manually-maintained copy — free hours change hourly, so Monday's spreadsheet lies by Tuesday, and double-booking returns. ✘ D spends the most expensive resource (recurring sync time, Segment 3) to coordinate a task that needs no discussion at all — a weekly meeting to avoid… scheduling.</div>
   </div>
 
-  <div class="q" data-a="3">
+  <div class="q" data-a="2">
     <h4>Q4 · <em>The feature-chart champion</em></h4>
-    <p class="stem">Harbor Lane's tech-savviest manager, Priyanka, champions a slick new meetings tool: it tops every feature-comparison chart she can find. Your due diligence turns up two facts: the tool cannot connect to the IDaaS identity provider you recommended in Session 4 (each user needs a separate password), and it offers no way to export recordings or chat history if you ever leave. The price is excellent. What should your recommendation say?</p>
+    <p class="stem">Tidewater Markets' tech-savviest manager, Priyanka, champions a slick new meetings tool: it tops every feature-comparison chart she can find. Your due diligence turns up two facts: the tool cannot connect to the IDaaS identity provider you recommended in Session 4 (each user needs a separate password), and it offers no way to export recordings or chat history if you ever leave. The price is excellent. What should your recommendation say?</p>
     <button class="opt">A. Adopt it — feature superiority is what users experience daily, so it outweighs plumbing concerns</button>
     <button class="opt">B. Adopt it, but ask employees to reuse their SSO password manually so it feels integrated</button>
-    <button class="opt">C. Reject it only if a second tool matches its features exactly</button>
-    <button class="opt">D. Pass — no SSO integration means a manual account to provision and (worse) deprovision for every hire and departure, and no export means lock-in; selection criteria exist precisely to veto chart-toppers with disqualifying plumbing</button>
-    <div class="expl"><strong>Answer: D.</strong> ✔ Two of Segment 2's criteria are hard gates, not preferences: identity integration (every non-SSO tool recreates the orphaned-account risk you watched in Session 4's lifecycle simulator — multiplied by 240 employees and seasonal turnover) and data export (Session 2's vendor lock-in, applied to your own meeting history). A tool that fails both is disqualified regardless of features. ✘ A prices "plumbing" at zero; the first departed-employee-still-in-the-meetings-tool incident reprices it. ✘ B is actively harmful: manually reusing the SSO password spreads the crown jewel credential to a system outside the IdP's protection — the exact anti-pattern SSO exists to end. ✘ C misunderstands vetoes: disqualifying criteria don't wait for a feature-equivalent rival; "great features, fails security gates" is simply a no.</div>
+    <button class="opt">C. Pass on it — treat the missing SSO and export support as hard disqualifiers, not tradeoffs</button>
+    <button class="opt">D. Reject it only if you can find a second tool that matches its feature chart line for line</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Two of Segment 2's criteria are hard gates, not preferences. Identity integration: no SSO means a manual account to provision and (worse) deprovision for every hire and departure — the orphaned-account risk you watched in Session 4's lifecycle simulator, multiplied by 240 employees and seasonal turnover. Data export: no way to take your recordings and chat history out means lock-in (Session 2's vendor lock-in, applied to your own meeting history). Selection criteria exist precisely to veto chart-toppers with disqualifying plumbing; a tool that fails both gates is disqualified regardless of features. ✘ A prices "plumbing" at zero; the first departed-employee-still-in-the-meetings-tool incident reprices it. ✘ B is actively harmful: manually reusing the SSO password spreads the crown jewel credential to a system outside the IdP's protection — the exact anti-pattern SSO exists to end. ✘ D misunderstands vetoes: disqualifying criteria don't wait for a feature-equivalent rival; "great features, fails security gates" is simply a no.</div>
   </div>
 
   <div class="q" data-a="0">
     <h4>Q5 · <em>The $31,200 subscription</em></h4>
     <p class="stem">Using today's calculator, CFO Elena discovers the Monday "all-hands status sync" at her firm — 10 people × $60/hr loaded × 1 hour, every week — costs about $600 per occurrence, roughly $31,200 a year. Reviewing the recordings, she finds 50 of the 60 minutes are people reading updates aloud; decisions occupy the final 10. She doesn't want to lose the decisions. What's the calculator-informed redesign?</p>
-    <button class="opt">A. Move the status portion to an async written update posted before Monday; keep a 15-minute synchronous meeting for the decisions — cutting the yearly cost by roughly three-quarters while keeping what sync time is actually for</button>
-    <button class="opt">B. Cancel the meeting entirely, including the decision-making</button>
-    <button class="opt">C. Keep the hour but stop calculating what meetings cost</button>
-    <button class="opt">D. Double the attendees so the cost per person looks lower</button>
-    <div class="expl"><strong>Answer: A.</strong> ✔ This is the sync/async split applied surgically: the read-aloud 50 minutes is async-shaped (status, needs a record, needs no back-and-forth), while the 10 decision minutes genuinely need synchronized humans. A 15-minute decision meeting costs ~$150/week ≈ $7,800/yr — about 75% saved, decisions intact, and the written updates become searchable history for free. ✘ B overcorrects: decisions are exactly the workload that earns synchronous time; canceling them trades $23k of savings for slow, ambiguous decision-making that costs more. ✘ C is the ostrich option — the cost continues whether or not the CFO looks at it. ✘ D is accounting comedy: total cost doubles to $1,200/occurrence while the per-person "metric" improves; if that logic worked, the cheapest meeting would be one the whole company attends.</div>
-  </div>
-
-  <div class="q" data-a="2">
-    <h4>Q6 · <em>Twelve stores, one trainer</em></h4>
-    <p class="stem">Harbor Lane's new POS system launches next month, and 240 employees across 12 stores need training. Trainer Gus can physically visit two stores a week — six weeks of travel, and October hires will have missed it entirely by November. The budget is small. Using Segment 3's streaming-video toolbox, what should you propose?</p>
-    <button class="opt">A. Gus visits all 12 stores; late hires learn from whoever remembers the visit</button>
-    <button class="opt">B. One live all-company stream at 8 AM; anyone who misses it misses it</button>
-    <button class="opt">C. Record one excellent 15-minute POS training + short task videos for an on-demand library every hire watches on day one; add ONE live streamed Q&amp;A session per store cluster during launch week for questions and morale</button>
-    <button class="opt">D. Email a 40-page PDF manual to all 240 employees</button>
-    <div class="expl"><strong>Answer: C.</strong> ✔ This uses each streaming mode for what it's uniquely good at: recorded on-demand video delivers perfect, identical training at zero marginal cost forever — including to every future hire (the requirement options A and B silently fail) — while the live Q&amp;A supplies the two things recordings can't: answers to unanticipated questions and the sense of a shared launch. ✘ A costs six weeks of travel, trains inconsistently ("whoever remembers" is a game of telephone), and evaporates for November hires. ✘ B is a single synchronous point of failure: one time slot across store schedules and shifts guarantees absentees, and live-only means the content vanishes at 9 AM. ✘ D confuses <em>available</em> with <em>learned</em> — a 40-page PDF about a hands-on register is where training goes to be technically-sent; watch-then-do video fits the task's shape.</div>
+    <button class="opt">A. Move the status updates to an async written post before Monday; keep a 15-minute sync meeting for decisions</button>
+    <button class="opt">B. Cancel the meeting entirely, decisions included, and reclaim the full $31,200 for the bottom line</button>
+    <button class="opt">C. Keep the full hour as-is but stop running the calculator, so the cost stops showing up anywhere</button>
+    <button class="opt">D. Invite 10 more people so the cost per attendee drops and the meeting looks cheaper on paper</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ This is the sync/async split applied surgically: the read-aloud 50 minutes is async-shaped (status, needs a record, needs no back-and-forth), while the 10 decision minutes genuinely need synchronized humans — sync time kept for what sync time is actually for. A 15-minute decision meeting costs ~$150/week ≈ $7,800/yr — roughly three-quarters of the yearly cost saved, decisions intact, and the written updates become searchable history for free. ✘ B overcorrects: decisions are exactly the workload that earns synchronous time; canceling them trades $23k of savings for slow, ambiguous decision-making that costs more. ✘ C is the ostrich option — the cost continues whether or not the CFO looks at it. ✘ D is accounting comedy: total cost doubles to $1,200/occurrence while the per-person "metric" improves; if that logic worked, the cheapest meeting would be one the whole company attends.</div>
   </div>
 
   <div class="q" data-a="3">
-    <h4>Q7 · <em>Same cell, same second</em></h4>
-    <p class="stem">Two Harbor Lane managers, Ruth and Desmond, both open the master price list at 4:55 PM before a 5 PM promotion. Ruth updates hardcover prices while Desmond fixes paperback prices — same spreadsheet, same minutes, from stores 40 miles apart. Neither gets a "file locked" warning, neither overwrites the other, and each literally watches the other's edits appear in colored cells as they type. Which capability of cloud collaboration suites are they experiencing?</p>
-    <button class="opt">A. Store-and-forward messaging, like email but faster</button>
-    <button class="opt">B. Nightly file synchronization between the two stores' servers</button>
-    <button class="opt">C. Version history — the ability to restore earlier states of a file</button>
-    <button class="opt">D. Real-time co-editing of a single cloud-hosted master copy, with fine-grained changes merged live and presence showing who is editing where</button>
-    <div class="expl"><strong>Answer: D.</strong> ✔ Every observed detail maps to real-time co-editing: no lock dialog (there's no second copy to lock against — both edit THE spreadsheet), no overwrite (the service merges changes at cell/keystroke granularity), and colored live cursors are presence. This is the one-master-copy architecture from Segment 1 doing its job at 4:55 PM under deadline. ✘ A — store-and-forward is email's asynchronous relay model; nothing here is being sent, stored, and forwarded — they're co-present in one document. ✘ B — nightly sync between store servers is the OLD world; it would have produced exactly the conflict-and-overwrite mess this scenario conspicuously lacks, and nightly is 7 hours too late for a 5 PM promo. ✘ C — version history is real and adjacent, but it explains recovering the <em>past</em>; what Ruth and Desmond are experiencing is the merged <em>present</em>.</div>
-  </div>
-
-  <div class="q" data-a="1">
-    <h4>Q8 · <em>Death by five channels</em></h4>
-    <p class="stem">In one enthusiastic quarter, Brightwave Media adopted Slack, a project board, a wiki, a new meetings tool, and kept email — five tools, each "the best in its category." Six months later: decisions are made in Slack threads nobody can find, the wiki contradicts the board, people answer whichever channel they saw last, and new hires ask, sincerely, "where do I look to know what's true?" Response times are WORSE than before the tools arrived. What's the actual lesson?</p>
-    <button class="opt">A. Collaboration software doesn't work; return to email for everything</button>
-    <button class="opt">B. Tool sprawl fragments attention and truth — the fix is consolidation plus explicit norms: which channel is for what, and which single system is the source of truth for decisions</button>
-    <button class="opt">C. They needed a sixth tool to search across the other five</button>
-    <button class="opt">D. Employees weren't trained hard enough on each of the five tools</button>
-    <div class="expl"><strong>Answer: B.</strong> ✔ Segment 2's misconception, played out: each tool added a place where truth could hide, and without norms ("decisions live on the board, period; chat is ephemeral; the wiki is reference"), five good tools compose into one bad system. The fix is subtraction and agreements, not addition — best <em>stack</em> beats best-of-category, and a stack includes the human rules. ✘ A throws out real gains (co-editing, presence, searchable history) because of a governance failure; email-for-everything is how you get Q1's fourteen attachments back. ✘ C is the tool-sprawl reflex at its funniest: a meta-tool adds a sixth inbox and a sixth place to check, treating the symptom with more disease. ✘ D misdiagnoses: everyone knows HOW to use each tool — nobody agreed WHEN and FOR WHAT, and no amount of feature training answers "which of five channels is authoritative?"</div>
+    <h4>Q6 · <em>Twelve stores, one trainer</em></h4>
+    <p class="stem">Tidewater Markets' new POS system launches next month, and 240 employees across 12 stores need training. Trainer Gus can physically visit two stores a week — six weeks of travel, and October hires will have missed it entirely by November. The budget is small. Using Segment 3's streaming-video toolbox, what should you propose?</p>
+    <button class="opt">A. Email the 40-page PDF manual to all 240 employees with a read-receipt to confirm completion</button>
+    <button class="opt">B. Have Gus visit all 12 stores over six weeks; late hires learn from whoever remembers the visit</button>
+    <button class="opt">C. Run one live all-company stream at 8 AM on launch day; anyone who misses it misses it</button>
+    <button class="opt">D. Build an on-demand video library every hire watches on day one, plus one live Q&amp;A per store cluster</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Concretely: record one excellent 15-minute POS training plus short task videos for the library, and add ONE live streamed Q&amp;A session per store cluster during launch week for questions and morale. This uses each streaming mode for what it's uniquely good at: recorded on-demand video delivers perfect, identical training at zero marginal cost forever — including to every future hire (the requirement options B and C silently fail) — while the live Q&amp;A supplies the two things recordings can't: answers to unanticipated questions and the sense of a shared launch. ✘ A confuses <em>available</em> with <em>learned</em> — a 40-page PDF about a hands-on register is where training goes to be technically-sent (a read-receipt proves delivery, not learning); watch-then-do video fits the task's shape. ✘ B costs six weeks of travel, trains inconsistently ("whoever remembers" is a game of telephone), and evaporates for November hires. ✘ C is a single synchronous point of failure: one time slot across store schedules and shifts guarantees absentees, and live-only means the content vanishes at 9 AM.</div>
   </div>
 
   <div class="q" data-a="0">
-    <h4>Q9 · <em>The decision nobody made</em> 🧠 AI concept</h4>
-    <p class="stem">Monday's AI-generated summary of Brightwave's product meeting reads: "DECISION: discontinue the Explorer product line (owner: Priya, effective Q3)." It's crisp, confident — and false. Priya wasn't even in the meeting, and the transcript shows only a muddled minute where two people talked over each other about "exploring line options." The summary is already filed in the project wiki. What property of the AI explains the error — and what's the right fix?</p>
-    <button class="opt">A. Generation predicts plausible continuations instead of looking facts up — a garbled passage got "completed" into the crisp decision such passages usually become; fix: verify AI minutes against the source recording before filing, with human sign-off on anything labeled a decision</button>
-    <button class="opt">B. The assistant's database accidentally pulled a decision record from a different company's meeting</button>
-    <button class="opt">C. Priya must have edited the summary after it was generated — check the access logs for the culprit</button>
-    <button class="opt">D. The microphone glitched, which proves transcripts can never be trusted and AI note-taking should be banned</button>
-    <div class="expl"><strong>Answer: A.</strong> ✔ Confabulation, mechanically: the summarizer hit an ambiguous stretch and produced the most statistically likely shape for it — meeting summaries are FULL of "DECISION: … (owner: …)" lines, so that is what thin evidence became. The fluency and the named owner are style, not knowledge. The fix is workflow, not hope: a source-of-truth check against the recording, plus tiered sign-off before a summary becomes the filed record. ✘ B — the assistant queries no database of decisions; there was nothing to "pull," which is precisely the problem. ✘ C invents a villain when the known failure mode of generation explains everything — and the wiki timestamp matches the AI run, not a later edit. ✘ D overcorrects: the transcript wasn't wrong, just ambiguous; the answer is verification tiers, not banning a tool that saves hours.</div>
+    <h4>Q7 · <em>Same cell, same second</em></h4>
+    <p class="stem">Two Cormorant Books managers, Ruth and Desmond, both open the master price list at 4:55 PM before a 5 PM promotion. Ruth updates hardcover prices while Desmond fixes paperback prices — same spreadsheet, same minutes, from stores 40 miles apart. Neither gets a "file locked" warning, neither overwrites the other, and each literally watches the other's edits appear in colored cells as they type. Which capability of cloud collaboration suites are they experiencing?</p>
+    <button class="opt">A. Real-time co-editing of a single cloud-hosted master copy of the file</button>
+    <button class="opt">B. Store-and-forward messaging — like email, but relayed much faster</button>
+    <button class="opt">C. Nightly file synchronization between the two stores' local servers</button>
+    <button class="opt">D. Version history — the ability to restore earlier states of the file</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Every observed detail maps to real-time co-editing: no lock dialog (there's no second copy to lock against — both edit THE spreadsheet), no overwrite (the service merges fine-grained changes live, at cell/keystroke granularity), and colored live cursors are presence — showing who is editing where. This is the one-master-copy architecture from Segment 1 doing its job at 4:55 PM under deadline. ✘ B — store-and-forward is email's asynchronous relay model; nothing here is being sent, stored, and forwarded — they're co-present in one document. ✘ C — nightly sync between store servers is the OLD world; it would have produced exactly the conflict-and-overwrite mess this scenario conspicuously lacks, and nightly is 7 hours too late for a 5 PM promo. ✘ D — version history is real and adjacent, but it explains recovering the <em>past</em>; what Ruth and Desmond are experiencing is the merged <em>present</em>.</div>
   </div>
 
   <div class="q" data-a="2">
+    <h4>Q8 · <em>Death by five channels</em></h4>
+    <p class="stem">In one enthusiastic quarter, Brightwave Media adopted Slack, a project board, a wiki, a new meetings tool, and kept email — five tools, each "the best in its category." Six months later: decisions are made in Slack threads nobody can find, the wiki contradicts the board, people answer whichever channel they saw last, and new hires ask, sincerely, "where do I look to know what's true?" Response times are WORSE than before the tools arrived. What's the actual lesson?</p>
+    <button class="opt">A. Collaboration software was a mistake; move everything back to email, where at least it's all in one inbox</button>
+    <button class="opt">B. Adopt a sixth tool — a unified search dashboard that indexes Slack, the board, the wiki, and email</button>
+    <button class="opt">C. Tool sprawl is the problem — consolidate and set norms: which channel is for what, where decisions live</button>
+    <button class="opt">D. Mandate deeper training on each tool — people clearly never learned the features well enough</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Segment 2's misconception, played out: tool sprawl fragments attention and truth — each tool added a place where truth could hide, and without explicit norms ("decisions live on the board, period; chat is ephemeral; the wiki is reference"), five good tools compose into one bad system. The fix is subtraction and agreements, not addition: consolidate, name one single system as the source of truth for decisions — best <em>stack</em> beats best-of-category, and a stack includes the human rules. ✘ A throws out real gains (co-editing, presence, searchable history) because of a governance failure; email-for-everything is how you get Q1's fourteen attachments back. ✘ B is the tool-sprawl reflex at its funniest: a search dashboard is a meta-tool that adds a sixth inbox and a sixth place to check, treating the symptom with more disease. ✘ D misdiagnoses: everyone knows HOW to use each tool — nobody agreed WHEN and FOR WHAT, and no amount of feature training answers "which of five channels is authoritative?"</div>
+  </div>
+
+  <div class="q" data-a="1">
+    <h4>Q9 · <em>The decision nobody made</em> 🧠 AI concept</h4>
+    <p class="stem">Monday's AI-generated summary of Brightwave's product meeting reads: "DECISION: discontinue the Explorer product line (owner: Priya, effective Q3)." It's crisp, confident — and false. Priya wasn't even in the meeting, and the transcript shows only a muddled minute where two people talked over each other about "exploring line options." The summary is already filed in the project wiki. What property of the AI explains the error — and what's the right fix?</p>
+    <button class="opt">A. The assistant's database accidentally pulled a decision record from a different company's meeting</button>
+    <button class="opt">B. Generation predicts plausible continuations, not facts; fix: verify minutes against the recording before filing</button>
+    <button class="opt">C. Priya must have edited the summary after it was generated — check the access logs for the culprit</button>
+    <button class="opt">D. The microphone glitched, which proves transcripts can never be trusted and AI note-taking should be banned</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ Confabulation, mechanically: generation predicts plausible continuations instead of looking facts up, so the summarizer hit an ambiguous stretch and "completed" the garbled passage into the crisp decision such passages usually become — meeting summaries are FULL of "DECISION: … (owner: …)" lines, so that is what thin evidence turned into. The fluency and the named owner are style, not knowledge. The fix is workflow, not hope: verify AI minutes against the source recording before filing, with human sign-off on anything labeled a decision — tiered sign-off before a summary becomes the filed record. ✘ A — the assistant queries no database of decisions; there was nothing to "pull," which is precisely the problem. ✘ C invents a villain when the known failure mode of generation explains everything — and the wiki timestamp matches the AI run, not a later edit. ✘ D overcorrects: the transcript wasn't wrong, just ambiguous; the answer is verification tiers, not banning a tool that saves hours.</div>
+  </div>
+
+  <div class="q" data-a="3">
     <h4>Q10 · <em>Four outputs, one reviewer</em> 🧠 AI concept</h4>
-    <p class="stem">Harbor Lane's ops team runs a stakes-based verification policy for AI output. Four items sit in this morning's queue: (1) an AI brainstorm of 30 author-event theme ideas the team will pick through; (2) an AI cleanup of Marcus's own meeting notes, for his own use; (3) an AI-drafted email to the landlord quoting "$18,400 in Q2 store-repair costs," assembled from photos of invoices; (4) a chat recap posted with the label "AI summary — correct me." Reviewer time is scarce. Which item MUST be verified against source documents before it leaves the building?</p>
-    <button class="opt">A. The brainstorm list — thirty machine-generated ideas surely contain some bad ones</button>
-    <button class="opt">B. Marcus's cleaned-up personal notes — private files deserve the most scrutiny</button>
-    <button class="opt">C. The landlord email — a specific, external-facing financial figure becomes a commitment and a record the moment it sends, so the $18,400 must be checked against the actual invoices and signed off by a human first</button>
-    <button class="opt">D. The labeled chat recap — a disclaimer label doesn't excuse errors</button>
-    <div class="expl"><strong>Answer: C.</strong> ✔ Stakes-based triage in action: the email stacks every high-stakes trait — external audience, financial claim, permanent record — and OCR-plus-summarization over invoice photos is exactly the compounding-error pipeline from today's concept, where one misread digit becomes a confident total. It gets source verification and sign-off first, always. ✘ A — brainstorms are the canonical safe tier: bad ideas cost nothing because the humans picking through the list ARE the filter; reviewing 30 throwaway themes squanders the scarce reviewer. ✘ B — the only victim of an error in Marcus's own notes is Marcus, who rereads them; self-consumed output is the lowest tier. ✘ D — the "correct me" label is the trust matcher's as-is zone working as designed: it invites crowd-correction and creates no obligation, while item 3 puts real money on the line.</div>
+    <p class="stem">Cormorant Books' ops team runs a stakes-based verification policy for AI output. Four items sit in this morning's queue: (1) an AI brainstorm of 30 author-event theme ideas the team will pick through; (2) an AI cleanup of Marcus's own meeting notes, for his own use; (3) an AI-drafted email to the landlord quoting "$18,400 in Q2 store-repair costs," assembled from photos of invoices; (4) a chat recap posted with the label "AI summary — correct me." Reviewer time is scarce. Which item MUST be verified against source documents before it leaves the building?</p>
+    <button class="opt">A. The brainstorm list — thirty machine-generated ideas surely contain some duds worth catching</button>
+    <button class="opt">B. Marcus's cleaned-up personal notes — private working files deserve the most careful scrutiny</button>
+    <button class="opt">C. The labeled chat recap — a "correct me" disclaimer doesn't excuse posting errors to the team</button>
+    <button class="opt">D. The landlord email — verify the $18,400 against the actual invoices before it sends</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ Stakes-based triage in action: a specific, external-facing financial figure becomes a commitment and a record the moment it sends — the email stacks every high-stakes trait (external audience, financial claim, permanent record), and OCR-plus-summarization over invoice photos is exactly the compounding-error pipeline from today's concept, where one misread digit becomes a confident total. It gets checked against the actual invoices and signed off by a human first, always. ✘ A — brainstorms are the canonical safe tier: bad ideas cost nothing because the humans picking through the list ARE the filter; reviewing 30 throwaway themes squanders the scarce reviewer. ✘ B — the only victim of an error in Marcus's own notes is Marcus, who rereads them; self-consumed output is the lowest tier. ✘ C — the "correct me" label is the trust matcher's as-is zone working as designed: it invites crowd-correction and creates no obligation, while item 3 puts real money on the line.</div>
   </div>
 
   <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
 </section>
 
-<!-- ============ MIDTERM REVIEW ============ -->
-<h2>🎓 MIDTERM REVIEW — Sessions 1–6, Objectives 1–6</h2>
-<div class="reviewbox">
-  <h3>What's coming and how to use this section</h3>
-  <p><strong>The midterm exam happens at the START of Session 7 — the first class of Week 3</strong> — per the syllabus. It covers Sessions 1–6 and Objectives 1–6, in the same story-problem multiple-choice style as your session quizzes. Nothing outside these six session pages will appear. Use this section in order: (1) take the 12-question review quiz cold — no notes — and let the wrong answers diagnose you; (2) drill the 16-card flash deck until every back is boring; (3) fill in the traffic-light self-audit and re-open tonight whichever session is still red or yellow. Your Lab B AI coach score is a fourth data point. Between those four signals, you'll know exactly what to study — no guessing.</p>
-
-  <h3>📝 Review Quiz — 12 mixed story problems (Sessions 1–5)</h3>
-  <section class="quiz" id="midreview" data-title="Midterm Review Quiz">
-
-    <div class="q" data-a="0">
-      <h4>R1 · <em>January at FlexFit</em> — cloud characteristics</h4>
-      <p class="stem">FlexFit's workout app runs on 6 cloud servers most of the year. Every January 1st, resolution season triples signups for three weeks; the platform automatically grows to 19 servers, then shrinks back by February, and the invoice bills only the server-hours actually consumed. The CFO, reviewing the January bill, asks which cloud properties the company is paying for. Name them.</p>
-      <button class="opt">A. Rapid elasticity (capacity tracks demand automatically, both directions) combined with measured service (billing follows actual usage)</button>
-      <button class="opt">B. Broad network access and resource pooling</button>
-      <button class="opt">C. Virtualization and grid computing</button>
-      <button class="opt">D. On-demand self-service and vendor lock-in</button>
-      <div class="expl"><strong>Answer: A.</strong> ✔ Two of the five essential characteristics, working as a pair: elasticity is the automatic stretch (6→19) and shrink (19→6); measured service is why the bill mirrors the curve instead of charging for 19 servers year-round. Together they're the January-surge business case. ✘ B — both are present (the app IS reachable everywhere; the provider DOES pool hardware), but neither explains capacity following demand or usage-based billing, which is what the CFO is looking at. ✘ C — virtualization is the enabling <em>technology</em> underneath (Session 1 distinction: enabler vs characteristic), and grid computing splits one big computation — nothing here is one big computation. ✘ D — self-service is how FlexFit provisioned initially, but the January behavior was automatic, not clicked; and lock-in is a risk, not a characteristic anyone pays extra for on purpose.</div>
-    </div>
-
-    <div class="q" data-a="2">
-      <h4>R2 · <em>Five counties, one system</em> — deployment models</h4>
-      <p class="stem">Five neighboring Florida counties each need a records system that meets the same strict criminal-justice data rules (CJIS). None can afford to build a compliant private cloud alone; all five distrust generic public multi-tenant hosting for this data. Their IT directors meet at a conference and realize they have identical requirements. What deployment model was practically invented for this meeting?</p>
-      <button class="opt">A. Public cloud — the cheapest option always wins government procurement</button>
-      <button class="opt">B. Five separate private clouds with five separate compliance audits</button>
-      <button class="opt">C. Community cloud — shared infrastructure for organizations with common regulatory and mission requirements, splitting cost while meeting the shared rules</button>
-      <button class="opt">D. Hybrid cloud — every county keeps everything on-premises but calls it hybrid</button>
-      <div class="expl"><strong>Answer: C.</strong> ✔ Community cloud is defined by exactly this shape: multiple organizations, shared compliance regime (CJIS), shared costs, controls tailored to the group's common rules — private-cloud assurance at split-five pricing. ✘ A ignores the stated trust constraint; public cloud <em>can</em> host compliant workloads, but the scenario says these five require a narrower trust boundary than arbitrary co-tenants. ✘ B is the "none can afford it alone" option quintupled — five builds, five audit bills, zero sharing; it's the problem restated as a solution. ✘ D abuses vocabulary: hybrid means deliberately combining models per workload (private ledger + public burst); keeping everything on-prem and renaming it isn't hybrid, it's the status quo with a conference sticker.</div>
-    </div>
-
-    <div class="q" data-a="1">
-      <h4>R3 · <em>The plant floor and the sales spike</em> — hybrid</h4>
-      <p class="stem">Ostara Manufacturing runs its factory-control systems on-premises — regulators and the plant engineers insist those never leave the building. Meanwhile its e-commerce analytics workload is bursty: quiet most of the month, then enormous for 72 hours after each product drop. The CIO wants one architecture strategy that respects both facts and connects the two worlds securely. What is she describing?</p>
-      <button class="opt">A. A community cloud shared with other manufacturers</button>
-      <button class="opt">B. Hybrid cloud: regulated factory systems stay on private infrastructure while the bursty analytics runs in public cloud, linked by secure networking into one coherent system</button>
-      <button class="opt">C. Pure public cloud — move the factory controls too and hope the regulators evolve</button>
-      <button class="opt">D. Pure private cloud — buy enough on-prem hardware to cover the 72-hour analytics peaks</button>
-      <div class="expl"><strong>Answer: B.</strong> ✔ Hybrid's whole reason to exist: each workload placed where its requirements point — control and compliance keep the plant floor private; elasticity and pay-per-use fit the 72-hour bursts perfectly — with secure connectivity making them one system, which is what "one strategy" means. Most real enterprises land here (Session 1). ✘ A — community clouds serve <em>shared</em> requirements among allied orgs; Ostara's needs are internal, and competitors don't co-own plant-control infrastructure. ✘ C bets production machinery and the regulator relationship on "hope" — compliance isn't a mood. ✘ D solves the peak by buying hardware that idles ~27 days a month — the exact utilization disease (Session 1's 5–15% servers) that cloud economics exist to cure.</div>
-    </div>
-
-    <div class="q" data-a="3">
-      <h4>R4 · <em>Nobody here patches anything</em> — SaaS</h4>
-      <p class="stem">Verdant Landscaping pays $23 per user per month for a CRM its crews open in a browser. The vendor hosts everything, applies every upgrade invisibly overnight, and Verdant's "IT department" is one part-timer who manages user accounts and imports data. During Week 1 of this course, Verdant's owner asks which service model he's been buying all along. It's:</p>
-      <button class="opt">A. IaaS — he's clearly renting infrastructure somewhere</button>
-      <button class="opt">B. PaaS — the CRM is a platform for his customer data</button>
-      <button class="opt">C. A private cloud, since only Verdant's staff can log in</button>
-      <button class="opt">D. SaaS — finished software consumed over the network, with the provider managing the entire stack beneath his data and users</button>
-      <div class="expl"><strong>Answer: D.</strong> ✔ Every clue is the SaaS checklist: browser access, per-user subscription, invisible provider-side upgrades, customer responsibility shrunk to data + users + settings. That's the top of the Session 1 stack diagram — YOU manage almost nothing. ✘ A — infrastructure absolutely exists underneath, but the service model is defined by the layer <em>you</em> buy at; Verdant never sees a server, an OS, or a patch. ✘ B — "platform" in PaaS means a place developers deploy <em>their own code</em>; storing your customer records in someone's finished app doesn't make it your platform. ✘ C confuses deployment with access control: tenant isolation and logins exist in every multi-tenant SaaS; a private cloud means infrastructure dedicated to one organization, which $23/user/month emphatically is not buying.</div>
-    </div>
-
-    <div class="q" data-a="2">
-      <h4>R5 · <em>Push code, walk away</em> — PaaS</h4>
-      <p class="stem">Kite &amp; Anchor's two developers deploy their web app by pushing code; the platform builds it, runs it, scales it when the app gets featured in a newsletter, and manages the database version underneath. They have never patched an operating system, never configured a load balancer, and couldn't tell you what OS their app runs on. In exchange, they must write the app the platform's way, and leaving the platform would mean rework. Which model — and what's the named trade-off?</p>
-      <button class="opt">A. IaaS; the trade-off is having to manage everything yourself</button>
-      <button class="opt">B. SaaS; the trade-off is subscription pricing</button>
-      <button class="opt">C. PaaS; the trade-off is vendor lock-in — platform conveniences bind your app to that platform's way of doing things</button>
-      <button class="opt">D. Community cloud; the trade-off is sharing with other developers</button>
-      <div class="expl"><strong>Answer: C.</strong> ✔ Bring only code and data while the provider runs build, runtime, scaling, and managed services — that's Platform as a Service, and the sentence "leaving would mean rework" is vendor lock-in named precisely (Session 2's PaaS trade-off): each platform convenience is also a small hook. ✘ A inverts the facts — never patching an OS is the opposite of IaaS, where the OS upward is your job. ✘ B — SaaS is finished software you <em>use</em>; these developers are shipping software they <em>wrote</em>, one full layer down the stack. ✘ D is a deployment-model answer to a service-model question — and multi-tenancy (sharing the platform) is normal for public PaaS, not its defining trade-off.</div>
-    </div>
-
-    <div class="q" data-a="0">
-      <h4>R6 · <em>Root access and 2 AM patches</em> — IaaS</h4>
-      <p class="stem">Meridian Games rents 14 virtual machines from a cloud provider by the hour. Their engineers chose the operating system images, they SSH in with root access, they schedule their own security patches (badly — last month's 2 AM patch window broke matchmaking), and they installed a custom game server the provider has never heard of. The provider supplies the hardware, virtualization layer, network, and storage. Which model is Meridian consuming?</p>
-      <button class="opt">A. IaaS — rented fundamental compute/storage/network, with everything from the OS upward Meridian's responsibility</button>
-      <button class="opt">B. PaaS — the VMs form a platform for their game</button>
-      <button class="opt">C. SaaS — the game is software and it's a service</button>
-      <button class="opt">D. DRaaS — the servers exist for disaster recovery</button>
-      <div class="expl"><strong>Answer: A.</strong> ✔ Root access, OS choice, self-managed patching, arbitrary custom software: that's the IaaS deal — the provider's responsibility ends at the virtualization layer, and the broken 2 AM patch window is Meridian's very own (Session 3, plus the shared-responsibility preview for Session 8). ✘ B — if this were PaaS, Meridian would push game-server code and never see an OS; "we patch it ourselves" is disqualifying by definition. ✘ C plays word games: what Meridian <em>sells players</em> may be software-as-a-service, but what Meridian <em>buys</em> — the question asked — is raw infrastructure. Same company can sit on both sides. ✘ D — disaster recovery is a purpose, not this purchase; nothing in the scenario replicates systems for failover.</div>
-    </div>
-
-    <div class="q" data-a="3">
-      <h4>R7 · <em>The board wants a number</em> — cloud economics</h4>
-      <p class="stem">Startup CFO Imani must present the financial case for launching on cloud infrastructure instead of buying $150,000 of servers her engineers sized "for where we might be in year three." The board's finance chair, a retired manufacturing executive, asks her to name the fundamental accounting shift, not just the totals. Her one-sentence answer should be:</p>
-      <button class="opt">A. "Cloud is always cheaper than owning over any horizon."</button>
-      <button class="opt">B. "It converts operating expenses into capital expenses, which looks better on our books."</button>
-      <button class="opt">C. "It eliminates IT costs entirely, including the engineers."</button>
-      <button class="opt">D. "It converts capital expense into operating expense — instead of locking $150k into hardware sized for a year-three guess, spend tracks actual usage month by month and can stop or scale anytime."</button>
-      <div class="expl"><strong>Answer: D.</strong> ✔ The CapEx→OpEx shift, stated the way a finance chair hears it: no depreciating asset bought against a demand forecast, no year-three guess, spend correlated with reality, reversible monthly. For a startup whose real risk is <em>being wrong about the future</em>, that flexibility is the headline — more than any raw total. ✘ A overclaims and hands the chair an easy rebuttal: steady, fully-utilized workloads can favor owning (Session 1's Devon math showed rented totals exceeding purchase over 48 months). ✘ B states the shift backwards — a direction error that ends CFO credibility in one sentence. ✘ C — engineers still architect, secure, and monitor; cloud shifts their work from racking hardware to higher-value tasks, and "eliminates IT" is how boards end up surprised later.</div>
-    </div>
-
-    <div class="q" data-a="1">
-      <h4>R8 · <em>Five apps, one gate</em> — SSO</h4>
-      <p class="stem">At Palmetto Credit, employee Jerome starts his day: signs in once at 8:30 (password + a push approval on his phone), then opens the loan system, email, the HR portal, the document vault, and the compliance tracker — no further login screens all morning. A new auditor asks the security team: "So where, exactly, does Jerome's password get checked, and how many of those five applications store it?" The correct answer:</p>
-      <button class="opt">A. Each application checks it silently in the background; all five store a copy</button>
-      <button class="opt">B. Only the identity provider ever checks (or stores) it — the five applications receive and verify the IdP's signed tokens instead, which is why disabling Jerome at the IdP locks every door at once</button>
-      <button class="opt">C. The first application he opens checks it, then whispers it to the other four</button>
-      <button class="opt">D. No one checks it after enrollment day; the network remembers him</button>
-      <div class="expl"><strong>Answer: B.</strong> ✔ This is SSO's architecture in one audit answer: authentication happens once, at the IdP (with MFA — the push), and applications outsource the question by trusting signed, expiring tokens. Password storage count across the five apps: zero — which shrinks the attack surface and gives security its one-click kill switch (Session 4's SSO animator, steps 3–7). ✘ A describes the pre-SSO disease: five password databases, five breach targets — exactly what the design eliminates. ✘ C would make app #1 an identity provider with a password-forwarding habit; forwarding credentials between applications is an anti-pattern federation exists to prevent. ✘ D — "the network remembers" isn't a control; sessions and tokens expire deliberately so that trust is always recent, revocable, and attributable.</div>
-    </div>
-
-    <div class="q" data-a="2">
-      <h4>R9 · <em>Upgrade the second factor</em> — MFA</h4>
-      <p class="stem">After a phishing scare, Brightline Legal wants true two-factor login for its case-management system, upgraded specifically to resist phishing sites that relay codes in real time. The firm's four finalist schemes: (1) password + memorable passphrase; (2) password + emailed one-time link (email opens with the same password); (3) password + FIDO2 hardware security key; (4) fingerprint + face scan on the same phone. Which finalist delivers BOTH requirements?</p>
-      <button class="opt">A. Scheme 1 — two long secrets are twice as strong</button>
-      <button class="opt">B. Scheme 2 — the email link adds an independent step</button>
-      <button class="opt">C. Scheme 3 — password (know) + security key (have), and the key's response is origin-bound, so a fake domain gets nothing a relay can reuse</button>
-      <button class="opt">D. Scheme 4 — two biometrics are the most futuristic option</button>
-      <div class="expl"><strong>Answer: C.</strong> ✔ Both boxes ticked: two different factor categories (know + have) make it true 2FA, and FIDO2's origin binding makes it <em>phishing-resistant</em> — the key signs a challenge tied to the real domain, so a pixel-perfect proxy site collects nothing replayable (Session 4's Renata scenario). ✘ A is one category twice — two "knows" fall to a single phishing page in a single paste. ✘ B is subtly awful: the "independent" email factor is guarded by the same password the phisher just captured, collapsing two factors into one; emailed links are also relayable in real time. ✘ D is two "ares" — one category — and adds biometrics' rotation problem: after compromise you can change a password, but not your face. Futuristic isn't a factor category.</div>
-    </div>
-
-    <div class="q" data-a="0">
-      <h4>R10 · <em>The contractor who never left</em> — provisioning</h4>
-      <p class="stem">A security review at Cypress Health finds that Tariq, a billing contractor whose engagement ended eight months ago, still has a working VPN login and an active account in the claims system. Nobody used them — this time. The CISO wants the class of failure named and the class of fix proposed, in one line, for the board packet. Write the line.</p>
-      <button class="opt">A. "Failure: deprovisioning gap creating an orphaned account; fix: automated leaver workflow driven by the HR/contract system, plus scheduled access reviews to catch strays."</button>
-      <button class="opt">B. "Failure: password too weak; fix: require 16-character passwords for contractors."</button>
-      <button class="opt">C. "Failure: too much monitoring; fix: fewer security reviews so findings stop appearing."</button>
-      <button class="opt">D. "Failure: VPN technology is obsolete; fix: buy a newer VPN."</button>
-      <div class="expl"><strong>Answer: A.</strong> ✔ Both halves are the classic pair (Session 4, Segment 3): the failure class is a leaver event that never propagated — the definition of an orphaned account, eight months of standing risk — and the fix class is structural: the HR/contract system emits the termination event, connectors revoke everywhere automatically, and periodic access reviews sweep for anything that slipped through. Contractors especially need end-<em>dates</em>, not end-<em>memories</em>. ✘ B secures the wrong thing: a strong password on an account that shouldn't exist is a well-locked door that shouldn't be there. ✘ C shoots the messenger — the review WORKED; the finding is the system functioning. ✘ D blames the tool: the VPN authenticated correctly per its records; no upgrade fixes "we never told it Tariq left."</div>
-    </div>
-
-    <div class="q" data-a="1">
-      <h4>R11 · <em>Milliseconds matter</em> — storage types</h4>
-      <p class="stem">Suncrest Analytics is moving its transactional PostgreSQL database to the cloud. The engine rewrites small regions inside large open data files thousands of times a minute and needs consistent sub-millisecond disk latency. An intern proposes object storage ("cheapest per GB!"); a second intern proposes the company-wide shared file service ("everyone can see the data!"). The senior architect sighs and orders:</p>
-      <button class="opt">A. Object storage — durability is what databases crave most</button>
-      <button class="opt">B. Block storage — a low-latency raw volume attached to the database server, formatted and managed by its filesystem; the cloud heir of the SAN</button>
-      <button class="opt">C. The shared file service — visibility for all departments</button>
-      <button class="opt">D. The archive tier — the data is important, so keep it deep and safe</button>
-      <div class="expl"><strong>Answer: B.</strong> ✔ Databases are block storage's defining customer (Session 5): raw volumes deliver in-place partial writes at sub-millisecond latency, exactly matching an engine that surgically rewrites file interiors all day. Cloud block services (EBS-style) are literally "SAN as a service." ✘ A optimizes the wrong axis — object storage's eleven-nines durability is wonderful for the database's <em>backups</em>, but its whole-object-replacement-over-HTTP model can't do partial writes; the live database would crawl. ✘ C — a shared filesystem invites lock contention and latency, and "every department can see the raw DB files" is a governance incident, not a feature; departments get access through the database, not the filesystem. ✘ D confuses important with cold: archive means hours-long restores — a transactional database in the deep freezer isn't safe, it's <em>off</em>.</div>
-    </div>
-
-    <div class="q" data-a="3">
-      <h4>R12 · <em>The auditor's three questions</em> — tiers &amp; 3-2-1</h4>
-      <p class="stem">Meadowbrook Clinics keeps 4 TB of seven-year compliance records (accessed roughly twice a year) plus a live 600 GB patient-scheduling database. A new auditor asks three questions: Where do the old records live and at what cost profile? Is the database backup strategy resilient to ransomware? And can any administrator quietly alter the archived records? Which design answers all three well?</p>
-      <button class="opt">A. Everything in the hot tier with one nightly backup on the same cloud drive, admin-editable for convenience</button>
-      <button class="opt">B. Records on the office NAS; database backed up to a USB disk in the manager's desk</button>
-      <button class="opt">C. Records in cool storage, backups synced continuously to a second folder, no versioning — sync is basically backup</button>
-      <button class="opt">D. Records in archive-tier object storage with object lock (WORM) + 7-year retention; database follows 3-2-1 — live copy, versioned backups in a separate cloud service, plus an immutable offsite copy — with quarterly test restores</button>
-      <div class="expl"><strong>Answer: D.</strong> ✔ Question by question: twice-a-year records → archive tier (~$1/TB-month, hours-long restores are acceptable); ransomware resilience → 3-2-1 with <em>versioned</em> and <em>immutable</em> copies (an attack that encrypts and syncs can't reach a WORM copy, and versioning rewinds the rest); quiet alteration → object lock says no, even to admin credentials, until the retention clock expires. Quarterly test restores close the loop: "a backup isn't a backup until you've restored from it." ✘ A pays hot prices ~23× over, keeps the "backup" inside the blast radius, and leaves records admin-editable — failing all three questions. ✘ B is Session 1's flooded closet cosplaying as compliance. ✘ C repeats the exam's favorite trap: sync replicates the attack in seconds; without versioning there is no rewind — sync is not backup, in bold, forever.</div>
-    </div>
-
-    <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
-  </section>
-
-  <h3>🃏 Flash Deck — 16 key terms from Weeks 1–2</h3>
-  <p>Flip until every back feels obvious. Each card ends with the exam tip that distinguishes it from its favorite distractor:</p>
-  <div class="flipgrid">
-    <button class="flip"><h5>Rapid elasticity</h5><span class="hint">tap to flip</span><span class="back">Capacity stretches AND shrinks with demand, often automatically; to the customer, resources appear unlimited. <em>Exam tip:</em> elasticity is the behavior; virtualization is the enabler underneath — don't swap them.</span></button>
-    <button class="flip"><h5>Measured service</h5><span class="hint">tap to flip</span><span class="back">Usage is metered and billed like a utility — per hour, GB, request. <em>Exam tip:</em> it's the reason the bill follows the demand curve; pairs with elasticity in almost every "viral spike" story problem.</span></button>
-    <button class="flip"><h5>Resource pooling / multi-tenancy</h5><span class="hint">tap to flip</span><span class="back">Provider hardware serves many customers at once, isolated by virtualization; pooling is why cloud prices are low. <em>Exam tip:</em> multi-tenant ≠ insecure — isolation is the design requirement, and SaaS runs on it.</span></button>
-    <button class="flip"><h5>CapEx → OpEx</h5><span class="hint">tap to flip</span><span class="back">Buying servers = capital expense locked in upfront; renting cloud = operating expense tracking actual use. <em>Exam tip:</em> the shift is the advantage — NOT "cloud is always cheaper." Watch for that trap option.</span></button>
-    <button class="flip"><h5>Community cloud</h5><span class="hint">tap to flip</span><span class="back">Infrastructure shared by organizations with common requirements (five hospitals, five counties) splitting costs under shared rules. <em>Exam tip:</em> the tell is a GROUP + a SHARED compliance regime; one company alone is never "community."</span></button>
-    <button class="flip"><h5>Hybrid cloud</h5><span class="hint">tap to flip</span><span class="back">Deliberate combination: sensitive/steady workloads private, spiky/public-facing workloads public, securely connected as one system. <em>Exam tip:</em> the tell is a SPLIT requirement in one company (regulated core + bursty edge).</span></button>
-    <button class="flip"><h5>SaaS</h5><span class="hint">tap to flip</span><span class="back">Finished software over the network (Gmail, CRM); provider manages the whole stack; you bring data, users, settings. <em>Exam tip:</em> if the customer never deploys code or patches anything, it's SaaS — subscription pricing is a supporting clue.</span></button>
-    <button class="flip"><h5>PaaS</h5><span class="hint">tap to flip</span><span class="back">Platform for YOUR code: push it, the provider builds/runs/scales it; you never see the OS. <em>Exam tip:</em> the customer is a developer. Named trade-off: vendor lock-in — conveniences bind your app to the platform.</span></button>
-    <button class="flip"><h5>IaaS</h5><span class="hint">tap to flip</span><span class="back">Rented fundamental compute/storage/network (VMs by the hour); everything from the OS up is YOUR job. <em>Exam tip:</em> "root access," "chose the OS," "patches it themselves" = IaaS, every time. Providers: EC2, Azure VMs, GCE.</span></button>
-    <button class="flip"><h5>Vendor lock-in</h5><span class="hint">tap to flip</span><span class="back">The cost and difficulty of leaving a provider once your systems depend on its specific services and formats. <em>Exam tip:</em> mitigations are exit plans, data export, standard formats — "never sign contracts" is the joke option.</span></button>
-    <button class="flip"><h5>SSO (single sign-on)</h5><span class="hint">tap to flip</span><span class="back">Authenticate once at an identity provider; apps accept its signed tokens and stop storing passwords entirely. <em>Exam tip:</em> know WHERE the password is checked (only the IdP) and the kill-switch consequence for terminations.</span></button>
-    <button class="flip"><h5>Federated identity</h5><span class="hint">tap to flip</span><span class="back">Trust across organizations: your IdP's assertions honored by another company's app ("Sign in with Google"; partner portals). Standards: SAML, OAuth 2.0, OIDC. <em>Exam tip:</em> OAuth = delegated authorization; OIDC = the "who are you" layer.</span></button>
-    <button class="flip"><h5>MFA factors</h5><span class="hint">tap to flip</span><span class="back">Know (password/PIN) · Have (phone app, security key) · Are (biometrics). True MFA = two DIFFERENT categories. <em>Exam tip:</em> password+PIN is one category (fake 2FA); FIDO2 keys are the phishing-resistant "have" because they're origin-bound.</span></button>
-    <button class="flip"><h5>Deprovisioning &amp; orphaned accounts</h5><span class="hint">tap to flip</span><span class="back">Leaver access must be revoked everywhere, immediately, from an HR-driven event; accounts that survive are orphaned — a top audit finding and breach vector. <em>Exam tip:</em> best practice is disable now, delete later; "checklist by memory" is the failure mode.</span></button>
-    <button class="flip"><h5>Block vs file vs object</h5><span class="hint">tap to flip</span><span class="back">Block = raw low-latency volumes (databases, boot disks). File = shared folders, many users (the S: drive). Object = HTTP blobs at infinite scale, cheapest per GB (images, video, backups). <em>Exam tip:</em> live databases NEVER go on object storage — no in-place writes.</span></button>
-    <button class="flip"><h5>Tiers + the 3-2-1 rule</h5><span class="hint">tap to flip</span><span class="back">Hot/cool/archive trade per-GB price against retrieval fees and latency — tier by ACCESS PATTERN. Backup: 3 copies, 2 media/services, 1 offsite (ideally immutable/offline). <em>Exam tip:</em> sync ≠ backup (it replicates ransomware); versioning is the rewind button.</span></button>
-  </div>
-
-  <h3>🚦 Traffic-Light Self-Audit — Objectives 1–6</h3>
-  <p>Tap each light honestly: 🔴 lost · 🟡 shaky · 🟢 exam-ready. Anything not green tells you which session page to re-open tonight — the midterm is first thing next class.</p>
-  <div class="exitrow"><button class="light" data-exit="aud1">⚪</button><span><strong>Objective 1</strong> · I can explain the cloud's abstract nature, the five characteristics, and argue advantages vs disadvantages. <em>(re-open Session 1)</em></span></div>
-  <div class="exitrow"><button class="light" data-exit="aud2">⚪</button><span><strong>Objective 2</strong> · I can define and describe SaaS — multi-tenancy, vendor pros/cons, examples. <em>(re-open Session 2)</em></span></div>
-  <div class="exitrow"><button class="light" data-exit="aud3">⚪</button><span><strong>Objective 3</strong> · I can define and describe PaaS — what "platform" means, components, lock-in. <em>(re-open Session 2)</em></span></div>
-  <div class="exitrow"><button class="light" data-exit="aud4">⚪</button><span><strong>Objective 4</strong> · I can describe IaaS, name providers, and size/justify instances for a workload. <em>(re-open Session 3)</em></span></div>
-  <div class="exitrow"><button class="light" data-exit="aud5">⚪</button><span><strong>Objective 5</strong> · I can evaluate identity-management challenges and appraise IDaaS — SSO flow, MFA factors, JML lifecycle. <em>(re-open Session 4)</em></span></div>
-  <div class="exitrow"><button class="light" data-exit="aud6">⚪</button><span><strong>Objective 6</strong> · I can differentiate storage (DAS/NAS/SAN, block/file/object, tiers, 3-2-1) and collaboration solutions (sync/async, selection criteria). <em>(re-open Sessions 5–6)</em></span></div>
-</div>
-
 <!-- ============ DISCUSSION ============ -->
 <section class="card disc">
   <h3>💬 Discussion Forum Prompts <span class="note">(syllabus: Discussion Forums = 15%)</span></h3>
-  <p><strong>Prompt 1:</strong> Your company's AI meeting assistant produced a summary stating a client "approved the revised budget" — the client actually said they'd <em>review</em> it. The summary was auto-emailed to eleven people before anyone noticed. Whose failure is this — the tool's, the meeting owner's, or the policy's? Propose the two-rule policy you'd institute for AI meeting outputs, and connect it to today's trust-calibration matcher. Reply to two classmates.</p>
-  <p><strong>Prompt 2:</strong> Argue for or against: "A company should pick ONE suite (Google or Microsoft) for all five collaboration needs, even when a best-of-breed tool is clearly better for one need." Use at least three selection criteria from Segment 2 — including the SSO/identity criterion from Session 4 — and your stack-builder verdict as evidence. Would your answer change for a 12-store bookstore vs a 40,000-person bank?</p>
+  <div class="definition-grid">
+    <article class="definition-card"><b>Prompt 1 · The auto-emailed "approval"</b><span>Your company's AI meeting assistant summarized a client's "we'll review it" as "approved the revised budget" — and auto-emailed eleven people before anyone noticed. Whose failure is this: the tool's, the meeting owner's, or the policy's? Propose the two-rule policy you'd institute for AI meeting outputs, connected to today's trust-calibration matcher. Reply to two classmates.</span></article>
+    <article class="definition-card"><b>Prompt 2 · One suite or best-of-breed?</b><span>Argue for or against: "A company should pick ONE suite (Google or Microsoft) for all five collaboration needs, even when a best-of-breed tool is clearly better for one need." Use at least three Segment 2 criteria — including the SSO/identity criterion from Session 4 — and your stack-builder verdict as evidence. Would your answer change for a 12-store grocery chain vs a 40,000-person bank?</span></article>
+  </div>
 </section>
 
-<!-- ============ CAPSTONE ============ -->
+<!-- ============ COURSE PROJECT ============ -->
 <section class="card capstone">
-  <h3>🏗️ Capstone · Harbor Lane Books — Checkpoint 6 of 12 · 🚨 DELIVERABLE D2 DUE TODAY</h3>
-  <p><strong>Deliverable D2 — the Identity + Data + Collaboration Plan — is due at the end of this session (end of Week 2)</strong> per the project schedule. It assembles your Session 4, 5, and 6 checkpoint work into one client-ready document. Rubric and submission details: <a href="project.html"><strong>open the Project Brief →</strong></a></p>
-  <p><strong>D2 must contain, in order:</strong></p>
-  <label class="step"><input type="checkbox" data-step="cap1"><span><strong>① Identity section (from Checkpoint 4):</strong> IDaaS recommendation justified against ≥3 appraisal criteria, the JML provisioning-policy table for three roles (with seasonal auto-expiry), and the MFA policy including the lost-phone flow.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap2"><span><strong>② Data section (from Checkpoint 5):</strong> the storage architecture map (every data set → type + tier + justification), the 3-2-1 backup policy naming the versioned and immutable copies, and the monthly cost estimate from the Session 5 simulator — including the "if everything were hot" comparison line.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap3"><span><strong>③ Collaboration section (today):</strong> your five-need stack pick with the vendor-mix reasoning from the stack builder, each tool checked against SSO integration and data export, plus a one-paragraph rollout/training note that uses the streaming-video approach from Segment 3.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap5"><span>Cross-check D2 against the rubric in <a href="project.html">project.html</a>, then submit per your instructor's directions <strong>before you leave today</strong>.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap6"><span><strong>Midterm-ready status check:</strong> confirm D1 (Week 1 cloud-adoption proposal) was submitted and D2 is in — Week 3 opens with the midterm, then pivots straight into virtualization, security, and DR for D3. Walking in current is the whole game.</span></label>
+  <h3>🏗️ Course Project · Milestone 2 due next class <span class="note">(Session 7 = midterm + M2 submission — the same day)</span></h3>
+  <p class="section-lead"><strong>Milestone 2 (25 pts) is "Identity (SSO/MFA) &amp; storage, 3-2-1 backups."</strong> You already have both halves — Session 4 taught identity, Session 5 taught storage. Nothing new is coming; what's left is assembly, and this is the last class before it's due.</p>
+  <div class="track-grid"><div class="track-card"><b>☁️ Pocket Cloud</b>Identity plus storage choices and 3-2-1 backups for your miniature provider.</div><div class="track-card"><b>🌊 Pelican Tours</b>Identity plus S3 tiers, versioning, and backup design.</div><div class="track-card"><b>📱 Bring Your Own App</b>Your login system, your assets, your backups.</div></div>
+  <div class="warning-callout"><strong>Calendar warning, in ink:</strong> Session 7 is a double event — the midterm is the first thing that happens, and M2 is due that same day. On Session 7 you will be writing an exam, not a milestone. <a href="project/index.html"><strong>Open the Project Hub for briefs, per-track checklists, and rubrics →</strong></a></div>
+  <label class="step"><input type="checkbox" data-step="cap1"><span><strong>Finish M2 tonight or this weekend — not on Session 7.</strong> Open your track's M2 checklist on the Project Hub and mark every requirement done / half-done / missing. The half-done and missing rows are your entire to-do list, and there are exactly zero class sessions left to do them in.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Grade yourself against the rubric before your instructor does.</strong> Identity: which IdP/SSO approach, which MFA factor, and the three appraisal criteria that justify them. Storage: every data set mapped to type + tier, and the 3-2-1 plan naming which copy is versioned and which is immutable. If you can't point to the sentence that satisfies a rubric row, that row is worth zero.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap3"><span><strong>Submit M2, then study.</strong> In that order — a submitted milestone is 25 points banked; a "nearly finished" one is not. Once it's in, re-open Sessions 1–5 and run Lab B's AI quiz drill as your midterm prep. (Milestones 3 and 4 land at Sessions 9 and 11, with the live demo at Session 12 — but none of that matters until M2 is uploaded.)</span></label>
 </section>
 
 <!-- ============ EXIT TICKET ============ -->
@@ -702,7 +539,7 @@ my score out of 5, my weakest topic, and the ONE thing to reread tonight.</pre><
   <p>Tap each light until it matches your confidence: 🔴 lost · 🟡 shaky · 🟢 got it</p>
   <div class="exitrow"><button class="light" data-exit="e1">⚪</button><span>I can choose sync vs async for a given collaboration task — and defend the choice with the cost calculator.</span></div>
   <div class="exitrow"><button class="light" data-exit="e2">⚪</button><span>I can justify a five-need collaboration stack using real selection criteria (SSO integration, export, cost, adoption).</span></div>
-  <div class="exitrow"><button class="light" data-exit="e3">⚪</button><span>I know exactly which Objectives 1–6 are still 🔴/🟡 for me — and which session pages I'm re-opening tonight.</span></div>
+  <div class="exitrow"><button class="light" data-exit="e3">⚪</button><span>I can pick the right streaming mode — live, webinar, or on-demand library — for a training rollout, and say why.</span></div>
   <div class="exitrow"><button class="light" data-exit="e4">⚪</button><span>🧠 AI concept: I can explain why AI hallucinates and run a verification workflow before trusting its output.</span></div>
   <p style="margin-top:10px"><strong>Muddiest point</strong> — one thing you want re-explained before the midterm (instructor reads these before writing the exam review):</p>
   <textarea data-persist="muddy" placeholder="The thing I most want re-explained before the exam is…"></textarea>
@@ -710,7 +547,7 @@ my score out of 5, my weakest topic, and the ONE thing to reread tonight.</pre><
 
 <footer>
   <div class="card" style="background:#f0eee6">
-    <strong>📚 Before Session 7:</strong> STUDY — the <strong>midterm exam is the FIRST thing in Session 7</strong> (start of Week 3), covering Sessions 1–6 / Objectives 1–6 in story-problem style. Retake this page's review quiz until green, drill the flash deck, and clear every 🔴 on your self-audit. After the exam, Session 7 begins <strong>Virtualization</strong> — preview it by skimming Session 7's opening segment; the deep dive can wait until after the test. And if D2 isn't submitted… submit D2.
+    <strong>📚 Before Session 7 — two deadlines, one day.</strong> ① <strong>Submit Milestone 2</strong> (25 pts: identity + storage + 3-2-1 backups, per your track's checklist on the <a href="project/index.html">Project Hub</a>). It is due at Session 7, and Session 7 is not a work session. ② <strong>STUDY</strong> — the <strong>midterm exam is the FIRST thing in Session 7</strong> (start of Week 3), covering Sessions 1–6 / Objectives 1–6 in story-problem style. Retake each session page's quiz until green and run Lab B's AI quiz drill to find your weakest topic. After the exam, Session 7 begins <strong>Virtualization</strong> — preview it by skimming Session 7's opening segment; the deep dive can wait until after the test.
   </div>
   <div class="footer-nav">
     <a class="btn ghost" href="index.html">⌂ Course Hub</a>
@@ -837,8 +674,8 @@ function stackPaint(){
   const vendors=sels.map(b=>b.dataset.vendor);
   const g=vendors.filter(x=>x==='google').length;
   const distinct=new Set(vendors).size;
-  if(g>=4){v.textContent='🧩 Verdict: an integrated-suite stack ('+g+'/5 Google). One vendor = one login (hello, Session 4 SSO), files/calendar/meetings interlink, one admin console — the integration argument in action. The trade-off to write down for D2: deeper single-vendor dependence — Session 2 vocabulary, vendor lock-in.';}
-  else if(distinct===5){v.textContent='🎛️ Verdict: five needs, five different vendors — pure best-of-breed. Strong features, but D2 now owes an integration plan: five logins unless EVERY tool federates with your Session 4 IdP, five notification streams, five admin consoles, five export policies. Convince the client it’s worth the seams.';}
+  if(g>=4){v.textContent='🧩 Verdict: an integrated-suite stack ('+g+'/5 Google). One vendor = one login (hello, Session 4 SSO), files/calendar/meetings interlink, one admin console — the integration argument in action. The trade-off to write down: deeper single-vendor dependence — Session 2 vocabulary, vendor lock-in. Note the seam too: no suite covers the whiteboard row, so even this stack owes one extra federation.';}
+  else if(distinct===5){v.textContent='🎛️ Verdict: five needs, five different vendors — pure best-of-breed. Strong features, but you now owe an integration plan: five logins unless EVERY tool federates with your Session 4 IdP, five notification streams, five admin consoles, five export policies. Convince the client it’s worth the seams.';}
   else{v.textContent='⚖️ Verdict: a mixed stack ('+distinct+' vendors). Reasonable — now run the Segment 2 gates on each non-suite pick: does it SSO with the ONE identity provider you chose in Session 4, and can you export your data if you leave? Any tool failing both gates gets vetoed, feature charts notwithstanding.';}
 }
 document.querySelectorAll('.pickrow').forEach(row=>{
@@ -878,7 +715,7 @@ function checkA(i){
   let ok=false,msg='';
   if(i===1){
     ok=document.querySelectorAll('.pickrow .pick.sel').length===5;
-    msg=ok?'✔ Full stack — 5/5 needs covered. Now read your vendor-mix verdict: integration is a selection criterion, not an afterthought, and that verdict paragraph belongs (in your own words) in D2.':'✘ Not yet — the stack builder in Segment 2 still has uncovered needs. Pick one tool in every row, then re-check.';
+    msg=ok?'✔ Full stack — 5/5 needs covered. Now read your vendor-mix verdict: integration is a selection criterion, not an afterthought, and that reasoning (in your own words) is exactly what a tool-selection justification looks like.':'✘ Not yet — the stack builder in Segment 2 still has uncovered needs. Pick one tool in every row, then re-check.';
   }
   if(i===2){
     const val=+document.getElementById('labA2').value;
@@ -897,84 +734,35 @@ function checkA(i){
   }
   fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
 }
-</script>
-<script type="module">
-/* pilot: in-page AI chat (WebLLM — runs fully offline in the visitor's browser, no server, no account, no cost) */
-const MODEL='Llama-3.2-1B-Instruct-q4f16_1-MLC';
-const loadPane=document.getElementById('aiLoadPane');
-const loadBtn=document.getElementById('aiLoadBtn');
-const bar=document.getElementById('aiBar');
-const barFill=document.getElementById('aiBarFill');
-const statusEl=document.getElementById('aiStatus');
-const log=document.getElementById('aiLog');
-const row=document.getElementById('aiRow');
-const input=document.getElementById('aiInput');
-const btn=document.getElementById('aiSendBtn');
-if(loadBtn&&log&&row&&input&&btn){
-  const history=[{role:'system',content:'You are a concise, friendly tutor for a college Cloud Computing course (CEN4086). Help the student with today\'s session: cloud collaboration tools, sync vs. async work, and reviewing material from Sessions 1-6 for the upcoming midterm. Keep answers under 100 words unless asked for more, and gently correct misconceptions.'}];
-  let engine=null;
 
-  function addMsg(role,text){
-    const d=document.createElement('div');
-    d.className='aichat-msg '+(role==='user'?'user':'bot');
-    d.textContent=text;
-    log.appendChild(d);
-    log.scrollTop=log.scrollHeight;
-    return d;
+/* Hands-on exercise checks */
+const HX={
+  '1a':{a:4,ok:'✔ Four and four — a dead heat, which is the point. The tell is never the tool (a video call and a comment thread are both "collaboration"); it is whether the work needs instant back-and-forth (standup blockers, the pre-call deck, the stuck coworker, the brainstorm) or needs a durable record people can read on their own clock (comments, recorded demo, weekly status, task board).',no:'✘ Place all eight cards first, then count the ⚡ zone. Ask each card one question: does this work die without instant back-and-forth, or does it just need a record someone can read later?'},
+  '1b':{a:'sync',alt:['synchronous','synchronously','sync call','a call','call','live','meeting'],ok:'✔ Sync — and notice what did NOT change: the document, the people, the topic. Only the deadline moved. Urgency is the switch that buys synchronous time; a two-day comment thread and a 15-minute call are the same conversation at two different speeds. That is why "should this be a meeting?" is always answered by the clock and the stakes, never by the topic.',no:'✘ Nothing about the artifact changed — only the clock did. A comment thread that resolves "over two days" cannot resolve in 40 minutes. Which mode buys speed of back-and-forth?'},
+  '1c':{a:6,ok:'✔ Six of twelve — four from the first sorter (the comment thread, the recorded demo, the weekly status doc, the task board) plus two of the borderline four (the 20-page proposal critique and the time-zone handoff). All six share one fingerprint: the work needs a durable record more than it needs humans in the same minute.',no:'✘ Place all twelve cards across BOTH sorters, then count the 📬 zones. Ask each card: does this task need a record, or a room?'},
+  '2a':{a:4,ok:'✔ Four of five. Pick Google for chat, meetings, docs, and calendar and the verdict fires the integrated-suite line — but the fifth row has no suite option at all. Even the most consolidated stack in this catalog ends with two vendors, which means the "one login" pitch always comes with an asterisk you must plan for.',no:'✘ Go row by row and count how many of the five needs offer the SAME vendor. Pick that vendor everywhere it appears, then read the verdict line — it prints the count for you.'},
+  '2b':{a:'whiteboard',alt:['white board','whiteboards','the whiteboard','board','whiteboarding'],ok:'✔ The whiteboard. Chat, meetings, docs, and calendar all have a suite option; the whiteboard row is diagrams.net, Excalidraw, and FigJam — no Google, no Microsoft. That single row is why "we are a Microsoft shop, so identity is simple" is never quite true: one tool always sits outside the walls and has to be federated (or it becomes the orphaned-account risk from Session 4).',no:'✘ Read the vendor of every button in all five rows. Four needs offer a big-suite option (Google or Microsoft). One offers neither — name that need.'},
+  '2c':{a:4,ok:'✔ Four vendors — and the verdict line says so: "a mixed stack (4 vendors)." The constraints force Jitsi Meet (the only meetings option with no account AND no 40-minute cap), diagrams.net (no account), and Microsoft for docs + calendar (the same non-Google vendor twice); chat can be Slack or Discord and the count is 4 either way. Real selection works exactly like this — constraints eliminate options long before feature charts get a vote.',no:'✘ Work the constraints one at a time: which meetings tool needs no account and has no time cap? Which whiteboard needs no account? Which non-Google vendor offers BOTH docs and calendar? Then count the distinct vendors — the verdict line prints the number.'},
+  '3a':{a:840,ok:'✔ $840 per occurrence: 14 people × $60/hr × 1 hour. Nobody signs an invoice for it, no budget line records it, and it happens again next Monday — which is exactly why meetings are the least-scrutinized recurring purchase in most companies.',no:'✘ Set attendees 14, rate $60, duration 60 and read the "cost per occurrence" KPI. By hand: 14 × 60 × (60 ÷ 60).'},
+  '3b':{a:43680,ok:'✔ $43,680 a year — $840 × 52. That is a mid-range salary spent on ONE recurring meeting, and it never appeared in a budget review. Now you understand why the first move of every serious ops leader is to audit the standing calendar.',no:'✘ Keep the same sliders (14 / $60 / 60 min) and read the "per year, if weekly" KPI — or multiply your Exercise 1 answer by 52 weeks.'},
+  '3c':{a:24960,ok:'✔ $24,960 a year, saved by editing an invite list. Six attendees cost $360 per occurrence ($18,720/yr) versus $840 ($43,680/yr) — the eight listeners were costing $24,960 annually to hear status they could read in ninety seconds. Attendance is a cost, not a courtesy: every person you add is a linear multiplier on the bill.',no:'✘ Two settings, two yearly KPIs, one subtraction. Read the "per year, if weekly" figure at 14 attendees, then drag attendees to 6 (rate and duration unchanged) and read it again.'},
+  '3d':{a:13,ok:'✔ 13 people. At 12 the meeting costs $1,800 an occurrence — $93,600 a year, just under. Add one more senior head and it is $1,950 × 52 = $101,400: a six-figure annual line item, created by a single "should probably loop them in." This is the number to have in your pocket the next time someone forwards a calendar invite to "a few more stakeholders."',no:'✘ Set rate $150 and duration 60, then walk the attendee slider up one notch at a time and watch the "per year, if weekly" KPI. Find the FIRST headcount whose annual figure passes $100,000.'},
+  '4a':{a:3,ok:'✔ Three of six — the raw transcript kept for your own memory, the recap clearly labeled "AI summary — correct me," and the rewrite of your OWN notes that you reread before using. What they share: low stakes and a built-in human filter, so you are the only victim of an error. The other three become a record, an obligation, or someone\'s to-do the moment they ship — they earn verification first.',no:'✘ Place all six cards first, then count the 👍 zone. The test is never "is it AI?" — it is "who gets hurt if this is wrong, and does a human check it before that happens?"'},
+  '4b':{a:'confabulation',alt:['confabulations','confabulate','confabulating','confab'],ok:'✔ Confabulation — borrowed from neuroscience, where a patient sincerely reports memories of events that never happened. Researchers prefer it because "hallucination" implies perceiving something; the model isn\'t perceiving at all — it is fluently filling a gap with whatever fits the pattern, which is exactly what makes the output so convincing.',no:'✘ It\'s in the "When grounding is thin" card above ("researchers prefer…") — a term borrowed from neuroscience for sincerely reporting memories of events that never happened.'}
+};
+function checkHX(k){
+  const el=document.getElementById('hx'+k),e=HX[k],fb=document.getElementById('fbHX'+k);
+  if(!el||!e||!fb)return;
+  const raw=String(el.value).trim();
+  if(raw===''){fb.textContent='✘ Type an answer first, then check it.';fb.className='fb no';return;}
+  let ok;
+  if(typeof e.a==='string'){
+    const got=raw.toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();
+    ok=(got===e.a)||((e.alt||[]).indexOf(got)>=0);
+  }else{
+    ok=(e.tol!=null)?Math.abs(+raw-e.a)<=e.tol:(+raw===e.a);
   }
-
-  async function loadModel(){
-    if(!navigator.gpu){
-      statusEl.textContent="This browser doesn't support WebGPU, so the offline AI model can't run here — try the latest Chrome or Edge on a laptop/desktop, or use one of the external chatbot links above instead.";
-      return;
-    }
-    loadBtn.disabled=true;loadBtn.textContent='Loading…';
-    bar.style.display='block';
-    try{
-      const webllm=await import('https://esm.run/@mlc-ai/web-llm');
-      engine=await webllm.CreateMLCEngine(MODEL,{
-        initProgressCallback:(p)=>{
-          const pct=Math.round((p.progress||0)*100);
-          barFill.style.width=pct+'%';
-          statusEl.textContent=(p.text||'Loading model…')+' ('+pct+'%)';
-        }
-      });
-      loadPane.style.display='none';
-      log.style.display='flex';
-      row.style.display='flex';
-      input.focus();
-    }catch(e){
-      statusEl.textContent="Couldn't load the offline AI model just now — try again, or use one of the external chatbot links above.";
-      loadBtn.disabled=false;loadBtn.textContent='Load the AI model';
-    }
-  }
-
-  async function send(){
-    const q=input.value.trim();
-    if(!q||btn.disabled||!engine)return;
-    input.value='';
-    addMsg('user',q);
-    history.push({role:'user',content:q});
-    btn.disabled=true;btn.textContent='…';
-    const bot=addMsg('bot','');
-    let full='';
-    try{
-      const chunks=await engine.chat.completions.create({messages:history,stream:true});
-      for await(const chunk of chunks){
-        full+=chunk.choices[0]?.delta?.content||'';
-        bot.textContent=full||'…';
-        log.scrollTop=log.scrollHeight;
-      }
-      history.push({role:'assistant',content:full||'(no response)'});
-    }catch(e){
-      bot.textContent="Something went wrong generating a reply — try again, or use one of the external chatbot links above.";
-    }
-    btn.disabled=false;btn.textContent='Send';
-  }
-
-  loadBtn.addEventListener('click',loadModel);
-  btn.addEventListener('click',send);
-  input.addEventListener('keydown',e=>{if(e.key==='Enter')send();});
+  fb.textContent=ok?e.ok:e.no;fb.className='fb '+(ok?'ok':'no');
 }
 </script>
 </body>

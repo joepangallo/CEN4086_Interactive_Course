@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="An interactive, progressively disclosed deep dive into how SSO tokens are created, carried, verified, and expired.">
+<title>Inside an SSO Token — Interactive Deep Dive</title>
+<style>
+:root{
+  --bg:#f4f1ea;--paper:#fffdf9;--ink:#172033;--muted:#606979;--line:#ded9cf;
+  --navy:#25236b;--violet:#6256c7;--teal:#087f7b;--gold:#d99b22;--red:#bd493e;
+  --green:#2d8050;--blue-bg:#eeeffb;--teal-bg:#e7f5f2;--gold-bg:#fff5dc;
+  --red-bg:#fbedeb;--green-bg:#eaf5ee;--shadow:0 12px 35px rgba(25,31,51,.08)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}
+button{touch-action:manipulation}
+a{color:var(--navy)}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px max(16px,calc((100vw - 1120px)/2));background:rgba(255,253,249,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+.topbar a{text-decoration:none;font-size:14px;font-weight:750}
+.topbar-title{font-weight:800;font-size:14px;text-align:center}
+.shell{max-width:1120px;margin:auto;padding:22px 18px 70px}
+.btn{border:0;border-radius:10px;padding:10px 16px;background:var(--navy);color:white;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{filter:brightness(1.12)}
+.btn:focus-visible,.choice:focus-visible,.claim:focus-visible,.step:focus-visible,summary:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.btn.light{background:white;color:var(--navy)}
+.btn.outline{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn.small{font-size:13px;padding:7px 11px}
+.progress-rail{position:sticky;top:52px;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);margin:18px 0 28px;background:var(--paper);border:1px solid var(--line);border-radius:13px;overflow:hidden;box-shadow:0 7px 20px rgba(25,31,51,.05)}
+.progress-rail a{padding:11px 8px;text-align:center;text-decoration:none;color:var(--muted);font-size:13px;font-weight:750;border-right:1px solid var(--line)}
+.progress-rail a:last-child{border:0}
+.progress-rail a.active{background:var(--blue-bg);color:var(--navy);box-shadow:inset 0 -3px var(--violet)}
+.lab{scroll-margin-top:116px;margin:0 0 28px;padding:27px;background:var(--paper);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+.lab-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}
+.lab-kicker{color:var(--violet);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.1em}
+.lab h2{font-size:clamp(23px,3vw,31px);line-height:1.15;margin:3px 0 5px;letter-spacing:-.02em}
+.lab-head p{margin:0;color:var(--muted)}
+.lab-number{flex:0 0 auto;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--blue-bg);color:var(--navy);font-size:18px;font-weight:900}
+.takeaway{display:flex;gap:12px;align-items:flex-start;margin-top:18px;padding:13px 15px;border-radius:12px;background:var(--gold-bg);border-left:4px solid var(--gold)}
+.takeaway b{white-space:nowrap;color:#76500a}
+.micro{font-size:13px;color:var(--muted)}
+details.deep{margin-top:15px;border:1px solid var(--line);border-radius:12px;background:#faf8f3}
+details.deep summary{cursor:pointer;padding:12px 15px;color:var(--navy);font-weight:800;list-style:none}
+details.deep summary::-webkit-details-marker{display:none}
+details.deep summary:before{content:"＋";display:inline-block;width:22px;color:var(--violet)}
+details.deep[open] summary:before{content:"−"}
+.deep-body{padding:0 16px 15px;color:#354055;font-size:14px}
+.deep-body p{margin:8px 0}
+.deep-body code,.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#ece9e1;border-radius:5px;padding:1px 5px}
+
+/* journey */
+.simple-sso{display:grid;grid-template-columns:1fr auto 1.2fr auto 1fr;gap:10px;align-items:stretch;margin-bottom:16px}.simple-card{border:1px solid var(--line);border-radius:13px;background:white;padding:13px}.simple-card strong{display:block;color:var(--navy);margin-bottom:4px}.simple-card p{margin:0;color:var(--muted);font-size:13px}.simple-arrow{display:grid;place-items:center;color:var(--violet);font-size:23px;font-weight:900}.cloudgate-card{background:var(--blue-bg);border-color:#cac9e7}.ticket-stack{display:grid;gap:5px;margin-top:8px}.ticket-row{display:flex;justify-content:space-between;gap:8px;border-radius:7px;background:white;padding:5px 7px;font-size:11px}.ticket-row code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--teal);font-weight:850}
+.why-many{display:grid;grid-template-columns:auto 1fr;gap:11px;margin-bottom:16px;border-radius:12px;background:var(--gold-bg);border-left:5px solid var(--gold);padding:13px 15px}.why-many .why-mark{font-size:24px}.why-many h3{margin:0 0 3px;font-size:17px;color:#704a00}.why-many p{margin:0;color:#5f4a20;font-size:14px}
+.delivery-path{margin-bottom:16px;border:1px solid var(--line);border-radius:13px;background:#faf9f5;padding:14px}.delivery-path h3{margin:0 0 9px;font-size:17px;color:var(--navy)}.delivery-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.delivery-step{position:relative;border-radius:9px;background:white;border:1px solid var(--line);padding:9px;font-size:12px;color:#3f4859}.delivery-step b{display:block;color:var(--teal);margin-bottom:2px}.delivery-step:not(:last-child):after{content:"→";position:absolute;right:-8px;top:50%;z-index:2;transform:translateY(-50%);color:var(--violet);font-weight:900}.delivery-note{margin:9px 0 0;color:var(--muted);font-size:12px}
+.flow-board{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,#fff,#faf9f5);padding:12px;overflow-x:auto}
+.flow-board svg{display:block;width:100%;min-width:720px;height:auto}
+.flow-node rect{fill:white;stroke:#cbd0df;stroke-width:2.5;transition:.25s}
+.flow-node text{fill:var(--ink);font-size:16px;font-weight:850}.flow-node .node-sub{fill:var(--muted);font-size:11px;font-weight:650}
+.flow-node.live rect{fill:var(--blue-bg);stroke:var(--violet);stroke-width:4;filter:drop-shadow(0 6px 7px rgba(98,86,199,.16))}
+.flow-arrow path,.flow-arrow line{fill:none;stroke:#dfe2ec;stroke-width:4;transition:.25s}
+.flow-arrow text{fill:#a0a7b8;font-size:12px;font-weight:800;transition:.25s}
+.flow-arrow.live path,.flow-arrow.live line{stroke:var(--violet);stroke-width:5}.flow-arrow.live text{fill:var(--navy)}
+.svg-token{opacity:0;transition:transform .55s ease,opacity .2s}.svg-token.show{opacity:1}.svg-token rect{fill:var(--gold-bg);stroke:var(--gold);stroke-width:2}.svg-token text{fill:#704a00;font-size:11px;font-weight:900}
+.flow-controls{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:12px 0}
+.flow-position{font-weight:800;color:var(--muted)}
+.flow-dots{display:flex;gap:5px;margin-left:auto}
+.flow-dot{width:10px;height:10px;padding:0;border:0;border-radius:50%;background:#d6d3cc;cursor:pointer}.flow-dot.active{background:var(--violet);transform:scale(1.3)}
+.step-explainer{border-left:5px solid var(--violet);border-radius:13px;background:var(--blue-bg);padding:16px 18px}
+.step-explainer-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.step-explainer h3{margin:2px 0 5px;font-size:21px;color:var(--navy)}
+.step-explainer p{margin:4px 0;color:#374158}.step-clock{white-space:nowrap;border-radius:999px;background:white;border:1px solid #d5d7ea;padding:5px 10px;color:var(--navy);font-size:13px;font-weight:850}
+.step-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.step-fact{min-width:0;border:1px solid #d8d9e8;border-radius:10px;background:white;padding:9px 10px}
+.step-fact span{display:block;color:var(--muted);font-size:10px;font-weight:850;text-transform:uppercase;letter-spacing:.06em}.step-fact b{display:block;margin-top:2px;font-size:13px;overflow-wrap:anywhere}
+.protocol-detail{margin-top:10px;border-top:1px solid #d5d7e6;padding-top:9px}
+.protocol-detail summary{cursor:pointer;color:var(--navy);font-weight:850}.protocol-detail-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:9px;font-size:13px}.protocol-detail-body p{margin:0 0 7px}.protocol-detail-body code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:white;border-radius:4px;padding:1px 4px}
+.ledger-title{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-top:16px}.ledger-title h3{margin:0;font-size:17px}.ledger-title span{color:var(--muted);font-size:12px}
+.token-ledger{width:100%;border-collapse:collapse;margin-top:7px;font-size:12px;display:block;overflow-x:auto}.token-ledger th,.token-ledger td{border:1px solid var(--line);padding:7px 8px;text-align:left;white-space:nowrap}.token-ledger th{background:#efede7;color:#4e5768}.token-ledger td:last-child{white-space:normal;min-width:190px}.token-pill{display:inline-block;border-radius:999px;padding:2px 7px;font-weight:850}.token-pill.none{background:#eceae5;color:var(--muted)}.token-pill.live{background:var(--green-bg);color:var(--green)}.token-pill.mint{background:var(--gold-bg);color:#704a00}.token-pill.used{background:var(--blue-bg);color:var(--navy)}
+
+/* anatomy */
+.jwt-intro{margin-bottom:17px;border:1px solid #cbc9e8;border-radius:15px;background:var(--blue-bg);padding:16px}.jwt-intro h3{margin:0 0 5px;color:var(--navy);font-size:20px}.jwt-intro>p{margin:4px 0;color:#414961}.jwt-plain{font-size:15px}.jwt-parts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.jwt-part{border-radius:10px;background:white;border:1px solid #d9d8e9;padding:10px}.jwt-part b{display:block;margin-bottom:3px}.jwt-part span{font-size:12px;color:var(--muted)}.jwt-rule{border-radius:9px;background:#fff;padding:9px 11px;font-size:13px;color:#3e485b}.jwt-rule strong{color:var(--teal)}
+.anatomy-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+.token-shell{min-width:0}
+.token-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.jwt{display:grid;gap:7px}
+.claim{border:2px solid transparent;border-radius:12px;padding:12px 13px;text-align:left;cursor:pointer;overflow:hidden;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;word-break:break-all}
+.claim small{display:block;margin-bottom:4px;font-family:inherit;font-weight:900;letter-spacing:.08em}
+.claim.header{background:var(--blue-bg);color:#302d77}.claim.payload{background:var(--teal-bg);color:#075d59}.claim.signature{background:var(--gold-bg);color:#704a00}
+.claim.selected{border-color:currentColor}
+.claim-panel{border-radius:15px;background:#162038;color:white;padding:20px;min-height:264px}
+.claim-panel .panel-tag{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#c8cbea;font-weight:850}
+.claim-panel h3{margin:6px 0 10px;font-size:21px}
+.claim-panel p{margin:7px 0;color:#e2e5ee;font-size:14px}
+.claim-panel dl{margin:10px 0 0;display:grid;grid-template-columns:auto 1fr;gap:7px 10px;font-size:13px}
+.claim-panel dt{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#f2c866}.claim-panel dd{margin:0;color:#e2e5ee}
+.myth{margin-top:12px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,.09);font-size:13px}
+
+/* verifier */
+.scenario-tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:15px}
+.choice{border:1.5px solid var(--line);background:white;border-radius:999px;padding:8px 13px;color:var(--muted);font-size:13px;font-weight:750;cursor:pointer}
+.choice.active{border-color:var(--violet);background:var(--violet);color:white}
+.verifier-grid{display:grid;grid-template-columns:.78fr 1.22fr;gap:18px}
+.presented{border:1px solid var(--line);border-radius:14px;padding:16px;background:#faf9f5}
+.presented h3{margin:0 0 9px;font-size:15px}
+.mini-token{font:12px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;background:white;border-radius:10px;border:1px solid var(--line);padding:10px;word-break:break-word}
+.mini-token .hot{background:#fee2dd;color:#8d2b22;border-radius:4px;padding:1px 3px}
+.inspection{min-height:285px}
+.checks{display:grid;gap:7px;margin-bottom:12px}
+.check{opacity:.42;display:grid;grid-template-columns:28px 1fr;gap:9px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:9px;background:white;transition:.25s}
+.check-icon{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#eee;color:var(--muted);font-weight:900}
+.check strong{display:block;font-size:13px}.check small{display:block;color:var(--muted)}
+.check.run{opacity:1;transform:translateX(3px)}
+.check.pass{opacity:1;background:var(--green-bg);border-color:#a9d2b8}.check.pass .check-icon{background:var(--green);color:white}
+.check.fail{opacity:1;background:var(--red-bg);border-color:#e0aaa4}.check.fail .check-icon{background:var(--red);color:white}
+.verdict{display:none;border-radius:11px;padding:12px 14px;font-size:14px}
+.verdict.show{display:block}.verdict.ok{background:var(--green-bg);border-left:5px solid var(--green)}.verdict.no{background:var(--red-bg);border-left:5px solid var(--red)}
+
+/* lifetime */
+.google-why{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;margin-bottom:16px;border-radius:13px;background:var(--teal-bg);border-left:5px solid var(--teal);padding:14px 16px}.google-why .why-icon{font-size:26px}.google-why h3{margin:0 0 3px;font-size:18px;color:#075d59}.google-why p{margin:0;color:#285b59;font-size:14px}
+.credential-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:10px}.credential-tab{border:1.5px solid var(--line);border-radius:11px;background:white;padding:9px 7px;cursor:pointer;color:var(--muted);font-size:12px;font-weight:800}.credential-tab span{display:block;font-size:20px;margin-bottom:2px}.credential-tab.active{background:var(--navy);border-color:var(--navy);color:white}
+.credential-panel{border:1px solid var(--line);border-radius:14px;background:#faf9f5;padding:16px;margin-bottom:18px}.credential-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.credential-head h3{margin:0;font-size:20px}.credential-kind{border-radius:999px;background:var(--blue-bg);color:var(--navy);padding:3px 9px;font-size:11px;font-weight:850;white-space:nowrap}.credential-summary{margin:5px 0 12px;color:var(--muted)}.credential-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.credential-fact{border-radius:9px;background:white;border:1px solid var(--line);padding:9px}.credential-fact span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:850}.credential-fact b{display:block;margin-top:3px;font-size:13px}.credential-detail{margin:11px 0 0;font-size:13px;color:#3e485b}
+.time-demo{border:1px solid var(--line);border-radius:15px;padding:17px;margin-bottom:18px}.time-demo-head{display:flex;justify-content:space-between;gap:10px;align-items:end}.time-demo h3{margin:0;font-size:18px}.time-demo-head span{font-weight:850;color:var(--violet)}.time-demo input{width:100%;accent-color:var(--violet);margin-top:12px}.time-demo-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:10px}.clock-statuses{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:12px}.clock-status{border:1px solid var(--line);border-radius:9px;padding:8px;background:white;font-size:11px}.clock-status b{display:block;margin-bottom:4px}.clock-status span{display:inline-block;border-radius:999px;padding:2px 6px;font-weight:850}.clock-status .alive{background:var(--green-bg);color:var(--green)}.clock-status .dead{background:var(--red-bg);color:var(--red)}.clock-status .maybe{background:var(--gold-bg);color:#704a00}.demo-note{margin:9px 0 0;color:var(--muted);font-size:11px}
+.lifetime-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}
+.slider-card{border:1px solid var(--line);border-radius:15px;padding:18px;background:#faf9f5}
+.slider-card input{width:100%;accent-color:var(--violet)}
+.slider-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:11px}
+.risk-window{position:relative;height:54px;margin:20px 0 10px;border-radius:11px;background:#e9e6df;overflow:hidden}
+.risk-fill{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,#f3b1aa,var(--red));transition:width .25s}
+.risk-window span{position:absolute;left:10px;top:8px;color:#6d241e;font-weight:850;font-size:13px}
+.life-output{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.big-number{font-size:28px;font-weight:900;color:var(--navy);letter-spacing:-.03em}
+.tradeoff{border-radius:15px;background:var(--navy);color:white;padding:19px}
+.tradeoff h3{margin:0 0 8px}.tradeoff p{margin:7px 0;color:#e5e6f0;font-size:14px}
+.meter{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.meter div{padding:9px;border-radius:9px;background:rgba(255,255,255,.1);font-size:12px}.meter strong{display:block;color:#f0c65f}
+
+/* challenge */
+.quiz-top{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:12px}
+.quiz-progress{font-weight:850;color:var(--navy)}
+.question{font-size:20px;font-weight:800;line-height:1.35;max-width:800px;margin:13px 0}
+.answers{display:grid;gap:8px}
+.answer{border:1.5px solid var(--line);background:white;border-radius:11px;padding:11px 13px;text-align:left;cursor:pointer;color:var(--ink)}
+.answer:hover:not(:disabled){border-color:var(--violet)}
+.answer.correct{background:var(--green-bg);border-color:var(--green)}.answer.wrong{background:var(--red-bg);border-color:var(--red)}
+.feedback{display:none;margin-top:12px;border-radius:12px;padding:14px;background:var(--blue-bg);border-left:5px solid var(--violet)}
+.feedback.show{display:block}.feedback p{margin:4px 0;font-size:14px}
+.quiz-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px}
+.score{font-weight:850;color:var(--green)}
+.footer-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:26px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:780px){
+  .progress-rail{top:49px;overflow-x:auto;grid-template-columns:repeat(5,minmax(105px,1fr))}
+  .anatomy-layout,.verifier-grid,.lifetime-grid{grid-template-columns:1fr}
+  .simple-sso,.delivery-steps{grid-template-columns:1fr}.simple-arrow{transform:rotate(90deg)}.delivery-step:not(:last-child):after{content:"↓";right:50%;top:auto;bottom:-12px;transform:translateX(50%)}.jwt-parts{grid-template-columns:1fr}.step-facts{grid-template-columns:1fr 1fr}.protocol-detail-body{grid-template-columns:1fr}.flow-dots{width:100%;order:3;margin-left:0}.credential-tabs{grid-template-columns:repeat(3,1fr)}.credential-facts{grid-template-columns:1fr 1fr}.clock-statuses{grid-template-columns:1fr 1fr}
+  .lab{padding:20px}.topbar-title{display:none}
+}
+@media(max-width:480px){.shell{padding:14px 10px 50px}.lab{border-radius:15px;padding:17px}.step-facts,.credential-facts,.clock-statuses{grid-template-columns:1fr}.credential-tabs{grid-template-columns:1fr 1fr}.step-explainer-head,.credential-head{display:block}.credential-kind,.step-clock{display:inline-block;margin-top:7px}.lab-number{width:38px;height:38px}.lab-head{gap:8px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+@media print{.topbar,.progress-rail,.btn{display:none}.claim-panel,.tradeoff{background:white;color:var(--ink);border:1px solid var(--line)}.lab{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+<nav class="topbar" aria-label="Course navigation">
+  <a href="index.html">← Course hub</a>
+  <span class="topbar-title">Inside an SSO Token</span>
+  <a href="week2-session4.html">Session 4 ↗</a>
+</nav>
+
+<main class="shell">
+  <nav class="progress-rail" aria-label="Deep dive progress">
+    <a href="#journey" data-section="journey">1 · Journey</a>
+    <a href="#anatomy" data-section="anatomy">2 · Anatomy</a>
+    <a href="#verifier" data-section="verifier">3 · Verify</a>
+    <a href="#lifetime" data-section="lifetime">4 · Lifetime</a>
+    <a href="#challenge" data-section="challenge">5 · Challenge</a>
+  </nav>
+
+  <section class="lab" id="journey">
+    <div class="lab-head">
+      <div><span class="lab-kicker">Lab 1 · The simple version first</span><h2>CloudGate is the trusted ticket desk</h2><p>Maya proves who she is once. CloudGate then gives each app its own signed ticket.</p></div>
+      <span class="lab-number">01</span>
+    </div>
+    <div class="simple-sso" role="group" aria-label="Simple SSO mental model">
+      <div class="simple-card"><strong>1 · Maya signs in once</strong><p>Her password and MFA go only to CloudGate. StaffMail, PayrollPro, and ShiftBoard never see them.</p></div>
+      <div class="simple-arrow" aria-hidden="true">→</div>
+      <div class="simple-card cloudgate-card"><strong>2 · CloudGate vouches for her</strong><p>CloudGate remembers the successful login. When an app exchanges its one-time code, CloudGate creates and signs a separate token for that app.</p><div class="ticket-stack"><div class="ticket-row"><span>🎫 StaffMail token</span><code>aud: staffmail</code></div><div class="ticket-row"><span>🎫 PayrollPro token</span><code>aud: payrollpro</code></div><div class="ticket-row"><span>🎫 ShiftBoard token</span><code>aud: shiftboard</code></div></div></div>
+      <div class="simple-arrow" aria-hidden="true">→</div>
+      <div class="simple-card"><strong>3 · Each app receives and checks its token</strong><p>The browser normally returns only a one-time code. The app’s backend gives that code to CloudGate; CloudGate sends the actual token directly to the backend, which verifies it.</p></div>
+    </div>
+    <div class="why-many"><span class="why-mark">🎟️</span><div><h3>Why not use the same token for every app?</h3><p>A token is labeled for one destination. A StaffMail token says <code>aud: staffmail</code>, so PayrollPro must reject it. Separate tokens stop one compromised app from opening every other app, allow different permissions and expiration times, and let each app know the proof was created specifically for it. CloudGate can issue the next token silently because it still remembers Maya’s original login.</p></div></div>
+    <div class="delivery-path">
+      <h3>Exactly who sends what to whom?</h3>
+      <div class="delivery-steps">
+        <div class="delivery-step"><b>1 · App → browser</b>“Go to CloudGate and sign in.”</div>
+        <div class="delivery-step"><b>2 · Browser → CloudGate</b>The browser follows the redirect.</div>
+        <div class="delivery-step"><b>3 · CloudGate → browser → app</b>A short-lived, one-time authorization code returns.</div>
+        <div class="delivery-step"><b>4 · App backend → CloudGate</b>The backend exchanges that code at CloudGate’s token endpoint.</div>
+        <div class="delivery-step"><b>5 · CloudGate → app backend</b>CloudGate creates and returns the signed ID token—and an access token when requested.</div>
+      </div>
+      <p class="delivery-note"><strong>The browser usually carries the code, not the actual production token.</strong> The app backend receives the token directly from CloudGate over HTTPS, verifies it, and then gives the browser an app-session cookie.</p>
+    </div>
+    <div class="flow-board">
+      <svg viewBox="0 0 880 360" role="img" aria-labelledby="flowTitle flowDesc">
+        <title id="flowTitle">Maya's browser signs into three applications through CloudGate</title>
+        <desc id="flowDesc">Seven numbered paths connect Maya's browser, CloudGate identity provider, StaffMail, PayrollPro, and ShiftBoard. The selected path is highlighted.</desc>
+        <defs><marker id="arrowHead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="context-stroke"/></marker></defs>
+        <g class="flow-arrow" id="flow1"><path d="M168 142 C350 32 540 24 700 47" marker-end="url(#arrowHead)"/><text x="380" y="35">1 · open StaffMail</text></g>
+        <g class="flow-arrow" id="flow2"><path d="M700 72 C620 94 570 112 515 143" marker-end="url(#arrowHead)"/><text x="570" y="103">2 · redirect to IdP</text></g>
+        <g class="flow-arrow" id="flow3"><line x1="170" y1="166" x2="340" y2="166" marker-end="url(#arrowHead)"/><text x="205" y="156">3 · login + MFA</text></g>
+        <g class="flow-arrow" id="flow4"><line x1="340" y1="198" x2="170" y2="198" marker-end="url(#arrowHead)"/><text x="195" y="220">4 · one-time code</text></g>
+        <g class="flow-arrow" id="flow5"><path d="M168 132 C340 66 535 55 700 61" marker-end="url(#arrowHead)"/><text x="390" y="79">5 · code exchanged → SM token</text></g>
+        <g class="flow-arrow" id="flow6"><path d="M168 222 C360 270 548 208 700 177" marker-end="url(#arrowHead)"/><text x="390" y="246">6 · silent code exchange → PP token</text></g>
+        <g class="flow-arrow" id="flow7"><path d="M160 238 C350 350 545 331 700 294" marker-end="url(#arrowHead)"/><text x="390" y="329">7 · code exchange → SB token</text></g>
+
+        <g class="flow-node" id="nodeBrowser"><rect x="20" y="130" width="150" height="100" rx="16"/><text x="95" y="171" text-anchor="middle">👩 Maya</text><text class="node-sub" x="95" y="194" text-anchor="middle">her browser</text></g>
+        <g class="flow-node" id="nodeIdp"><rect x="340" y="130" width="175" height="100" rx="16"/><text x="427" y="171" text-anchor="middle">🛡️ CloudGate</text><text class="node-sub" x="427" y="194" text-anchor="middle">identity provider (IdP)</text></g>
+        <g class="flow-node" id="nodeStaff"><rect x="700" y="18" width="160" height="76" rx="16"/><text x="780" y="50" text-anchor="middle">📧 StaffMail</text><text class="node-sub" x="780" y="72" text-anchor="middle">app 1</text></g>
+        <g class="flow-node" id="nodePayroll"><rect x="700" y="134" width="160" height="76" rx="16"/><text x="780" y="166" text-anchor="middle">💵 PayrollPro</text><text class="node-sub" x="780" y="188" text-anchor="middle">app 2</text></g>
+        <g class="flow-node" id="nodeShift"><rect x="700" y="250" width="160" height="76" rx="16"/><text x="780" y="282" text-anchor="middle">📅 ShiftBoard</text><text class="node-sub" x="780" y="304" text-anchor="middle">app 3</text></g>
+        <g class="svg-token" id="flowToken"><rect x="-36" y="-13" width="72" height="26" rx="13"/><text x="0" y="4" text-anchor="middle" id="flowTokenText">🎫 token</text></g>
+      </svg>
+    </div>
+    <div class="flow-controls">
+      <button class="btn outline small" id="flowPrev" type="button">← Previous</button>
+      <button class="btn small" id="flowNext" type="button">Next →</button>
+      <span class="flow-position" id="flowPosition">Step 0 of 7</span>
+      <div class="flow-dots" id="flowDots" role="group" aria-label="Choose a flow step"></div>
+    </div>
+    <article class="step-explainer" id="stepExplainer" aria-live="polite">
+      <div class="step-explainer-head"><div><span class="lab-kicker" id="stepLabel">Step 0 · Before the flow</span><h3 id="stepTitle">Nothing has happened yet</h3><p id="stepSummary">Maya has three app URLs, one CloudGate identity, and zero tokens.</p></div><span class="step-clock" id="stepClock">🕘 8:59 AM</span></div>
+      <div class="step-facts" id="stepFacts"></div>
+      <details class="protocol-detail" id="protocolDetail"><summary>Want the technical version? Open the full protocol explanation</summary><div class="protocol-detail-body" id="protocolBody"></div></details>
+    </article>
+    <div class="ledger-title"><h3>Live token ledger</h3><span>One login ≠ one token reused everywhere</span></div>
+    <table class="token-ledger" aria-label="Tokens that exist at the selected step">
+      <thead><tr><th>Token</th><th>Created by</th><th>Audience</th><th>Issued / expires</th><th>Holder or consumer now</th><th>Status and use</th></tr></thead>
+      <tbody id="flowLedger"></tbody>
+    </table>
+    <div class="takeaway"><b>Keep this:</b><span>The browser is allowed to hold a readable token because possession does not grant the power to alter or mint one.</span></div>
+    <details class="deep">
+      <summary>Why doesn’t Maya log in again for the next app?</summary>
+      <div class="deep-body">
+        <p>CloudGate also created its own secure session cookie after the first login. When another app redirects Maya to CloudGate, the browser sends that cookie only to CloudGate. CloudGate recognizes the still-valid session and can mint a new token for the new app without showing a password screen.</p>
+        <p>This means <b>one login does not mean one reusable token</b>. StaffMail and PayrollPro normally receive different tokens with different <code>aud</code> (audience) claims. The reusable memory is the IdP session; the proofs sent to apps stay narrow and short-lived.</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="lab" id="anatomy">
+    <div class="lab-head">
+      <div><span class="lab-kicker">Lab 2 · Tap each colored segment</span><h2>What is inside?</h2><p>A JWT is readable, signed data—not an encrypted password.</p></div>
+      <span class="lab-number">02</span>
+    </div>
+    <div class="jwt-intro">
+      <h3>JWT means JSON Web Token</h3>
+      <p class="jwt-plain">Pronounced “jot,” a JWT is a compact way to send claims—small facts such as <em>who authenticated, which app the token is for, and when it expires</em>—together with proof that those facts were not changed.</p>
+      <div class="jwt-parts">
+        <div class="jwt-part"><b>1 · Header</b><span>Instructions: which signing algorithm and public key should the app use?</span></div>
+        <div class="jwt-part"><b>2 · Payload</b><span>Claims: who issued it, who the user is, the audience, and the expiration time.</span></div>
+        <div class="jwt-part"><b>3 · Signature</b><span>Tamper evidence: proof that the trusted issuer signed the exact header and payload.</span></div>
+      </div>
+      <p class="jwt-rule"><strong>Important:</strong> a JWT is a <em>format</em>, like a standardized envelope—not a guarantee that the contents are trustworthy. Its contents are encoded, not encrypted, so anyone holding it can usually read them. The signature prevents undetected changes; HTTPS protects the token while it travels. An app trusts the claims only after checking the signature, issuer, audience (<code>aud</code>), and expiration (<code>exp</code>). ID tokens are commonly JWTs; access tokens may be JWTs or opaque strings.</p>
+    </div>
+    <div class="anatomy-layout">
+      <div class="token-shell">
+        <div class="token-label"><b>PayrollPro ID token</b><button class="btn outline small" id="encodingToggle" type="button">Show encoded</button></div>
+        <div class="jwt">
+          <button class="claim header selected" data-claim="header" type="button"><small>HEADER</small><span id="headerText"></span></button>
+          <button class="claim payload" data-claim="payload" type="button"><small>PAYLOAD</small><span id="payloadText"></span></button>
+          <button class="claim signature" data-claim="signature" type="button"><small>SIGNATURE</small><span id="signatureText"></span></button>
+        </div>
+        <p class="micro">The dots separate the three encoded chunks. Base64URL hides nothing; anyone can decode the first two.</p>
+      </div>
+      <aside class="claim-panel" id="claimPanel" aria-label="Selected token segment explanation" aria-live="polite"></aside>
+    </div>
+    <div class="takeaway"><b>Keep this:</b><span>Claims become trustworthy only after the signature, issuer, time, and audience all pass validation.</span></div>
+    <details class="deep">
+      <summary>ID token, access token, app session—what is the difference?</summary>
+      <div class="deep-body">
+        <p><b>ID token:</b> tells the client application who authenticated and facts about that authentication. In OpenID Connect it is intended for the client named by <code>aud</code>.</p>
+        <p><b>Access token:</b> authorizes a client to call an API. Its audience is the resource server/API, and it may contain scopes such as <code>payroll:read</code>. An API validates it; a client should not treat it as a general-purpose identity profile.</p>
+        <p><b>App session:</b> after validating the sign-in response, a traditional web app usually creates its own secure session cookie. The browser then uses that cookie on normal page requests; it does not need to replay the ID token forever.</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="lab" id="verifier">
+    <div class="lab-head">
+      <div><span class="lab-kicker">Lab 3 · Choose an attack, then run checks</span><h2>Can you fool the app?</h2><p>PayrollPro trusts cryptographic evidence, not the courier.</p></div>
+      <span class="lab-number">03</span>
+    </div>
+    <div class="scenario-tabs" role="tablist" aria-label="Token scenarios">
+      <button class="choice active" data-scenario="valid" type="button">Genuine</button>
+      <button class="choice" data-scenario="tampered" type="button">Edit role</button>
+      <button class="choice" data-scenario="expired" type="button">Wait 45 min</button>
+      <button class="choice" data-scenario="wrong-aud" type="button">Wrong app</button>
+    </div>
+    <div class="verifier-grid">
+      <div class="presented">
+        <h3>Token presented at PayrollPro</h3>
+        <div class="mini-token" id="presentedToken"></div>
+        <p class="micro" id="scenarioHint"></p>
+        <button class="btn" id="runChecks" type="button">Run verification →</button>
+      </div>
+      <div class="inspection">
+        <div class="checks" id="checks"></div>
+        <div class="verdict" id="verdict" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="takeaway"><b>Keep this:</b><span>A perfectly readable, well-formed token can still be rejected. Syntax is not proof.</span></div>
+    <details class="deep">
+      <summary>What does “verify the signature” actually mean?</summary>
+      <div class="deep-body">
+        <p>CloudGate hashes the exact encoded header and payload, then uses its private key to produce a signature. PayrollPro obtains CloudGate’s public keys from its published JWKS endpoint and selects the key named by <code>kid</code>.</p>
+        <p>PayrollPro verifies that the signature matches those exact bytes. If an attacker changes <code>role</code>, <code>sub</code>, <code>aud</code>, or <code>exp</code>, the bytes change and verification fails. The public key can check a signature but cannot create a new valid one.</p>
+        <p>Real libraries must also restrict acceptable algorithms, trusted issuers, audiences, and clock skew. “Decode the JWT and read the claims” is not validation.</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="lab" id="lifetime">
+    <div class="lab-head">
+      <div><span class="lab-kicker">Lab 4 · Compare five different clocks</span><h2>Why does “Sign in with Google” last so long?</h2><p>The short answer: the original token usually is not what keeps the screen signed in.</p></div>
+      <span class="lab-number">04</span>
+    </div>
+    <div class="google-why"><span class="why-icon">💡</span><div><h3>One smooth login can involve several credentials.</h3><p>An ID token can expire while the app’s own session remains valid. An access token can expire while a refresh token obtains a replacement. And Google’s account session can let Google issue a new sign-in response without asking for the password again.</p></div></div>
+    <div class="credential-tabs" id="credentialTabs" role="tablist" aria-label="Credential types in Google sign-in">
+      <button class="credential-tab active" type="button" role="tab" aria-selected="true" data-credential="google"><span>🌐</span>Google session</button>
+      <button class="credential-tab" type="button" role="tab" aria-selected="false" data-credential="id"><span>🪪</span>ID token</button>
+      <button class="credential-tab" type="button" role="tab" aria-selected="false" data-credential="app"><span>🍪</span>App session</button>
+      <button class="credential-tab" type="button" role="tab" aria-selected="false" data-credential="access"><span>🎟️</span>Access token</button>
+      <button class="credential-tab" type="button" role="tab" aria-selected="false" data-credential="refresh"><span>♻️</span>Refresh token</button>
+    </div>
+    <article class="credential-panel" id="credentialPanel" aria-live="polite"></article>
+    <div class="time-demo">
+      <div class="time-demo-head"><div><span class="lab-kicker">Interactive example</span><h3>Move time forward after one Google sign-in</h3></div><span id="timeTravelText">Just signed in</span></div>
+      <input id="timeTravel" type="range" min="0" max="5" step="1" value="0" aria-label="Time elapsed after signing in">
+      <div class="time-demo-labels"><span>Now</span><span>30 min</span><span>61 min</span><span>8 hours</span><span>7 days</span><span>30 days</span></div>
+      <div class="clock-statuses" id="clockStatuses"></div>
+      <div class="takeaway" id="timeExplanation"></div>
+      <p class="demo-note">Illustrative—not a promise of Google or any app: this example assumes 1-hour ID/access tokens, a 7-day app session, a 30-day Google browser session, and a refresh token that remains valid. Real values come from <code>exp</code>/<code>expires_in</code>, application configuration, Google policy, Workspace admin policy, device risk, and revocation.</p>
+    </div>
+    <h3>Now choose CloudGate’s token lifetime</h3>
+    <div class="lifetime-grid">
+      <div class="slider-card">
+        <label for="lifeSlider"><b>Token lifetime</b></label>
+        <input id="lifeSlider" type="range" min="0" max="6" step="1" value="2">
+        <div class="slider-labels"><span>5 min</span><span>15</span><span>30</span><span>1 h</span><span>2 h</span><span>4 h</span><span>8 h</span></div>
+        <div class="risk-window"><div class="risk-fill" id="riskFill"></div><span id="riskText"></span></div>
+        <div class="life-output"><span>Account disabled at <b>4:07 PM</b> → last token dead by</span><span class="big-number" id="deadBy"></span></div>
+      </div>
+      <aside class="tradeoff" id="tradeoff" aria-label="Selected token lifetime trade-off"></aside>
+    </div>
+    <div class="takeaway"><b>Keep this:</b><span>Disabling the IdP account stops new tokens. Already-issued self-contained tokens may work until expiry.</span></div>
+    <details class="deep">
+      <summary>Exact issuance, use, renewal, and revocation rules</summary>
+      <div class="deep-body">
+        <p><b>ID token issuance:</b> Google issues it as part of an OpenID Connect authentication response or when the application backend exchanges an authorization code. The application validates it to learn which Google subject authenticated and confirms signature, issuer, audience, expiry, and nonce. It is not the credential for arbitrary Google API calls.</p>
+        <p><b>Access token issuance:</b> Google’s authorization server issues it after the user or policy authorizes particular OAuth scopes. The application sends it to the Google API named by the token’s permissions. The API needs it; the user-facing website does not use it as a replacement for its own session cookie.</p>
+        <p><b>Refresh token issuance:</b> for a web-server application it is optional and normally requires offline access. The application stores it securely on its backend and sends it only to Google’s token endpoint to obtain replacement access tokens. It can stop working after user revocation, long inactivity, some password changes, token-count limits, time-limited consent, testing-mode limits, or administrator policy.</p>
+        <p><b>Session issuance:</b> Google creates its account session when the user authenticates to Google. Your application creates a separate application session after it validates the Google response. Either session can outlive an individual ID or access token, and either can be ended independently.</p>
+        <p><b>Local JWT revocation:</b> a self-contained JWT can be validated without calling its issuer, so its issuer cannot pull back every copy instantly. Short expiry bounds that risk. Systems needing faster shutdown add introspection, denylists, token-version checks, security-event notifications, or coordinated app-session revocation.</p>
+        <p class="micro">Official references: <a href="https://developers.google.com/identity/openid-connect/openid-connect">Google OpenID Connect</a> · <a href="https://developers.google.com/identity/protocols/oauth2">Google OAuth 2.0 overview</a> · <a href="https://developers.google.com/identity/protocols/oauth2/web-server">Web-server OAuth flow and refresh tokens</a>.</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="lab" id="challenge">
+    <div class="lab-head">
+      <div><span class="lab-kicker">Lab 5 · Three decisions</span><h2>Make the call.</h2><p>Apply the model to a stolen token, silent SSO, and vendor claims.</p></div>
+      <span class="lab-number">05</span>
+    </div>
+    <div class="quiz-top"><span class="quiz-progress" id="quizProgress">Question 1 of 3</span><span class="score" id="score">0 correct</span></div>
+    <div id="quizCard">
+      <div class="question" id="question"></div>
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+      <div class="quiz-actions"><button class="btn outline small" id="prevQuestion" type="button">← Previous</button><button class="btn small" id="nextQuestion" type="button">Next →</button></div>
+    </div>
+    <details class="deep">
+      <summary>One-screen reference: the complete mental model</summary>
+      <div class="deep-body">
+        <p><b>IdP:</b> authenticates the person, writes claims, signs tokens with its private key, publishes public keys, and controls whether new tokens can be issued.</p>
+        <p><b>Browser:</b> follows redirects and carries protocol messages. It can read a JWT and could try to alter it, so apps never trust it as the authority.</p>
+        <p><b>App:</b> validates structure, trusted issuer, allowed algorithm and signature, time claims, nonce/state where applicable, and the exact audience. Only then does it use claims and create an app session.</p>
+        <p><b>Security boundary:</b> passwords stay at the IdP; signatures reveal tampering; audience limits where a token is accepted; expiry limits replay; TLS and secure browser storage protect tokens in transit and at rest.</p>
+      </div>
+    </details>
+  </section>
+
+  <nav class="footer-nav" aria-label="Footer navigation">
+    <a class="btn outline" href="week2-session4.html">← Session 4 · IDaaS</a>
+    <a class="btn" href="index.html">Course hub</a>
+  </nav>
+</main>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Lab 1: journey */
+const journey=[
+  {clock:'8:59 AM',label:'Step 0 · Before the flow',title:'Nothing has happened yet',summary:'Maya has three app URLs, one CloudGate identity, and zero tokens. No system has authenticated her today.',arrows:[],nodes:[],token:null,
+   facts:[['Token exists?','No'],['Token creator','Nobody'],['Token holder','Nobody'],['Token user / verifier','Nobody'],['Password','Not entered'],['IdP session','None'],['App session','None'],['Trust established','None']],
+   protocol:['<b>Browser state</b><p>No StaffMail, PayrollPro, ShiftBoard, or CloudGate session cookies exist. A saved URL or bookmark is not a credential.</p><b>Token state</b><p>There is no ID token, access token, authorization code, or app session yet. Nothing exists to carry, verify, expire, or steal.</p>','<b>Security meaning</b><p>SSO does not mean the apps automatically trust Maya. Trust will begin only after CloudGate authenticates her and each app validates proof intended for that app.</p><b>Next trigger</b><p>Maya types the StaffMail URL or selects its tile from an application portal.</p>'],ledger:[]},
+  {clock:'9:00:05 AM',label:'Step 1 · Browser → StaffMail',title:'Maya opens StaffMail',summary:'Her browser requests a protected StaffMail page. The request has no CloudGate token and no StaffMail session cookie.',arrows:['flow1'],nodes:['Browser','Staff'],token:null,
+   facts:[['Token exists?','No'],['Sender','Maya’s browser'],['Receiver','StaffMail'],['Token user / verifier','Nobody yet'],['Message','HTTPS GET /inbox'],['Credentials sent','None'],['IdP session','None'],['Result','App cannot identify Maya']],
+   protocol:['<b>Network exchange</b><p>The browser makes an HTTPS request to StaffMail. TLS protects the request in transit, but it does not tell StaffMail which employee is using the browser.</p><b>App decision</b><p>StaffMail checks for its own application session cookie. None is present, so it starts an OpenID Connect sign-in instead of displaying or processing a password form.</p>','<b>Token detail</b><p>No token is created, carried, used, or checked in this step. StaffMail cannot accept a token it has not received.</p><b>Security meaning</b><p>StaffMail has outsourced authentication to CloudGate. This reduces password exposure: the app never needs Maya’s password database or login UI.</p>'],ledger:[]},
+  {clock:'9:00:06 AM',label:'Step 2 · StaffMail → CloudGate',title:'StaffMail redirects to the IdP',summary:'StaffMail tells the browser to visit CloudGate’s authorization endpoint and return with proof for StaffMail.',arrows:['flow2'],nodes:['Browser','Staff','Idp'],token:null,
+   facts:[['Token exists?','No'],['Initiator','StaffMail'],['Carrier','Browser follows redirect'],['Receiver','CloudGate'],['Typical message','HTTP 302 + /authorize'],['Audience requested','staffmail'],['Password sent','No'],['Result','Authentication requested']],
+   protocol:['<b>Front-channel request</b><p>The redirect normally includes <code>client_id=staffmail</code>, an exact registered <code>redirect_uri</code>, <code>scope=openid</code>, a random <code>state</code>, a <code>nonce</code>, and—when using Authorization Code + PKCE—a code challenge.</p><b>Who uses those values</b><p>CloudGate identifies the requesting client. StaffMail later checks <code>state</code> to bind the response to this browser flow and <code>nonce</code> to prevent replay of an old ID token.</p>','<b>Token detail</b><p>Still no signed token. The browser carries a request for authentication, not proof of authentication.</p><b>Security meaning</b><p>The registered redirect URI prevents CloudGate from sending the result to an attacker-controlled site. State protects the login transaction from cross-site request forgery and response mix-up.</p>'],ledger:[]},
+  {clock:'9:01 AM',label:'Step 3 · Maya ↔ CloudGate',title:'The one interactive login',summary:'CloudGate authenticates Maya with her password and MFA. No application receives either secret.',arrows:['flow3'],nodes:['Browser','Idp'],token:null,
+   facts:[['Token exists?','Not yet'],['Authenticates Maya','CloudGate'],['Password sees','CloudGate only'],['MFA verifies','CloudGate'],['Authentication result','maya-1842 + MFA'],['IdP session','Created after success'],['App session','None yet'],['Result','IdP may issue proof']],
+   protocol:['<b>Authentication ceremony</b><p>Maya submits her password only to CloudGate over TLS. CloudGate verifies it, applies risk and device policy, and requires a second factor. The eventual <code>amr</code> claim can record methods such as <code>pwd</code> and <code>mfa</code>.</p><b>IdP session</b><p>After success, CloudGate sets its own secure, HttpOnly, SameSite session cookie. The browser stores it and returns it only to CloudGate. StaffMail, PayrollPro, and ShiftBoard cannot read it.</p>','<b>Token detail</b><p>Authentication has succeeded, but the diagram has not yet minted the StaffMail proof. A password is not a token and will never be copied into one.</p><b>Security meaning</b><p>This is the single concentrated password boundary. MFA, anomaly detection, lockout, recovery, and audit controls can be enforced once at CloudGate instead of implemented differently by every app.</p>'],ledger:[]},
+  {clock:'9:02:00 AM',label:'Step 4 · CloudGate → browser → StaffMail',title:'CloudGate returns a one-time code',summary:'CloudGate sends a short-lived authorization code through Maya’s browser to StaffMail. In the recommended code flow, the browser does not receive the actual ID token.',arrows:['flow4'],nodes:['Browser','Idp'],token:{at:[215,198],text:'🔑 code'},
+   facts:[['ID token exists?','Not yet in code flow'],['Code created by','CloudGate'],['Code carrier','Maya’s browser'],['Code recipient','StaffMail redirect URI'],['Code usable by','StaffMail backend only'],['Code lifetime','Very short + single use'],['Password inside?','Never'],['IdP session','Alive at CloudGate']],
+   protocol:['<b>What CloudGate sends now</b><p>CloudGate creates a random, one-time authorization code tied to Maya’s completed login, StaffMail’s client ID and redirect URI, and the original PKCE challenge. The code contains no password and is not the ID token.</p><b>Who carries it</b><p>CloudGate redirects the browser back to StaffMail with the code. The browser is only the front-channel courier.</p>','<b>Why use a code?</b><p>If malware or browser history exposes the code, it is short-lived, single-use, and must be redeemed by the correct client. With PKCE, redemption also requires the matching secret verifier created when StaffMail began the flow.</p><b>Next step</b><p>StaffMail’s backend—not the browser—will send this code to CloudGate’s token endpoint over HTTPS.</p>'],ledger:[['CODE','CloudGate','staffmail','single use / very short','Browser → StaffMail','mint','Authorization code only; no ID token in the browser']]},
+  {clock:'9:02:01 AM',label:'Step 5 · StaffMail ↔ CloudGate',title:'CloudGate creates the token and sends it to StaffMail',summary:'StaffMail’s backend exchanges the one-time code with CloudGate. CloudGate creates and signs the StaffMail ID token, then returns it directly to StaffMail’s backend.',arrows:['flow5'],nodes:['Browser','Staff','Idp'],token:{at:[674,61],text:'🎫 SM'},
+   facts:[['Token exists?','Yes · StaffMail ID token'],['Created / signed by','CloudGate'],['Sent from','CloudGate token endpoint'],['Sent to','StaffMail backend'],['Browser carried','One-time code—not token'],['Uses / verifies token','StaffMail'],['Audience','staffmail only'],['Issued / expires','9:02 / 9:32']],
+   protocol:['<b>How the token is created</b><p>After validating the code, client, redirect URI, and PKCE verifier, CloudGate writes the ID-token claims: <code>iss</code> = CloudGate, <code>sub</code> = Maya, <code>aud</code> = StaffMail, authentication method, issue time, and expiration. It signs the exact JWT header and payload with its private key.</p><b>Who sends it to whom</b><p>CloudGate’s token endpoint returns the ID token—and an access token if one was requested—directly to StaffMail’s backend over HTTPS. The browser is not part of this back-channel response.</p>','<b>Who uses the token</b><p>StaffMail verifies CloudGate’s signature with CloudGate’s public key, then checks issuer, audience, expiry, and nonce. After validation, StaffMail creates its own app-session cookie for the browser.</p><b>What happens to the code</b><p>The authorization code is now spent and cannot be redeemed again. Normal inbox requests use the StaffMail session, not the ID token.</p>'],ledger:[['SM','CloudGate','staffmail','9:02 / 9:32','StaffMail backend','used','Created by CloudGate; sent directly to StaffMail; verified and consumed']]},
+  {clock:'10:15 AM',label:'Step 6 · Silent SSO → PayrollPro',title:'A new PayrollPro token—without another prompt',summary:'PayrollPro starts the same redirect dance. CloudGate recognizes its own living session and mints a different token for PayrollPro.',arrows:['flow6'],nodes:['Browser','Idp','Payroll'],token:{at:[674,177],text:'🎫 PP'},
+   facts:[['New token?','Yes · PayrollPro'],['Created / signed by','CloudGate'],['Browser carries','One-time code'],['Token sent to','PayrollPro backend'],['Uses / verifies','PayrollPro'],['Audience','payrollpro only'],['Issued / expires','10:15 / 10:45'],['Password re-entered','No']],
+   protocol:['<b>Hidden substeps</b><p>PayrollPro finds no app session → redirects the browser to CloudGate → the browser automatically sends CloudGate’s secure IdP-session cookie → CloudGate recognizes Maya → CloudGate issues a fresh PayrollPro authorization response → PayrollPro validates it.</p><b>Why this is “single” sign-on</b><p>The login ceremony is reused, not the StaffMail token. CloudGate’s session remembers the authenticated human; a newly minted, audience-locked token proves that identity to each app.</p>','<b>Who uses which object</b><p>The browser uses the CloudGate session cookie only when talking to CloudGate. CloudGate uses that session to skip password/MFA prompts. PayrollPro verifies and consumes the new PayrollPro ID token. StaffMail never sees or uses it.</p><b>Security meaning</b><p>Compromising StaffMail does not automatically yield a token accepted by PayrollPro. Separate audiences limit lateral replay. PayrollPro can demand fresher authentication or step-up MFA for sensitive payroll changes.</p>'],ledger:[['SM','CloudGate','staffmail','9:02 / 9:32','StaffMail session continues','used','ID token expired; app session may still be active'],['PP','CloudGate','payrollpro','10:15 / 10:45','Consumed by PayrollPro','used','Fresh token verified silently; PayrollPro session created']]},
+  {clock:'11:00 AM',label:'Step 7 · Silent SSO → ShiftBoard',title:'The same pattern scales to every connected app',summary:'CloudGate silently creates a third, separate proof. Maya has typed one password; three apps have verified three audience-specific tokens.',arrows:['flow7'],nodes:['Browser','Idp','Shift'],token:{at:[674,294],text:'🎫 SB'},
+   facts:[['New token?','Yes · ShiftBoard'],['Created / signed by','CloudGate'],['Browser carries','One-time code'],['Token sent to','ShiftBoard backend'],['Uses / verifies','ShiftBoard'],['Audience','shiftboard only'],['Issued / expires','11:00 / 11:30'],['Passwords today','One']],
+   protocol:['<b>Repeated exchange</b><p>ShiftBoard initiates its own OIDC authorization request with its own client ID, redirect URI, state, nonce, and PKCE values. CloudGate recognizes the same IdP session and returns a ShiftBoard-specific result without asking Maya to authenticate again.</p><b>Independent verification</b><p>ShiftBoard independently validates CloudGate’s issuer, allowed algorithm, signature, lifetime, audience, nonce, and transaction state. It does not call StaffMail or PayrollPro and does not trust their sessions.</p>','<b>Token inventory</b><p>There is no universal “Maya token.” SM, PP, and SB have different audiences, issue/expiry times, authorization context, and signatures. Each app consumes only the proof minted for it and then manages its own session.</p><b>Security and offboarding</b><p>Disabling Maya at CloudGate ends the IdP session and prevents every future mint. Existing self-contained tokens can remain valid until <code>exp</code>, and existing app sessions need coordinated revocation or short lifetimes if immediate shutdown is required.</p>'],ledger:[['SM','CloudGate','staffmail','9:02 / 9:32','StaffMail session','used','Token expired; app session governed separately'],['PP','CloudGate','payrollpro','10:15 / 10:45','PayrollPro session','used','Token expired; app session governed separately'],['SB','CloudGate','shiftboard','11:00 / 11:30','Consumed by ShiftBoard','used','Fresh token verified; ShiftBoard session created']]}
+];
+let journeyIndex=0;
+function paintJourney(i){
+  journeyIndex=i;const j=journey[i];
+  $$('.flow-arrow').forEach(a=>a.classList.toggle('live',j.arrows.includes(a.id)));
+  ['Browser','Idp','Staff','Payroll','Shift'].forEach(n=>$('#node'+n).classList.toggle('live',j.nodes.includes(n)));
+  const tok=$('#flowToken');tok.setAttribute('class','svg-token'+(j.token?' show':''));
+  if(j.token){tok.setAttribute('transform',`translate(${j.token.at[0]} ${j.token.at[1]})`);$('#flowTokenText').textContent=j.token.text}
+  $('#flowPosition').textContent=`Step ${i} of ${journey.length-1}`;$('#stepLabel').textContent=j.label;$('#stepTitle').textContent=j.title;$('#stepSummary').textContent=j.summary;$('#stepClock').textContent='🕘 '+j.clock;
+  $('#stepFacts').innerHTML=j.facts.map(f=>`<div class="step-fact"><span>${f[0]}</span><b>${f[1]}</b></div>`).join('');
+  $('#protocolBody').innerHTML=`<div>${j.protocol[0]}</div><div>${j.protocol[1]}</div>`;
+  $('#flowLedger').innerHTML=j.ledger.length?j.ledger.map(r=>`<tr><td><b>🎫 ${r[0]}</b></td><td>${r[1]}</td><td><code>${r[2]}</code></td><td>${r[3]}</td><td>${r[4]}</td><td><span class="token-pill ${r[5]}">${r[6]}</span></td></tr>`).join(''):'<tr><td colspan="6"><span class="token-pill none">No token exists at this step</span></td></tr>';
+  $$('.flow-dot').forEach((d,n)=>{d.classList.toggle('active',n===i);d.setAttribute('aria-current',n===i?'step':'false')});
+  $('#flowPrev').disabled=i===0;$('#flowNext').disabled=i===journey.length-1;
+}
+$('#flowDots').innerHTML=journey.map((_,i)=>`<button class="flow-dot" type="button" data-flow-step="${i}" aria-label="Show step ${i}"></button>`).join('');
+$$('.flow-dot').forEach(b=>b.addEventListener('click',()=>paintJourney(+b.dataset.flowStep)));
+$('#flowPrev').addEventListener('click',()=>{if(journeyIndex>0)paintJourney(journeyIndex-1)});
+$('#flowNext').addEventListener('click',()=>{if(journeyIndex<journey.length-1)paintJourney(journeyIndex+1)});
+paintJourney(0);
+
+/* Lab 2: token anatomy */
+const header={alg:'RS256',typ:'JWT',kid:'cg-2026-07'};
+const payload={iss:'https://login.cloudgate.example',sub:'maya-1842',aud:'payrollpro',amr:['pwd','mfa'],iat:1783952100,exp:1783953900};
+const encoded={
+  header:'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImNnLTIwMjYtMDcifQ',
+  payload:'eyJpc3MiOiJodHRwczovL2xvZ2luLmNsb3VkZ2F0ZS5leGFtcGxlIiwic3ViIjoibWF5YS0xODQyIiwiYXVkIjoicGF5cm9sbHBybyIsImFtciI6WyJwd2QiLCJtZmEiXSwiaWF0IjoxNzgzOTUyMTAwLCJleHAiOjE3ODM5NTM5MDB9',
+  signature:'Qf2xK9p7Yw4uN3aR…cryptographic-signature…J8mL2w'
+};
+const claimPanels={
+  header:`<span class="panel-tag">Instructions for verification</span><h3>The header names the key.</h3><p>It does not identify Maya. It tells PayrollPro how to verify the signature.</p><dl><dt>alg</dt><dd>RS256: the expected signing algorithm</dd><dt>kid</dt><dd>Which CloudGate public key to select after key rotation</dd><dt>typ</dt><dd>The object is a JWT</dd></dl><div class="myth">Nothing here is secret. The app must enforce its own algorithm allowlist—not blindly obey attacker-controlled text.</div>`,
+  payload:`<span class="panel-tag">Claims about this sign-in</span><h3>The payload says who, where, and when.</h3><dl><dt>iss</dt><dd>CloudGate issued it</dd><dt>sub</dt><dd>Maya’s stable subject identifier</dd><dt>aud</dt><dd>Only PayrollPro should accept it</dd><dt>amr</dt><dd>Password + MFA were used</dd><dt>iat / exp</dt><dd>Issued at / expires 30 minutes later</dd></dl><div class="myth">No password is present—not encrypted, hashed, or hidden. Claims are assertions, not proof, until validation succeeds.</div>`,
+  signature:`<span class="panel-tag">Tamper evidence</span><h3>The signature binds every byte.</h3><p>CloudGate signs the encoded header and payload with its private key. PayrollPro verifies with the matching public key.</p><p>Change Maya’s role, expiry, identity, or audience and the signature no longer matches. A public key can verify; it cannot forge.</p><div class="myth">A signature provides integrity and issuer authenticity. It does not encrypt the token or stop a thief from replaying a stolen bearer token.</div>`
+};
+let encodedView=false,selectedClaim='header';
+function paintToken(){
+  $('#headerText').textContent=encodedView?encoded.header:JSON.stringify(header);
+  $('#payloadText').textContent=encodedView?encoded.payload:JSON.stringify(payload);
+  $('#signatureText').textContent=encoded.signature;
+  $('#encodingToggle').textContent=encodedView?'Show decoded':'Show encoded';
+  $$('.claim').forEach(c=>c.classList.toggle('selected',c.dataset.claim===selectedClaim));
+  $('#claimPanel').innerHTML=claimPanels[selectedClaim];
+}
+$('#encodingToggle').addEventListener('click',()=>{encodedView=!encodedView;paintToken()});
+$$('.claim').forEach(c=>c.addEventListener('click',()=>{selectedClaim=c.dataset.claim;paintToken()}));
+paintToken();
+
+/* Lab 3: verifier */
+const scenarios={
+  valid:{hint:'Untouched, presented at 10:20 AM.',role:'events-coordinator',aud:'payrollpro',time:'10:20',fail:null,reason:'All evidence agrees: CloudGate signed these exact claims for PayrollPro, and the token is still alive.'},
+  tampered:{hint:'Attacker changed one readable claim but kept the old signature.',role:'payroll-admin',aud:'payrollpro',time:'10:20',fail:2,reason:'The edited payload no longer matches CloudGate’s signature. Valid JSON is easy; a valid signature requires the private key.'},
+  expired:{hint:'Genuine token, presented at 11:30 AM; exp was 10:45 AM.',role:'events-coordinator',aud:'payrollpro',time:'11:30',fail:3,reason:'Authentic does not mean timeless. The signed expiry has passed, so the app rejects without asking CloudGate.'},
+  'wrong-aud':{hint:'Genuine StaffMail token presented to PayrollPro.',role:'events-coordinator',aud:'staffmail',time:'10:20',fail:4,reason:'The signature is valid, but aud says staffmail. Audience binding prevents one app’s token from opening another app.'}
+};
+const checkDefs=[['Structure','Three well-formed JWT segments'],['Issuer','iss is the configured CloudGate issuer'],['Signature','Bytes match CloudGate’s public key'],['Time','iat / exp are valid at server time'],['Audience','aud contains payrollpro']];
+let currentScenario='valid',checking=false,checkTimers=[];
+function clearTimers(){checkTimers.forEach(clearTimeout);checkTimers=[];checking=false}
+function paintScenario(){
+  clearTimers();const s=scenarios[currentScenario];
+  $$('.choice').forEach(b=>b.classList.toggle('active',b.dataset.scenario===currentScenario));
+  $('#presentedToken').innerHTML=`sub: maya-1842<br>role: <span class="${currentScenario==='tampered'?'hot':''}">${s.role}</span><br>aud: <span class="${currentScenario==='wrong-aud'?'hot':''}">${s.aud}</span><br>exp: 10:45 AM · now: <span class="${currentScenario==='expired'?'hot':''}">${s.time}</span>`;
+  $('#scenarioHint').textContent=s.hint;
+  $('#checks').innerHTML=checkDefs.map((c,i)=>`<div class="check" data-check="${i}"><span class="check-icon">${i+1}</span><span><strong>${c[0]}</strong><small>${c[1]}</small></span></div>`).join('');
+  $('#verdict').className='verdict';$('#verdict').innerHTML='';$('#runChecks').disabled=false;$('#runChecks').textContent='Run verification →';
+}
+$$('.choice').forEach(b=>b.addEventListener('click',()=>{if(checking)return;currentScenario=b.dataset.scenario;paintScenario()}));
+$('#runChecks').addEventListener('click',()=>{
+  if(checking)return;checking=true;$('#runChecks').disabled=true;$('#runChecks').textContent='Checking…';
+  const s=scenarios[currentScenario],stop=s.fail===null?checkDefs.length:s.fail+1;
+  for(let i=0;i<stop;i++)checkTimers.push(setTimeout(()=>{
+    const row=$(`[data-check="${i}"]`),failed=i===s.fail;row.classList.add('run',failed?'fail':'pass');row.querySelector('.check-icon').textContent=failed?'×':'✓';
+    if(i===stop-1){
+      const verdict=$('#verdict');verdict.className='verdict show '+(s.fail===null?'ok':'no');
+      verdict.innerHTML=`<b>${s.fail===null?'✓ Accepted':'× Rejected at '+checkDefs[s.fail][0]}</b><br>${s.reason}`;
+      $('#runChecks').textContent='Run again';$('#runChecks').disabled=false;checking=false;
+    }
+  },reduced?0:360*(i+1)));
+});
+paintScenario();
+
+/* Lab 4: lifetime */
+const credentials={
+  google:{kind:'Browser session · not an OIDC token',title:'Google account session',summary:'This is why Google may recognize you immediately, even though yesterday’s ID token has expired.',facts:[['Issued by','Google, after you authenticate'],['Who needs it','Google’s identity service'],['Stored by','Browser as protected Google cookies'],['Valid for','Policy-dependent; no universal duration'],['Sent to','Google domains—not the third-party app'],['Renewal','Google controls and may extend/recheck']],detail:'When an app redirects you to Google, the browser may already have a valid Google account session. Google can identify the signed-in account and issue a fresh authorization response without asking for the password again. Security events, explicit sign-out, cookie deletion, device risk, or Workspace session-control policy can shorten this experience.'},
+  id:{kind:'OpenID Connect · signed JWT',title:'ID token',summary:'A short-lived assertion telling one specific application who authenticated.',facts:[['Issued by','Google authorization server'],['Who needs it','The app’s OIDC client'],['Issued when','Sign-in response / code exchange'],['Valid for','Until its signed exp timestamp'],['Audience','That app’s Google client ID'],['Used for','Validate identity, then create session']],detail:'The application verifies Google’s signature, issuer, its own client ID in aud, exp, and nonce. The app should identify the user by the stable sub claim. Expiration means the token can no longer establish identity; it does not automatically erase an application session that was already created after successful validation.'},
+  app:{kind:'Application credential · usually a cookie',title:'Application session',summary:'This is usually what keeps the website itself signed in after the Google token has done its job.',facts:[['Issued by','The application’s server'],['Who needs it','Browser + that application'],['Issued when','After Google proof validates'],['Valid for','Application-defined minutes to months'],['Sent to','Only that application’s domain'],['Used for','Authenticate normal page requests']],detail:'The application maps Google’s sub to a local user, creates server-side session state or a signed/encrypted session cookie, and sets its own expiry and idle-timeout rules. The app can rotate or extend the session while you use it. Signing out of Google does not necessarily delete this app cookie, and signing out of the app does not necessarily end the Google account session.'},
+  access:{kind:'OAuth 2.0 bearer credential',title:'Access token',summary:'Permission to call a Google API—not proof that should keep an unrelated website session alive.',facts:[['Issued by','Google authorization server'],['Who needs it','The target Google API'],['Issued when','OAuth grant / code exchange'],['Valid for','Limited; response includes expires_in'],['Restricted by','Scopes and authorized resources'],['Used for','Authorization: API requests']],detail:'The client sends the access token in an Authorization: Bearer header to a Google API. Google’s API checks whether it is active and whether its scopes permit the requested operation. When it expires, API calls fail unless the client obtains a replacement through a user-driven request, a silent authorization flow, or a refresh token, depending on the application model.'},
+  refresh:{kind:'OAuth 2.0 long-lived credential',title:'Refresh token',summary:'A backend-held credential that can obtain new access tokens without the user being present.',facts:[['Issued by','Google authorization server'],['Who needs it','Application backend / OAuth client'],['Issued when','Eligible offline-access grant'],['Valid for','Until expired, revoked, or invalidated'],['Sent to','Google token endpoint only'],['Used for','Mint replacement access tokens']],detail:'A refresh token is not sent to Google APIs and should not be exposed to ordinary browser requests. It may stop working after revocation, prolonged non-use, some password changes involving Gmail scopes, token-count limits, time-based access expiry, testing-mode rules, or administrator session policy. Apps must handle invalid_grant by returning the user to an interactive authorization flow.'}
+};
+let credentialKey='google';
+function paintCredential(){
+  const c=credentials[credentialKey];
+  $$('.credential-tab').forEach(b=>{const on=b.dataset.credential===credentialKey;b.classList.toggle('active',on);b.setAttribute('aria-selected',on)});
+  $('#credentialPanel').innerHTML=`<div class="credential-head"><div><h3>${c.title}</h3><p class="credential-summary">${c.summary}</p></div><span class="credential-kind">${c.kind}</span></div><div class="credential-facts">${c.facts.map(f=>`<div class="credential-fact"><span>${f[0]}</span><b>${f[1]}</b></div>`).join('')}</div><p class="credential-detail">${c.detail}</p>`;
+}
+$$('.credential-tab').forEach(b=>b.addEventListener('click',()=>{credentialKey=b.dataset.credential;paintCredential()}));
+paintCredential();
+
+const timePoints=[
+  {label:'Just signed in',min:0,explain:'Google has returned fresh ID/access tokens. The app validates the ID token and creates its own session. All five clocks begin independently.'},
+  {label:'30 minutes later',min:30,explain:'The short-lived tokens are still valid in this example. Normal website requests already rely on the app session, not repeated ID-token validation.'},
+  {label:'61 minutes later',min:61,explain:'The original ID and access tokens have expired—but the website still looks signed in because its app session is alive. If it needs a Google API, it can obtain a new access token through an allowed renewal path.'},
+  {label:'8 hours later',min:480,explain:'The short tokens are long gone. The app session still authenticates this browser, the Google session can make a new sign-in silent, and an eligible backend refresh token can mint new access tokens.'},
+  {label:'7 days later',min:10080,explain:'This example’s app session has now expired, so the app redirects to Google. If the Google account session is still alive, Google may return fresh proof immediately—no password screen—then the app creates a new session.'},
+  {label:'30 days later',min:43200,explain:'This example ends the Google browser session too, so interactive authentication is required. A refresh token might still support authorized background API work, but it cannot by itself create the app’s browser session.'}
+];
+function timeState(min,expiry,maybe){if(maybe)return ['Policy-dependent','maybe'];return min<expiry?['Active','alive']:['Expired','dead']}
+function paintTimeTravel(){
+  const p=timePoints[+$('#timeTravel').value],states=[['Google session',...timeState(p.min,43200,false)],['ID token',...timeState(p.min,60,false)],['App session',...timeState(p.min,10080,false)],['Access token',...timeState(p.min,60,false)],['Refresh token',...timeState(p.min,Infinity,false)]];
+  $('#timeTravelText').textContent=p.label;$('#clockStatuses').innerHTML=states.map(s=>`<div class="clock-status"><b>${s[0]}</b><span class="${s[2]}">${s[1]}</span></div>`).join('');$('#timeExplanation').innerHTML=`<b>What you experience:</b><span>${p.explain}</span>`;
+}
+$('#timeTravel').addEventListener('input',paintTimeTravel);paintTimeTravel();
+
+const lives=[5,15,30,60,120,240,480];
+const lifeCopy=[
+  ['Very tight','Best replay limit; frequent silent renewal. Fit for highly sensitive actions.','High','Low'],
+  ['Tight','Strong containment with modest renewal traffic.','Medium–high','Low'],
+  ['Balanced','A common teaching default: short exposure, manageable renewal.','Medium','Medium'],
+  ['Convenient','Reasonable for lower-risk apps; generous for payroll or admin.','Medium–low','Medium'],
+  ['Long','A stolen token may survive an entire meeting or exit interview.','Low','High'],
+  ['Risky','Four hours of locally valid access after the IdP says stop.','Very low','Very high'],
+  ['Too long for sensitive apps','An all-day bearer token turns theft into an all-day incident.','Minimal','Extreme']
+];
+function clock(min){const h24=Math.floor(min/60)%24,m=min%60,ap=h24>=12?'PM':'AM',h=(h24%12)||12;return `${h}:${String(m).padStart(2,'0')} ${ap}`}
+function paintLife(){
+  const i=+$('#lifeSlider').value,mins=lives[i],c=lifeCopy[i];
+  $('#riskFill').style.width=(mins/480*100)+'%';$('#riskText').textContent=`Worst-case replay window: ${mins<60?mins+' min':mins/60+' h'}`;$('#deadBy').textContent=clock(16*60+7+mins);
+  $('#tradeoff').innerHTML=`<h3>${c[0]}</h3><p>${c[1]}</p><div class="meter"><div><strong>Renewal load</strong>${c[2]}</div><div><strong>Replay exposure</strong>${c[3]}</div></div>`;
+}
+$('#lifeSlider').addEventListener('input',paintLife);paintLife();
+
+/* Lab 5: challenge */
+const questions=[
+  {q:'A thief copies Maya’s valid PayrollPro bearer token. What limits the damage?',a:['The token secretly requires her password on every use','Expiry limits replay; disabling Maya stops CloudGate from issuing replacements','The thief cannot read a JWT, so the copy is harmless'],right:1,why:'A bearer token can generally be replayed by whoever holds it. The signature prevents edits, not copying. Short expiry limits the existing token; account disablement prevents silent renewal and future issuance.'},
+  {q:'PayrollPro opens with no login screen at 10:15. What most likely happened?',a:['It reused StaffMail’s audience-locked token','It received Maya’s cached password','It redirected to CloudGate, which recognized its IdP session and minted a PayrollPro token'],right:2,why:'Silent SSO is still a protocol exchange. The IdP session avoids another prompt; PayrollPro receives its own response. Apps do not share passwords or blindly reuse each other’s tokens.'},
+  {q:'A vendor proposes eight-hour tokens “for SSO convenience.” Best response?',a:['Accept: a signed token is safe for any duration','Reject all SSO; short tokens force a password every few minutes','Keep app tokens short and use a longer, revocable IdP session for convenience'],right:2,why:'Long bearer-token life expands the post-theft and post-disablement window. A revocable IdP session can preserve the smooth experience while minting narrow, short-lived proofs as needed.'}
+];
+let qIndex=0,quizAnswers=Array(questions.length).fill(null);
+function paintQuestion(){
+  const q=questions[qIndex],picked=quizAnswers[qIndex];$('#quizProgress').textContent=`Question ${qIndex+1} of ${questions.length}`;$('#question').textContent=q.q;
+  $('#answers').innerHTML=q.a.map((a,i)=>`<button class="answer ${picked===null?'':i===q.right?'correct':i===picked?'wrong':''}" data-answer="${i}" ${picked===null?'':'disabled'}>${a}</button>`).join('');
+  const fb=$('#feedback');if(picked===null){fb.className='feedback';fb.innerHTML=''}else{fb.className='feedback show';fb.innerHTML=`<b>${picked===q.right?'Correct.':'Not quite.'}</b><p>${q.why}</p>`}
+  const correct=quizAnswers.reduce((n,a,i)=>n+(a===questions[i].right),0);$('#score').textContent=`${correct} correct`;
+  $('#prevQuestion').disabled=qIndex===0;$('#nextQuestion').textContent=qIndex===questions.length-1?'Start over ↻':'Next →';
+  $$('.answer').forEach(b=>b.addEventListener('click',()=>{quizAnswers[qIndex]=+b.dataset.answer;paintQuestion()}));
+}
+$('#prevQuestion').addEventListener('click',()=>{if(qIndex>0){qIndex--;paintQuestion()}});
+$('#nextQuestion').addEventListener('click',()=>{if(qIndex<questions.length-1)qIndex++;else{qIndex=0;quizAnswers.fill(null)}paintQuestion()});
+paintQuestion();
+
+/* progress navigation */
+if('IntersectionObserver' in window){
+  const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)$$('.progress-rail a').forEach(a=>a.classList.toggle('active',a.dataset.section===e.target.id))}),{rootMargin:'-30% 0px -60%'});
+  $$('.lab').forEach(s=>observer.observe(s));
+}
+</script>
+</body>
+</html>
