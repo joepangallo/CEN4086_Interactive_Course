@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CEN4086 Homework 6 — preserve an MCP tool contract while moving its implementation to AWS API Gateway, Lambda, DynamoDB, and CloudWatch.">
+<title>CEN4086 · Homework 6 — Same Contract, Real Cloud</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--amb:#e0a437;--acc:#0f8b8d;--bad:#c04f43;--ok:#3e8e5a;--aws:#b86b00}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--aws);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+main{max-width:920px;margin:0 auto;padding:20px 16px 80px}
+header.head{margin:18px 0 6px}header.head h1{margin:0 0 6px;font-size:27px}header.head p{margin:0;color:var(--mut)}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:10px 6px 0 0;color:var(--ink)}
+h2{font-size:21px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--aws)}
+h3{font-size:17.5px;margin:18px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:12px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card>:first-child{margin-top:0}.card>:last-child{margin-bottom:0}
+.concept{background:#f2f1fa;border:1px solid #d8d5ee;border-left:6px solid var(--pri);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}.concept b:first-child{color:var(--pri)}
+.warn{background:#fbeeec;border:1px solid #e8c5c0;border-left:6px solid var(--bad);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.tip{background:#eef8f1;border:1px solid #c9e2d1;border-left:6px solid var(--ok);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.awsnote{background:#fff5e7;border:1px solid #ead2ad;border-left:6px solid var(--aws);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.deliver{background:#e9f4f4;border:1px solid #c5dede;border-left:6px solid var(--acc);border-radius:10px;padding:11px 15px;margin:12px 0 2px;font-size:14.5px}.deliver b:first-child{color:var(--acc)}
+.goal{background:#fff5e7;border:1px solid #ead2ad;border-left:6px solid var(--aws);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.done{background:#eef8f1;border:1px solid #c9e2d1;border-left:6px solid var(--ok);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.atglance{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:12px 0}.mini{background:#fbfaf7;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:14px}.mini b{display:block;color:var(--aws);margin-bottom:2px}
+.where{font-weight:700;color:var(--aws)}
+ul.tight li,ol.tight li{margin:7px 0}
+code{background:#efede6;border-radius:5px;padding:1px 6px;font-size:.92em}
+pre{background:#1d2433;color:#e8e6f0;border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:13.5px;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0}th{background:#f0eee6;text-align:left}th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.note{font-size:13.5px;color:var(--mut)}
+.navtitle{font-weight:700}.points{width:14%}
+@media (max-width:620px){.atglance{grid-template-columns:1fr}th,td{padding:7px 8px}}
+@media print{.topnav{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="../index.html">⌂ Course Hub</a>
+  <span class="navtitle">📝 Homework 6 · Same Contract, Real Cloud</span>
+  <span><a href="hw5.html">HW5</a> · <a href="../week4-session10.html">SOA</a> · <a href="../week4-session11.html">Cloud Operations</a> · <a href="../project/aws-monday-checklist.html">Learner Lab</a> · <a href="hw6-starter.zip">Starter</a></span>
+</nav>
+<main>
+
+<header class="head">
+  <h1>Homework 6 · Same Contract, Real Cloud</h1>
+  <p>Move the support tools from local JSON files to a real AWS service—without changing what connected MCP clients see—then prove authorization failures, graceful degradation, persistence, logs, alarms, and measured-service cost.</p>
+  <div>
+    <span class="chip">Individual</span><span class="chip">Submit your GitHub repo link</span><span class="chip">AWS Academy Learner Lab</span><span class="chip">us-east-1</span><span class="chip">Fake data only</span>
+  </div>
+</header>
+
+<div class="card">
+  <p><b>The scenario, continued.</b> HW5's MCP server works—but only while your laptop is awake, and its tickets live in one local JSON file. Your business hires a remote support worker. Replacing the entire AI integration would be tight coupling. Instead, keep the same three MCP tool names and input schemas while moving the order/ticket implementation behind a cloud REST service.</p>
+<pre>AI host → local MCP adapter → HTTPS → API Gateway → Lambda → DynamoDB
+           same contract                         ↘ CloudWatch logs + alarm</pre>
+  <p>The adapter still publishes <code>get_order_status</code>, <code>get_ticket</code>, and <code>create_support_ticket</code>. The clients do not need to know whether the work happens in a JSON file, Lambda, a container, or tomorrow's vendor platform. That is loose coupling you can test, not just define.</p>
+  <div class="concept"><b>What is—and is not—moving:</b> the MCP server remains local because the lesson is the service boundary behind its tools. You are not trying to force a stateful MCP transport into Lambda. You are turning ordinary cloud services into reusable AI tools through a thin adapter.</div>
+</div>
+
+<h2>Assignment at a glance</h2>
+<div class="card">
+  <div class="atglance">
+    <div class="mini"><b>Estimated time</b>3–4 hours in one Learner Lab session</div>
+    <div class="mini"><b>You build</b>One HTTP API, one Lambda, one DynamoDB table, one alarm</div>
+    <div class="mini"><b>You keep local</b>The MCP server, Inspector, policies, adapter, and secret file</div>
+    <div class="mini"><b>You prove</b>Stable contracts, persistence, two safety boundaries, failure, and recovery</div>
+    <div class="mini"><b>You submit</b>Code and captured evidence—not a live secret URL</div>
+    <div class="mini"><b>You finish by</b>Deleting every AWS resource you created</div>
+  </div>
+  <p><b>Work in this order:</b> test the local adapter → create DynamoDB → deploy Lambda → publish API routes → configure local <code>.env</code> → test end to end → inspect logs/alarm → test outage/recovery → write memo → capture cleanup.</p>
+</div>
+
+<h2>Read this first — what runs where</h2>
+<div class="card">
+  <p>HW6 has a local half and a cloud half. Copying every file into Lambda—or trying to run the MCP Inspector in AWS—is a category error.</p>
+  <table>
+    <tbody>
+    <tr><th>Component/file</th><th>Where it runs or lives</th><th>Exact job</th></tr>
+    <tr><td><span class="where">MCP Inspector</span></td><td>Your laptop/browser</td><td>Acts as the developer test client. It discovers and manually calls the MCP capabilities.</td></tr>
+    <tr><td><code>server-cloud.mjs</code></td><td>Your laptop, launched by Inspector</td><td>Publishes the same MCP resources, prompt, tool names, and input schemas as HW5.</td></tr>
+    <tr><td><code>cloud-support-store.mjs</code></td><td>Your laptop, imported by <code>server-cloud.mjs</code></td><td>Translates a local MCP tool call into an HTTPS request to your AWS API.</td></tr>
+    <tr><td><code>.env</code></td><td>Your laptop only; never GitHub</td><td>Holds the API base URL and temporary demo token used by the adapter.</td></tr>
+    <tr><td><code>lambda_function.py</code></td><td>AWS Lambda</td><td>Authenticates requests, validates routes/arguments, checks confirmation, and reads/writes tickets.</td></tr>
+    <tr><td>HTTP API routes</td><td>Amazon API Gateway</td><td>Provide public HTTPS addresses and forward matching requests to Lambda.</td></tr>
+    <tr><td>Ticket table</td><td>Amazon DynamoDB</td><td>Persists tickets after Lambda invocations and deployments end.</td></tr>
+    <tr><td>Logs + alarm</td><td>Amazon CloudWatch</td><td>Record sanitized execution evidence and turn the Lambda Errors metric into an operational signal.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>One successful write, end to end</h3>
+  <ol class="tight">
+    <li>You call <code>create_support_ticket</code> in the Inspector.</li>
+    <li>The Inspector's MCP client sends a structured call over stdio to local <code>server-cloud.mjs</code>.</li>
+    <li>The local adapter refuses immediately if <code>confirmed</code> is not true. If approved, it sends JSON over HTTPS with the demo token.</li>
+    <li>API Gateway matches <code>POST /tickets</code> and invokes Lambda.</li>
+    <li>Lambda independently rechecks the token, confirmation, order, and issue length.</li>
+    <li>Lambda writes one DynamoDB item and emits a sanitized CloudWatch log.</li>
+    <li>The JSON result travels back through API Gateway → adapter → MCP server → Inspector.</li>
+  </ol>
+<pre>Inspector
+   │ MCP over local stdio
+   ▼
+server-cloud.mjs → cloud-support-store.mjs
+                           │ HTTPS + JSON + demo token
+                           ▼
+                  API Gateway route
+                           ▼
+                        Lambda ── logs/Errors ──▶ CloudWatch
+                           │
+                           ▼
+                       DynamoDB</pre>
+  <div class="done"><b>Architecture checkpoint:</b> the MCP contract remains local and unchanged; only the implementation behind the tools moves. API Gateway is not an MCP server, Lambda is not the AI model, and DynamoDB is not the RAG index.</div>
+</div>
+
+<h2>Starter file map</h2>
+<div class="card">
+  <table>
+    <tbody>
+    <tr><th>File</th><th>What to do with it</th></tr>
+    <tr><td><code>lambda_function.py</code></td><td>Paste into Lambda's code editor. Customize the three fictional orders if desired.</td></tr>
+    <tr><td><code>server-cloud.mjs</code></td><td>Run locally. Copy your HW5 business name and prompt wording into it; do not change the three tool contracts.</td></tr>
+    <tr><td><code>cloud-support-store.mjs</code></td><td>Run locally. It is already complete; read it to see how tool calls become HTTP calls.</td></tr>
+    <tr><td><code>cloud-support-store.test.mjs</code></td><td>Run with <code>npm test</code>. Do not edit it.</td></tr>
+    <tr><td><code>direct-cloud-test.mjs</code></td><td>Run only after the API exists. It bypasses MCP to prove Lambda rejects a bad token and an unconfirmed write.</td></tr>
+    <tr><td><code>.env.example</code></td><td>Commit this placeholder template. Copy it to <code>.env</code> later.</td></tr>
+    <tr><td><code>.env</code></td><td>Create locally after API Gateway gives you an invoke URL. Never commit or screenshot it.</td></tr>
+    <tr><td><code>data/policies.json</code></td><td>Replace with your HW5 policy resource. It remains local in this assignment.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>What you'll practice</h2>
+<div class="card">
+  <table>
+    <tbody>
+    <tr><th>You will…</th><th>Which is…</th></tr>
+    <tr><td>Expose three REST routes through API Gateway</td><td>A published service contract using HTTP verbs, resources, and JSON</td></tr>
+    <tr><td>Run request logic in Lambda and persist tickets in DynamoDB</td><td>Event-driven serverless compute plus managed NoSQL storage</td></tr>
+    <tr><td>Swap local storage for an HTTP adapter without changing MCP tool schemas</td><td>Loose coupling and service substitution</td></tr>
+    <tr><td>Reject bad tokens and unconfirmed writes at the cloud boundary</td><td>Authentication plus defense in depth</td></tr>
+    <tr><td>Turn one intentional error into a CloudWatch log and alarm</td><td>Observability: logs, metrics, thresholds, and operational evidence</td></tr>
+    <tr><td>Price one million events and clean up every resource</td><td>Measured service, FinOps, and lifecycle responsibility</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Before you start</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> prove the local half works and record the lab's starting state before creating anything billable.</div>
+  <ul class="tight">
+    <li>Start the <b>AWS Academy Learner Lab</b>, wait for the green AWS indicator, open the console, and confirm <b>N. Virginia (<code>us-east-1</code>)</b>. Record the remaining lab budget before building.</li>
+    <li>Create and clone a new public repo named <code>cen4086-hw6</code>. Download and unzip the <a href="hw6-starter.zip"><b>HW6 starter</b></a> into it.</li>
+    <li>Copy your customized HW5 <code>policies.json</code> and prompt wording into the new starter. The cloud code ships with the sample orders; customize their statuses/dates consistently in both <code>lambda_function.py</code> and your evidence.</li>
+    <li>From the folder containing <code>package.json</code>, run:</li>
+  </ul>
+<pre>npm install
+npm test</pre>
+  <p><b>Expected baseline:</b> <code>tests 3 · pass 3 · fail 0</code>. These tests use fake HTTP responses; AWS does not need to exist yet. They prove the adapter blocks unconfirmed writes locally and converts cloud/auth failures into honest tool errors.</p>
+  <div class="done"><b>Preflight is done when:</b> all 3 tests pass, the console shows <code>us-east-1</code>, your starting budget is recorded, and your repo contains the starter files but no <code>.env</code>.</div>
+  <div class="warn"><b>Safety boundary for this class:</b> use fictional orders and issues only. The API will be internet-reachable for a short lab exercise. A random demo token reduces casual access but is not production identity. Never put the token in Git, screenshots, a URL, or CloudWatch logs; delete the cloud resources after capturing evidence.</div>
+  <div class="awsnote"><b>Learner Lab rule:</b> when Lambda asks for an execution role, choose the existing <code>LabRole</code>. Do not attempt to create a role. The lab role is intentionally broader than a production role; you will design the least-privilege replacement in Part 5.</div>
+</div>
+
+<h2>Part 1 — Persistent state: DynamoDB + Lambda</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> create the cloud data and compute layers. Do not create API Gateway routes until both layers are configured.</div>
+  <h3>1A · Create the ticket table</h3>
+  <ol class="tight">
+    <li>AWS Console → <b>DynamoDB</b> → <b>Create table</b>.</li>
+    <li>Table name: <code>cen4086-hw6-tickets-YOURINITIALS</code>.</li>
+    <li>Partition key: <code>ticketId</code>, type <b>String</b>. Keep default settings / on-demand capacity. Create the table and wait for <b>Active</b>.</li>
+  </ol>
+
+  <h3>1B · Create the function</h3>
+  <ol class="tight">
+    <li>Lambda → <b>Create function</b> → Author from scratch. Name: <code>cen4086-hw6-support-YOURINITIALS</code>; runtime: the latest supported <b>Python 3</b> runtime.</li>
+    <li>Expand permissions → <b>Use an existing role</b> → select <code>LabRole</code>. Create the function.</li>
+    <li>Replace the default editor contents with the starter's <code>lambda_function.py</code>. Click <b>Deploy</b>.</li>
+    <li>Configuration → Environment variables → add <code>TABLE_NAME</code> with your exact DynamoDB table name.</li>
+    <li>Generate a random temporary token locally—do not invent a short password:
+<pre>node -e "console.log(require('node:crypto').randomBytes(24).toString('base64url'))"</pre>
+    Add it as Lambda environment variable <code>DEMO_TOKEN</code>. Keep the value private; you will put the same value in a local ignored <code>.env</code> file.</li>
+  </ol>
+  <div class="done"><b>Part 1 is done when:</b> the DynamoDB table says <b>Active</b>; Lambda shows <code>lambda_function.py</code> as deployed; and Lambda Configuration → Environment variables lists <code>TABLE_NAME</code> and <code>DEMO_TOKEN</code>. Do not screenshot the token value.</div>
+  <div class="deliver"><b>Evidence:</b> one screenshot of the active table configuration and one of the Lambda overview/configuration with secret values hidden.</div>
+  <p class="note">The function checks the token, validates the route and arguments, rechecks confirmation and order existence, writes one ticket, and logs only IDs/timestamps. AWS Lambda automatically sends its invocation output to CloudWatch Logs; Part 4 makes that visible.</p>
+</div>
+
+<h2>Part 2 — Publish the REST service and reconnect MCP</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> expose the Lambda through three precise HTTP routes, configure the local adapter, and prove one ticket survives outside the Lambda process.</div>
+  <h3>2A · API Gateway</h3>
+  <ol class="tight">
+    <li>API Gateway → <b>Create API</b> → <b>HTTP API</b> → Build. Name it <code>cen4086-hw6-support-api-YOURINITIALS</code>.</li>
+    <li>Add your Lambda function as the integration.</li>
+    <li>Create these three routes, all using that integration:
+      <ul class="tight">
+        <li><code>GET /orders/{orderId}</code></li>
+        <li><code>POST /tickets</code></li>
+        <li><code>GET /tickets/{ticketId}</code></li>
+      </ul>
+    </li>
+    <li>Use the <code>$default</code> stage with auto-deploy. CORS is not needed: the caller is a local Node process, not browser JavaScript.</li>
+    <li>Copy the API's base <b>Invoke URL</b>—the <code>https://…execute-api.us-east-1.amazonaws.com</code> value with no route appended.</li>
+  </ol>
+
+  <h3>2B · Point the adapter at AWS</h3>
+  <ol class="tight">
+    <li>Copy <code>.env.example</code> to a file named <code>.env</code>:</li>
+  </ol>
+<pre># macOS / Linux
+cp .env.example .env
+
+# Windows PowerShell
+Copy-Item .env.example .env</pre>
+  <ol class="tight" start="2">
+    <li>Open <code>.env</code> in a plain-text/code editor. Replace both placeholders; do not add the route <code>/tickets</code> to the base URL:</li>
+  </ol>
+<pre>SUPPORT_API_URL=https://YOUR-ID.execute-api.us-east-1.amazonaws.com
+SUPPORT_API_TOKEN=YOUR_RANDOM_TOKEN_FROM_PART_1</pre>
+  <ol class="tight" start="3">
+    <li>Run <code>git status</code>. <code>.env</code> must <b>not</b> appear; the provided <code>.gitignore</code> excludes it. Run <code>git check-ignore .env</code> for positive proof.</li>
+    <li>Run the direct boundary test, then the Inspector:
+<pre>npm run test:boundary
+npm run inspect</pre>
+    The boundary test must report <code>401 UNAUTHORIZED</code> for a wrong token and <code>409 CONFIRMATION_REQUIRED</code> for an unconfirmed direct write. It never sends a successful write.</li>
+    <li>Before the successful call, DynamoDB → your table → <b>Explore table items</b> should show zero items. In the Inspector, call <code>get_order_status</code> for <code>ORD-1002</code>. Then call <code>create_support_ticket</code> once for a known order with <code>confirmed: true</code>. Copy the returned ticket ID and read it back through <code>get_ticket</code>.</li>
+    <li>DynamoDB → your table → <b>Explore table items</b>. Confirm exactly one ticket exists and matches the tool result.</li>
+  </ol>
+  <div class="done"><b>Part 2 is done when:</b> the direct test prints a <code>401 UNAUTHORIZED</code> line, a <code>409 CONFIRMATION_REQUIRED</code> line, and then its final <code>PASS</code> line; Inspector returns one real order, creates one approved ticket, and reads it back; and the identical ticket ID is the table's only item. If troubleshooting created extra fictional tickets, delete those test items and perform one clean final run before capturing evidence.</div>
+  <div class="deliver"><b>Evidence:</b> boundary-test output, the three Inspector calls, and the matching DynamoDB item. Mask the API hostname if you prefer; the token must never be visible.</div>
+
+  <h3>If the end-to-end test fails</h3>
+  <table>
+    <tbody>
+    <tr><th>Observed result</th><th>Check in this order</th></tr>
+    <tr><td><code>401 UNAUTHORIZED</code> when the real token should work</td><td>The Lambda <code>DEMO_TOKEN</code> and local <code>SUPPORT_API_TOKEN</code> must match exactly; reconnect Inspector after editing <code>.env</code>.</td></tr>
+    <tr><td><code>404 ROUTE_NOT_FOUND</code> / API Gateway Not Found</td><td>Confirm the method and path exactly match all three routes; confirm <code>SUPPORT_API_URL</code> is only the base invoke URL.</td></tr>
+    <tr><td><code>500 SERVER_MISCONFIGURED</code></td><td>Lambda is missing <code>TABLE_NAME</code> or <code>DEMO_TOKEN</code>; save environment changes and redeploy code if needed.</td></tr>
+    <tr><td>Lambda <code>AccessDenied</code></td><td>Confirm region <code>us-east-1</code>, execution role <code>LabRole</code>, and exact table name. Copy the full error to your notes.</td></tr>
+    <tr><td><code>SERVICE_UNAVAILABLE</code></td><td>Confirm Learner Lab is running, the URL begins with <code>https://</code>, and no extra quote/space was pasted into <code>.env</code>.</td></tr>
+    <tr><td>Tool succeeds but DynamoDB is empty</td><td>Make sure you are viewing the correct table and region; compare the <code>TABLE_NAME</code> environment variable character for character.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Part 3 — Prove both boundaries</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> demonstrate that bypassing the local MCP safety check still does not bypass the cloud service's safety check.</div>
+  <p>Your system has two enforcement points on purpose:</p>
+  <table>
+    <tbody>
+    <tr><th>Test</th><th>Where it should stop</th><th>Evidence</th></tr>
+    <tr><td>Inspector write with <code>confirmed: false</code></td><td>Local MCP adapter; it should make no HTTP request.</td><td>Tool returns <code>CONFIRMATION_REQUIRED</code>; adapter unit test proves fetch was never called.</td></tr>
+    <tr><td>Direct HTTP write with the correct token but <code>confirmed: false</code></td><td>Lambda; a caller bypassed MCP, so cloud logic must still refuse.</td><td><code>npm run test:boundary</code> returns HTTP 409.</td></tr>
+    <tr><td>Direct request with a wrong token</td><td>Lambda authentication check before database access.</td><td>Boundary test returns HTTP 401; table unchanged.</td></tr>
+    <tr><td>Approved write with correct token</td><td>Passes both boundaries.</td><td>HTTP 201 reaches Inspector; one DynamoDB item exists.</td></tr>
+    </tbody>
+  </table>
+  <p>In your write-up, explain why the MCP prompt, tool description, local check, API token, Lambda validation, and DynamoDB permissions are not interchangeable controls. Then answer: if an attacker steals the demo token, which controls still limit the blast radius—and which production control should replace the shared token?</p>
+  <div class="concept"><b>The important failure:</b> “the model was told not to” is never authorization. A client can be buggy, compromised, or bypassed. The system that owns the side effect must validate the action under its own permissions.</div>
+  <div class="done"><b>Part 3 is done when:</b> your table shows no item from either rejected direct request, exactly one item from the approved Inspector request, and your explanation identifies both the local and cloud enforcement points.</div>
+  <div class="deliver"><b>Evidence:</b> one four-row table using the columns above, plus the adapter test, direct boundary-test, approved call, and DynamoDB item screenshots.</div>
+</div>
+
+<h2>Part 4 — Operate it: logs, one alarm, one outage</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> observe one healthy event, turn one real error into an alarm, and prove the MCP tool reports a dependency outage honestly and then recovers.</div>
+  <h3>4A · Read useful logs without leaking data</h3>
+  <ol class="tight">
+    <li>Lambda → Monitor → View CloudWatch logs. Find the successful <code>ticket_created</code> event. It should contain request/ticket/order IDs and a timestamp—but not the issue text or demo token.</li>
+    <li>Find the rejected-token warning. Explain why logging “unauthorized request” is useful but logging the supplied credential would create a new incident.</li>
+  </ol>
+
+  <h3>4B · Make an error alarm fire for real</h3>
+  <ol class="tight">
+    <li>CloudWatch → Alarms → Create alarm → select your Lambda's <b>Errors</b> metric. Statistic: Sum; period: 1 minute; threshold: greater than or equal to 1. Name: <code>cen4086-hw6-lambda-errors-YOURINITIALS</code>. No notification action is required for this lab.</li>
+    <li>Back in Lambda, create a console test event named <code>intentional-alarm-test</code> with exactly:</li>
+  </ol>
+<pre>{"forceError": true}</pre>
+  <ol class="tight" start="3">
+    <li>Run it once. The test must fail with <code>Intentional HW6 alarm test</code>. Wait for the metric period and refresh until the alarm enters <b>ALARM</b>. Screenshot the alarm and matching log stack trace.</li>
+  </ol>
+
+  <h3>4C · Graceful degradation</h3>
+  <ol class="tight">
+    <li>Temporarily change <code>SUPPORT_API_URL</code> in <code>.env</code> to <code>http://127.0.0.1:1</code>, reconnect the Inspector, and call <code>get_order_status</code>.</li>
+    <li>The tool must return an honest <code>SERVICE_UNAVAILABLE</code> error. It must not invent an order status or claim the action succeeded. Capture it, then restore the real URL and prove recovery with one successful read.</li>
+    <li>Write a three-step fallback for a customer-facing AI host: what it tells the customer, what (if anything) it queues, and when a human is paged. Distinguish read failure from an uncertain write—blindly retrying a write can create duplicates.</li>
+  </ol>
+  <div class="done"><b>Part 4 is done when:</b> you have a sanitized success log, rejected-auth log, intentional error stack, alarm in ALARM state, <code>SERVICE_UNAVAILABLE</code> result, and a successful read after restoring the URL. CloudWatch may take 1–3 minutes to update.</div>
+  <div class="deliver"><b>Evidence:</b> six clearly named screenshots matching the six items above, with no token or customer issue visible.</div>
+</div>
+
+<h2>Part 5 — Loose coupling, least privilege, and cost memo</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> explain why the stable contract matters and evaluate the lab architecture as a production consultant would.</div>
+  <p>Write a one-page consultant memo with these four sections:</p>
+  <ol class="tight">
+    <li><b>Contract comparison.</b> Put HW5 and HW6 Inspector screenshots side by side. Confirm the three tool names and input schemas stayed the same; list what changed behind them. Explain why an MCP-capable second client can discover the same service without another bespoke integration.</li>
+    <li><b>Least privilege.</b> <code>LabRole</code> is broad because it supports many labs. Design the production Lambda policy in words: which exact DynamoDB actions on which exact table ARN, and which log actions, would it need? State why API clients should never receive AWS credentials or direct table access.</li>
+    <li><b>Production identity.</b> Explain why the shared <code>x-demo-token</code> is acceptable only for fictional, short-lived lab traffic. Recommend an API Gateway authorizer/OAuth identity design that gives each caller revocable identity and scopes read vs. write.</li>
+    <li><b>Measured-service math.</b> Ignore free tiers and use these course model prices for one million ticket creations in a month: HTTP API calls = $1.00/million; Lambda requests = $0.20/million; Lambda compute = $0.0000166667 per GB-second; DynamoDB writes under 1 KB = $0.625/million. At 128 MB and 100 ms average duration, calculate total GB-seconds and total monthly cost before logs/storage/transfer. Compare it with one t3.micro running 730 hours at $0.0104/hour. Name what the always-on VM buys and what it wastes at quiet traffic.</li>
+  </ol>
+  <div class="tip"><b>Cost self-check:</b> one million × 0.1 seconds × 0.125 GB = 12,500 GB-seconds. Your four serverless line items should total only a few dollars. MCP Inspector itself used no model; a production AI host would add separate token/inference charges.</div>
+  <div class="done"><b>Part 5 is done when:</b> the memo contains four labeled sections, shows every cost calculation, distinguishes lab token from production identity, and names exact DynamoDB actions/resources for a least-privilege role.</div>
+</div>
+
+<h2>Cleanup — part of the grade</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> remove the public endpoint, data store, compute, and alarm only after all required evidence is safely in your repo.</div>
+  <ol class="tight">
+    <li>Capture all evidence first. Record the Learner Lab budget again.</li>
+    <li>Delete the API Gateway API, Lambda function, DynamoDB table, and CloudWatch alarm. Delete the homework log group if the lab permits it; otherwise note that it remains.</li>
+    <li>Verify the named resources no longer appear, end the lab, and add a cleanup table to your write-up: resource, deleted at, final state, recoverable or not.</li>
+    <li>Keep <code>.env</code> local until grading artifacts are finished, then delete it from your computer. Never commit it. If it ever reached GitHub, deleting the file in a later commit is not enough—rotate the token immediately and report the exposure.</li>
+  </ol>
+  <div class="awsnote"><b>Why delete instead of leaving a live grader URL?</b> The grader needs your code, logs/screenshots, and test evidence—not a shared secret. Cleanup proves you can manage cloud resources through their full lifecycle and prevents an unnecessary public endpoint from lingering.</div>
+  <div class="done"><b>Cleanup is done when:</b> searches in API Gateway, Lambda, DynamoDB, and CloudWatch show the named resources are gone (or the restricted log group is documented), the final budget is recorded, and the Learner Lab is ended.</div>
+</div>
+
+<h2>What you hand in</h2>
+<div class="card">
+  <div class="deliver"><b>Submit one thing on Blackboard: the link to your GitHub repository.</b> It must contain:
+    <ul class="tight">
+      <li><code>lambda_function.py</code>, <code>server-cloud.mjs</code>, <code>cloud-support-store.mjs</code>, its test, <code>direct-cloud-test.mjs</code>, <code>package.json</code>, and <code>package-lock.json</code></li>
+      <li>Your customized <code>data/policies.json</code> and security-test fixture—fictional data only</li>
+      <li><code>writeup.pdf</code> (or <code>.docx</code> / <code>.txt</code>)—architecture, Parts 2–4 evidence, defense analysis, fallback, and cleanup table</li>
+      <li><code>memo.pdf</code> (or <code>.docx</code> / <code>.txt</code>)—Part 5</li>
+      <li><code>screenshots/</code>—masked evidence for API routes, tests, Inspector, DynamoDB, CloudWatch logs/alarm, recovery, and cleanup</li>
+    </ul>
+  </div>
+<pre>cen4086-hw6/
+├── package.json + package-lock.json
+├── lambda_function.py
+├── server-cloud.mjs
+├── cloud-support-store.mjs
+├── cloud-support-store.test.mjs
+├── direct-cloud-test.mjs
+├── .env.example       ← placeholders only; safe to commit
+├── .gitignore
+├── data/
+│   ├── policies.json
+│   └── customer-note.txt
+├── screenshots/
+├── writeup.pdf        (or .docx / .txt)
+└── memo.pdf           (or .docx / .txt)
+
+NOT IN GITHUB:
+.env · demo token · AWS credentials · real customer/order data · node_modules/</pre>
+  <h3>Final five-minute check</h3>
+  <ol class="tight">
+    <li><code>npm test</code> reports 3 passed, 0 failed.</li>
+    <li>Your write-up includes Part 1–4 evidence, the two-boundary explanation, fallback, and cleanup table.</li>
+    <li>Your memo includes contract comparison, least privilege, production identity, and cost math.</li>
+    <li><code>git check-ignore .env</code> prints <code>.env</code>, while <code>git status</code> does not list it.</li>
+    <li>All named AWS resources are deleted and the final budget reading is captured.</li>
+    <li>Your GitHub link opens in a private browser window and contains the safe files above.</li>
+  </ol>
+  <div class="warn"><b>Automatic security check:</b> a committed <code>.env</code>, demo token, AWS credential, or real customer record is a stop-and-remediate issue. Rotate/delete it and tell the instructor; do not try to hide it in later history.</div>
+  <table>
+    <tbody>
+    <tr><th>Rubric</th><th class="points">Points</th></tr>
+    <tr><td>API Gateway routes, Lambda validation, and DynamoDB persistence work end to end</td><td>30</td></tr>
+    <tr><td>MCP contract remains stable; adapter handles auth, approval, and outages honestly</td><td>20</td></tr>
+    <tr><td>Defense-in-depth evidence accurately proves local and cloud enforcement</td><td>15</td></tr>
+    <tr><td>CloudWatch logs/alarm and graceful-degradation drill are complete and sanitized</td><td>15</td></tr>
+    <tr><td>Least privilege, identity, loose-coupling, cost reasoning, and full cleanup are sound</td><td>20</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</main>
+</body>
+</html>

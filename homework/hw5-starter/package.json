@@ -1,0 +1,19 @@
+{
+  "name": "cen4086-hw5-mcp-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CEN4086 HW5 starter: a local MCP support server with resources, prompts, and typed tools.",
+  "scripts": {
+    "inspect": "npx -y @modelcontextprotocol/inspector@0.22.0 node server.mjs",
+    "test": "node --test server.test.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "zod": "4.4.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
+

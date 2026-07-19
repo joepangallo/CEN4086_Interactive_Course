@@ -1,0 +1,20 @@
+{
+  "name": "cen4086-hw6-aws-tools-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CEN4086 HW6 starter: keep an MCP contract while moving tool work to AWS.",
+  "scripts": {
+    "inspect": "npx -y @modelcontextprotocol/inspector@0.22.0 node server-cloud.mjs",
+    "test": "node --test cloud-support-store.test.mjs",
+    "test:boundary": "node direct-cloud-test.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "dotenv": "17.4.2",
+    "zod": "4.4.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

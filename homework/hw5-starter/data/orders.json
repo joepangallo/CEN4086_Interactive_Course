@@ -1,0 +1,18 @@
+[
+  {
+    "orderId": "ORD-1001",
+    "status": "processing",
+    "eta": "2026-07-22"
+  },
+  {
+    "orderId": "ORD-1002",
+    "status": "shipped",
+    "eta": "2026-07-20"
+  },
+  {
+    "orderId": "ORD-1003",
+    "status": "delivered",
+    "eta": "2026-07-16"
+  }
+]
+

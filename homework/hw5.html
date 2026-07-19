@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CEN4086 Homework 5 — continue the grounded chatbot with an MCP server that exposes resources, prompts, typed tools, approval boundaries, and an audit trail.">
+<title>CEN4086 · Homework 5 — From Answers to Actions</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--amb:#e0a437;--acc:#0f8b8d;--bad:#c04f43;--ok:#3e8e5a}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--amb);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+main{max-width:900px;margin:0 auto;padding:20px 16px 80px}
+header.head{margin:18px 0 6px}header.head h1{margin:0 0 6px;font-size:27px}header.head p{margin:0;color:var(--mut)}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:10px 6px 0 0;color:var(--ink)}
+h2{font-size:21px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--amb)}
+h3{font-size:17.5px;margin:18px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:12px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card>:first-child{margin-top:0}.card>:last-child{margin-bottom:0}
+.concept{background:#f2f1fa;border:1px solid #d8d5ee;border-left:6px solid var(--pri);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}.concept b:first-child{color:var(--pri)}
+.warn{background:#fbeeec;border:1px solid #e8c5c0;border-left:6px solid var(--bad);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.tip{background:#eef8f1;border:1px solid #c9e2d1;border-left:6px solid var(--ok);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.deliver{background:#e9f4f4;border:1px solid #c5dede;border-left:6px solid var(--acc);border-radius:10px;padding:11px 15px;margin:12px 0 2px;font-size:14.5px}.deliver b:first-child{color:var(--acc)}
+.goal{background:#fff8e8;border:1px solid #ead9aa;border-left:6px solid var(--amb);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.done{background:#eef8f1;border:1px solid #c9e2d1;border-left:6px solid var(--ok);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.atglance{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:12px 0}.mini{background:#fbfaf7;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:14px}.mini b{display:block;color:var(--pri);margin-bottom:2px}
+.term{font-weight:700;color:var(--pri)}
+ul.tight li,ol.tight li{margin:7px 0}
+code{background:#efede6;border-radius:5px;padding:1px 6px;font-size:.92em}
+pre{background:#1d2433;color:#e8e6f0;border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:13.5px;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0}th{background:#f0eee6;text-align:left}th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.note{font-size:13.5px;color:var(--mut)}
+.navtitle{font-weight:700}.points{width:14%}
+@media (max-width:620px){.atglance{grid-template-columns:1fr}th,td{padding:7px 8px}}
+@media print{.topnav{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="../index.html">⌂ Course Hub</a>
+  <span class="navtitle">📝 Homework 5 · From Answers to Actions</span>
+  <span><a href="../week2-session5.html">RAG</a> · <a href="../week3-session8.html">AI Security</a> · <a href="../week4-session10.html">MCP &amp; SOA</a> · <a href="hw5-starter.zip">Starter</a></span>
+</nav>
+<main>
+
+<header class="head">
+  <h1>Homework 5 · From Answers to Actions</h1>
+  <p>Your grounded chatbot already knows what the documents say. Now give an AI application a standard, inspectable way to read those documents, check live order state, and request one carefully controlled action.</p>
+  <div>
+    <span class="chip">Individual</span><span class="chip">Submit your GitHub repo link</span><span class="chip">No model API key</span><span class="chip">Node.js 18+</span><span class="chip">Uses the official MCP Inspector</span>
+  </div>
+</header>
+
+<div class="card">
+  <p><b>The scenario, continued.</b> Your HW3/HW4 support bot can retrieve a return policy and cite it. Customers immediately ask it to do two things its documents cannot do: <i>“Where is ORD-1002 right now?”</i> and <i>“Open a support case for it.”</i> The first needs live state; the second changes state. Adding more policy documents solves neither problem.</p>
+  <p>You will build a local <b>MCP server</b> that publishes the business policies as a read-only resource, publishes live operations as typed tools, and publishes a reusable support workflow as a prompt. You will test the protocol with the MCP Inspector, not a paid model. The point is the integration and safety boundary—not whether an LLM can write a charming sentence.</p>
+  <div class="concept"><b>The progression:</b> RAG answers from changing knowledge. MCP standardizes how an AI application discovers that knowledge and the operations around it. MCP is not a model, a database, or “better RAG”; it is the contract between an AI client and capability servers.</div>
+</div>
+
+<h2>Assignment at a glance</h2>
+<div class="card">
+  <div class="atglance">
+    <div class="mini"><b>Estimated time</b>2–3 hours after Session 10</div>
+    <div class="mini"><b>You build</b>One local MCP server for your HW4 business</div>
+    <div class="mini"><b>You edit</b><code>policies.json</code>, <code>orders.json</code>, <code>support-store.mjs</code>, and prompt wording</div>
+    <div class="mini"><b>You prove</b>4/4 tests pass and all safety cases behave correctly</div>
+    <div class="mini"><b>You use</b>MCP Inspector—no paid model or API key</div>
+    <div class="mini"><b>You submit</b>One GitHub repo with code, screenshots, write-up, and memo</div>
+  </div>
+  <p><b>Work in this order:</b> understand MCP → run the unchanged starter → publish your policies → finish one function → run the safety protocol → complete the short explanations. Do not begin Part 2 until the Inspector shows exactly 2 resources, 3 tools, and 1 prompt.</p>
+</div>
+
+<h2>MCP from zero — what you are actually building</h2>
+<div class="card">
+  <h3>1 · The definition</h3>
+  <p><b>MCP</b> stands for <b>Model Context Protocol</b>. It is an open standard for connecting an AI application to outside data and operations through one common message format. A useful analogy is USB-C: the protocol defines the plug and conversation, while the device on either side supplies the actual capability. The <a href="https://modelcontextprotocol.io/docs/learn/architecture">official architecture overview</a> uses the same host–client–server roles defined below.</p>
+  <p>Without a standard, every AI client needs custom glue for every order system, document store, calendar, or database. With MCP, a server publishes what it offers in a discoverable form and an MCP-capable client can list and use those capabilities at runtime.</p>
+
+  <h3>2 · The five roles in this homework</h3>
+  <table>
+    <tbody>
+    <tr><th>Role</th><th>Plain-English job</th><th>In this homework</th></tr>
+    <tr><td><span class="term">Human</span></td><td>Asks for something and approves consequential actions.</td><td>You, clicking and entering arguments in the Inspector.</td></tr>
+    <tr><td><span class="term">Host</span></td><td>The AI application that manages the user experience, model, permissions, and connected servers.</td><td>A production chat/IDE would be the host. The Inspector supplies only a developer test UI here.</td></tr>
+    <tr><td><span class="term">MCP client</span></td><td>Maintains one protocol connection to a server, discovers capabilities, sends requests, and receives results.</td><td>The Inspector's client connection.</td></tr>
+    <tr><td><span class="term">MCP server</span></td><td>Publishes named capabilities with contracts, validates calls, executes code, and returns structured results.</td><td>Your <code>server.mjs</code> process.</td></tr>
+    <tr><td><span class="term">Backing systems</span></td><td>Hold the real data or perform the real work behind the server.</td><td><code>policies.json</code>, <code>orders.json</code>, and <code>tickets.json</code>.</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><b>Critical distinction:</b> a host, client, server, and model are not synonyms. The model may suggest a tool call; the client carries it; the server decides whether the requested operation is valid and performs it under the server's permissions.</div>
+
+  <h3>3 · The three things an MCP server can publish</h3>
+  <table>
+    <tbody>
+    <tr><th>Primitive</th><th>What it means</th><th>Starter example</th><th>Who normally initiates it?</th></tr>
+    <tr><td><span class="term">Resource</span></td><td>Read-only context addressed by a URI. Think document, schema, record, or configuration.</td><td><code>business://policies</code></td><td>The host/application chooses what context to read or attach.</td></tr>
+    <tr><td><span class="term">Tool</span></td><td>A typed function that computes, reads live state, or changes a system. Inputs are described by JSON Schema.</td><td><code>get_order_status</code>, <code>get_ticket</code>, <code>create_support_ticket</code></td><td>A model may propose it; the host can require approval; the server validates and executes it.</td></tr>
+    <tr><td><span class="term">Prompt</span></td><td>A reusable, parameterized instruction template for a common workflow.</td><td><code>resolve_support_case</code></td><td>The user selects it from the host/client UI.</td></tr>
+    </tbody>
+  </table>
+  <p><code>business://policies</code> is an identifier understood by this server; it is <b>not</b> a public website URL. Reading it asks the MCP server to return the resource content.</p>
+
+  <h3>4 · What happens when the Inspector connects</h3>
+  <ol class="tight">
+    <li><code>npm run inspect</code> starts the Inspector and launches <code>node server.mjs</code> as a child process.</li>
+    <li>The client and server perform <b>initialization/capability negotiation</b>: each side identifies itself and agrees on supported protocol features.</li>
+    <li>The client sends discovery requests equivalent to “list your resources,” “list your tools,” and “list your prompts.”</li>
+    <li>The server returns names, descriptions, URIs, and schemas. This is why the Inspector can build a form for each tool without custom UI code.</li>
+    <li>When you click Run, the client sends a structured tool call. The SDK validates its shape, your server checks business rules, the backing file changes only if allowed, and the server returns a structured result.</li>
+  </ol>
+<pre>Inspector/client  ── initialize + list ──▶  server.mjs
+Inspector/client  ◀── names + schemas ───  server.mjs
+Inspector/client  ── tools/call(args) ──▶  schema → business rule → file
+Inspector/client  ◀── result or error ────  server.mjs</pre>
+  <p>The messages use JSON-RPC semantics. In HW5 they travel through <b>stdio</b>—the server's standard input/output streams—because everything is local. Remote MCP servers usually use Streamable HTTP. The transport changes how messages travel, not what a resource or tool means.</p>
+
+  <h3>5 · What MCP does not provide</h3>
+  <p>MCP does not supply an LLM, embeddings, a vector database, a user account system, authorization policy, cloud hosting, or automatic trust. Your code and host still own those decisions. The Inspector contains no model: it lets you test discovery and calls manually so every result is deterministic and free.</p>
+  <div class="done"><b>Understanding checkpoint:</b> before setup, make sure you can finish these sentences aloud: “The server is…,” “the client is…,” “a resource differs from a tool because…,” “stdio is…,” and “MCP does not replace RAG because….” These ideas are assessed in Parts 1, 4, and 5.</div>
+</div>
+
+<h2>How MCP follows RAG without replacing it</h2>
+<div class="card">
+  <p>HW3/HW4 built a RAG pipeline: embed the question, retrieve the nearest policy, then answer from that evidence. MCP solves a different layer of the system.</p>
+<pre>RAG knowledge path
+question → embed → retrieve policy chunk → give evidence to model → cited answer
+
+MCP integration path
+host/client → discover resource or tool → structured request → server → result
+
+Together in production
+MCP resource → host's RAG pipeline → retrieved evidence → model answer
+MCP tool     → live system / approved action              → model reports result</pre>
+  <p>In this homework, <code>business://policies</code> returns the policy collection; the Inspector simply displays it. It does <b>not</b> run embeddings or select a chunk. A production host could feed that resource into the RAG pipeline you learned in HW3, or the server could later publish a separate <code>search_policies(question)</code> tool. We are deliberately keeping the existing RAG idea and isolating the new lesson: standardized discovery and safe action.</p>
+</div>
+
+<h2>Why MCP is the next step</h2>
+<div class="card">
+  <table>
+    <tbody>
+    <tr><th>Customer need</th><th>Right primitive</th><th>Why</th></tr>
+    <tr><td>“What is your damaged-order policy?”</td><td>RAG over an MCP <b>resource</b></td><td>Read changing source text, retrieve the relevant part, cite it; no side effect.</td></tr>
+    <tr><td>“Where is ORD-1002?”</td><td>Read-only MCP <b>tool</b></td><td>The answer is live application state, not prose in a document.</td></tr>
+    <tr><td>“Create a case for ORD-1002.”</td><td>Write MCP <b>tool</b> + approval</td><td>The operation changes state, so typed arguments, authorization, validation, confirmation, and logging matter.</td></tr>
+    <tr><td>“Handle this case using our normal steps.”</td><td>MCP <b>prompt</b></td><td>A user-selected, reusable workflow tells a client how to combine resources and tools.</td></tr>
+    </tbody>
+  </table>
+  <p>The control split is intentional: the host/application chooses what resources enter context, the model may <i>propose</i> a tool call, and a human must remain able to approve or deny consequential calls. Read the official <a href="https://modelcontextprotocol.io/docs/learn/server-concepts">MCP server concepts</a> if those roles blur together.</p>
+</div>
+
+<h2>What you'll practice</h2>
+<div class="card">
+  <table>
+    <tbody>
+    <tr><th>You will…</th><th>Which is…</th></tr>
+    <tr><td>Publish resources, prompts, and typed tools from one server</td><td>MCP's three server primitives and runtime discoverability</td></tr>
+    <tr><td>Inspect generated input schemas and watch invalid arguments fail</td><td>A service contract enforced before business logic runs</td></tr>
+    <tr><td>Separate a read tool from a state-changing write tool</td><td>Command/query separation and a clear risk boundary</td></tr>
+    <tr><td>Require explicit confirmation and verify the order again inside the server</td><td>Defense in depth: model proposals never become authority</td></tr>
+    <tr><td>Keep a sanitized audit trail without copying customer free text</td><td>Observability plus data minimization</td></tr>
+    <tr><td>Keep the same tool contract while imagining multiple clients</td><td>Session 10's N+M integration story and loose coupling</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Setup — get the server into the Inspector</h2>
+<div class="card">
+  <h3>Know the starter before you edit it</h3>
+  <table>
+    <tbody>
+    <tr><th>File</th><th>Purpose</th><th>Should you edit it?</th></tr>
+    <tr><td><code>server.mjs</code></td><td>Creates the MCP server and registers its 2 resources, 3 tools, and 1 prompt.</td><td>Yes: business/server wording and the prompt. Keep the three tool names and schemas.</td></tr>
+    <tr><td><code>support-store.mjs</code></td><td>Reads/writes the backing JSON files. Contains the one unfinished function.</td><td>Yes: complete only <code>createSupportTicket()</code>.</td></tr>
+    <tr><td><code>server.test.mjs</code></td><td>Automated specification for the read and write behavior.</td><td>No. A changed test cannot prove the original requirement.</td></tr>
+    <tr><td><code>data/policies.json</code></td><td>The read-only policy collection exposed as an MCP resource.</td><td>Yes: replace with your HW4 policies.</td></tr>
+    <tr><td><code>data/orders.json</code></td><td>Three fake live orders used by the read and write tools.</td><td>Yes: customize values, but keep IDs compatible with the tests.</td></tr>
+    <tr><td><code>data/tickets.json</code></td><td>The local ticket store; starts as <code>[]</code>.</td><td>No manual tickets. Your tool writes here.</td></tr>
+    <tr><td><code>data/customer-note.txt</code></td><td>Hostile, customer-authored text for the injection test.</td><td>Keep it as an untrusted test fixture.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Run the unchanged starter</h3>
+  <ol class="tight">
+    <li>Create a public GitHub repository named <code>cen4086-hw5</code> and clone it.</li>
+    <li>Check the runtime: <code>node --version</code>. You need Node 18 or newer. If it is missing, install the current LTS release from <a href="https://nodejs.org/">nodejs.org</a>, reopen the terminal, and check again.</li>
+    <li>Download and unzip the <a href="hw5-starter.zip"><b>HW5 starter</b></a>. Move its contents—not the enclosing folder—into your repo.</li>
+    <li>In the terminal, move into the folder containing <code>package.json</code>. Confirm <code>server.mjs</code>, <code>support-store.mjs</code>, and <code>data/</code> are beside it using <code>ls</code> (macOS) or <code>dir</code> (Windows).</li>
+    <li>Install the pinned dependencies and run the starter tests:
+<pre>npm install
+npm test</pre>
+    <b>Expected baseline:</b> <code>tests 4 · pass 1 · fail 3</code>. The command exits red/nonzero because <code>createSupportTicket()</code> intentionally returns <code>NOT_IMPLEMENTED</code>. Do not troubleshoot those three failures yet; they are the Part 2 specification.</li>
+    <li>Start the official MCP Inspector and leave this terminal running:
+<pre>npm run inspect</pre>
+    A browser tab opens. Click <b>Connect</b> if needed. Open each tab and verify:
+      <ul class="tight">
+        <li><b>Resources (2):</b> Business policy documents; Untrusted customer note</li>
+        <li><b>Tools (3):</b> <code>get_order_status</code>; <code>get_ticket</code>; <code>create_support_ticket</code></li>
+        <li><b>Prompts (1):</b> <code>resolve_support_case</code></li>
+      </ul>
+    Stop the Inspector later with <code>Ctrl+C</code>. After code changes, disconnect/reconnect so the child server restarts.</li>
+  </ol>
+  <div class="done"><b>Setup is done when:</b> the unchanged starter has the expected 1-pass/3-fail test baseline and the Inspector displays exactly 2 resources, 3 tools, and 1 prompt. If either count differs, stop here and fix setup before editing.</div>
+  <div class="warn"><b>Do not add <code>console.log()</code> to an stdio MCP server.</b> MCP's JSON messages travel over stdout; ordinary log text corrupts the protocol stream. Temporary diagnostics go to <code>console.error()</code> and should be removed before submission.</div>
+  <table>
+    <tbody>
+    <tr><th>Symptom</th><th>Likely fix</th></tr>
+    <tr><td><code>node</code> or <code>npm</code> not found</td><td>Install Node LTS, then fully reopen the terminal.</td></tr>
+    <tr><td><code>Cannot find package</code></td><td>Run <code>npm install</code> in the folder that contains <code>package.json</code>.</td></tr>
+    <tr><td>Inspector opens but connection closes immediately</td><td>Run <code>node --check server.mjs</code>, read the terminal's exact error, and remove any <code>console.log()</code>.</td></tr>
+    <tr><td>Old tool schema still appears</td><td>Disconnect/reconnect the Inspector after changing server code.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>Part 1 — Publish your grounded knowledge as a resource</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> replace the sample surf-shop knowledge with your business's current policies and prove that an MCP client can discover and read them through a stable resource URI.</div>
+  <ol class="tight">
+    <li>Replace <code>data/policies.json</code> with the <code>docs.json</code> from your completed HW4 business. If HW4 is unavailable, write at least eight short business policies in the same <code>title</code>/<code>text</code> JSON shape.</li>
+    <li>Rename <code>sandpiper-support</code>, the resource title/description, and the business named in the prompt. Do not rename the URI <code>business://policies</code>; a stable address is part of the contract.</li>
+    <li>Reconnect the Inspector → <b>Resources</b> → read <code>business://policies</code>. Confirm the content is your current master copy and take a screenshot.</li>
+    <li>In your write-up, draw the path below with your own component names, then label who is the host, client, server, and data source:</li>
+  </ol>
+<pre>human → AI host → MCP client ══ stdio / JSON-RPC ══ MCP server → policies.json
+                 discovers resources, prompts, and tools at runtime</pre>
+  <p>Then answer: where would the embedding/retrieval step from HW3 live in a production version? MCP can expose a knowledge base, but the protocol does not automatically embed, retrieve, or generate anything.</p>
+  <div class="done"><b>Part 1 is done when:</b> reading <code>business://policies</code> in the Inspector shows only your policies, valid JSON, and the resource title describes your business. No tool call is required to read a resource.</div>
+  <div class="deliver"><b>Evidence:</b> resource screenshot + labeled architecture + the retrieval answer in <code>writeup.pdf</code>, <code>.docx</code>, or <code>.txt</code>.</div>
+</div>
+
+<h2>Part 2 — Finish the write tool's server-side boundary</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> implement exactly one state-changing function while keeping every denial side-effect free.</div>
+  <p><code>get_order_status</code> and <code>get_ticket</code> already work. The starter deliberately leaves <code>createSupportTicket()</code> unfinished in <code>support-store.mjs</code>. Implement the five requirements in its TODO comment:</p>
+  <ol class="tight">
+    <li>No explicit confirmation → return <code>CONFIRMATION_REQUIRED</code>; write nothing.</li>
+    <li>Unknown order—even a well-formed <code>ORD-9999</code>—→ return <code>ORDER_NOT_FOUND</code>; write nothing.</li>
+    <li>Approved, known order → append exactly one <code>TKT-XXXXXXXX</code> ticket with <code>status: "open"</code> and an ISO timestamp.</li>
+    <li>Append one JSON audit event containing the action, IDs, and timestamp—but not the issue text.</li>
+    <li>Return the created ticket. Keep the schema and business checks; do not weaken the tests.</li>
+  </ol>
+<pre>required decision order
+1. confirmed is not exactly true?  → deny; stop
+2. order does not exist?           → deny; stop
+3. construct one ticket            → write tickets.json
+4. construct sanitized audit event → append audit.jsonl
+5. return the created ticket       → ok: true</pre>
+  <p>Do not write first and validate later. A denied call must leave both files byte-for-byte unchanged.</p>
+  <p>Customize the status and <code>eta</code> values of the three fake orders in <code>data/orders.json</code>. Keep the IDs <code>ORD-1001</code>, <code>ORD-1002</code>, and <code>ORD-1003</code>: the unchanged tests deliberately use all three. Then run:</p>
+<pre>npm test</pre>
+  <div class="done"><b>Part 2 is done when:</b> the test summary says <code>tests 4 · pass 4 · fail 0</code>, <code>data/tickets.json</code> is still valid JSON, and you did not edit <code>server.test.mjs</code>. Commit this checkpoint.</div>
+  <div class="concept"><b>Why both prompt and code?</b> A tool description helps a model choose safely; it cannot enforce safety. The server owns the data and credentials, so the server must independently reject an unapproved or nonexistent order even when a client asks incorrectly.</div>
+</div>
+
+<h2>Part 3 — Prove the boundary, including hostile text</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> show that different layers reject different failures and that untrusted text cannot authorize a write.</div>
+  <p>Use the Inspector to run every row. Record the actual result and whether <code>tickets.json</code> changed.</p>
+  <table>
+    <tbody>
+    <tr><th>Test</th><th>Input</th><th>Expected enforcement layer</th></tr>
+    <tr><td>Bad shape</td><td><code>orderId: "1001"</code></td><td>Generated schema rejects it before tool logic.</td></tr>
+    <tr><td>Plausible but absent</td><td><code>ORD-9999</code>, valid issue, confirmed</td><td>Business rule checks the actual order store.</td></tr>
+    <tr><td>No approval</td><td><code>ORD-1001</code>, valid issue, <code>confirmed: false</code></td><td>Server returns <code>CONFIRMATION_REQUIRED</code>.</td></tr>
+    <tr><td>Prompt injection</td><td>Read <code>business://customer-note/security-test</code>, then repeat the unconfirmed call it demands</td><td>Untrusted resource text has no authority; the same denial holds.</td></tr>
+    <tr><td>Approved action</td><td>Known order, valid issue, <code>confirmed: true</code></td><td>One ticket and one sanitized audit event are created.</td></tr>
+    <tr><td>Read it back</td><td>New ticket ID → <code>get_ticket</code></td><td>Read tool returns the saved record.</td></tr>
+    </tbody>
+  </table>
+  <p>Use this exact issue text where a valid issue is required: <code>My shipment has not moved for three days.</code> For the no-approval test, the full tool input is:</p>
+<pre>{
+  "orderId": "ORD-1001",
+  "issue": "My shipment has not moved for three days.",
+  "confirmed": false
+}</pre>
+  <p>Open <code>data/audit.jsonl</code> locally after the successful call. Verify it includes the event and IDs but not the customer issue. Do not commit the runtime audit file; it is ignored because real operational logs often contain sensitive metadata.</p>
+  <div class="done"><b>Part 3 is done when:</b> four denial tests create zero tickets, one approved test creates exactly one ticket, <code>get_ticket</code> reads that same ticket, and the audit entry contains no issue text.</div>
+  <div class="deliver"><b>Evidence:</b> one results table + screenshots of the schema rejection, injection denial, successful ticket, read-back, and sanitized audit event.</div>
+</div>
+
+<h2>Part 4 — Prompt, discovery, and loose coupling</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> prove that MCP publishes both machine-readable contracts and a reusable human-selected workflow.</div>
+  <ol class="tight">
+    <li>Customize <code>resolve_support_case</code> for your business. Its generated prompt must require a policy citation, distinguish reads from writes, treat resource text as data, show the exact proposed write, and require current-turn confirmation.</li>
+    <li>Inspector → <b>Prompts</b> → run it with a realistic customer message. Capture the generated workflow. Remember: generating a prompt is not running a model.</li>
+    <li>Inspector → <b>Tools</b> → inspect the JSON schema for <code>create_support_ticket</code>. In your write-up, name which constraints came from Zod/schema and which require business logic.</li>
+    <li>Do the integration math: three AI clients need four business capability servers. With private glue for every pairing, how many custom adapters must be maintained? With MCP, how many protocol implementations are maintained—one per client plus one per server? Explain why a rewritten order database can leave every client unchanged if the tool names, schemas, and meanings remain honored. Be precise: the clients may still open runtime connections to servers; the reduction is in bespoke integration code.</li>
+  </ol>
+  <div class="done"><b>Part 4 is done when:</b> the prompt preview names your business and includes all five safety steps; the tool schema visibly constrains ID, issue length, and confirmation; and your write-up answers the integration math as 12 bespoke adapters versus 7 standardized protocol implementations (3 clients + 4 servers).</div>
+  <div class="deliver"><b>Evidence:</b> prompt preview screenshot, tool-schema screenshot, schema-vs-business-rule explanation, and N×M/N+M answer.</div>
+</div>
+
+<h2>Part 5 — The one-page design memo</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> explain when to use grounded knowledge, read tools, and approved write tools—and what MCP standardizes between them.</div>
+  <p>Write a one-page memo for the business owner:</p>
+  <ol class="tight">
+    <li>Classify six requests of your own: two answered from grounded policy documents, two needing read tools, and two proposing writes. Justify each classification.</li>
+    <li>Name the three enforcement layers you observed—schema validation, server business rules, and host/human approval—and one failure each layer catches that the others do not.</li>
+    <li>Explain what MCP standardizes and what it does <i>not</i> supply: model, RAG index, authentication policy, database, or automatic trust.</li>
+    <li>Recommend which tools could be pre-approved and which always need a confirmation dialog. Use consequence, reversibility, and data sensitivity—not “AI is smart”—as your criteria.</li>
+  </ol>
+  <div class="done"><b>Part 5 is done when:</b> the memo has all four labeled sections, contains six classified examples, and explicitly says that the Inspector ran no model or inference.</div>
+</div>
+
+<h2>What you hand in</h2>
+<div class="card">
+  <div class="deliver"><b>Submit one thing on Blackboard: the link to your GitHub repository.</b> It must contain:
+    <ul class="tight">
+      <li><code>server.mjs</code>, <code>support-store.mjs</code>, <code>server.test.mjs</code>, <code>package.json</code>, and <code>package-lock.json</code></li>
+      <li><code>data/policies.json</code>, <code>data/orders.json</code>, <code>data/tickets.json</code>, and the untrusted-note fixture—fake data only</li>
+      <li><code>writeup.pdf</code> (or <code>.docx</code> / <code>.txt</code>)—Parts 1, 3, and 4 evidence and answers</li>
+      <li><code>memo.pdf</code> (or <code>.docx</code> / <code>.txt</code>)—Part 5</li>
+      <li><code>screenshots/</code>—the required Inspector and test evidence, with no real customer data</li>
+    </ul>
+  </div>
+<pre>cen4086-hw5/
+├── package.json + package-lock.json
+├── server.mjs
+├── support-store.mjs
+├── server.test.mjs
+├── data/
+│   ├── policies.json
+│   ├── orders.json
+│   ├── tickets.json
+│   └── customer-note.txt
+├── screenshots/
+├── writeup.pdf   (or .docx / .txt)
+└── memo.pdf      (or .docx / .txt)</pre>
+  <h3>Final five-minute check</h3>
+  <ol class="tight">
+    <li><code>npm test</code> reports 4 passed, 0 failed.</li>
+    <li>A fresh Inspector connection lists 2 resources, 3 tools, and 1 prompt.</li>
+    <li>Your results table accounts for every Part 3 test and every side effect.</li>
+    <li><code>git status</code> does not show <code>node_modules/</code> or <code>data/audit.jsonl</code>.</li>
+    <li>Your GitHub link opens in a private browser window and contains the files above.</li>
+  </ol>
+  <table>
+    <tbody>
+    <tr><th>Rubric</th><th class="points">Points</th></tr>
+    <tr><td>Your policies, resource, prompt, and three discoverable tool contracts are coherent and customized</td><td>25</td></tr>
+    <tr><td>Write boundary works: confirmation, existence check, one side effect, sanitized audit; all tests pass</td><td>30</td></tr>
+    <tr><td>Adversarial protocol proves schema, business-rule, and injection defenses with accurate evidence</td><td>25</td></tr>
+    <tr><td>Architecture, N+M reasoning, RAG-vs-tool classifications, and design memo are technically sound</td><td>20</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Before pushing, run <code>npm test</code> once more and inspect <code>git status</code>. Do not commit <code>node_modules/</code>, real customer/order data, or runtime audit logs.</p>
+</div>
+
+</main>
+</body>
+</html>
