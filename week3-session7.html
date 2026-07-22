@@ -36,6 +36,19 @@ h3{font-size:18px;margin:20px 0 8px}
 .bdg{display:inline-block;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
 .b-lec{background:#c9d4f5;color:#22307a}.b-int{background:#ffe3a3;color:#6b4d05}.b-lab{background:#bfe6e0;color:#0b5450}.b-quiz{background:#f3c9c2;color:#7a2417}.b-brk{background:#e4e4e4;color:#555}.b-cap{background:#ddd3f0;color:#432c73}
 .flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.section-lead{margin:0 0 12px;color:var(--mut)}
+.definition-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
+.definition-card{border-radius:10px;background:#f4f6fb;border:1px solid #dfe1eb;padding:11px}
+.definition-card b{display:block;color:var(--pri);margin-bottom:3px}
+.definition-card span{font-size:13px;color:#485164}
+.key-callout{border-left:5px solid var(--acc);border-radius:10px;background:#edf8f6;padding:11px 13px;margin:12px 0;font-size:14px}
+.key-callout strong{color:#0b5450}
+.warning-callout{border-left:5px solid var(--bad);border-radius:10px;background:#faece9;padding:11px 13px;margin:12px 0;font-size:14px}
+.warning-callout strong{color:#7a2417}
+.track-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.track-card{border:1px solid var(--line);border-radius:10px;background:white;padding:10px;font-size:13px}
+.track-card b{display:block;color:var(--pri);margin-bottom:3px}
+@media(max-width:650px){.track-grid,.definition-grid{grid-template-columns:1fr}}
 .flip{border:1.5px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
 .flip h5{margin:0;font-size:15px;color:var(--pri)}
 .flip .back{display:none;margin-top:8px;font-size:14px;color:var(--ink)}
@@ -143,45 +156,29 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
 <!-- ============ MIDTERM NOTICE ============ -->
 <section class="card" style="border-top:6px solid var(--bad)">
   <h3>📝 First order of business: the Midterm Exam</h3>
-  <p>Per the syllabus, the <strong>midterm exam happens at the start of this session</strong> and covers everything from Weeks 1–2 (Sessions 1–6): cloud fundamentals, SaaS, PaaS, IaaS, IDaaS, data storage, and collaboration. Your instructor administers it during the first 45 minutes — close this page and all notes until it is collected. You prepared for this with the Session 6 review quiz, the flash-card deck, and the objective traffic-light audit.</p>
-  <p class="note">When the exam is done: stretch, breathe, and start the warm-up polls below. Fittingly, today's topic — virtualization — is the single technology that makes everything you were just tested on economically possible.</p>
-</section>
-
-<!-- ============ WARM-UP ============ -->
-<section class="card warmup">
-  <h3>🔥 Warm-Up Polls <span class="note">(no wrong answers — vote, then we discuss)</span></h3>
-  <div class="poll" id="poll1">
-    <p><strong>Poll 1:</strong> Right now, how many "computers" is your laptop actually running?</p>
-    <button class="popt">Exactly 1 — hardware is hardware</button><button class="popt">2–5</button><button class="popt">Possibly dozens</button><button class="popt">Depends what counts as a computer</button>
-    <div class="pollwhy">"Depends" is the most honest answer — and after today, "possibly dozens" is defensible. Every browser tab runs in its own sandboxed process; Windows can be running a whole Linux kernel inside WSL2 (a virtual machine); Docker Desktop runs containers inside another VM; an Android emulator is a virtual phone. The idea that one physical machine = one computer died decades ago. Virtualization is the technology that made "computer" a <em>software</em> concept, and it is the engine room of every cloud provider you have studied so far.</div>
-  </div>
-  <div class="poll" id="poll2">
-    <p><strong>Poll 2:</strong> Before virtualization took over data centers (early 2000s), a typical dedicated corporate server's average CPU utilization was about…</p>
-    <button class="popt">90% — companies ran them hard</button><button class="popt">60%</button><button class="popt">35%</button><button class="popt">5–15%</button>
-    <div class="pollwhy">Industry analyses of the one-app-per-server era consistently found averages around <strong>5–15%</strong>. Companies bought a separate machine for every application to keep them from interfering with each other — then paid full price in power, cooling, rack space, and admin time for boxes that idled 85–95% of the time. That staggering waste is the villain of today's session, and in Segment 2 you'll personally consolidate ten of those sleepy servers and count the savings.</div>
-  </div>
-  <div class="poll" id="poll3">
-    <p><strong>Poll 3:</strong> One VM on a shared host hits a bug and pegs its CPU allocation at 100%. What happens to the other VMs on that same physical host?</p>
-    <button class="popt">They all crash too</button><button class="popt">Absolutely nothing, ever</button><button class="popt">They keep running, but may slow if the host is oversubscribed</button><button class="popt">The hypervisor shuts everyone down for safety</button>
-    <div class="pollwhy">The third option is reality. The hypervisor gives each VM its own isolated memory and virtual hardware, so one VM's crash or CPU spin <em>cannot corrupt</em> its neighbors — that isolation is a headline reason to virtualize. But CPU cycles are still a shared, finite pool: if the host is oversubscribed, a greedy VM can make neighbors sluggish (the "noisy neighbor" problem). Good operators set resource limits and reservations. Isolation is about <em>protection</em>, not infinite capacity — remember that nuance for the quiz.</div>
-  </div>
+  <p>Per the syllabus, the <strong>midterm exam happens at the start of this session</strong> and covers everything from Weeks 1–2 (Sessions 1–6): cloud fundamentals, SaaS, PaaS, IaaS, IDaaS, data storage, and collaboration. Your instructor administers it as a proctored 150-minute sitting — plan on it taking most of the class period, and close this page and all notes until your exam is submitted. You prepared for this with the session quizzes on the Sessions 1–6 pages and Session 6's Lab B, where the AI quizzed <em>you</em> as a midterm warm-up.</p>
+  <div class="warning-callout"><strong>Today is a double event:</strong> <strong>Milestone 2 of the course project is also due today.</strong> Session 6 warned you not to leave it for this morning — submit it per your track's checklist on the <a href="project/index.html"><strong>Project Hub</strong></a> before you leave.</div>
+  <p class="note">When the exam is done: stretch, breathe, and pick up at Segment 1 below — in class if time remains, on your own before Session 8 if it doesn't. Fittingly, today's topic — virtualization — is the single technology that makes everything you were just tested on economically possible.</p>
 </section>
 
 <!-- ============ SEGMENT 1 ============ -->
 <section class="segment">
   <h2><span class="segno">1</span> One Machine Pretending to Be Many</h2>
   <div class="card">
+    <h3>How many computers is your laptop running right now?</h3>
+    <p>The honest answer is "possibly dozens." Every browser tab runs in its own sandboxed process; Windows can be running a whole Linux kernel inside WSL2 (a virtual machine); Docker Desktop runs containers inside another VM; an Android emulator is a virtual phone. The idea that one physical machine = one computer died decades ago. Virtualization is the technology that made "computer" a <em>software</em> concept — and it is the engine room of every cloud provider you have studied so far.</p>
     <h3>What virtualization actually is</h3>
     <p><strong>Virtualization</strong> is a layer of software — called a <strong>hypervisor</strong> (or virtual machine monitor, VMM) — that sits between physical hardware and operating systems, carving one real machine into several isolated <strong>virtual machines (VMs)</strong>. Each VM is handed virtual CPUs, virtual RAM, a virtual disk, and a virtual network card that look and behave exactly like real ones. The guest operating system inside the VM has no idea it isn't alone on the hardware: Windows Server boots, sees "a computer," and gets to work — while two shelves over in the same silicon, an Ubuntu VM believes exactly the same thing. Crucially, a VM is ultimately just <em>a set of files</em> on disk (a virtual disk image plus a small configuration file), which is why VMs can be copied, backed up, moved between hosts, and shipped to a cloud provider like documents.</p>
     <p>The trick is older than most people realize. IBM built virtualization into its System/360 and /370 mainframes in the late 1960s so that one wildly expensive machine could safely time-share among many users. The cheap-PC era forgot the lesson — when x86 servers cost a few thousand dollars, companies just bought another box per application — until VMware brought virtualization to x86 in 1999, and by the late 2000s consolidation was standard practice. <strong>Blade servers</strong> — thin compute cards slotted into a shared chassis that supplies power, cooling, and networking — densified data centers in the same era and paired perfectly with hypervisors: one chassis of blades could host hundreds of VMs.</p>
     <p><strong>Why it matters:</strong> virtualization is <em>the</em> enabling technology of cloud resource pooling from Session 1. When AWS hands you an "instance" 90 seconds after you click, no human racked a server — a scheduler placed your new VM onto a pooled host that already runs strangers' VMs, safely isolated by the hypervisor. No virtualization, no cloud economics. <strong>Common misconception:</strong> virtualization is not dual-booting (VMs run <em>simultaneously</em>, isolated) and it is not emulation of foreign hardware — same-architecture VMs execute most instructions directly on the real CPU, which is why overhead is only a few percent.</p>
-    <h3>Why virtualize? Flip the five payoffs</h3>
-    <div class="flipgrid">
-      <button class="flip"><h5>1 · Consolidation</h5><span class="hint">tap to flip</span><span class="back">Pack many under-used servers onto few well-used hosts. Cuts power, cooling, rack space, and hardware spend — typically 60–85% of boxes retired. Segment 2 is all about this.</span></button>
-      <button class="flip"><h5>2 · Isolation</h5><span class="hint">tap to flip</span><span class="back">Each VM gets its own OS, memory space, and virtual hardware. One VM crashing, being hacked, or misbehaving cannot corrupt its neighbors — the original reason companies ran one app per physical box, preserved without the waste.</span></button>
-      <button class="flip"><h5>3 · Snapshots &amp; clones</h5><span class="hint">tap to flip</span><span class="back">Freeze a VM's exact state in seconds before a risky patch; roll back instantly if it goes wrong. Clone a golden image into 30 identical training machines before class. Physical servers can't do either.</span></button>
-      <button class="flip"><h5>4 · Hardware independence</h5><span class="hint">tap to flip</span><span class="back">Because a VM is just files, it can move to newer hardware, migrate between hosts while running (live migration), or be replicated to a disaster-recovery site. The app no longer cares what box it lives on.</span></button>
-      <button class="flip"><h5>5 · Speed of provisioning</h5><span class="hint">tap to flip</span><span class="back">A new physical server takes weeks: quote, purchase order, shipping, racking, cabling. A new VM takes minutes from a template. This speed is what makes cloud on-demand self-service possible at all.</span></button>
+    <h3>Why virtualize? The five payoffs</h3>
+    <p class="section-lead">These five benefits are the answer to every "why bother?" in today's session — and the vocabulary of the quiz.</p>
+    <div class="definition-grid">
+      <div class="definition-card"><b>1 · Consolidation</b><span>Pack many under-used servers onto few well-used hosts. Cuts power, cooling, rack space, and hardware spend — typically 60–85% of boxes retired. Segment 2 is all about this.</span></div>
+      <div class="definition-card"><b>2 · Isolation</b><span>Each VM gets its own OS, memory space, and virtual hardware. One VM crashing, being hacked, or misbehaving cannot corrupt its neighbors — the original reason companies ran one app per physical box, preserved without the waste.</span></div>
+      <div class="definition-card"><b>3 · Snapshots &amp; clones</b><span>Freeze a VM's exact state in seconds before a risky patch; roll back instantly if it goes wrong. Clone a golden image into 30 identical training machines before class. Physical servers can't do either.</span></div>
+      <div class="definition-card"><b>4 · Hardware independence</b><span>Because a VM is just files, it can move to newer hardware, migrate between hosts while running (live migration), or be replicated to a disaster-recovery site. The app no longer cares what box it lives on.</span></div>
+      <div class="definition-card"><b>5 · Speed of provisioning</b><span>A new physical server takes weeks: quote, purchase order, shipping, racking, cabling. A new VM takes minutes from a template. This speed is what makes cloud on-demand self-service possible at all.</span></div>
     </div>
     <h3>Type 1 vs Type 2 hypervisors — where the hypervisor sits</h3>
     <p>Hypervisors come in two architectures, and Objective 7 expects you to evaluate which fits a given job. A <strong>Type 1 ("bare-metal") hypervisor</strong> installs directly onto the server hardware and <em>is</em> the operating system of the box — examples: <strong>VMware ESXi, Microsoft Hyper-V, KVM, Xen</strong>. With no general-purpose OS underneath, it wastes little, performs close to native speed, presents a small attack surface, and is managed remotely — which is why data centers and cloud providers run Type 1 essentially everywhere. A <strong>Type 2 ("hosted") hypervisor</strong> is an ordinary application installed on top of Windows, macOS, or Linux — examples: <strong>Oracle VirtualBox (free), VMware Workstation/Fusion, Parallels</strong>. It's the convenient choice for laptops: developers testing another OS, students running lab environments, support techs reproducing customer bugs. The costs: the host OS consumes resources, the extra layer adds overhead, and if the host OS crashes, every guest dies with it.</p>
@@ -193,6 +190,15 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     </div>
     <div id="hypViz" style="max-width:560px"></div>
     <p class="note" id="hypCap"></p>
+    <h3>🛠️ Hands-On Exercises — count the layers, then delete one</h3>
+    <p>Four drills you answer by clicking the two buttons above and reading the stack diagrams — three the page grades, one you argue out loud. Every answer is on the screen.</p>
+    <p><strong>Exercise 1 · Census of the laptop.</strong> Click <strong>Type 2 · hosted</strong>. Counting the row of VMs as one layer, how many layers tall is the whole stack?</p>
+    <div class="checkfield">→ Layers in the Type 2 stack: <input type="number" id="hx1a"> <button class="btn small" onclick="checkHX('1a')">Check</button> <span class="fb" id="fbHX1a"></span></div>
+    <p><strong>Exercise 2 · The vanishing layer.</strong> Now click <strong>Type 1 · bare-metal</strong> and compare. Which layer from the Type 2 stack has disappeared entirely?</p>
+    <div class="checkfield">→ The missing layer: <input type="text" id="hx1b" placeholder="two words"> <button class="btn small" onclick="checkHX('1b')">Check</button> <span class="fb" id="fbHX1b"></span></div>
+    <p><strong>Exercise 3 · Read the fleet.</strong> Stay on Type 1 — the production view. How many VMs is this one physical server hosting in the diagram?</p>
+    <div class="checkfield">→ VMs on the Type 1 host: <input type="number" id="hx1c"> <button class="btn small" onclick="checkHX('1c')">Check</button> <span class="fb" id="fbHX1c"></span></div>
+    <label class="step"><input type="checkbox" data-step="hx1d"><span><strong>Exercise 4 · One sentence, out loud.</strong> The Type 2 caption warns that "a host-OS crash kills every guest." Explain to a neighbor why that particular disaster is <em>impossible</em> in the Type 1 stack — then flip it: name the one thing whose failure still kills every guest on a Type 1 host. (That answer is why Segment 2 ends with N+1 design.)</span></label>
   </div>
 </section>
 
@@ -201,8 +207,9 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
   <h2><span class="segno">2</span> Server Consolidation: Ten Sleepy Boxes → Two Busy Ones</h2>
   <div class="card">
     <h3>The 5–15% disease</h3>
-    <p>Walk into a 2003-era server room and you'd find a rack per department: one box for email, one for the ERP, one for file sharing, one for the print queue — each bought so applications "couldn't interfere with each other." Vendors demanded dedicated machines for support; admins wanted clean blame lines; conflicting library versions made cohabitation genuinely risky. The result was the utilization disease you voted on in Poll 2: rooms full of servers averaging <strong>5–15% CPU use</strong> while drawing near-full power, demanding cooling, eating rack space, and each needing patches, backups, and an admin's attention. An idle server is not a cheap server.</p>
-    <p><strong>Server consolidation</strong> is the cure: image each physical box into a VM (a process called <strong>P2V, physical-to-virtual</strong>) and stack those VMs onto a small number of virtualized hosts. The <strong>consolidation ratio</strong> — VMs per host — decides how many hosts you need. But here is the judgment call that separates professionals from spreadsheet jockeys: <strong>you do not pack hosts to 100%</strong>. Workload peaks correlate — month-end close hammers finance apps together; an author-event evening slams Harbor Lane's web store and POS database at the same hour. And if a host fails, its VMs must restart on the survivors (<strong>N+1 design</strong>), which is only possible if the survivors have headroom. The industry sweet spot for steady-state utilization is roughly <strong>60–75%</strong>.</p>
+    <p>Walk into a 2003-era server room and you'd find a rack per department: one box for email, one for the ERP, one for file sharing, one for the print queue — each bought so applications "couldn't interfere with each other." Vendors demanded dedicated machines for support; admins wanted clean blame lines; conflicting library versions made cohabitation genuinely risky. The result was the utilization disease: industry analyses of that era consistently found rooms full of servers averaging <strong>5–15% CPU use</strong> while drawing near-full power, demanding cooling, eating rack space, and each needing patches, backups, and an admin's attention. An idle server is not a cheap server.</p>
+    <p><strong>Server consolidation</strong> is the cure: image each physical box into a VM (a process called <strong>P2V, physical-to-virtual</strong>) and stack those VMs onto a small number of virtualized hosts. The <strong>consolidation ratio</strong> — VMs per host — decides how many hosts you need. But here is the judgment call that separates professionals from spreadsheet jockeys: <strong>you do not pack hosts to 100%</strong>. Workload peaks correlate — month-end close hammers finance apps together; a holiday-shipping crunch slams Bayfront's customer portal and dispatch database at the same hour. And if a host fails, its VMs must restart on the survivors (<strong>N+1 design</strong>), which is only possible if the survivors have headroom. The industry sweet spot for steady-state utilization is roughly <strong>60–75%</strong>.</p>
+    <div class="key-callout"><strong>Isolation ≠ infinite capacity:</strong> the hypervisor guarantees one VM's crash or memory corruption cannot touch its neighbors — but CPU cycles remain a shared, finite pool. On an oversubscribed host, one greedy VM can make everyone else sluggish (the <strong>"noisy neighbor"</strong> problem). Good operators set resource limits and reservations. Isolation is about <em>protection</em>, not capacity — remember that nuance for the quiz.</div>
     <p><strong>Misconception:</strong> "Consolidation puts all our eggs in one basket." Partially true — and managed: clusters restart VMs from a failed host automatically, live migration empties a host before maintenance, and N+1 sizing keeps a spare basket's worth of capacity. Meanwhile the un-virtualized alternative is ten baskets, each with <em>zero</em> spare — a dead print server stayed dead until someone rebuilt it by hand.</p>
     <h3>🎛️ Interactive: The Server-Consolidation Simulator</h3>
     <p><strong>Bayfront Logistics</strong> (your Session 1 quiz client) signed the contract. Below is their real closet: 10 physical servers with measured average utilization. Cost model: each old box costs <strong>$1,300/yr in power + cooling</strong> (≈4,400 kWh) plus <strong>$800/yr in maintenance and support</strong> = <strong>$2,100/yr per retired server</strong>. Replacement hosts are the same hardware class. Drag the ratio and watch the fleet reshape:</p>
@@ -219,6 +226,16 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
     <p style="margin:4px 0 2px"><strong>After consolidation:</strong> <span id="kVerdict" style="font-weight:800"></span></p>
     <div id="hostView" style="margin:8px 0"></div>
     <p class="note" id="conNote"></p>
+    <h3>🛠️ Hands-On Exercises — read the fleet like a CFO</h3>
+    <p>Four drills on the simulator above — different settings than Lab A, so don't skip ahead. Drag the slider to the named ratio, read the KPIs, and check each answer.</p>
+    <p><strong>Exercise 1 · The timid plan.</strong> Slide to <strong>2 VMs per host</strong> — the most cautious consolidation on the slider. How many of Bayfront's ten boxes survive as hosts?</p>
+    <div class="checkfield">→ Hosts needed at 2:1: <input type="number" id="hx2a"> <button class="btn small" onclick="checkHX('2a')">Check</button> <span class="fb" id="fbHX2a"></span></div>
+    <p><strong>Exercise 2 · Why timid is expensive.</strong> Still at 2:1 — read the average-utilization KPI (whole percent). This number is the argument against the timid plan.</p>
+    <div class="checkfield">→ Avg utilization at 2:1 (%): <input type="number" id="hx2b"> <button class="btn small" onclick="checkHX('2b')">Check</button> <span class="fb" id="fbHX2b"></span></div>
+    <p><strong>Exercise 3 · Count the retirements.</strong> Slide to <strong>3 VMs per host</strong>. How many servers get retired?</p>
+    <div class="checkfield">→ Servers retired at 3:1: <input type="number" id="hx2c"> <button class="btn small" onclick="checkHX('2c')">Check</button> <span class="fb" id="fbHX2c"></span></div>
+    <p><strong>Exercise 4 · Find the sweet spot.</strong> Keep raising the ratio one notch at a time. What is the <em>smallest</em> ratio where the verdict first turns <strong>🟢 Sweet spot</strong>?</p>
+    <div class="checkfield">→ First sweet-spot ratio: <input type="number" id="hx2d"> <button class="btn small" onclick="checkHX('2d')">Check</button> <span class="fb" id="fbHX2d"></span></div>
   </div>
 </section>
 
@@ -265,6 +282,7 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
       <div class="kpi"><b>GBs vs MBs</b><small>typical size: VM vs container</small></div>
       <div class="kpi"><b>HW vs kernel</b><small>isolation boundary: VM vs container</small></div>
     </div>
+    <p class="note">🔎 <strong>Go deeper:</strong> the companion <a href="docker-deep-dive.html">Docker Field Guide</a> gives you a saved seven-lab path: run ten terminal missions, build and optimize images, solve ports and persistence, trace a Compose stack, then diagnose and harden containers.</p>
     <h3>🎮 Decision game: Virtualize it — or keep it physical?</h3>
     <p>You're the consultant. Click a workload card, then the verdict zone. Wrong calls shake; defend your reasoning out loud as you go:</p>
     <div class="matcher" id="vNotMatcher">
@@ -285,6 +303,15 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
       <p class="mstatus">0/8 placed</p>
     </div>
     <p class="note">Nuance for the curious: GPU passthrough can hand a VM real GPUs, and dongle servers exist — "keep physical" often means "virtualizing costs more than it returns <em>today</em>." The legacy app is the sneaky one: failing hardware is a <em>reason to</em> virtualize (P2V encapsulates it into files that outlive the tower).</p>
+    <h3>🛠️ Hands-On Exercises — expose the duplication, then defend a verdict</h3>
+    <p>Four drills — three on the two-architectures diagram and the kernel rule, then one you defend out loud in the decision game. Click <strong>Show the duplication</strong> first — the colors answer the first two.</p>
+    <p><strong>Exercise 1 · Count the waste.</strong> With the duplication highlighted, how many <em>full guest operating systems</em> are running on the VM side just to serve three apps?</p>
+    <div class="checkfield">→ Guest OSes on the VM side: <input type="number" id="hx3a"> <button class="btn small" onclick="checkHX('3a')">Check</button> <span class="fb" id="fbHX3a"></span></div>
+    <p><strong>Exercise 2 · Count the kernels.</strong> Same three apps on the container side — how many OS kernels serve all of them?</p>
+    <div class="checkfield">→ Kernels on the container side: <input type="number" id="hx3b"> <button class="btn small" onclick="checkHX('3b')">Check</button> <span class="fb" id="fbHX3b"></span></div>
+    <p><strong>Exercise 3 · The kernel rule's sharpest edge.</strong> Because every container borrows its host's kernel, there is one kind of container a Linux host can never run. What kind?</p>
+    <div class="checkfield">→ A <input type="text" id="hx3c" placeholder="one word"> container <button class="btn small" onclick="checkHX('3c')">Check</button> <span class="fb" id="fbHX3c"></span></div>
+    <label class="step"><input type="checkbox" data-step="hx3d"><span><strong>Exercise 4 · Consultant's defense.</strong> Play the 🎮 decision game to 8/8, then pick the card you hesitated on longest and defend its verdict to a neighbor in one sentence — without using the word "because" twice. (Most people hesitate on the legacy app; the note above explains why it's the trap.)</span></label>
   </div>
 </section>
 
@@ -326,7 +353,7 @@ table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
 
 <!-- ============ LEARN IT WITH AI ============ -->
 <section class="card ai">
-  <h3>🎓 Learn Objective 7 with AI (virtualization)</h3>
+  <h3>🎓 Learn Objective 7 with AI — personal tutor drills</h3>
   <p><strong>Objective 7: Examine and evaluate virtualization solutions.</strong> Open any free AI chatbot (ChatGPT, Gemini, Claude, Copilot) and run these three drills — each turns the AI into a different kind of tutor on today's virtualization topics.</p>
   <p><strong>Drill 1 · Socratic tutor</strong> — the AI questions you, not the other way around:</p>
   <div class="promptbox"><button class="copybtn" onclick="copyPrompt(this)">📋 Copy</button><pre>Act as a Socratic tutor for Session 7 of my cloud computing course —
@@ -440,7 +467,7 @@ HR-01	11</pre></div>
   <label class="step"><input type="checkbox" data-step="c4"><span>Download VirtualBox from <strong>virtualbox.org</strong> (free, open source) and install it on your own machine. Congratulations — you now operate a Type 2 hypervisor.</span></label>
   <label class="step"><input type="checkbox" data-step="c5"><span>Get a free OS to virtualize: download the Ubuntu Desktop ISO from <strong>ubuntu.com/download</strong>.</span></label>
   <label class="step"><input type="checkbox" data-step="c6"><span>In VirtualBox: New → name it <code>cen4086-lab</code> → give it 2 CPUs, 4 GB RAM, 25 GB disk → attach the ISO → Start, and click through the Ubuntu installer. You just provisioned virtual hardware from thin air.</span></label>
-  <label class="step"><input type="checkbox" data-step="c7"><span>After it boots: take a <strong>snapshot</strong> (Machine → Take Snapshot), delete some desktop files inside the VM, then restore the snapshot and watch them return. That is the safety net from Segment 1, in your hands. Bring a screenshot to Session 8.</span></label>
+  <label class="step"><input type="checkbox" data-step="c7"><span>After it boots: take a <strong>snapshot</strong> (Machine → Take Snapshot), delete some desktop files inside the VM, then restore the snapshot and watch them return. That is the safety net from Segment 1, in your hands. Write one sentence in your notes on what the restore felt like compared to rebuilding a real machine — you will reuse that observation in Milestone 3's disaster drill.</span></label>
 </section>
 
 <!-- ============ STORY QUIZ ============ -->
@@ -451,100 +478,100 @@ HR-01	11</pre></div>
   <div class="q" data-a="1">
     <h4>Q1 · <em>The CFO's suspicious eyebrow</em></h4>
     <p class="stem">Marisol, infrastructure lead at Gulfstream Grocers, audits the company's 18 physical servers and finds they average 9% CPU utilization at a cost of about $2,000 per box per year in power, cooling, and maintenance. She proposes consolidating everything onto 3 virtualized hosts running near 55% utilization, retiring 15 machines and saving roughly $30,000 a year. The CFO squints: "If this is such free money, why did we ever buy 18 separate servers?" What is the historically accurate answer?</p>
-    <button class="opt">A. Old servers physically could not run two programs at the same time</button>
-    <button class="opt">B. Apps were deliberately isolated one-per-box to prevent conflicts; virtualization now provides that same isolation on shared hardware</button>
-    <button class="opt">C. Eighteen servers were needed for speed, and the consolidated hosts will be slower</button>
-    <button class="opt">D. Software licensing has always legally required one physical server per application</button>
+    <button class="opt">A. Old servers physically could not run two programs at the same time, so one box per application was the only option</button>
+    <button class="opt">B. Apps were deliberately isolated one-per-box to prevent conflicts; virtualization now provides that isolation on shared hardware</button>
+    <button class="opt">C. Eighteen servers were genuinely needed for speed, and the consolidated hosts will run each application noticeably slower</button>
+    <button class="opt">D. Software licensing has always legally required a separate physical server for every application a company installs, and those terms still bind today</button>
     <div class="expl"><strong>Answer: B.</strong> ✔ Companies ran one app per box because cohabiting apps clashed — conflicting libraries, competing patches, vendors refusing support, no clean blame lines. Isolation was the goal; waste was the side effect. The hypervisor's breakthrough is delivering that same isolation (separate OS, memory, virtual hardware per VM) while pooling the physical machine — you keep the reason for 18 servers and discard the 18 servers. ✘ A is false: multitasking OSes ran many programs decades before virtualization; the fear was interference, not impossibility. ✘ C inverts reality — at 9% utilization, speed was never the constraint, and 55% loading leaves ample headroom. ✘ D — some licenses have hardware terms, but no universal rule ever required it; licensing is a case-by-case detail, not the historical driver.</div>
   </div>
 
   <div class="q" data-a="0">
     <h4>Q2 · <em>Two jobs, two hypervisors</em></h4>
     <p class="stem">Diego wears two hats at Palmetto Freight. Monday he must stand up the production cluster that will run 40 VMs — the POS database, email, and the customer portal — on three new rack servers. Tuesday he wants to tinker on his own laptop, booting a Linux VM beside his everyday Windows to test scripts. He asks you which hypervisor architecture belongs where. What do you tell him?</p>
-    <button class="opt">A. Type 1 (ESXi / Hyper-V) on the rack servers for production; Type 2 (VirtualBox) on his laptop for tinkering</button>
-    <button class="opt">B. VirtualBox on the rack servers — it is free, and free wins in production</button>
-    <button class="opt">C. Type 2 everywhere, because hosted hypervisors are newer technology</button>
-    <button class="opt">D. Type 1 on his laptop — bare-metal is always better, even for desktops</button>
+    <button class="opt">A. Type 1 (ESXi / Hyper-V) on the rack servers; Type 2 (VirtualBox) on his laptop</button>
+    <button class="opt">B. VirtualBox on the rack servers — it is free, and free always wins in production</button>
+    <button class="opt">C. Type 2 everywhere, because hosted hypervisors are the newer generation of the technology</button>
+    <button class="opt">D. Type 1 on his laptop — bare-metal performance is always better, even for a desktop machine</button>
     <div class="expl"><strong>Answer: A.</strong> ✔ Production wants a bare-metal Type 1 hypervisor: no host OS stealing resources, near-native performance, a minimal attack surface, and remote fleet management — which is why data centers standardize on ESXi, Hyper-V, and KVM. The laptop wants Type 2: install VirtualBox like any app, keep Windows for daily work, and run guests in a window. ✘ B confuses price with fit — VirtualBox depends on a desktop host OS and lacks the clustering, live-migration, and management tooling production requires. ✘ C is backwards; Type 2 isn't "newer," it's a different placement of the same idea, and it adds a whole OS of overhead. ✘ D would erase Diego's everyday Windows environment — a bare-metal hypervisor <em>replaces</em> the host OS, exactly what you don't want on a working laptop.</div>
   </div>
 
   <div class="q" data-a="2">
     <h4>Q3 · <em>Sunday, 2 a.m., one shot</em></h4>
     <p class="stem">Prisha administers the ERP system at Cypress Mill Supply, which runs as a VM on the company's Hyper-V cluster. The vendor ships a major patch with a grim reputation on the user forums — several companies report it corrupting the configuration database. Her maintenance window is Sunday 2:00–4:00 a.m., and Monday is month-end close, so a broken ERP would be a catastrophe. What is the virtualization-native safety net she should use?</p>
-    <button class="opt">A. Print the configuration screens before patching so settings can be re-entered by hand</button>
-    <button class="opt">B. Rely on the SAN's RAID mirroring to protect the system from the patch</button>
-    <button class="opt">C. Take a VM snapshot immediately before patching; if the patch misbehaves, roll back to the snapshot within minutes</button>
-    <button class="opt">D. Run a full antivirus scan first, since scans detect bad patches</button>
+    <button class="opt">A. Print the configuration screens before patching so settings can be re-entered by hand if needed</button>
+    <button class="opt">B. Rely on the SAN's RAID mirroring — a mirrored disk array can absorb whatever the patch does</button>
+    <button class="opt">C. Take a VM snapshot immediately before patching, and roll back to it if the patch misbehaves</button>
+    <button class="opt">D. Run a full antivirus scan first, since scanners are built to flag dangerous patches before they install</button>
     <div class="expl"><strong>Answer: C.</strong> ✔ A snapshot freezes the VM's disk and state at a known-good instant. If the patch corrupts anything, Prisha reverts and is back to 1:59 a.m. reality in minutes — with the whole window left to plan differently. This rollback superpower is a headline "why virtualize" benefit, impossible on bare metal without lengthy image restores. ✘ A preserves screenshots, not a working system; re-keying settings into a corrupted database could take days she doesn't have. ✘ B misunderstands RAID: mirroring faithfully duplicates <em>every write — including the corruption</em>. RAID protects against disk failure, not bad changes. ✘ D — antivirus hunts malware signatures and behavior; a vendor's buggy-but-legitimate patch is neither, so a scan proves nothing about it. (Snapshots complement, never replace, real backups — hold that thought for Session 9.)</div>
   </div>
 
   <div class="q" data-a="3">
     <h4>Q4 · <em>The month-end slowdown mystery</em></h4>
     <p class="stem">At Verano Resorts, the POS database VM and a marketing-analytics VM share a virtualization host. Every month-end, marketing runs enormous reports, the analytics VM pins its CPU for six hours, and front-desk staff complain that checkouts crawl. The ops chat erupts: "Virtualization isolation is BROKEN — the vendor lied!" As the senior engineer, what is the correct diagnosis?</p>
-    <button class="opt">A. The hypervisor has been compromised by an attacker and must be rebuilt</button>
-    <button class="opt">B. Isolation failed, so both VMs must be moved back to physical servers permanently</button>
-    <button class="opt">C. VMs can never safely share a host, so the original design was impossible</button>
-    <button class="opt">D. Isolation is working — memory and crashes stay contained — but CPU is a shared finite pool; set resource reservations/limits or separate the two VMs</button>
-    <div class="expl"><strong>Answer: D.</strong> ✔ This is the "noisy neighbor" problem from the warm-up poll. The hypervisor's isolation guarantees protection — the analytics VM cannot read POS memory or crash it — but it never promised infinite CPU. When a host is oversubscribed, greedy VMs squeeze polite ones. The professional fixes: reserve guaranteed CPU for the POS VM, cap the analytics VM, or migrate one elsewhere (trivial, since VMs are portable files). ✘ A leaps to an attack with zero evidence; the slowdown correlates perfectly with a known internal workload. ✘ B throws away consolidation's economics to fix a scheduling knob — de-virtualizing is the most expensive possible response to a configuration problem. ✘ C is refuted by every cloud provider on Earth, whose entire business is strangers' VMs sharing hosts safely at massive scale.</div>
+    <button class="opt">A. The hypervisor has been compromised by an attacker and must be rebuilt from scratch before month-end</button>
+    <button class="opt">B. Isolation has failed outright, so both VMs must be moved back onto dedicated physical servers permanently</button>
+    <button class="opt">C. VMs can never safely share a single host, so the original consolidated design was impossible from day one and must be unwound</button>
+    <button class="opt">D. Isolation is working, but CPU is a shared finite pool — set resource reservations/limits or separate the VMs</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ This is the classic "noisy neighbor" problem from Segment 2. The hypervisor's isolation guarantees protection — the analytics VM cannot read POS memory or crash it — but it never promised infinite CPU. When a host is oversubscribed, greedy VMs squeeze polite ones. The professional fixes: reserve guaranteed CPU for the POS VM, cap the analytics VM, or migrate one elsewhere (trivial, since VMs are portable files). ✘ A leaps to an attack with zero evidence; the slowdown correlates perfectly with a known internal workload. ✘ B throws away consolidation's economics to fix a scheduling knob — de-virtualizing is the most expensive possible response to a configuration problem. ✘ C is refuted by every cloud provider on Earth, whose entire business is strangers' VMs sharing hosts safely at massive scale.</div>
   </div>
 
   <div class="q" data-a="1">
     <h4>Q5 · <em>The one that stays on metal</em></h4>
     <p class="stem">Quinn is modernizing infrastructure at Meridian Capital, which runs three systems: an HR benefits portal (steady, light load), a build-and-test farm for developers (bursty, rebuilt constantly), and an options-trading engine whose entire edge depends on responding within about 30 microseconds. The virtualization vendor's salesperson insists everything should be virtualized "as a matter of principle." Which workload should Quinn exempt, and why?</p>
-    <button class="opt">A. The HR portal — anything containing personal data must stay physical</button>
-    <button class="opt">B. The trading engine — hypervisor scheduling adds small, variable latency (jitter) that is fatal at microsecond scale</button>
-    <button class="opt">C. The build farm — it is too busy for a hypervisor to handle</button>
-    <button class="opt">D. Nothing — every workload belongs on a VM in a modern shop</button>
+    <button class="opt">A. The HR portal — anything containing employees' personal data must stay on physical hardware</button>
+    <button class="opt">B. The trading engine — hypervisor scheduling adds small, variable latency that is fatal at microsecond scale</button>
+    <button class="opt">C. The build farm — its bursty, constantly rebuilt workloads are far too much scheduling churn for a hypervisor to keep up with</button>
+    <button class="opt">D. Nothing — in a modern shop every workload belongs on a VM, with no exceptions worth documenting</button>
     <div class="expl"><strong>Answer: B.</strong> ✔ Virtualization's overhead is tiny — a few percent, invisible to almost everything — but it is not <em>zero</em>, and it is not perfectly <em>consistent</em>. A hypervisor occasionally delays a VM by microseconds to schedule neighbors, and for a system whose profit lives inside a 30-microsecond budget, that jitter is the whole ballgame. High-frequency trading is the classic "not suited" example. ✘ A confuses data sensitivity with placement — VMs protect personal data exactly as well as metal; controls, not physics, govern privacy. ✘ C is upside-down: bursty, constantly rebuilt build farms are virtualization's <em>dream</em> customer — clone, thrash, destroy, repeat. ✘ D is salesperson absolutism; Objective 7 says <em>evaluate</em>, and honest evaluation keeps a short, documented exemption list.</div>
   </div>
 
   <div class="q" data-a="2">
     <h4>Q6 · <em>Three hundred desks</em></h4>
     <p class="stem">Seabreeze Insurance runs a 300-agent call center with high seasonal turnover, aging desktop PCs, and a compliance team rattled by a recent laptop theft at a competitor. IT director Amara proposes VDI: every agent's desktop becomes a VM in the data center, and desks get cheap thin clients. The CEO asks for the honest pitch — the primary benefits AND the new risk she is signing up for. Which summary is correct?</p>
-    <button class="opt">A. VDI makes each agent's PC hardware dramatically faster at no cost</button>
-    <button class="opt">B. VDI eliminates the company's dependence on the network</button>
-    <button class="opt">C. Desktops become centrally provisioned and wiped in minutes, and customer data never leaves the data center — but the network and VDI infrastructure become a single point of failure for all 300 seats</button>
-    <button class="opt">D. VDI's main benefit is eliminating software licensing costs</button>
+    <button class="opt">A. VDI makes each agent's desk PC dramatically faster, since the data center's horsepower is added to the local machine at no extra cost</button>
+    <button class="opt">B. VDI eliminates the company's dependence on the network, because every desktop now runs safely inside the data center instead of at the desk</button>
+    <button class="opt">C. Desktops become centrally provisioned and wiped in minutes and data never leaves the data center — but network and VDI cluster become a single point of failure</button>
+    <button class="opt">D. VDI's main benefit is eliminating Windows and application licensing costs, since a single data-center copy of each product now legally serves all three hundred agents</button>
     <div class="expl"><strong>Answer: C.</strong> ✔ That is the honest, complete trade. Onboarding a seasonal class becomes an afternoon of cloning template VMs; departing contractors are wiped instantly; and after the competitor's laptop theft, "data never physically leaves the data center" is the compliance team's favorite sentence. The signed-up risk is equally real: when the network hiccups or the VDI cluster fails, 300 people stare at blank terminals — so the supporting infrastructure must be engineered and redundant. ✘ A — thin clients are typically <em>less</em> powerful; the horsepower moved to the data center, it didn't multiply. ✘ B is exactly backwards: VDI <em>deepens</em> network dependence; no connection, no desktop. ✘ D — Windows and application licenses still exist under VDI (and VDI licensing can be intricate); cost savings come from management and hardware lifecycle, not license erasure.</div>
   </div>
 
   <div class="q" data-a="0">
     <h4>Q7 · <em>Forty microservices and one stubborn Windows box</em></h4>
     <p class="stem">Pelican Pay's platform team ships 40 small microservices and wants developers to spin up the whole stack in seconds inside the CI pipeline, packing test environments as densely as possible onto Linux build hosts. One wrinkle: the legacy fraud-check service runs only on Windows and cannot be ported this year. Architect Lena must pick the right mix of VMs and containers. What should she choose?</p>
-    <button class="opt">A. Containers for the 40 Linux microservices (shared kernel = fast, dense); one Windows VM for the fraud service, since containers must share the host's kernel</button>
-    <button class="opt">B. Containers for everything — a Linux host can run a Windows container just fine</button>
-    <button class="opt">C. Full VMs for all 41 services, because VMs start faster than containers</button>
-    <button class="opt">D. Neither — 41 separate physical servers is the only reliable design</button>
+    <button class="opt">A. Containers for the 40 Linux microservices; one Windows VM for the fraud service, since a container must share its host's kernel</button>
+    <button class="opt">B. Containers for everything — a modern Linux host runs a Windows container just fine through the compatibility layer in the container engine</button>
+    <button class="opt">C. Full VMs for all 41 services, because VMs start faster than containers and CI pipelines live on startup speed</button>
+    <button class="opt">D. Neither — 41 separate physical servers is the only design reliable enough for a payments platform</button>
     <div class="expl"><strong>Answer: A.</strong> ✔ The microservices are the classic container case: megabyte images, second-scale startup, high density on shared Linux kernels — perfect for CI's constant build-up/tear-down. The Windows service is the boundary case that proves the rule: a container <em>borrows the host's kernel</em>, and a Linux kernel cannot execute Windows system calls, so the fraud service needs full hardware virtualization — a VM with a Windows guest OS. This hybrid (containers where possible, VMs where necessary) is how real platforms are built. ✘ B fails on the kernel-sharing fact; it's the one thing containers simply cannot do. ✘ C reverses the performance story — VMs boot whole operating systems in minutes; containers launch processes in seconds. ✘ D abandons two generations of consolidation economics and would make Lena's CI pipeline geologically slow.</div>
   </div>
 
   <div class="q" data-a="3">
     <h4>Q8 · <em>The contractor's two-part proposal</em></h4>
-    <p class="stem">Harbor Lane Books' infrastructure contractor submits a proposal with two line items. First: pool the three aging storage arrays in the closet into one logical volume so capacity can be assigned to systems as needed and failing disks swapped invisibly. Second: connect the web-store VM and its database VM through a software switch inside the host, with VLANs separating POS traffic from the store's guest Wi-Fi. Owner Gregory asks you, his consultant, to name what is actually being proposed. What do you tell him?</p>
-    <button class="opt">A. Grid computing and Software as a Service</button>
-    <button class="opt">B. RAID striping and a DNS overhaul</button>
-    <button class="opt">C. Containerization and single sign-on</button>
-    <button class="opt">D. Storage virtualization (pooled logical volumes) and network virtualization (virtual switch + VLAN segmentation)</button>
+    <p class="stem">Driftwood Books' infrastructure contractor submits a proposal with two line items. First: pool the three aging storage arrays in the closet into one logical volume so capacity can be assigned to systems as needed and failing disks swapped invisibly. Second: connect the web-store VM and its database VM through a software switch inside the host, with VLANs separating POS traffic from the store's guest Wi-Fi. Owner Gregory asks you, his consultant, to name what is actually being proposed. What do you tell him?</p>
+    <button class="opt">A. Grid computing for the pooled storage closet and Software as a Service for the software switch on the network side</button>
+    <button class="opt">B. RAID striping across the three arrays and a DNS overhaul for the in-store network paths</button>
+    <button class="opt">C. Containerization of the storage arrays and single sign-on between the two connected VMs</button>
+    <button class="opt">D. Storage virtualization (pooled logical volumes) and network virtualization (virtual switch plus VLANs)</button>
     <div class="expl"><strong>Answer: D.</strong> ✔ Item one is storage virtualization: many physical arrays abstracted into logical volumes (LUNs), so capacity becomes assignable configuration and hardware swaps hide behind the pool. Item two is network virtualization: a virtual switch moves VM-to-VM traffic inside the host without touching a cable, and VLANs slice one physical network into isolated segments — exactly how POS data stays walled off from guest Wi-Fi on shared wiring. Same pattern, different resources: decouple the logical from the physical. ✘ A — grid computing splits one computation across many machines, and SaaS is a software delivery model; neither appears here. ✘ B — RAID protects/stripes within an array and DNS resolves names; the proposal is about pooling arrays and segmenting traffic. ✘ C — no application packaging or login federation was proposed anywhere.</div>
   </div>
 
   <div class="q" data-a="2">
     <h4>Q9 · <em>The two-minute first token</em> 🧠 AI concept</h4>
     <p class="stem">Amara's team deploys a customer-support model to their cloud platform on Friday night. The container schedules in seconds and health checks go green — but the FIRST test request takes almost 2 minutes to answer. Every request after that returns in about 800 ms. Monday's post-deploy review demands an explanation. What is it?</p>
-    <button class="opt">A. The model was retraining itself on the first question before it could answer it</button>
-    <button class="opt">B. The first tester's question was simply longer and harder than the later ones</button>
-    <button class="opt">C. A cold start: the container launched fast, but then had to load billions of parameters from storage into GPU memory before serving; once the weights were resident, later requests skipped the load — which is why serving fleets keep warm replicas</button>
-    <button class="opt">D. Network congestion at deploy time delayed the first request until routers caught up</button>
+    <button class="opt">A. The model was retraining itself on the first tester's question, and no answer could be produced until that retraining pass had fully finished</button>
+    <button class="opt">B. The first tester's question was simply longer and harder to think about than the ones that came after it</button>
+    <button class="opt">C. A cold start: the container launched fast, but billions of parameters still had to load from storage into GPU memory before serving</button>
+    <button class="opt">D. Network congestion at deploy time delayed the first request until the routers caught up with the new traffic</button>
     <div class="expl"><strong>Answer: C.</strong> ✔ "Container running" and "model ready" are different milestones. The process starts in seconds, but a large model's weights — tens to hundreds of gigabytes — must travel from storage into the GPU's VRAM before the first token can be computed. That load is the cold start; once the parameters sit in memory, every request flows through them in well under a second. Production fleets hide it with a warm pool of pre-loaded replicas, which is why "scale from zero" is never instant for big models. ✘ A — inference never retrains the model; answering questions doesn't touch the weights (Session 1's two-lives rule). ✘ B — a harder question turns 800 ms into a few seconds, not into two minutes; the gap is loading, not thinking. ✘ D — a congested network adds milliseconds, and later requests over the same path were fast.</div>
   </div>
 
   <div class="q" data-a="0">
     <h4>Q10 · <em>The suspiciously cheap tier</em> 🧠 AI concept</h4>
-    <p class="stem">Comparing AI vendors for Harbor Lane's chatbot, developer Yuki finds a provider charging a fraction of a cent per request on its small-model tier. Her manager is skeptical: "A serving GPU costs $30,000 — how can they charge that little without losing money on every request?" Using today's session, what should Yuki answer?</p>
-    <button class="opt">A. Resource pooling, applied to silicon: the small model runs on a shared GPU — partitioned or time-sliced among many tenants — and the server batches many customers' requests through the card together, so each request pays for a sliver of a busy GPU, not a whole idle one</button>
-    <button class="opt">B. The provider dedicates one full GPU to every customer and recovers the loss on its enterprise tier</button>
-    <button class="opt">C. Small models actually run on each customer's own device, so the provider has no hardware cost</button>
-    <button class="opt">D. The provider is selling below cost, and prices must soon rise tenfold to catch up</button>
+    <p class="stem">Comparing AI vendors for Sawgrass Outfitters' support chatbot, developer Yuki finds a provider charging a fraction of a cent per request on its small-model tier. Her manager is skeptical: "A serving GPU costs $30,000 — how can they charge that little without losing money on every request?" Using today's session, what should Yuki answer?</p>
+    <button class="opt">A. Resource pooling, applied to silicon: the model runs on a shared, partitioned GPU that batches many customers' requests together</button>
+    <button class="opt">B. The provider dedicates one full GPU to every customer on the cheap tier and recovers the loss through its enterprise pricing</button>
+    <button class="opt">C. Small models actually run on each customer's own device rather than in the cloud, so the provider carries no serving hardware cost at all</button>
+    <button class="opt">D. The provider is deliberately selling below cost, and prices must soon rise roughly tenfold to catch up with the hardware</button>
     <div class="expl"><strong>Answer: A.</strong> ✔ This is today's consolidation economics applied to the scarcest hardware. GPU virtualization (partitioning like MIG, or time-slicing) lets one accelerator serve many tenants safely, and batching keeps the silicon near-fully busy the way consolidation keeps a host busy — so the card's cost divides across millions of paying requests. It's the same pooling that made $40/month VMs possible on $20,000 servers. ✘ B — a dedicated $30,000 card per small-tier customer is the 5–15% utilization disease at its most expensive; no enterprise tier subsidizes that. ✘ C — API answers are computed in the provider's data center; your prompt travels there and back, which is exactly why the same chatbot works on any device. ✘ D — pooled-GPU pricing has been sustainable for years for the utilization reason; no below-cost conspiracy is needed.</div>
   </div>
 
@@ -558,14 +585,16 @@ HR-01	11</pre></div>
   <p><strong>Prompt 2:</strong> "Containers will make virtual machines obsolete within a decade." Agree or disagree with at least two technical arguments from today (kernel sharing, isolation boundaries, multi-tenant clouds, legacy operating systems). Cite one real-world example.</p>
 </section>
 
-<!-- ============ CAPSTONE ============ -->
+<!-- ============ COURSE PROJECT ============ -->
 <section class="card capstone">
-  <h3>🏗️ Harbor Lane Books — Checkpoint 7 of 12 <span class="note">(Deliverable 3 due end of Week 3 — Session 9)</span></h3>
-  <p>Deliverable 3 is the <strong>Virtualization, Security &amp; DR plan</strong>, and today you build its first third. Harbor Lane's closet still holds: 2 Windows web servers, the POS database server, a file server, and an aging Exchange box. The owner wants to "never buy another server." Full brief and rubric: <a href="project.html"><strong>open the Project Brief →</strong></a></p>
-  <p><strong>Your tasks before Session 8:</strong></p>
-  <label class="step"><input type="checkbox" data-step="cap1"><span>Build a 5-row inventory table of Harbor Lane's closet servers: estimated utilization, and your verdict for each — <em>virtualize on-site</em>, <em>migrate to cloud</em> (which service model?), or <em>retire</em>. Justify each verdict in one sentence.</span></label>
-  <label class="step"><input type="checkbox" data-step="cap2"><span>For anything staying on-site: choose Type 1 hypervisor + consolidation ratio, and show the savings math using today's $2,100/server figure (adjust if you make different assumptions — show them).</span></label>
-  <label class="step"><input type="checkbox" data-step="cap3"><span>Draw the before/after diagram in diagrams.net and drop it into your D3 document.</span></label>
+  <h3>🏗️ Course Project · Milestone 2 due today → Milestone 3 starts now <span class="note">(M2: 25 pts, submitted this session · M3: 25 pts, due Session 9)</span></h3>
+  <p class="section-lead"><strong>Milestone 2 — identity (SSO/MFA) &amp; storage with 3-2-1 backups — is due today.</strong> Submit it before you leave; a submitted milestone is 25 points banked, a "nearly finished" one is not.</p>
+  <p>And today's material opens the next one. <strong>Milestone 3 (due Session 9) is "Consolidation, hardening, disaster drill"</strong> — and this session hands you the consolidation third: inventory what your project runs, decide what gets virtualized or containerized versus what stays put, and prove the savings with the same math you ran in the simulator. Session 8 supplies the hardening third; Session 9 the disaster drill.</p>
+  <div class="track-grid"><div class="track-card"><b>☁️ Pocket Cloud</b>Consolidate your provider's services: which run as VMs, which as containers, at what ratio — and why.</div><div class="track-card"><b>🌊 Pelican Tours</b>Golden images: turn your hand-built instance into an image you can stamp out on demand.</div><div class="track-card"><b>📱 Bring Your Own App</b>Package your app — container or image — so a fresh copy provisions in minutes, not an afternoon.</div></div>
+  <div class="warning-callout"><strong>Do not start M3 by building.</strong> Start it the way today's consultants did — with an inventory table and a verdict per row. <a href="project/index.html"><strong>Open the Project Hub for briefs, per-track checklists, and rubrics →</strong></a></div>
+  <label class="step"><input type="checkbox" data-step="cap1"><span><strong>Submit Milestone 2 today</strong> (25 pts). Check it against your track's M2 checklist on the Project Hub before you hand it in — the rubric is the grading sheet, not a suggestion.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap2"><span><strong>Open M3 tonight: build the consolidation inventory.</strong> List every server or service your project runs, estimate each one's utilization, and give a verdict per row — <em>virtualize/containerize</em>, <em>keep physical</em>, or <em>retire</em> — with a one-sentence justification, exactly like the Segment 3 decision game.</span></label>
+  <label class="step"><input type="checkbox" data-step="cap3"><span><strong>Show the savings math.</strong> Pick a consolidation ratio, justify the headroom you leave (the 60–75% rule and N+1 from Segment 2), and compute what the plan saves using today's $2,100-per-retired-server figure — adjust the number if your assumptions differ, and say so.</span></label>
 </section>
 
 <!-- ============ EXIT TICKET ============ -->
@@ -582,7 +611,7 @@ HR-01	11</pre></div>
 
 <footer>
   <div class="card" style="background:#f0eee6">
-    <strong>📚 Before Session 8:</strong> preview <strong>Session 8 (Securing the Cloud — shared responsibility, encryption, MFA)</strong> by skimming its opening segment — next session decides who patches what, breaks a toy cipher, and fights off a simulated DDoS. Finish Lab C Part 1 if class time ran short; post to both discussion prompts; complete Capstone Checkpoint 7 (D3 is due at the end of Session 9 — do not let it pile up).
+    <strong>📚 Before Session 8:</strong> preview <strong>Session 8 (Securing the Cloud — shared responsibility, encryption, MFA)</strong> by skimming its opening segment — next session decides who patches what, breaks a toy cipher, and fights off a simulated DDoS. Finish Lab C Part 1 if class time ran short; post to both discussion prompts; and start the M3 consolidation inventory (M3 is due at Session 9 — do not let it pile up).
   </div>
   <div class="footer-nav">
     <a class="btn ghost" href="index.html">⌂ Course Hub</a>
@@ -765,6 +794,34 @@ function checkA(i){
   if(i===3){ok=(val>=48&&val<=49);msg=ok?'✔ Yes: 145 total utilization points ÷ 3 hosts ≈ 48.3% per host.':'✘ Set the ratio to 4 (10 servers → 3 hosts) and read the average-utilization KPI.';}
   if(i===4){ok=(val===10);msg=ok?'✔ Correct: only at 10:1 does everything land on one host, which would need to run at 145% — impossible.':'✘ Keep raising the ratio until the verdict shows OVERCOMMITTED, then report the smallest such ratio.';}
   fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
+}
+
+/* Hands-on exercise checks (separate from the Lab A checker above) */
+const HX={
+  '1a':{a:4,ok:'✔ Four: the VMs, the hypervisor application, the host operating system, and the laptop hardware. That extra host-OS layer is exactly where Type 2’s overhead — and its convenience — both live.',no:'✘ Click Type 2 · hosted and count every horizontal row in the diagram, treating the row of VMs as one layer.'},
+  '1b':{a:'host operating system',alt:['host os','the host os','the host operating system','operating system','host'],ok:'✔ The host OS is gone — on bare metal the hypervisor IS the operating system of the box. No Windows or macOS underneath means less overhead, a smaller attack surface, and one less thing whose crash kills every guest.',no:'✘ Compare the two stacks row by row. One layer sits between the hypervisor and the hardware in Type 2 but is missing in Type 1 — name that layer.'},
+  '1c':{a:3,ok:'✔ Three — Web, Database, and Email, each believing it owns the machine. On a real production host that number is routinely 10–30, which is why Segment 2’s consolidation math works.',no:'✘ Stay on Type 1 · bare-metal and count the boxes in the top row of the diagram.'},
+  '2a':{a:5,ok:'✔ Five hosts: ceil(10 servers ÷ 2 per host). Half the closet survives — which is why nobody consolidates at 2:1 unless the workloads are monsters.',no:'✘ Slide to exactly 2 and read the "hosts needed" KPI: 10 ÷ 2 = …'},
+  '2b':{a:29,ok:'✔ 29% — Bayfront’s 145 utilization points spread across 5 hosts. You just rebuilt a milder version of the disease you were curing: five machines loafing below 30%. Timid consolidation leaves most of the savings on the table.',no:'✘ Keep the slider at 2 and read the average-utilization KPI: 145 total points ÷ 5 hosts.'},
+  '2c':{a:6,ok:'✔ Six retired: 10 servers − ceil(10÷3) = 4 hosts kept. Six boxes × $2,100 = $12,600/yr back — and you haven’t even reached the sweet spot yet.',no:'✘ Slide to 3 and read the "servers retired" KPI: 10 minus the hosts you still need.'},
+  '2d':{a:5,ok:'✔ At 5:1 the fleet drops to 2 hosts at 72.5% each — squarely in the professional 60–75% band, with the verdict to prove it. One notch earlier (4:1) the hosts idle at 48%; one host fewer (10:1) is physically impossible. Consolidation is a dial, not a switch.',no:'✘ Step the slider up one notch at a time and watch the verdict line — report the first ratio where it turns 🟢 Sweet spot.'},
+  '3a':{a:3,ok:'✔ Three full guest operating systems — gigabytes each, every one separately booted, patched, and licensed, just to run three apps. That triple red ring IS the cost of hardware-level virtualization.',no:'✘ Click "Show the duplication" and count the red-ringed Guest OS boxes on the virtual-machines side.'},
+  '3b':{a:1,ok:'✔ One — the host’s kernel, shared by every container (the green ring). No duplicated OS is the entire reason containers are megabytes instead of gigabytes and start in seconds instead of minutes.',no:'✘ Look at the container side: the green-ringed row names how many kernels all three apps share.'},
+  '3c':{a:'windows',alt:['a windows','windows container','windows containers','ms windows','microsoft windows'],ok:'✔ A Windows container — a Linux kernel cannot execute Windows system calls, and a container has no kernel of its own to bring along. That single fact decides quiz Q7 and half of real-world architecture meetings.',no:'✘ Re-read the kernel-sharing paragraph: containers borrow the HOST’s kernel. Which operating system’s containers can a Linux kernel therefore never host?'}
+};
+function checkHX(k){
+  const el=document.getElementById('hx'+k),e=HX[k],fb=document.getElementById('fbHX'+k);
+  if(!el||!e||!fb)return;
+  const raw=String(el.value).trim();
+  if(raw===''){fb.textContent='✘ Type an answer first, then check it.';fb.className='fb no';return;}
+  let ok;
+  if(typeof e.a==='string'){
+    const got=raw.toLowerCase().replace(/[^a-z0-9 ]/g,'').replace(/\s+/g,' ').trim();
+    ok=(got===e.a)||((e.alt||[]).indexOf(got)>=0);
+  }else{
+    ok=(e.tol!=null)?Math.abs(+raw-e.a)<=e.tol:(+raw===e.a);
+  }
+  fb.textContent=ok?e.ok:e.no;fb.className='fb '+(ok?'ok':'no');
 }
 </script>
 <script type="module">

@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Learn Docker by doing: mental models, a guided terminal, Dockerfiles and cache layers, real builds, image sharing, ports, volumes, Compose, health checks, security, and troubleshooting.">
+<title>Docker Field Guide — Learn by Doing</title>
+<style>
+:root{
+  --bg:#f4f1ea;--paper:#fffdf9;--ink:#172033;--muted:#606979;--line:#ded9cf;
+  --navy:#25236b;--violet:#6256c7;--teal:#087f7b;--gold:#a86c00;--red:#bd493e;
+  --green:#277447;--blue-bg:#eeeffb;--teal-bg:#e7f5f2;--gold-bg:#fff5dc;
+  --red-bg:#fbedeb;--green-bg:#eaf5ee;--shadow:0 12px 35px rgba(25,31,51,.08);
+  --whale:#1d63ed
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}
+button{touch-action:manipulation}
+a{color:var(--navy)}
+code,.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#ece9e1;border-radius:5px;padding:1px 5px;font-size:.92em}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px max(16px,calc((100vw - 1120px)/2));background:rgba(255,253,249,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+.topbar a{text-decoration:none;font-size:14px;font-weight:750}
+.topbar-title{font-weight:800;font-size:14px;text-align:center}
+.shell{max-width:1120px;margin:auto;padding:22px 18px 70px}
+.btn{border:0;border-radius:10px;padding:10px 16px;background:var(--navy);color:white;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn:hover{filter:brightness(1.12)}
+.btn:focus-visible,.choice:focus-visible,.dline:focus-visible,summary:focus-visible,button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.btn.light{background:white;color:var(--navy)}
+.btn.outline{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.btn.small{font-size:13px;padding:7px 11px}
+.btn.teal{background:var(--teal)}
+.btn.red{background:var(--red)}
+.progress-rail{position:sticky;top:52px;z-index:20;display:grid;grid-template-columns:repeat(7,1fr);margin:18px 0 28px;background:var(--paper);border:1px solid var(--line);border-radius:13px;overflow:hidden;box-shadow:0 7px 20px rgba(25,31,51,.05)}
+.progress-rail a{padding:11px 8px;text-align:center;text-decoration:none;color:var(--muted);font-size:13px;font-weight:750;border-right:1px solid var(--line)}
+.progress-rail a:last-child{border:0}
+.progress-rail a.active{background:var(--blue-bg);color:var(--navy);box-shadow:inset 0 -3px var(--violet)}
+.progress-rail a.done{color:var(--green)}
+.progress-rail a.done:before{content:"✓ ";font-weight:950}
+.lab{scroll-margin-top:116px;margin:0 0 28px;padding:27px;background:var(--paper);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+.lab-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}
+.lab-kicker{color:var(--violet);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.1em}
+.lab h2{font-size:clamp(23px,3vw,31px);line-height:1.15;margin:3px 0 5px;letter-spacing:-.02em}
+.lab-head p{margin:0;color:var(--muted)}
+.lab-number{flex:0 0 auto;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--blue-bg);color:var(--navy);font-size:18px;font-weight:900}
+.lab h3{font-size:18px;margin:20px 0 8px}
+.takeaway{display:flex;gap:12px;align-items:flex-start;margin-top:18px;padding:13px 15px;border-radius:12px;background:var(--gold-bg);border-left:4px solid var(--gold)}
+.takeaway b{white-space:nowrap;color:#76500a}
+.micro{font-size:13px;color:var(--muted)}
+details.deep{margin-top:15px;border:1px solid var(--line);border-radius:12px;background:#faf8f3}
+details.deep summary{cursor:pointer;padding:12px 15px;color:var(--navy);font-weight:800;list-style:none}
+details.deep summary::-webkit-details-marker{display:none}
+details.deep summary:before{content:"＋";display:inline-block;width:22px;color:var(--violet)}
+details.deep[open] summary:before{content:"−"}
+.deep-body{padding:0 16px 15px;color:#354055;font-size:14px}
+.deep-body p{margin:8px 0}
+.why-box{display:grid;grid-template-columns:auto 1fr;gap:11px;margin:0 0 16px;border-radius:12px;background:var(--gold-bg);border-left:5px solid var(--gold);padding:13px 15px}
+.why-box .why-mark{font-size:24px}
+.why-box h3{margin:0 0 3px;font-size:17px;color:#704a00}
+.why-box p{margin:0;color:#5f4a20;font-size:14px}
+.keyrule{border-radius:9px;background:#fff;border:1px solid var(--line);padding:9px 11px;font-size:14px;color:#3e485b;margin:10px 0}
+.keyrule strong{color:var(--teal)}
+
+/* course orientation + saved progress */
+.course-intro{position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(135deg,#17164f 0%,#302a85 62%,#087f7b 160%);color:white;padding:34px;margin:8px 0 18px;box-shadow:0 18px 48px rgba(23,22,79,.2)}
+.course-intro:after{content:"";position:absolute;right:-90px;top:-105px;width:280px;height:280px;border:52px solid rgba(255,255,255,.055);border-radius:50%;pointer-events:none}
+.intro-kicker{display:inline-block;margin-bottom:9px;color:#9ff0da;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.course-intro h1{position:relative;max-width:760px;margin:0 0 9px;font-size:clamp(31px,5vw,53px);line-height:1.02;letter-spacing:-.045em}
+.intro-lead{position:relative;max-width:810px;margin:0;color:#e4e6ff;font-size:clamp(16px,2vw,19px)}
+.intro-meta{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0}
+.intro-meta span{border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(255,255,255,.09);padding:5px 10px;font-size:12px;font-weight:800}
+.intro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:18px 0}
+.intro-step{border:1px solid rgba(255,255,255,.18);border-radius:13px;background:rgba(255,255,255,.08);padding:12px 13px;color:#dfe3ff;font-size:13px}
+.intro-step b{display:block;margin-bottom:2px;color:white;font-size:14px}
+.learning-status{position:relative;border-radius:15px;background:white;color:var(--ink);padding:14px 15px;margin-top:18px}
+.learning-status-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.learning-status-head b{color:var(--navy)}
+.learning-status-head span{font-size:12.5px;color:var(--muted)}
+.learning-bar{height:9px;border-radius:99px;background:#e8e6ef;overflow:hidden;margin:10px 0 12px}
+.learning-bar span{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--violet),var(--teal));transition:width .35s}
+.learning-actions{display:flex;gap:8px;flex-wrap:wrap}
+.route-note{margin-top:11px;color:#d9dcf6;font-size:12.5px}
+.route-note strong{color:white}
+
+/* retrieval checkpoints */
+.checkpoint{margin-top:18px;border:1px solid #cfd0eb;border-radius:14px;background:var(--blue-bg);padding:15px}
+.checkpoint h3{margin:0 0 4px;color:var(--navy)}
+.checkpoint p{margin:4px 0 10px}
+.checkpoint-options{display:grid;gap:7px}
+.checkpoint-option{border:1.5px solid #cacbe0;border-radius:10px;background:white;padding:9px 11px;text-align:left;color:var(--ink);cursor:pointer}
+.checkpoint-option:hover:not(:disabled){border-color:var(--violet)}
+.checkpoint-option.correct{border-color:var(--green);background:var(--green-bg)}
+.checkpoint-option.wrong{border-color:var(--red);background:var(--red-bg)}
+.checkpoint-feedback{display:none;margin:10px 0 0;border-left:4px solid var(--violet);padding:8px 10px;background:white;border-radius:8px;font-size:13.5px}
+.checkpoint-feedback.show{display:block}
+.lab-complete{display:inline-flex;align-items:center;gap:5px;margin-left:7px;border-radius:999px;background:var(--green-bg);color:var(--green);padding:2px 8px;font-size:11px;font-weight:900;vertical-align:middle}
+
+/* copied code samples */
+.code-sample{position:relative;min-width:0;margin:1em 0}
+.compose-grid>.code-sample,.prod-files .code-sample{margin:0}
+.code-sample>.yaml{margin:0}
+.copy-code{position:absolute;right:9px;top:9px;z-index:2;border:1px solid #4b567c;border-radius:7px;background:#202949;color:#e8ebff;padding:4px 8px;font-size:11px;font-weight:800;cursor:pointer}
+.copy-code.copied{background:var(--green);border-color:var(--green)}
+
+/* lab 6 — operate and troubleshoot */
+.ops-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:14px;margin:12px 0}
+.state-picker{display:grid;gap:7px;align-content:start}
+.state-btn{border:1.5px solid var(--line);border-radius:10px;background:white;padding:9px 11px;text-align:left;color:var(--ink);font-weight:800;cursor:pointer}
+.state-btn small{display:block;margin-top:2px;color:var(--muted);font-weight:500}
+.state-btn.active{border-color:var(--violet);background:var(--blue-bg);color:var(--navy)}
+.ops-panel{border-radius:14px;background:#17213b;color:white;padding:17px;min-height:220px}
+.ops-panel .status-pill{display:inline-block;border-radius:999px;background:#303e67;color:#b9c7f8;padding:3px 9px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+.ops-panel h3{margin:8px 0 5px;color:white}
+.ops-panel p{margin:6px 0;color:#e0e6f7;font-size:14px}
+.ops-panel code{background:#2b375c;color:#d9e4ff}
+.diagnostic{border:1px solid var(--line);border-radius:15px;background:#faf9f5;padding:16px;margin:15px 0}
+.diagnostic-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.diagnostic-head h3{margin:0}
+.incident-label{color:var(--violet);font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+.incident-symptom{font-size:18px;font-weight:800;line-height:1.35;margin:8px 0 12px}
+.incident-options{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.incident-option{border:1.5px solid var(--line);border-radius:10px;background:white;padding:9px 11px;text-align:left;cursor:pointer;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+.incident-option.correct{border-color:var(--green);background:var(--green-bg)}
+.incident-option.wrong{border-color:var(--red);background:var(--red-bg)}
+.incident-feedback{display:none;border-left:5px solid var(--violet);border-radius:10px;background:var(--blue-bg);padding:10px 12px;margin-top:10px;font-size:13.5px}
+.incident-feedback.show{display:block}
+.hardening-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
+.hardening-card{border:1px solid var(--line);border-radius:11px;background:white;padding:11px;text-align:left;color:var(--ink);cursor:pointer}
+.hardening-card b{display:block;color:var(--navy);margin-bottom:2px}
+.hardening-card .reveal{display:none;margin-top:7px;color:var(--muted);font-size:12.5px}
+.hardening-card.open{border-color:var(--teal);background:var(--teal-bg)}
+.hardening-card.open .reveal{display:block}
+.prod-files{display:grid;grid-template-columns:1.25fr .75fr;gap:12px;margin:12px 0}
+
+/* lab 7 — Compose network tracer */
+.network-lab{border:1px solid var(--line);border-radius:15px;background:#faf9f5;padding:16px;margin:15px 0}
+.network-lab h3{margin:0 0 4px}
+.route-controls{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+.route-btn{border:1.5px solid var(--line);border-radius:999px;background:white;padding:7px 11px;color:var(--muted);font-size:12.5px;font-weight:800;cursor:pointer}
+.route-btn.active{border-color:var(--violet);background:var(--violet);color:white}
+.network-map{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:8px;align-items:stretch;margin:12px 0}
+.network-node{border:1.5px solid var(--line);border-radius:11px;background:white;padding:11px;font-size:12.5px}
+.network-node b{display:block;color:var(--navy);margin-bottom:2px}
+.network-node.active{border-color:var(--teal);box-shadow:inset 0 0 0 2px #c6ebe5;background:var(--teal-bg)}
+.network-arrow{display:grid;place-items:center;color:#aaa6b7;font-weight:900;text-align:center;font-size:12px}
+.network-arrow.active{color:var(--teal)}
+.route-explain{border-left:5px solid var(--violet);border-radius:10px;background:var(--blue-bg);padding:10px 12px;font-size:13.5px}
+.source-list{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}
+.source-list a{border:1px solid var(--line);border-radius:9px;background:white;padding:8px 10px;text-decoration:none;font-size:12.5px;font-weight:750}
+.source-list a:hover{text-decoration:underline}
+
+/* lab 1 — big picture */
+.metaphor{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.meta-card{border-radius:10px;background:white;border:1px solid var(--line);padding:11px}
+.meta-card b{display:block;color:var(--navy);margin-bottom:3px}
+.meta-card span{font-size:13px;color:var(--muted)}
+.vmrecap{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.vmrecap div{border:1px solid var(--line);border-radius:10px;background:#faf9f5;padding:10px;font-size:13.5px}
+.vmrecap b{display:block;color:var(--navy)}
+.spawner{border:1px solid var(--line);border-radius:15px;background:#faf9f5;padding:16px;margin:14px 0}
+.spawner-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.spawner-head h3{margin:0}
+.image-slab{display:flex;align-items:center;gap:12px;border:2px solid var(--whale);border-radius:13px;background:var(--blue-bg);padding:12px 15px;margin-bottom:12px}
+.image-slab .whale{font-size:30px}
+.image-slab b{color:var(--navy)}
+.image-slab p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.ctr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:9px;min-height:64px}
+.ctr-card{border:1.5px solid var(--teal);border-radius:11px;background:white;padding:10px 11px;font-size:13px}
+.ctr-card.stopped{border-color:#c9c4b9;opacity:.75}
+.ctr-card b{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:var(--teal)}
+.ctr-card.stopped b{color:var(--muted)}
+.ctr-card .state{display:inline-block;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:850;margin:5px 0}
+.ctr-card .state.up{background:var(--green-bg);color:var(--green)}
+.ctr-card .state.down{background:#eceae5;color:var(--muted)}
+.ctr-card .row{display:flex;gap:5px;margin-top:6px}
+.ctr-card button{border:1px solid var(--line);background:#faf9f5;border-radius:7px;padding:3px 8px;font-size:11.5px;font-weight:750;cursor:pointer}
+.spawn-empty{color:var(--muted);font-size:13.5px;align-self:center}
+.spawn-stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.spawn-stat{flex:1;min-width:120px;border-radius:10px;background:white;border:1px solid var(--line);padding:8px 12px;text-align:center;font-size:12px;color:var(--muted)}
+.spawn-stat b{display:block;font-size:20px;color:var(--navy)}
+
+/* lab 2 — terminal */
+.term-wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin:14px 0}
+.term{border-radius:14px;background:#10162a;overflow:hidden;display:flex;flex-direction:column;min-height:430px}
+.term-bar{display:flex;align-items:center;gap:7px;background:#1b2340;padding:8px 12px}
+.term-bar span{width:11px;height:11px;border-radius:50%}
+.term-bar .r{background:#e0655a}.term-bar .y{background:#e0b23e}.term-bar .g{background:#5fb96a}
+.term-bar b{margin-left:8px;color:#aeb6d8;font-size:12px;font-weight:700}
+.term-bar .term-reset{margin-left:auto;border:1px solid #4a577e;border-radius:7px;background:#252e50;color:#d8def8;padding:3px 7px;font-size:10.5px;font-weight:800;cursor:pointer}
+.term-log{flex:1;overflow-y:auto;padding:12px 14px;font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;color:#d7def5;max-height:430px}
+.term-log .cmd{color:#8ee6b8}
+.term-log .err{color:#ff9d94}
+.term-log .sys{color:#8f9ac2;font-style:italic}
+.term-log pre{margin:0 0 2px;white-space:pre-wrap;word-break:break-all;font:inherit}
+.term-in{display:flex;align-items:center;gap:8px;border-top:1px solid #262f52;background:#141b33;padding:9px 14px}
+.term-in .ps1{color:#8ee6b8;font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
+.term-in input{flex:1;background:transparent;border:0;outline:0;color:#eef1ff;font:13px ui-monospace,SFMono-Regular,Menlo,monospace}
+.term-in:focus-within{box-shadow:inset 0 0 0 2px var(--gold)}
+.missions{border:1px solid var(--line);border-radius:14px;background:#faf9f5;padding:14px;display:flex;flex-direction:column}
+.missions h3{margin:0 0 2px}
+.missions .mprog{color:var(--violet);font-weight:850;font-size:13px;margin-bottom:9px}
+.mission-guide{width:100%;margin:0 0 9px}
+.mlist{display:grid;gap:6px;overflow-y:auto}
+.mission{display:grid;grid-template-columns:24px 1fr;gap:8px;border:1px solid var(--line);border-radius:10px;background:white;padding:8px 10px;font-size:13px}
+.mission .mk{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#eceae5;color:var(--muted);font-weight:900;font-size:12px}
+.mission.done{background:var(--green-bg);border-color:#a9d2b8}
+.mission.done .mk{background:var(--green);color:white}
+.mission b{display:block}
+.mission code{background:#f0ede5;font-size:11.5px}
+.cheat{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin:12px 0}
+.cheat div{border:1px solid var(--line);border-radius:9px;background:white;padding:8px 10px;font-size:12.5px;color:var(--muted)}
+.cheat code{display:block;margin-bottom:2px;background:#f0ede5;color:var(--navy);font-weight:700;width:fit-content}
+
+/* lab 3 — dockerfile */
+.build-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;margin:14px 0}
+.dfile{border-radius:14px;background:#10162a;padding:13px;display:grid;gap:5px;align-content:start}
+.dfile-title{color:#aeb6d8;font:11px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.dline{display:grid;grid-template-columns:22px 1fr;gap:8px;border:2px solid transparent;border-radius:9px;background:#182042;color:#d7def5;padding:8px 10px;text-align:left;cursor:pointer;font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace}
+.dline .ln{color:#5d6a99}
+.dline .kw{color:#8ee6b8;font-weight:700}
+.dline.selected{border-color:var(--gold)}
+.dline-panel{border-radius:15px;background:#162038;color:white;padding:18px;min-height:230px}
+.dline-panel .panel-tag{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#c8cbea;font-weight:850}
+.dline-panel h3{margin:6px 0 8px;font-size:20px;color:white}
+.dline-panel p{margin:6px 0;color:#e2e5ee;font-size:14px}
+.dline-panel .gotcha{margin-top:10px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,.09);font-size:13px}
+.appfiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.appfile{border:1px solid var(--line);border-radius:10px;background:white;padding:9px 11px;font-size:12.5px;color:var(--muted)}
+.appfile b{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--navy);font-size:12.5px}
+.cachelab{border:1px solid var(--line);border-radius:15px;background:#faf9f5;padding:16px;margin:16px 0}
+.cachelab h3{margin:0 0 4px}
+.cache-controls{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.layerstack{display:grid;gap:5px;margin:12px 0}
+.layer{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:9px;background:white;padding:8px 12px;font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;opacity:.35;transition:.25s}
+.layer.built{opacity:1}
+.layer .badge{border-radius:999px;padding:2px 9px;font:11px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-weight:850}
+.layer .badge.cached{background:var(--green-bg);color:var(--green)}
+.layer .badge.rebuilt{background:var(--gold-bg);color:#704a00}
+.layer .badge.first{background:var(--blue-bg);color:var(--navy)}
+.layer .tdur{color:var(--muted);font-size:11px;min-width:44px;text-align:right}
+.buildmsg{border-left:5px solid var(--violet);border-radius:11px;background:var(--blue-bg);padding:11px 13px;font-size:14px;color:#374158;min-height:44px}
+.buildbar{height:10px;border-radius:99px;background:#e9e6df;overflow:hidden;margin:9px 0 3px}
+.buildbar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--violet));transition:width .5s}
+.buildtime{font-size:12px;color:var(--muted)}
+
+/* lab 5 — ports & volumes */
+.port-lab{border:1px solid var(--line);border-radius:15px;background:#faf9f5;padding:16px;margin:14px 0}
+.port-pick{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+.choice{border:1.5px solid var(--line);background:white;border-radius:999px;padding:8px 13px;color:var(--muted);font-size:13px;font-weight:750;cursor:pointer}
+.choice.active{border-color:var(--violet);background:var(--violet);color:white}
+.portviz{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch;margin:12px 0}
+.portviz .node{border:1px solid var(--line);border-radius:12px;background:white;padding:12px;font-size:13px}
+.portviz .node b{display:block;color:var(--navy);margin-bottom:3px}
+.portviz .pipe{display:grid;place-items:center;color:var(--violet);font-weight:900;font-size:13px;text-align:center}
+.portviz .pipe.dead{color:#c9c4b9}
+.browser-sim{border:1px solid var(--line);border-radius:12px;background:white;overflow:hidden;margin:10px 0}
+.browser-bar{display:flex;align-items:center;gap:8px;background:#efede7;border-bottom:1px solid var(--line);padding:7px 10px;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+.browser-body{padding:16px;font-size:14px;min-height:74px}
+.browser-body.ok{background:var(--green-bg)}
+.browser-body.no{background:var(--red-bg)}
+.browser-body h4{margin:0 0 4px;font-size:17px}
+.data-lifecycle{border:1px solid #cfd0eb;border-radius:17px;background:var(--blue-bg);padding:18px;margin:14px 0}
+.data-lifecycle>h3{margin:0 0 5px;color:var(--navy);font-size:21px}
+.data-lifecycle>p{margin:6px 0 12px}
+.layer-model{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:13px 0}
+.layer-card{position:relative;border:1px solid #cfd0eb;border-radius:12px;background:white;padding:12px;font-size:13px;color:var(--muted)}
+.layer-card b{display:block;margin-bottom:3px;color:var(--navy);font-size:14px}
+.layer-card .layer-state{display:inline-block;margin-bottom:6px;border-radius:999px;padding:2px 8px;font-size:10.5px;font-weight:900;letter-spacing:.07em;text-transform:uppercase}
+.layer-card.image-layer .layer-state{background:#eceae5;color:var(--muted)}
+.layer-card.write-layer{border-color:#e3c98c;background:#fffdf7}.layer-card.write-layer .layer-state{background:var(--gold-bg);color:#76500a}
+.layer-card.mount-layer{border-color:#a9d2b8;background:#fbfffc}.layer-card.mount-layer .layer-state{background:var(--green-bg);color:var(--green)}
+.delete-meanings{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:11px 0}
+.delete-meaning{border-left:4px solid var(--violet);border-radius:9px;background:white;padding:10px 11px;font-size:12.5px;color:var(--muted)}
+.delete-meaning b{display:block;color:var(--ink);margin-bottom:2px}
+.lifecycle-scroll{overflow-x:auto;margin:12px 0;border:1px solid #cfd0eb;border-radius:12px;background:white}
+.lifecycle-table{width:100%;min-width:980px;border-collapse:collapse;font-size:12.25px;line-height:1.4}
+.lifecycle-table th,.lifecycle-table td{padding:9px 10px;border-right:1px solid #e3e1eb;border-bottom:1px solid #e3e1eb;text-align:left;vertical-align:top}
+.lifecycle-table th{background:#25236b;color:white;font-size:11.5px;letter-spacing:.02em}
+.lifecycle-table th:last-child,.lifecycle-table td:last-child{border-right:0}
+.lifecycle-table tr:last-child td{border-bottom:0}
+.lifecycle-table tbody tr:nth-child(even){background:#faf9fd}
+.lifecycle-table td:first-child{font-weight:850;color:var(--navy);white-space:nowrap}
+.fate{display:inline-block;margin-bottom:3px;border-radius:999px;padding:1px 7px;font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.05em}
+.fate.keep{background:var(--green-bg);color:var(--green)}
+.fate.gone{background:var(--red-bg);color:var(--red)}
+.fate.depends{background:var(--gold-bg);color:#76500a}
+.fate.unchanged{background:var(--blue-bg);color:var(--navy)}
+.danger-commands{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:12px 0}
+.danger-commands>div{min-width:0}
+.danger-commands h4{margin:0 0 5px;color:var(--navy)}
+.vol-lab{border:1px solid var(--line);border-radius:15px;background:#faf9f5;padding:16px;margin:14px 0}
+.vol-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+.vol-side{border:1px solid var(--line);border-radius:12px;background:white;padding:12px}
+.vol-side h4{margin:0 0 6px;font-size:14.5px;color:var(--navy)}
+.vol-box{border:1.5px dashed var(--line);border-radius:10px;padding:9px;margin:7px 0;font-size:12.5px;min-height:56px}
+.vol-box.volume{border-color:var(--teal);background:var(--teal-bg)}
+.vol-box b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.vol-file{display:inline-block;border-radius:7px;background:var(--gold-bg);border:1px solid #e3c98c;padding:2px 8px;font:11.5px ui-monospace,SFMono-Regular,Menlo,monospace;color:#704a00;margin:1px}
+.vol-none{color:var(--muted);font-size:12px;font-style:italic}
+.vol-status{font-size:12.5px;color:var(--muted);margin-top:6px}
+.vol-btns{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.vol-btns button{border:1px solid var(--line);background:#faf9f5;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:750;cursor:pointer}
+.vol-verdict{border-left:5px solid var(--violet);border-radius:11px;background:var(--blue-bg);padding:11px 13px;font-size:14px;color:#374158;min-height:40px}
+
+/* lab 4 — from scratch */
+.lang-pane{display:none}
+.lang-pane.on{display:block}
+.share-section{margin:22px 0;border:1px solid #b9dcd5;border-radius:17px;background:var(--teal-bg);padding:19px}
+.share-section>h3{margin:3px 0 6px;font-size:22px;color:#075f5c}
+.share-section>p{margin:6px 0 13px}
+.handoff-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:13px 0}
+.handoff-step{position:relative;border:1px solid #b9dcd5;border-radius:11px;background:white;padding:11px 12px;font-size:13px;color:var(--muted)}
+.handoff-step:not(:last-child):after{content:"→";position:absolute;right:-13px;top:50%;z-index:2;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--teal);color:white;font-weight:900;transform:translateY(-50%)}
+.handoff-step b{display:block;color:var(--navy);margin-bottom:2px}
+.share-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:13px 0}
+.share-card{min-width:0;border:1px solid #b9dcd5;border-radius:13px;background:white;padding:15px}
+.share-card h4{margin:3px 0 6px;color:var(--navy);font-size:17px}
+.share-card p{margin:7px 0;font-size:13.5px}
+.method-tag{color:var(--teal);font-size:11px;font-weight:900;letter-spacing:.09em;text-transform:uppercase}
+.stage-bar{height:26px;border-radius:8px;background:#e9e6df;overflow:hidden;margin:8px 0}
+.stage-bar span{display:block;height:100%;background:linear-gradient(90deg,var(--teal),var(--violet));transition:width .5s;min-width:2px}
+.stage-caption{font-size:12.5px;color:var(--muted);margin:0 0 10px}
+
+/* lab 6 — compose + quiz */
+.compose-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin:12px 0}
+.yaml{border-radius:14px;background:#10162a;padding:14px;font:12.5px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;color:#d7def5;overflow-x:auto}
+.yaml .yk{color:#8ee6b8}.yaml .yc{color:#5d6a99;font-style:italic}
+.compose-why{display:grid;gap:8px;align-content:start}
+.compose-why div{border:1px solid var(--line);border-radius:10px;background:white;padding:10px 12px;font-size:13.5px;color:var(--muted)}
+.compose-why b{display:block;color:var(--navy)}
+.quiz-top{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:12px}
+.quiz-progress{font-weight:850;color:var(--navy)}
+.question{font-size:19px;font-weight:800;line-height:1.35;max-width:820px;margin:13px 0}
+.answers{display:grid;gap:8px}
+.answer{border:1.5px solid var(--line);background:white;border-radius:11px;padding:11px 13px;text-align:left;cursor:pointer;color:var(--ink)}
+.answer:hover:not(:disabled){border-color:var(--violet)}
+.answer.correct{background:var(--green-bg);border-color:var(--green)}
+.answer.wrong{background:var(--red-bg);border-color:var(--red)}
+.feedback{display:none;margin-top:12px;border-radius:12px;padding:14px;background:var(--blue-bg);border-left:5px solid var(--violet)}
+.feedback.show{display:block}
+.feedback p{margin:4px 0;font-size:14px}
+.quiz-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px}
+.score{font-weight:850;color:var(--green)}
+.footer-nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:26px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:780px){
+  .progress-rail{top:49px;overflow-x:auto;grid-template-columns:repeat(7,minmax(105px,1fr))}
+  .term-wrap,.build-layout,.vol-grid,.compose-grid,.ops-grid,.prod-files,.share-grid,.danger-commands{grid-template-columns:1fr}
+  .metaphor,.appfiles{grid-template-columns:1fr}
+  .layer-model,.delete-meanings{grid-template-columns:1fr}
+  .handoff-strip{grid-template-columns:1fr;gap:16px}.handoff-step:not(:last-child):after{content:"↓";right:50%;top:auto;bottom:-13px;transform:translateX(50%)}
+  .vmrecap,.cheat,.hardening-grid,.source-list{grid-template-columns:1fr}
+  .intro-grid{grid-template-columns:1fr}.course-intro{padding:25px}
+  .incident-options{grid-template-columns:1fr}
+  .network-map{grid-template-columns:1fr}.network-arrow{min-height:34px}
+  .portviz{grid-template-columns:1fr}.portviz .pipe{min-height:34px}
+  .lab{padding:20px}.topbar-title{display:none}
+}
+@media(max-width:480px){.shell{padding:14px 10px 50px}.lab{border-radius:15px;padding:17px}.lab-number{width:38px;height:38px}.lab-head{gap:8px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+@media print{.topbar,.progress-rail,.btn{display:none}.dline-panel,.term,.dfile,.yaml{background:white;color:var(--ink);border:1px solid var(--line)}.lab{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+<nav class="topbar" aria-label="Course navigation">
+  <a href="index.html">← Course hub</a>
+  <span class="topbar-title">Docker Field Guide</span>
+  <a href="week3-session7.html">Session 7 ↗</a>
+</nav>
+
+<main class="shell">
+  <header class="course-intro">
+    <span class="intro-kicker">Interactive field guide · beginner → production instincts</span>
+    <h1>Docker, from first container to a healthy stack</h1>
+    <p class="intro-lead">Build the right mental model, type real commands in a safe simulator, package and share an app, connect and persist containers, then debug and harden what you made.</p>
+    <div class="intro-meta" aria-label="Lesson facts">
+      <span>7 focused labs</span><span>75–100 minutes</span><span>No installation required</span><span>Progress saved on this device</span>
+    </div>
+    <div class="intro-grid" aria-label="How each lab works">
+      <div class="intro-step"><b>1 · Learn</b>Start with one plain-language idea and a concrete picture.</div>
+      <div class="intro-step"><b>2 · Do</b>Change something, type a command, or trace what Docker does.</div>
+      <div class="intro-step"><b>3 · Prove</b>Answer a short checkpoint before the next idea piles on.</div>
+    </div>
+    <div class="learning-status" aria-live="polite">
+      <div class="learning-status-head"><b id="learningProgressText">0 of 7 labs complete</b><span id="learningNextText">Start with the big picture.</span></div>
+      <div class="learning-bar" role="progressbar" aria-label="Course completion" aria-valuemin="0" aria-valuemax="7" aria-valuenow="0"><span id="learningBarFill"></span></div>
+      <div class="learning-actions">
+        <a class="btn small teal" id="continueLearning" href="#picture">Start Lab 1 →</a>
+        <button class="btn small outline" id="resetLearning" type="button">Reset saved progress</button>
+      </div>
+    </div>
+    <p class="route-note"><strong>Short on time?</strong> Take the 45-minute core route: Labs 1 → 2 → 3 → 5 → 7. Labs 4 and 6 are the deeper build and production passes.</p>
+  </header>
+
+  <nav class="progress-rail" aria-label="Deep dive progress">
+    <a href="#picture" data-section="picture">1 · Big picture</a>
+    <a href="#terminal" data-section="terminal">2 · Terminal</a>
+    <a href="#build" data-section="build">3 · Build &amp; share</a>
+    <a href="#fromscratch" data-section="fromscratch">4 · From scratch</a>
+    <a href="#portsdata" data-section="portsdata">5 · Ports &amp; data</a>
+    <a href="#operate" data-section="operate">6 · Operate</a>
+    <a href="#challenge" data-section="challenge">7 · Compose &amp; prove</a>
+  </nav>
+
+  <!-- ================= LAB 1 · BIG PICTURE ================= -->
+  <section class="lab" id="picture">
+    <div class="lab-head">
+      <div><span class="lab-kicker">Lab 1 · The mental model first</span><h2>One recipe, many cakes</h2><p>Before any command: what an image is, what a container is, and why they are not the same thing.</p></div>
+      <span class="lab-number">01</span>
+    </div>
+    <p>Here is the oldest problem in software: a program works on your computer, but when your friend tries it, it breaks. Different computer, different setup, different missing pieces. <strong>Docker</strong> fixes most of that drift with one idea: don't hand over just the program — package it with its user-space runtime, libraries, and default configuration. That package behaves consistently on compatible laptops and cloud servers because the moving parts travel together. The host still supplies a compatible kernel and CPU, which the platform experiment below makes precise.</p>
+    <div class="metaphor" role="group" aria-label="The three core nouns">
+      <div class="meta-card"><b>📦 Image</b><span>The <em>recipe</em>: a frozen master copy of your app and everything it needs. It never changes and it never runs. You make it once and share it everywhere.</span></div>
+      <div class="meta-card"><b>🚢 Container</b><span>A <em>cake baked from that recipe</em>: a live, running copy with its own files, its own network, its own little world. Bake one or bake fifty — all from the same recipe.</span></div>
+      <div class="meta-card"><b>🗄️ Registry</b><span>The <em>cookbook library</em>: a website that stores images so anyone can download them. Docker Hub is the big free one. <code>docker pull</code> = borrow a recipe; <code>docker push</code> = share yours.</span></div>
+    </div>
+    <div class="keyrule"><strong>The one sentence to memorize:</strong> an image is the frozen recipe; a container is a running copy of it. Deleting a container never hurts the image — eating a cake doesn't hurt the recipe.</div>
+    <h3>Where this sits in what you already know</h3>
+    <div class="vmrecap">
+      <div><b>A virtual machine virtualizes hardware.</b> Each VM boots and maintains a guest operating system. That stronger boundary costs extra disk, memory, and startup work.</div>
+      <div><b>A container isolates processes.</b> It shares the host kernel, so there is no guest OS per app to boot or duplicate. Containers are typically much smaller and start much faster.</div>
+    </div>
+    <h3>So what IS a container, really?</h3>
+    <p>Here is the honest answer, no magic: <strong>a container is just a normal program running on your computer — with invisible walls built around it.</strong> It is <em>not</em> a tiny computer hiding inside your computer (that's what a virtual machine is). When a container starts, the operating system builds three walls around the program:</p>
+    <div class="metaphor" role="group" aria-label="The three walls around a container">
+      <div class="meta-card"><b>🗂️ Its own files</b><span>The program starts with only the image plus its own writable layer. Host folders, volumes, devices, and sockets appear only when you explicitly mount or grant them.</span></div>
+      <div class="meta-card"><b>🌐 Its own network doorway</b><span>It gets a private doorway to the network. Door 80 inside the box is NOT your computer's door 80 — Lab 5 is all about connecting them.</span></div>
+      <div class="meta-card"><b>📋 Its own process list</b><span>It sees only processes in its process namespace — often one main process, sometimes helpers — not every process running on the host.</span></div>
+    </div>
+    <p>From the inside, it feels like having a whole computer to yourself. From the outside, it is just one more program in your computer's list. The wall-builder is the <strong>kernel</strong> — the boss program at the heart of every operating system. That one fact decides the next question:</p>
+    <h3>🎛️ Try it: can the same container image run on different operating systems?</h3>
+    <p class="micro">You built a Linux container on a Mac. Click each machine — and the CPU edge case — to see what portability really promises:</p>
+    <div class="port-pick" role="group" aria-label="Pick a machine to run the container on">
+      <button class="choice active" data-os="mac" type="button" aria-pressed="true">🍎 A MacBook</button>
+      <button class="choice" data-os="win" type="button" aria-pressed="false">🪟 A Windows laptop</button>
+      <button class="choice" data-os="linux" type="button" aria-pressed="false">🐧 A Linux server</button>
+      <button class="choice" data-os="wincont" type="button" aria-pressed="false">🚫 A Windows container on Linux?</button>
+      <button class="choice" data-os="arch" type="button" aria-pressed="false">🧩 Apple Silicon vs Intel?</button>
+    </div>
+    <div class="vol-verdict" id="osPanel" aria-live="polite"></div>
+    <div class="keyrule" style="margin-top:10px"><strong>The precise portability promise:</strong> a Linux image runs wherever Docker can provide a compatible Linux kernel <em>and CPU build</em>. A multi-platform image reference can point to separate amd64 and arm64 variants, and Docker selects the match. A Windows-only container still needs a Windows kernel.</div>
+
+    <div class="spawner">
+      <div class="spawner-head">
+        <h3>🎛️ Try it: one image, many containers</h3>
+        <span><button class="btn small teal" id="spawnBtn" type="button">▶ docker run nginx</button> <button class="btn small outline" id="spawnReset" type="button">Reset</button></span>
+      </div>
+      <div class="image-slab"><span class="whale" aria-hidden="true">📦</span><div><b>nginx:latest — the image</b><p>Read-only template, downloaded once. Watch it stay untouched no matter what happens to the containers below.</p></div></div>
+      <div class="ctr-grid" id="ctrGrid"><span class="spawn-empty" id="spawnEmpty">No containers yet — press <strong>▶ docker run nginx</strong> a few times.</span></div>
+      <div class="spawn-stats">
+        <div class="spawn-stat"><b id="statImages">1</b>images on disk</div>
+        <div class="spawn-stat"><b id="statTotal">0</b>containers created</div>
+        <div class="spawn-stat"><b id="statRunning">0</b>running right now</div>
+      </div>
+      <p class="micro" id="spawnNote">Each press creates a <em>new, separate</em> container from the same image — its own ID, its own name, its own separate set of files. Stop or remove any of them; the image count never moves.</p>
+    </div>
+    <div class="takeaway"><b>Keep this:</b><span>"Run an image" really means "create a container from it and start that container." The image count only changes when you <code>pull</code>, <code>build</code>, or <code>rmi</code>.</span></div>
+    <div class="checkpoint" data-checkpoint="picture" data-correct="1" data-success="Exactly. The image is shared and unchanged; each run adds a separate writable container layer and process." data-retry="Not quite. Ask what is the frozen template and what is the live copy, then try again.">
+      <h3>60-second checkpoint</h3>
+      <p>You run <code>docker run nginx</code> twice. Which description is accurate?</p>
+      <div class="checkpoint-options">
+        <button class="checkpoint-option" type="button" data-choice="0">Docker duplicates the nginx image, so there are two images.</button>
+        <button class="checkpoint-option" type="button" data-choice="1">One image stays read-only; two separate containers are created from it.</button>
+        <button class="checkpoint-option" type="button" data-choice="2">The second command restarts the first container.</button>
+      </div>
+      <div class="checkpoint-feedback" aria-live="polite"></div>
+    </div>
+    <details class="deep">
+      <summary>What exactly is "Docker" when I install it?</summary>
+      <div class="deep-body">
+        <p>Two programs, working as a team. <strong>Who you talk to:</strong> the <code>docker</code> command — the messenger. <strong>Who does the work:</strong> the Docker <em>daemon</em>, a helper that runs in the background and does the real jobs — downloading images, building the walls, starting containers. <strong>Where they live:</strong> on Linux the daemon runs right on the machine; on Mac and Windows it lives inside the tiny hidden Linux helper you met above. <strong>When:</strong> every command you type in Lab 2 is the messenger handing one request to the daemon. <strong>Why it matters:</strong> Docker images follow a shared open standard (called OCI), so an image Docker builds is not locked to Docker — other tools and every big cloud can run it too.</p>
+        <p><strong>Get it for free:</strong> install <a href="https://docs.docker.com/desktop/" target="_blank" rel="noopener">Docker Desktop</a> (free for personal and education use), or use <a href="https://labs.play-with-docker.com/" target="_blank" rel="noopener">Play with Docker</a> — a browser Linux machine with Docker pre-installed (a Docker account is required). The CLI patterns in this guide transfer to both.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ================= LAB 2 · TERMINAL ================= -->
+  <section class="lab" id="terminal">
+    <div class="lab-head">
+      <div><span class="lab-kicker">Lab 2 · Type the real commands</span><h2>The simulated Docker terminal</h2><p>A safe copy of the Docker command line lives below. It behaves like the real one — including the error messages. Complete all ten missions.</p></div>
+      <span class="lab-number">02</span>
+    </div>
+    <div class="why-box"><span class="why-mark">⌨️</span><div><h3>Why a terminal and not buttons?</h3><p>Real Docker is driven by typed commands on laptops, servers, and CI systems. This simulator accepts a focused subset of the real CLI and returns realistic state and errors. Nothing here touches your machine, so experiment; the simulator labels the few places where it deliberately simplifies Docker.</p></div></div>
+    <div class="term-wrap">
+      <div class="term">
+        <div class="term-bar"><span class="r"></span><span class="y"></span><span class="g"></span><b>student@cloudlab — docker simulator</b><button class="term-reset" id="termReset" type="button">Reset terminal</button></div>
+        <div class="term-log" id="termLog" aria-live="polite"></div>
+        <div class="term-in">
+          <span class="ps1">student@cloudlab:~$</span>
+          <input type="text" id="termInput" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Type a docker command" placeholder="type a command… (try: docker run hello-world)">
+        </div>
+      </div>
+      <div class="missions">
+        <h3>🎯 Missions</h3>
+        <p class="mprog" id="missionProg">0 / 10 complete</p>
+        <button class="btn small outline mission-guide" id="fillMissionHint" type="button">Run the next mission command →</button>
+        <div class="mlist" id="missionList"></div>
+      </div>
+    </div>
+    <h3>The commands you just used, on one card</h3>
+    <div class="cheat">
+      <div><code>docker pull IMAGE</code>Download an image from the registry without running it.</div>
+      <div><code>docker run [flags] IMAGE</code>Create a <em>new</em> container from an image and start it. <code>-d</code> = detached (background) · <code>--name</code> = pick a name · <code>-p HOST:CONTAINER</code> = publish a port.</div>
+      <div><code>docker ps</code> / <code>docker ps -a</code>List <em>running</em> containers / list <em>all</em> containers including stopped ones.</div>
+      <div><code>docker logs NAME</code>Read everything the container's main program has printed.</div>
+      <div><code>docker inspect NAME</code>Show the full configuration and runtime state Docker actually applied: command, exit code, ports, mounts, network, and health history.</div>
+      <div><code>docker exec NAME CMD</code>Run an extra command inside a <em>running</em> container (e.g. <code>docker exec web ls</code>).</div>
+      <div><code>docker stop / start NAME</code>Politely stop a container (its program gets a moment to finish) / start a stopped one again — same container, same files.</div>
+      <div><code>docker rm NAME</code> · <code>docker rmi IMAGE</code>Delete a container (add <code>-f</code> if it's running) · delete an image (only when no container uses it).</div>
+      <div><code>docker images</code>List the images on this machine, with tags and sizes.</div>
+      <div><code>docker port NAME</code>Show the published host-to-container port mapping for one container.</div>
+      <div><code>docker stats</code>Watch live CPU, memory, network, and disk I/O consumption by running container.</div>
+    </div>
+    <div class="takeaway"><b>Keep this:</b><span><code>run</code> always makes a <em>new</em> container. If you want the same one back, it's <code>start</code>, not <code>run</code> — the number-one beginner mix-up.</span></div>
+    <details class="deep">
+      <summary>What actually happens during <code>docker run -d -p 8080:80 --name web nginx</code>?</summary>
+      <div class="deep-body">
+        <p><strong>1 · Check:</strong> do we have the <code>nginx</code> image? If not, download it automatically. <strong>2 · Create:</strong> make a brand-new container — a fresh writable box stacked on top of the read-only image, with its own walls. <strong>3 · Wire:</strong> <code>-p 8080:80</code> connects your computer's door 8080 to the box's door 80. <strong>4 · Start:</strong> the image's default program (for nginx, the web server) starts up inside the box. <strong>5 · Step away:</strong> because of <code>-d</code>, Docker prints the new container's ID and gives your prompt back — the box keeps running in the background until you stop it.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ================= LAB 3 · BUILD ================= -->
+  <section class="lab" id="build">
+    <div class="lab-head">
+      <div><span class="lab-kicker">Lab 3 · Make and share your image</span><h2>The Dockerfile, line by line</h2><p>Build your own image from a Dockerfile, then hand the finished image to someone else to run.</p></div>
+      <span class="lab-number">03</span>
+    </div>
+    <p>So far you ran boxes other people made. Real work means making your own image — and the instructions for building one live in a plain text file called a <strong>Dockerfile</strong>. (In Lab 1 the image was the frozen recipe; the Dockerfile is the instruction sheet you follow <em>once</em> to create that recipe.) Below is a complete, real Dockerfile for a small web app; this exact seven-line pattern runs thousands of real services. <strong>Click every line</strong> — the panel explains what it does, when it happens, and the classic mistake that comes with it.</p>
+    <div class="appfiles" role="group" aria-label="The project folder being built">
+      <div class="appfile"><b>server.js</b>The app itself — ~20 lines of Node that answer web requests on port 3000.</div>
+      <div class="appfile"><b>package.json</b>The shopping list — the npm libraries the app needs installed.</div>
+      <div class="appfile"><b>Dockerfile</b>The build recipe — the seven instructions on the left.</div>
+    </div>
+    <div class="build-layout">
+      <div class="dfile" role="group" aria-label="Dockerfile, one button per line">
+        <span class="dfile-title">Dockerfile</span>
+        <button class="dline selected" data-line="0" type="button"><span class="ln">1</span><span><span class="kw">FROM</span> node:24-alpine</span></button>
+        <button class="dline" data-line="1" type="button"><span class="ln">2</span><span><span class="kw">WORKDIR</span> /app</span></button>
+        <button class="dline" data-line="2" type="button"><span class="ln">3</span><span><span class="kw">COPY</span> package*.json ./</span></button>
+        <button class="dline" data-line="3" type="button"><span class="ln">4</span><span><span class="kw">RUN</span> npm ci --omit=dev</span></button>
+        <button class="dline" data-line="4" type="button"><span class="ln">5</span><span><span class="kw">COPY</span> . .</span></button>
+        <button class="dline" data-line="5" type="button"><span class="ln">6</span><span><span class="kw">EXPOSE</span> 3000</span></button>
+        <button class="dline" data-line="6" type="button"><span class="ln">7</span><span><span class="kw">CMD</span> ["node","server.js"]</span></button>
+      </div>
+      <aside class="dline-panel" id="dlinePanel" aria-live="polite"></aside>
+    </div>
+
+    <div class="cachelab">
+      <h3>🎛️ Try it: build the image, then bust the cache</h3>
+      <p class="micro">Filesystem-changing instructions such as <code>COPY</code> and <code>RUN</code> produce immutable <strong>layers</strong>; instructions such as <code>CMD</code> and <code>EXPOSE</code> primarily add image metadata. Docker caches instruction results either way. On a rebuild, reuse continues until the first instruction whose inputs changed. Try two edits and watch where that chain breaks.</p>
+      <div class="cache-controls">
+        <button class="btn small" id="buildFirst" type="button">🔨 docker build (first time)</button>
+        <button class="btn small teal" id="buildSrc" type="button">✏️ Edit server.js → rebuild</button>
+        <button class="btn small red" id="buildDeps" type="button">📦 Edit package.json → rebuild</button>
+      </div>
+      <div class="layerstack" id="layerStack"></div>
+      <div class="buildbar"><span id="buildBarFill"></span></div>
+      <p class="buildtime" id="buildTime"></p>
+      <div class="buildmsg" id="buildMsg">Press <strong>🔨 docker build</strong> to run the first build.</div>
+    </div>
+    <div class="takeaway"><b>Keep this:</b><span>Put things that rarely change at the top of the recipe and things that change every day at the bottom. Copying the shopping list and installing libraries <em>before</em> copying your code is why an everyday rebuild takes seconds instead of minutes.</span></div>
+    <div class="checkpoint" data-checkpoint="build" data-correct="0" data-success="Right. A source edit invalidates COPY . . and the layers after it, but the locked dependency install above it remains reusable." data-retry="Trace from the first Dockerfile line whose inputs changed. Cache reuse stops there, not before it.">
+      <h3>Cache checkpoint</h3>
+      <p>Only <code>server.js</code> changed. What happens on the next build?</p>
+      <div class="checkpoint-options">
+        <button class="checkpoint-option" type="button" data-choice="0">Docker reuses the dependency-install layer and rebuilds from <code>COPY . .</code> downward.</button>
+        <button class="checkpoint-option" type="button" data-choice="1">Docker reruns every line because any file change empties the whole cache.</button>
+        <button class="checkpoint-option" type="button" data-choice="2">Docker edits the existing image in place without creating new layers.</button>
+      </div>
+      <div class="checkpoint-feedback" aria-live="polite"></div>
+    </div>
+
+    <div class="share-section" id="share-image">
+      <span class="lab-kicker">Next step · distribute it</span>
+      <h3>You built the image. How does someone else use it?</h3>
+      <p>Right now <code>myapp:1.0</code> exists only inside <em>your</em> Docker Engine. The normal handoff is to upload the image to a <strong>registry</strong> such as Docker Hub and send the other person its image name plus a run command. They do not need your source code or Dockerfile because they receive the already-built image.</p>
+      <div class="handoff-strip" role="group" aria-label="Image handoff from builder through a registry to another user">
+        <div class="handoff-step"><b>1 · You push</b>Upload the built image under a registry address and version.</div>
+        <div class="handoff-step"><b>2 · The registry stores</b>Docker Hub or another registry holds the image layers.</div>
+        <div class="handoff-step"><b>3 · They pull and run</b>Docker downloads the image and creates their own container from it.</div>
+      </div>
+
+      <div class="share-grid">
+        <div class="share-card">
+          <span class="method-tag">Normal path · internet or team registry</span>
+          <h4>Push it to Docker Hub</h4>
+          <p>First create a Docker Hub repository named <code>myapp</code> and choose whether it is public or private. Replace <code>YOUR_DOCKER_ID</code> below with your Docker Hub username.</p>
+          <p><strong>On your computer:</strong></p>
+          <pre class="yaml"><span class="yc"># Sign in, give the local image its registry address, then upload it.</span>
+docker login
+docker tag myapp:1.0 YOUR_DOCKER_ID/myapp:1.0
+docker push YOUR_DOCKER_ID/myapp:1.0</pre>
+          <p><strong>On the other person's computer:</strong></p>
+          <pre class="yaml">docker pull YOUR_DOCKER_ID/myapp:1.0
+docker run --rm -p 3000:3000 YOUR_DOCKER_ID/myapp:1.0</pre>
+          <p>They open <code>http://localhost:3000</code>. Pressing <code>Ctrl+C</code> stops the foreground container, and <code>--rm</code> removes that used container while keeping the downloaded image.</p>
+          <p class="micro"><code>docker run</code> can pull a missing image automatically; spelling out <code>pull</code> makes the handoff visible. For a private repository, grant that person's Docker account access; they run <code>docker login</code> before pulling. Never send them your password or access token.</p>
+        </div>
+
+        <div class="share-card">
+          <span class="method-tag">Offline path · no registry</span>
+          <h4>Send one image archive</h4>
+          <p>When the machines cannot reach a registry, save the image and its tag into a tar archive, then transfer that file with your approved file-sharing method.</p>
+          <p><strong>On your computer:</strong></p>
+          <pre class="yaml">docker save -o myapp-1.0.tar myapp:1.0</pre>
+          <p><strong>On the other person's computer:</strong></p>
+          <pre class="yaml">docker load -i myapp-1.0.tar
+docker run --rm -p 3000:3000 myapp:1.0</pre>
+          <p class="micro">Use <code>docker save</code> for an <em>image</em>. <code>docker export</code> is a different tool: it flattens a container's filesystem and does not preserve the image's normal metadata and history for this handoff.</p>
+        </div>
+      </div>
+
+      <div class="keyrule"><strong>What you actually send:</strong> one copyable image reference, one complete run command, and “open <code>http://localhost:3000</code>.” Also list required environment-variable <em>names</em>, volume mounts, and configuration files — but send secret values through a secret manager, never inside the image or README.</div>
+      <div class="takeaway"><b>Keep this:</b><span><code>build</code> creates the image on one machine; <code>push</code> publishes it; <code>pull</code> retrieves it; <code>run</code> creates the recipient's container. Prefer a meaningful version such as <code>:1.0</code> over relying only on <code>:latest</code>.</span></div>
+      <details class="deep">
+        <summary>Will the same image run on their computer?</summary>
+        <div class="deep-body">
+          <p>Usually, if Docker is installed and the image matches their operating-system and CPU platform. One common surprise is building a Linux ARM image on an Apple Silicon Mac and handing it to an Intel Linux server. Emulation may help, but the distributable answer is a multi-platform image whose one registry name contains both variants:</p>
+          <pre class="yaml">docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t YOUR_DOCKER_ID/myapp:1.0 \
+  --push .</pre>
+          <p>Docker chooses the matching variant when the recipient pulls it. A version tag is convenient but can be moved to different bytes later; for an audit or deployment that must use the exact pushed image, share the <code>sha256:</code> digest printed by <code>docker push</code> and pull <code>YOUR_DOCKER_ID/myapp@sha256:DIGEST</code>.</p>
+          <p>Official references: <a href="https://docs.docker.com/docker-hub/repos/manage/hub-images/push/" target="_blank" rel="noopener">tag and push</a>, <a href="https://docs.docker.com/reference/cli/docker/image/save/" target="_blank" rel="noopener">save an image</a>, <a href="https://docs.docker.com/reference/cli/docker/image/load/" target="_blank" rel="noopener">load an image</a>, and <a href="https://docs.docker.com/build/building/multi-platform/" target="_blank" rel="noopener">build for multiple platforms</a>.</p>
+        </div>
+      </details>
+    </div>
+
+    <details class="deep">
+      <summary>RUN vs CMD — the two most-confused instructions</summary>
+      <div class="deep-body">
+        <p><strong><code>RUN</code> happens while the image is being MADE.</strong> It runs a command right then (like installing libraries) and freezes the result into a layer, so that piece is saved inside the image forever.</p>
+        <p><strong><code>CMD</code> happens LATER, when a container starts.</strong> It doesn't run during the build at all — it just writes down the program every future container should start with. Run fifty containers and each one starts that program fresh.</p>
+        <p><strong>Build & tag it yourself:</strong> in a folder with these files you would type <code>docker build -t myapp:1.0 .</code> — the <code>-t</code> names (tags) the image, and the final <code>.</code> says "the recipe and files are in this folder." Then <code>docker run -d -p 3000:3000 myapp:1.0</code> starts it, exactly like Lab 2's nginx.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ================= LAB 4 · FROM SCRATCH ================= -->
+  <section class="lab" id="fromscratch">
+    <div class="lab-head">
+      <div><span class="lab-kicker">Lab 4 · Build your own, for real</span><h2>Hello world from scratch — three languages</h2><p>The exact steps to build your own container on your own machine with Docker Desktop, then the famous trick that shrinks it by 99%.</p></div>
+      <span class="lab-number">04</span>
+    </div>
+    <p>Everything before this ran boxes other people made, or simulated the building. Now the real thing: <strong>you write a program, you write the recipe, you build the image, you run the container</strong> — on your own machine. The recipe is the same in every programming language on Earth:</p>
+    <div class="metaphor" role="group" aria-label="The universal four steps">
+      <div class="meta-card"><b>1 · Make a folder, write the program</b><span>A completely ordinary program — nothing about it is Docker-specific. The program always comes first; the box comes second.</span></div>
+      <div class="meta-card"><b>2 · Write the Dockerfile next to it</b><span>A file named exactly <code>Dockerfile</code> — capital D, no extension — in the same folder. Three to six lines, and you already know every instruction in them.</span></div>
+      <div class="meta-card"><b>3 · Build, then run</b><span><code>docker build -t NAME .</code> freezes your image, <code>docker run --rm NAME</code> bakes a container from it (<code>--rm</code> throws the used container away the moment it finishes). Same two commands, every language, forever.</span></div>
+    </div>
+    <div class="keyrule"><strong>Only ONE thing truly changes between languages:</strong> does the program need a <em>build-time</em> preparation step (a <code>RUN</code> line), or can it run as-is? Python: no — Python reads your source fresh every start. C++: yes — it must be compiled into a machine program first. TypeScript: yes — it must be translated into JavaScript first. Watch that one difference as you click through the three tabs.</div>
+    <p class="micro"><strong>Need Docker itself?</strong> Use <a href="https://docs.docker.com/desktop/" target="_blank" rel="noopener">Docker Desktop</a>, or open <a href="https://labs.play-with-docker.com/" target="_blank" rel="noopener">Play with Docker</a> when you cannot install software. Lab 1 explains what Desktop adds on Mac and Windows.</p>
+    <div class="port-pick" role="group" aria-label="Pick a programming language">
+      <button class="choice active" data-lang="python" type="button" aria-pressed="true">🐍 Python</button>
+      <button class="choice" data-lang="cpp" type="button" aria-pressed="false">⚙️ C++</button>
+      <button class="choice" data-lang="ts" type="button" aria-pressed="false">🟦 TypeScript</button>
+    </div>
+
+    <div class="lang-pane on" data-pane="python">
+      <p><strong>Step 1 · Make the folder and the program.</strong> Open your terminal (or Docker Desktop's <code>&gt;_ Terminal</code> button) and make a fresh folder:</p>
+      <pre class="yaml">mkdir docker-hello-python
+cd docker-hello-python</pre>
+      <p>Create a file named <code>hello.py</code> with one line in it:</p>
+      <pre class="yaml"><span class="yc"># hello.py — the whole program.</span>
+print("Hello, World! from my own Python container")</pre>
+      <p><strong>Step 2 · Write the Dockerfile.</strong> In the same folder, a file named exactly <code>Dockerfile</code>:</p>
+      <pre class="yaml"><span class="yc"># Start from a tiny Linux that already has Python installed —</span>
+<span class="yc"># you never install Python yourself; you start from a box that has it.</span>
+<span class="yk">FROM</span> python:3.14-alpine
+
+<span class="yc"># Pick the folder inside the box to work in (creates it too).</span>
+<span class="yk">WORKDIR</span> /app
+
+<span class="yc"># Copy your program into the box.</span>
+<span class="yk">COPY</span> hello.py .
+
+<span class="yc"># What every container from this image runs the moment it starts.</span>
+<span class="yk">CMD</span> ["python", "hello.py"]</pre>
+      <p><strong>Notice what is missing: there is no <code>RUN</code> line.</strong> Python is an <em>interpreted</em> language — the <code>python</code> program reads your source code fresh every time it starts, so there is nothing to prepare during the build. Four lines and done. This is why Python is the gentlest first build.</p>
+      <p><strong>Step 3 · Build it.</strong></p>
+      <pre class="yaml">docker build -t my-python-hello .</pre>
+      <p>Read it out loud: "follow the Dockerfile in this folder (<code>.</code>) and name the frozen result <code>my-python-hello</code>." The first build downloads the <code>python:3.14-alpine</code> <strong>base image</strong> — the current Python feature line in a small ready-made starting box; the exact download size varies by CPU architecture. After that it is cached.</p>
+      <p><strong>Step 4 · Run it.</strong></p>
+      <pre class="yaml">docker run --rm my-python-hello</pre>
+      <p>You'll see <code>Hello, World! from my own Python container</code> — printed by your program, from inside your container, built from your recipe. The new flag: <strong><code>--rm</code> means "throw the container away the moment it finishes"</strong> — perfect for say-one-thing-and-quit programs, and it keeps your <code>docker ps -a</code> list tidy. Check Docker Desktop's Images tab: <code>my-python-hello</code> is on your shelf.</p>
+    </div>
+
+    <div class="lang-pane" data-pane="cpp">
+      <p><strong>Step 1 · Make the folder and the program.</strong></p>
+      <pre class="yaml">mkdir docker-hello-cpp
+cd docker-hello-cpp</pre>
+      <p>Create <code>hello.cpp</code> — ordinary C++, nothing Docker-flavored about it:</p>
+      <pre class="yaml"><span class="yc">// hello.cpp — the whole program.</span>
+#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "Hello, World! from my own C++ container\n";
+    return 0;
+}</pre>
+      <p><strong>Step 2 · Write the Dockerfile.</strong> Here's the difference from Python: your computer cannot run <code>hello.cpp</code> at all — C++ must be <em>compiled</em> into a machine program first. Compiling is a one-time, build-time job, and you know which instruction owns build-time jobs: <strong><code>RUN</code></strong>.</p>
+      <pre class="yaml"><span class="yc"># Start from a Linux that ships with the g++ compiler already installed.</span>
+<span class="yk">FROM</span> gcc
+
+<span class="yc"># Pick the folder inside the box to work in.</span>
+<span class="yk">WORKDIR</span> /app
+
+<span class="yc"># Copy your program into the box.</span>
+<span class="yk">COPY</span> hello.cpp .
+
+<span class="yc"># BUILD-TIME job: compile hello.cpp into a runnable program named "hello".</span>
+<span class="yc"># Runs ONCE, during docker build — the finished program is frozen into a layer.</span>
+<span class="yk">RUN</span> g++ hello.cpp -o hello
+
+<span class="yc"># START-TIME: what every future container runs. The ./ means</span>
+<span class="yc"># "the hello program right here in this folder."</span>
+<span class="yk">CMD</span> ["./hello"]</pre>
+      <p><strong>Step 3 · Build it.</strong></p>
+      <pre class="yaml">docker build -t my-cpp-hello .</pre>
+      <p>Two things to expect. First, <strong>this download is big</strong> — the <code>gcc</code> base image is over a gigabyte, because a whole compiler workshop is heavy (remember that feeling; the shrink trick below is the cure). Second, <strong>watch the <code>RUN g++</code> step scroll by</strong> — that's your program being compiled <em>inside</em> the build. A typo in <code>hello.cpp</code> fails right there with a normal g++ error, and no image gets made: a broken program can never become a "finished" image.</p>
+      <p><strong>Step 4 · Run it.</strong></p>
+      <pre class="yaml">docker run --rm my-cpp-hello</pre>
+      <p><code>Hello, World! from my own C++ container</code> — then it stops cleanly (the 0 in <code>Exited (0)</code> means "no errors"), because a container lives exactly as long as its main program. Now peek at the Images tab and note the size: <strong>about 2 GB, for a two-word program.</strong> Hold that thought for the shrink trick below.</p>
+    </div>
+
+    <div class="lang-pane" data-pane="ts">
+      <p><strong>Step 1 · Make the folder and the program.</strong></p>
+      <pre class="yaml">mkdir docker-hello-ts
+cd docker-hello-ts</pre>
+      <p>Create <code>hello.ts</code>:</p>
+      <pre class="yaml"><span class="yc">// hello.ts — the ": string" part is TypeScript's addition:</span>
+<span class="yc">// a type label that plain JavaScript doesn't have.</span>
+const message: string = "Hello, World! from my own TypeScript container";
+console.log(message);</pre>
+      <p><strong>Step 2 · Write the Dockerfile.</strong> TypeScript is the interesting middle case: it IS a compiled language, like C++ — but it compiles into <em>another language</em> (plain JavaScript) instead of machine code, because Node can only run JavaScript. So this Dockerfile needs <code>RUN</code> lines too — one to install the translator, one to translate:</p>
+      <pre class="yaml"><span class="yc"># Start from a tiny Linux that already has Node.js installed.</span>
+<span class="yk">FROM</span> node:24-alpine
+
+<span class="yc"># Pick the folder inside the box to work in.</span>
+<span class="yk">WORKDIR</span> /app
+
+<span class="yc"># BUILD-TIME job 1: install the TypeScript translator (tsc) into the box.</span>
+<span class="yc"># It sits BEFORE the COPY on purpose — Lab 3's cache lesson: this slow step</span>
+<span class="yc"># doesn't depend on your source file, so editing hello.ts never redoes it.</span>
+<span class="yk">RUN</span> npm install -g typescript
+
+<span class="yc"># Copy your program into the box.</span>
+<span class="yk">COPY</span> hello.ts .
+
+<span class="yc"># BUILD-TIME job 2: translate hello.ts → hello.js (plain JavaScript).</span>
+<span class="yk">RUN</span> tsc hello.ts
+
+<span class="yc"># START-TIME: Node runs the TRANSLATED file — hello.js, not hello.ts.</span>
+<span class="yk">CMD</span> ["node", "hello.js"]</pre>
+      <p><strong>Step 3 · Build it.</strong></p>
+      <pre class="yaml">docker build -t my-ts-hello .</pre>
+      <p>Watch the two <code>RUN</code> steps go by: installing the translator, then translating. Each becomes its own frozen layer — and the caching lesson from Lab 3 applies: edit <code>hello.ts</code> and rebuild, and the slow install layer is reused instantly.</p>
+      <p><strong>Step 4 · Run it.</strong></p>
+      <pre class="yaml">docker run --rm my-ts-hello</pre>
+      <p><code>Hello, World! from my own TypeScript container</code>. One detail worth noticing: the type label (<code>: string</code>) is gone by the time the container runs — types are checked during translation and then removed. The box runs <code>hello.js</code>; <code>hello.ts</code> is just along for the ride. (Which means the translator and the <code>.ts</code> file could be left out of the shipped box entirely… which is exactly the next lesson.)</p>
+    </div>
+
+    <h3>The shrink trick: multi-stage builds</h3>
+    <p>Do the C++ tab for real and you'll own a strange object: a <strong>2.14 GB image carrying a two-word program</strong>. Why so huge? Because the box you ship still contains the entire compiler workshop — g++ and all its tools — which you needed for exactly one moment: the <code>RUN g++</code> line, during the build. The finished, compiled <code>hello</code> never uses the compiler again. <strong>You baked a cake, then shipped the whole kitchen along with it.</strong></p>
+    <p>A <strong>multi-stage build</strong> is one Dockerfile with <em>two</em> <code>FROM</code> lines — two boxes instead of one:</p>
+    <pre class="yaml"><span class="yc"># ============ Stage 1: the workshop (temporary) ============</span>
+<span class="yc"># "AS builder" gives this stage a name so stage 2 can point at it.</span>
+<span class="yk">FROM</span> gcc AS builder
+<span class="yk">WORKDIR</span> /app
+<span class="yk">COPY</span> hello.cpp .
+<span class="yc"># -static packs every helper the program needs INSIDE the program,</span>
+<span class="yc"># so the finished file can live completely alone.</span>
+<span class="yk">RUN</span> g++ -static hello.cpp -o hello
+
+<span class="yc"># ============ Stage 2: the shipping box (what you keep) ============</span>
+<span class="yc"># "scratch" is a special base: a COMPLETELY EMPTY box. Zero bytes inside.</span>
+<span class="yk">FROM</span> scratch
+<span class="yc"># The magic line: reach back into the workshop, take ONLY the finished program.</span>
+<span class="yk">COPY</span> --from=builder /app/hello /hello
+<span class="yk">CMD</span> ["/hello"]</pre>
+    <p>When the build ends, <strong>the workshop is left out of the final image</strong> — only stage 2 is tagged for shipping. Same build command (<code>docker build -t my-cpp-hello-small .</code>), same run command, same output. The numbers below are one measured build; exact sizes vary with base-image updates and CPU architecture, but the order-of-magnitude difference is the lesson:</p>
+    <div class="port-pick" role="group" aria-label="Compare single-stage and multi-stage">
+      <button class="choice active" data-stage="single" type="button" aria-pressed="true">Example one stage — 2.14 GB</button>
+      <button class="choice" data-stage="multi" type="button" aria-pressed="false">Example two stages — 1.27 MB</button>
+    </div>
+    <div class="stage-bar" aria-hidden="true"><span id="stageBarFill" style="width:100%"></span></div>
+    <p class="stage-caption" id="stageCaption"></p>
+    <div class="vol-verdict" id="stagePanel" aria-live="polite"></div>
+    <p class="micro" style="margin-top:10px"><strong>Why does an empty box even work?</strong> This is Lab 1 paying off: the isolation and kernel come from the host. Ordinary base images provide a user-space filesystem — shells, libraries, certificates, and utilities — not a kernel. A fully static program can run from <code>scratch</code>; an app that needs shared libraries, CA certificates, or timezone data must copy them or use a small runtime base.</p>
+    <div class="takeaway"><b>Keep this:</b><span>The workshop stage builds; the shipping stage keeps only runtime requirements. A dramatic size reduction speeds pulls and removes unused tools and libraries from the attack surface. It does not make the app invulnerable — the shipped program and shared kernel still matter. The same pattern works for TypeScript: compile in one stage, then ship the JavaScript and runtime dependencies.</span></div>
+    <div class="checkpoint" data-checkpoint="fromscratch" data-correct="2" data-success="Yes. The builder is disposable scaffolding; the final stage should contain only what the running process needs." data-retry="Separate build-time tools from run-time needs. Which item is useful only while compiling?">
+      <h3>Multi-stage checkpoint</h3>
+      <p>What is the main reason to leave the compiler out of the final image?</p>
+      <div class="checkpoint-options">
+        <button class="checkpoint-option" type="button" data-choice="0">Containers cannot start if a compiler and an app are in the same image.</button>
+        <button class="checkpoint-option" type="button" data-choice="1">Docker Hub rejects images that contain build tools.</button>
+        <button class="checkpoint-option" type="button" data-choice="2">The running app does not need it; removing it cuts transfer size and attack surface.</button>
+      </div>
+      <div class="checkpoint-feedback" aria-live="polite"></div>
+    </div>
+    <details class="deep">
+      <summary>Which base image should I pick? A cheat sheet</summary>
+      <div class="deep-body">
+        <p><strong><code>python:3.14-alpine</code> / <code>node:24-alpine</code></strong> — tiny Linux with the language pre-installed. A practical starting point for these dependency-free demos, which need their interpreter in the shipping box forever. For real dependencies, confirm Alpine's musl-based environment is supported; a slim Debian variant is often the less surprising choice. Node 24 is the current LTS line used here.</p>
+        <p><strong><code>gcc</code></strong> — the full C++ workshop. Great as a <em>builder stage</em>; too heavy to ship. Use it on the top floor of a multi-stage build.</p>
+        <p><strong><code>debian:stable-slim</code></strong> — a smaller general-purpose user-space for shipping dynamically linked programs without the full compiler toolchain. It is often the gentle middle choice when <code>scratch</code> is too bare.</p>
+        <p><strong><code>scratch</code></strong> (0 bytes) — the completely empty base. It needs a fully self-contained program plus any runtime data the program expects. Forgetting <code>-static</code> is the classic C++ gotcha: the build succeeds, but the container can die with a confusing "file not found" because its dynamic loader is absent.</p>
+      </div>
+    </details>
+  </section>
+
+<!-- ================= LAB 5 · PORTS & DATA ================= -->
+  <section class="lab" id="portsdata">
+    <div class="lab-head">
+      <div><span class="lab-kicker">Lab 5 · Ports and the storage lifecycle</span><h2>Ports in, data survives—or doesn't</h2><p>Why an app can be unreachable, why a “read-only” image still produces writable containers, and exactly which actions keep or delete each kind of data.</p></div>
+      <span class="lab-number">05</span>
+    </div>
+
+    <div class="port-lab">
+      <h3>🎛️ Wall #1 — publishing ports</h3>
+      <p class="micro">Remember the container's walls: nginx is listening at door 80 <em>inside</em> the box, but your browser lives outside, on your computer. The <code>-p</code> flag builds a doorway between them — and the order of its two numbers trips up everyone at least once. Pick a run command, then try to load the page:</p>
+      <div class="port-pick" role="group" aria-label="Choose how the container was started">
+        <button class="choice active" data-port="good" type="button" aria-pressed="true">docker run -d -p 8080:80 nginx</button>
+        <button class="choice" data-port="reversed" type="button" aria-pressed="false">docker run -d -p 80:8080 nginx</button>
+        <button class="choice" data-port="none" type="button" aria-pressed="false">docker run -d nginx</button>
+      </div>
+      <div class="portviz">
+        <div class="node"><b>💻 Your computer (the “host”)</b><span id="portHostTxt">Browser asks for <code>localhost:8080</code></span></div>
+        <div class="pipe" id="portPipe">-p 8080:80<br>→</div>
+        <div class="node"><b>🚢 Container</b><span>nginx listens on port <strong>80</strong> (always — that's its job inside its own little world)</span></div>
+      </div>
+      <p><button class="btn small" id="portTest" type="button">🌐 Open localhost:8080</button></p>
+      <div class="browser-sim">
+        <div class="browser-bar">🔒 localhost:8080</div>
+        <div class="browser-body" id="portResult">Press the button to load the page.</div>
+      </div>
+      <p class="micro"><strong>Read the flag left-to-right as "outside:inside".</strong> <code>-p 8080:80</code> = your computer's door 8080 leads to the box's door 80. The inside number is decided by the program in the box (nginx: 80; the Lab 3 app: 3000). The outside number is yours to pick.</p>
+    </div>
+
+    <div class="data-lifecycle" id="data-lifecycle">
+      <h3>Docker is read-only <em>and</em> writable</h3>
+      <p>The phrase “Docker images are read-only” is true, but it leaves out the most important runtime detail. When Docker creates a container, it stacks a thin <strong>writable container layer</strong> on top of the image. The program sees one combined filesystem even though the pieces underneath have different owners and deletion rules.</p>
+      <div class="layer-model" role="group" aria-label="The three places a container can see data">
+        <div class="layer-card image-layer"><span class="layer-state">Bottom · shared</span><b>📦 Read-only image layers</b><code>FROM</code>, <code>COPY</code>, and <code>RUN</code> froze these files during the build. Containers can read them but never alter the image itself.</div>
+        <div class="layer-card write-layer"><span class="layer-state">Top · per container</span><b>✏️ Writable container layer</b>By default, new files and runtime changes land here. Stop preserves it; removing the container deletes it.</div>
+        <div class="layer-card mount-layer"><span class="layer-state">Plugged into a path</span><b>🔌 Volume, bind, or tmpfs mount</b>At a mounted path such as <code>/app/data</code>, writes bypass the container layer and follow the mount's own lifecycle.</div>
+      </div>
+      <div class="keyrule"><strong>Copy-on-write in plain English:</strong> if a process changes an image-provided file, Docker records the changed version in that container's writable layer. If it “deletes” an image file, Docker records a hide marker there. The original image layer remains untouched, so a fresh container sees the original file again.</div>
+
+      <h3>“Delete” can mean three different things</h3>
+      <div class="delete-meanings">
+        <div class="delete-meaning"><b><code>docker stop</code> is not deletion</b>The same container still exists. <code>docker start</code> brings back its writable layer and files.</div>
+        <div class="delete-meaning"><b><code>docker rm</code> deletes one container</b>Its writable layer disappears. The image and named volumes remain; bind-mounted host files remain.</div>
+        <div class="delete-meaning"><b>Deleting a mounted file deletes real data</b>Inside a writable volume or bind mount, <code>rm</code> changes that storage directly. A new container cannot resurrect it.</div>
+      </div>
+
+      <h3>The data survival matrix</h3>
+      <p class="micro">Read across one row. “Recreate” means replacing the old container with a newly created one, including an image upgrade or many Compose updates.</p>
+      <div class="lifecycle-scroll" tabindex="0" role="region" aria-label="Scrollable Docker data survival matrix">
+        <table class="lifecycle-table">
+          <thead>
+            <tr><th>Where the data lives</th><th>Stop or restart the same container</th><th><code>docker rm</code> or exit with <code>--rm</code></th><th>New or recreated container</th><th>Compose teardown</th><th>What deliberately deletes it?</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Image layers</td>
+              <td><span class="fate unchanged">Unchanged</span><br>The container never writes here.</td>
+              <td><span class="fate unchanged">Unchanged</span><br>Removing a container is not removing its image.</td>
+              <td><span class="fate keep">Available</span><br>Every new container begins from these same files.</td>
+              <td><span class="fate unchanged">Unchanged</span><br><code>down</code> and <code>down -v</code> do not remove images.</td>
+              <td><code>docker image rm IMAGE</code>, after dependent containers are removed. A registry copy is separate.</td>
+            </tr>
+            <tr>
+              <td>Container writable layer</td>
+              <td><span class="fate keep">Survives</span><br>Stop, start, and restart keep the same container object.</td>
+              <td><span class="fate gone">Deleted</span><br>Plain <code>rm</code>, forced <code>rm -f</code>, and automatic <code>--rm</code> all remove it.</td>
+              <td><span class="fate gone">Starts clean</span><br>The new container gets a different empty writable layer.</td>
+              <td><span class="fate gone">Deleted</span><br>Both forms of <code>down</code> remove service containers.</td>
+              <td>Removing the container. Rebuilding an image does not copy this runtime data into the new image.</td>
+            </tr>
+            <tr>
+              <td>Named volume<br><code>dbdata:/data</code></td>
+              <td><span class="fate keep">Survives</span><br>It has a lifecycle separate from the container.</td>
+              <td><span class="fate keep">Survives</span><br>Even <code>docker rm -v</code> does not remove a named volume.</td>
+              <td><span class="fate keep">Survives if remounted</span><br>Use the same volume name and path.</td>
+              <td><span class="fate depends">Depends</span><br><code>down</code> keeps it; <code>down -v</code> deletes project-declared volumes. External volumes survive both.</td>
+              <td><code>docker volume rm dbdata</code>, <code>compose down -v</code>, or <code>volume prune -a</code> while unused.</td>
+            </tr>
+            <tr>
+              <td>Anonymous volume<br><code>-v /data</code></td>
+              <td><span class="fate keep">Survives</span><br>It still exists while the container is stopped.</td>
+              <td><span class="fate depends">Depends</span><br>Plain <code>rm</code> leaves it; <code>rm -v</code> and a container started with <code>--rm</code> delete it.</td>
+              <td><span class="fate depends">Easy to orphan</span><br>A fresh <code>docker run</code> creates another anonymous volume rather than finding the old one by intent.</td>
+              <td><span class="fate depends">Depends</span><br><code>down</code> leaves it but cannot automatically reuse it later; <code>down -v</code> deletes it.</td>
+              <td><code>docker rm -v</code>, automatic <code>--rm</code>, its volume ID with <code>volume rm</code>, or <code>volume prune</code> while unused.</td>
+            </tr>
+            <tr>
+              <td>Bind mount<br><code>./data:/data</code></td>
+              <td><span class="fate keep">Survives</span><br>The files belong to the host path.</td>
+              <td><span class="fate keep">Survives</span><br>Removing Docker objects does not remove the host folder.</td>
+              <td><span class="fate keep">Survives if remounted</span><br>Point the new container at the same host path.</td>
+              <td><span class="fate keep">Survives</span><br>Neither <code>down</code> nor <code>down -v</code> deletes bind-mounted host files.</td>
+              <td>Deleting the host files—either on the host or from a container with a writable bind mount. Add <code>:ro</code> when writes are not needed.</td>
+            </tr>
+            <tr>
+              <td>tmpfs mount<br><code>--tmpfs /cache</code></td>
+              <td><span class="fate gone">Cleared</span><br>A stop or restart removes the in-memory mount and its contents.</td>
+              <td><span class="fate gone">Deleted</span><br>Nothing persistent was stored on disk.</td>
+              <td><span class="fate gone">Starts empty</span><br>Each container session gets fresh temporary storage.</td>
+              <td><span class="fate gone">Deleted</span><br>Compose stopping/removing the container ends the tmpfs lifetime.</td>
+              <td>Stopping or restarting the container, or rebooting the host. Use it only for deliberately disposable data.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="danger-commands">
+        <div>
+          <h4>Inspect before deleting</h4>
+          <pre class="yaml"><span class="yc"># See every mount and its type/source.</span>
+docker inspect web --format '{{json .Mounts}}'
+
+docker volume ls
+docker volume inspect dbdata</pre>
+          <p class="micro">Persistence is not a backup. Before deleting a volume that matters, make and test a backup outside that volume.</p>
+        </div>
+        <div>
+          <h4>Commands with different blast radii</h4>
+          <pre class="yaml">docker rm web                 <span class="yc"># container layer</span>
+docker rm -v web              <span class="yc"># + its anonymous volumes</span>
+docker volume rm dbdata       <span class="yc"># one named volume</span>
+docker volume prune           <span class="yc"># unused anonymous volumes</span>
+docker volume prune --all     <span class="yc"># + unused named volumes</span>
+docker compose down           <span class="yc"># containers; volumes stay</span>
+docker compose down --volumes <span class="yc"># + project volumes</span></pre>
+          <p class="micro"><strong>Do not copy the cleanup commands blindly.</strong> Docker refuses to remove a volume still in use, but “unused” does not mean “unimportant.”</p>
+        </div>
+      </div>
+
+      <h3>Want the container itself to reject writes?</h3>
+      <p>That is an explicit runtime choice, not Docker's default. <code>--read-only</code> makes the container's root filesystem read-only; then grant only the writable locations the app truly needs. Mounts are read-write by default, so mark a bind or volume <code>readonly</code> separately when it should also reject writes.</p>
+      <pre class="yaml"><span class="yc"># Read-only root, disposable writable /tmp.</span>
+docker run --read-only --tmpfs /tmp myapp:1.0
+
+<span class="yc"># Read-only root, but persistent app data may be written here.</span>
+docker run --read-only \
+  --mount type=volume,src=appdata,dst=/app/data \
+  myapp:1.0
+
+<span class="yc"># A configuration folder the container may read but not change.</span>
+docker run \
+  --mount type=bind,src=./config,dst=/app/config,readonly \
+  myapp:1.0</pre>
+      <p class="micro">Official references: <a href="https://docs.docker.com/engine/storage/" target="_blank" rel="noopener">container storage layers</a>, <a href="https://docs.docker.com/engine/storage/volumes/" target="_blank" rel="noopener">volume lifecycles</a>, <a href="https://docs.docker.com/reference/cli/docker/container/run/#mount-volume--v" target="_blank" rel="noopener">read-only containers and mounts</a>, and <a href="https://docs.docker.com/reference/cli/docker/compose/down/" target="_blank" rel="noopener">Compose teardown rules</a>.</p>
+    </div>
+
+    <div class="vol-lab">
+      <h3>🎛️ Try it — remove the container, then compare</h3>
+      <p class="micro">Without a mount, writes go into the container's writable layer — and removing the container removes that layer. A <strong>volume</strong> (<code>-v notes:/app/data</code>) is Docker-managed storage with its own lifecycle, mounted at a path inside the container. Run the same three steps on both sides and compare the endings:</p>
+      <div class="vol-grid">
+        <div class="vol-side">
+          <h4>Without a volume — <code>docker run -d --name a1 noteapp</code></h4>
+          <div class="vol-box"><b>container filesystem</b><span id="volAfilesC"><span class="vol-none">empty</span></span></div>
+          <p class="vol-status" id="volAstatus">Container a1 is running.</p>
+          <div class="vol-btns">
+            <button id="volAwrite" type="button">1 · Save notes.txt</button>
+            <button id="volArm" type="button">2 · docker rm -f a1</button>
+            <button id="volAnew" type="button">3 · Run a fresh container</button>
+          </div>
+        </div>
+        <div class="vol-side">
+          <h4>With a volume — <code>docker run -d --name b1 -v notes:/app/data noteapp</code></h4>
+          <div class="vol-box"><b>container filesystem</b><span id="volBfilesC"><span class="vol-none">empty</span></span></div>
+          <div class="vol-box volume"><b>🔌 volume "notes" (lives on the host, outside the container)</b><span id="volBfilesV"><span class="vol-none">empty</span></span></div>
+          <p class="vol-status" id="volBstatus">Container b1 is running, volume plugged into /app/data.</p>
+          <div class="vol-btns">
+            <button id="volBwrite" type="button">1 · Save notes.txt</button>
+            <button id="volBrm" type="button">2 · docker rm -f b1</button>
+            <button id="volBnew" type="button">3 · Run a fresh container</button>
+          </div>
+        </div>
+      </div>
+      <div class="vol-verdict" id="volVerdict">Work both columns top to bottom, then compare what the fresh containers can see.</div>
+      <p class="micro"><button class="btn small outline" id="volReset" type="button">Reset both columns</button></p>
+    </div>
+    <div class="takeaway"><b>Keep this:</b><span>Treat containers as throwaway and keep anything precious in a volume. You should always be able to answer <em>yes</em> to: "can I delete this container without losing anything?"</span></div>
+    <div class="checkpoint" data-checkpoint="portsdata" data-correct="1" data-success="Correct. Host port first, container port second; the named volume owns the database files independently of either container." data-retry="Read the port pair as outside:inside, then ask which storage object survives container removal.">
+      <h3>Ports + data checkpoint</h3>
+      <p>A database listens on 5432 in its container, should be reached at 15432 on your laptop, and must keep its data. Which shape is right?</p>
+      <div class="checkpoint-options">
+        <button class="checkpoint-option" type="button" data-choice="0"><code>-p 5432:15432</code> with no volume</button>
+        <button class="checkpoint-option" type="button" data-choice="1"><code>-p 15432:5432 -v dbdata:/var/lib/postgresql/data</code></button>
+        <button class="checkpoint-option" type="button" data-choice="2"><code>EXPOSE 15432</code> by itself</button>
+      </div>
+      <div class="checkpoint-feedback" aria-live="polite"></div>
+    </div>
+    <details class="deep">
+      <summary>Named volumes vs bind mounts</summary>
+      <div class="deep-body">
+        <p><strong>Named volume</strong> (<code>-v notes:/app/data</code>): a storage bin Docker owns and looks after in its own space on your computer. The best default for databases and app data — it just works, no folder paths to get wrong.</p>
+        <p><strong>Bind mount</strong> (<code>-v your-folder:/usr/share/nginx/html</code>): plugs a <em>specific host path</em> straight into the container. Developers use it for live source code and configuration: edit a file, refresh, no rebuild. It is host-path dependent and writable by default; add <code>:ro</code> when the container only needs to read. Mounting over a non-empty container directory temporarily hides the image's original contents at that path.</p>
+        <p><strong>tmpfs mount</strong> (<code>--tmpfs /run/cache</code>): keeps temporary data in host memory rather than the container layer or disk. It disappears when the container stops and can suit disposable caches or short-lived sensitive material — never anything that must survive.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ================= LAB 6 · OPERATE + TROUBLESHOOT ================= -->
+  <section class="lab" id="operate">
+    <div class="lab-head">
+      <div><span class="lab-kicker">Lab 6 · Keep it healthy</span><h2>Operate, debug, and harden</h2><p>Starting a container is the beginning, not the finish line. Learn to read its state, find failures quickly, and ship fewer surprises.</p></div>
+      <span class="lab-number">06</span>
+    </div>
+    <div class="why-box"><span class="why-mark">🩺</span><div><h3>The production mindset</h3><p>A container can be <em>running</em> while its app is stuck, can consume every free byte of memory unless you set a limit, and can leak a secret that was copied into an old image layer. Operations means asking better questions than “is the box on?”</p></div></div>
+
+    <h3>Running is not the same as ready</h3>
+    <p>Docker tracks the container's main process. A <code>HEALTHCHECK</code> adds a second signal: can the application actually do its job? Select each state and learn what Docker has — and has not — proved.</p>
+    <div class="ops-grid">
+      <div class="state-picker" role="group" aria-label="Container runtime states">
+        <button class="state-btn active" type="button" data-runtime-state="created">Created<small>The container exists, but PID 1 has not started.</small></button>
+        <button class="state-btn" type="button" data-runtime-state="running">Running<small>The main process is alive; readiness is unknown.</small></button>
+        <button class="state-btn" type="button" data-runtime-state="healthy">Healthy<small>The configured probe is succeeding.</small></button>
+        <button class="state-btn" type="button" data-runtime-state="unhealthy">Unhealthy<small>PID 1 lives, but repeated probes fail.</small></button>
+        <button class="state-btn" type="button" data-runtime-state="exited">Exited<small>The main process ended; its exit code is evidence.</small></button>
+      </div>
+      <div class="ops-panel" id="runtimeStatePanel" aria-live="polite"></div>
+    </div>
+    <div class="takeaway"><b>Keep this:</b><span><code>running</code> proves a process exists. <code>healthy</code> proves your chosen test is passing. Docker Engine records an unhealthy result, but a health check alone does not repair or restart the app — an operator or orchestrator needs a policy for that.</span></div>
+
+    <div class="diagnostic">
+      <div class="diagnostic-head"><div><span class="incident-label">Interactive incident desk</span><h3>Choose the first useful command</h3></div><b id="incidentScore">0 / 4 diagnosed</b></div>
+      <p class="micro">Do not guess at fixes. Start with the command that gives the strongest evidence for the symptom.</p>
+      <p class="incident-symptom" id="incidentSymptom"></p>
+      <div class="incident-options" id="incidentOptions" role="group" aria-label="Diagnostic command choices"></div>
+      <div class="incident-feedback" id="incidentFeedback" aria-live="polite"></div>
+      <div class="quiz-actions"><button class="btn small outline" id="incidentPrev" type="button">← Previous</button><button class="btn small" id="incidentNext" type="button">Next incident →</button></div>
+    </div>
+
+    <h3>Eight production guardrails — reveal the “why”</h3>
+    <p class="micro">These are not decorations. Each one closes a specific failure mode. Open every card, then compare the production-shaped Dockerfile below with Lab 3's teaching version.</p>
+    <div class="hardening-grid">
+      <button class="hardening-card" type="button"><b>1 · Trusted, supported base</b>Start from an official or verified image.<span class="reveal">Use a supported runtime line such as <code>node:24-alpine</code>. Tags can move; a digest pins exact bytes when reproducibility matters. Rebuild regularly so security fixes reach your image.</span></button>
+      <button class="hardening-card" type="button"><b>2 · Small build context</b>Send only required files.<span class="reveal"><code>.dockerignore</code> keeps <code>node_modules</code>, Git history, test output, local secrets, and other junk out of the build context and out of accidental <code>COPY . .</code> layers.</span></button>
+      <button class="hardening-card" type="button"><b>3 · Locked dependencies</b>Make rebuilds repeatable.<span class="reveal"><code>npm ci</code> installs the exact lockfile tree and fails when the lock and manifest disagree. <code>--omit=dev</code> leaves test-only tools out of the shipping image.</span></button>
+      <button class="hardening-card" type="button"><b>4 · Non-root process</b>Reduce what a compromise can do.<span class="reveal"><code>USER node</code> means the app does not run as root inside the container. Pair it with correctly owned files; “permission denied” is evidence to fix ownership, not a reason to return to root.</span></button>
+      <button class="hardening-card" type="button"><b>5 · Runtime secrets</b>Never bake credentials into layers.<span class="reveal">Do not put passwords in <code>ARG</code>, <code>ENV</code>, or copied files. Grant a Compose secret at runtime; the service reads it from <code>/run/secrets/NAME</code>. Keep the source file out of Git.</span></button>
+      <button class="hardening-card" type="button"><b>6 · Real health probe</b>Test the work, not just the process.<span class="reveal">Probe a cheap endpoint that proves the app can serve. Give startup-heavy apps a <code>start_period</code>. A probe that always returns 200 creates false confidence.</span></button>
+      <button class="hardening-card" type="button"><b>7 · CPU and memory limits</b>Contain noisy neighbors.<span class="reveal">Containers have no resource limits by default. For a local run, <code>--cpus=1 --memory=512m</code> sets ceilings; measure first so a realistic burst does not become an avoidable out-of-memory kill.</span></button>
+      <button class="hardening-card" type="button"><b>8 · Observable, graceful process</b>Make failure explain itself.<span class="reveal">Write logs to stdout/stderr, use exec-form <code>CMD</code> so the app receives stop signals, and inspect exit codes. Configure log rotation on long-lived hosts so logs cannot fill the disk.</span></button>
+    </div>
+
+    <div class="prod-files">
+      <div>
+        <h3>Production-shaped Dockerfile</h3>
+        <pre class="yaml"><span class="yc"># syntax=docker/dockerfile:1</span>
+<span class="yk">FROM</span> node:24-alpine
+<span class="yk">WORKDIR</span> /app
+
+<span class="yc"># Stable, cacheable dependency layer.</span>
+<span class="yk">COPY</span> package*.json ./
+<span class="yk">RUN</span> npm ci --omit=dev &amp;&amp; npm cache clean --force
+
+<span class="yc"># The official image already provides the unprivileged "node" user.</span>
+<span class="yk">COPY</span> --chown=node:node . .
+<span class="yk">ENV</span> NODE_ENV=production
+<span class="yk">USER</span> node
+
+<span class="yc"># Documentation only; publish with -p at runtime.</span>
+<span class="yk">EXPOSE</span> 3000
+<span class="yk">HEALTHCHECK</span> --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3000/health || exit 1
+<span class="yk">CMD</span> ["node", "server.js"]</pre>
+      </div>
+      <div>
+        <h3><code>.dockerignore</code></h3>
+        <pre class="yaml">node_modules
+npm-debug.log*
+.git
+.env*
+!.env.example
+secrets/
+coverage/
+*.md</pre>
+        <div class="keyrule"><strong>Build-context rule:</strong> if Docker never receives a secret, <code>COPY</code> cannot accidentally preserve it in a layer. Still use BuildKit secret mounts when a build step itself needs a credential.</div>
+        <div class="keyrule"><strong>Git is separate:</strong> <code>.dockerignore</code> does not affect version control. Add <code>.env*</code> and <code>secrets/</code> to <code>.gitignore</code> too, while explicitly keeping a safe <code>.env.example</code>.</div>
+        <div class="keyrule"><strong>Probe rule:</strong> the sample assumes your app implements <code>GET /health</code> and that the image contains <code>wget</code>. A health check is application-specific; copy the pattern, not the URL blindly.</div>
+      </div>
+    </div>
+
+    <details class="deep">
+      <summary>The five-command troubleshooting flight plan</summary>
+      <div class="deep-body">
+        <p><strong>1 · <code>docker ps -a</code></strong> — Does the container exist? Is it running, restarting, or exited? Read the status and port columns. <strong>2 · <code>docker logs --tail 100 web</code></strong> — What did PID 1 say before or during failure? Add <code>-f</code> to follow live output. <strong>3 · <code>docker inspect web</code></strong> — What configuration did Docker actually apply: command, environment, mounts, network, health history, and exit code? <strong>4 · <code>docker stats</code></strong> — Is CPU, memory, network, or I/O pressure the problem? <strong>5 · <code>docker exec web ...</code></strong> — Only after the container is running, test from inside its network and filesystem view.</p>
+        <p>The order matters: first establish lifecycle, then read the app's own evidence, then inspect configuration and resources. Jumping straight into a shell can hide the original failure and does not work on a stopped container or a minimal image with no shell.</p>
+      </div>
+    </details>
+
+    <div class="checkpoint" data-checkpoint="operate" data-correct="2" data-success="Exactly. Running and healthy are different signals; inspect the recorded health output and logs before changing configuration." data-retry="Choose the command that exposes the failed probe's evidence, not a command that blindly restarts or rebuilds.">
+      <h3>Operations checkpoint</h3>
+      <p><code>docker ps</code> says <code>Up 4 minutes (unhealthy)</code>. What is the best first move?</p>
+      <div class="checkpoint-options">
+        <button class="checkpoint-option" type="button" data-choice="0">Delete the image and rebuild with <code>--no-cache</code>.</button>
+        <button class="checkpoint-option" type="button" data-choice="1">Restart Docker Desktop until the label changes.</button>
+        <button class="checkpoint-option" type="button" data-choice="2">Inspect the container's health history and read its logs.</button>
+      </div>
+      <div class="checkpoint-feedback" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ================= LAB 7 · COMPOSE + CHALLENGE ================= -->
+  <section class="lab" id="challenge">
+    <div class="lab-head">
+      <div><span class="lab-kicker">Lab 7 · Many containers, then prove it</span><h2>Compose — and the challenge</h2><p>Describe the whole application, trace how its pieces communicate, then use a detailed challenge to prove what you can do.</p></div>
+      <span class="lab-number">07</span>
+    </div>
+    <p>Running one container is one command. Real apps are teams: a web service, a database, perhaps a cache or worker — each in its own container, each needing consistent configuration. <strong>Docker Compose</strong> records that application model in <code>compose.yaml</code>. A service can be built from your Dockerfile or pulled from a registry; Compose creates a private network, volumes, health dependencies, and explicitly granted secrets around them.</p>
+    <div class="compose-grid">
+      <pre class="yaml" aria-label="compose.yaml with a comment on each concept"><span class="yc"># compose.yaml — the application model</span>
+<span class="yk">services:</span>
+  <span class="yk">web:</span>               <span class="yc"># service 1: our Node app</span>
+    <span class="yk">build:</span> .          <span class="yc"># use the Dockerfile here</span>
+    <span class="yk">ports:</span>
+      - "3000:3000"  <span class="yc"># the only host-facing doorway</span>
+    <span class="yk">environment:</span>
+      <span class="yk">DATABASE_HOST:</span> db  <span class="yc"># service-name DNS, not localhost</span>
+      <span class="yk">DATABASE_NAME:</span> app
+      <span class="yk">DATABASE_USER:</span> app
+      <span class="yk">DATABASE_PASSWORD_FILE:</span> /run/secrets/db_password <span class="yc"># app reads it</span>
+    <span class="yk">secrets:</span>
+      - db_password
+    <span class="yk">depends_on:</span>
+      <span class="yk">db:</span>
+        <span class="yk">condition:</span> service_healthy  <span class="yc"># wait for readiness</span>
+
+  <span class="yk">db:</span>                <span class="yc"># service 2: Postgres</span>
+    <span class="yk">image:</span> postgres:16-alpine
+    <span class="yk">environment:</span>
+      <span class="yk">POSTGRES_DB:</span> app
+      <span class="yk">POSTGRES_USER:</span> app
+      <span class="yk">POSTGRES_PASSWORD_FILE:</span> /run/secrets/db_password
+    <span class="yk">volumes:</span>
+      - dbdata:/var/lib/postgresql/data
+    <span class="yk">secrets:</span>
+      - db_password
+    <span class="yk">healthcheck:</span>
+      <span class="yk">test:</span> ["CMD-SHELL", "pg_isready -U app -d app"]
+      <span class="yk">interval:</span> 5s
+      <span class="yk">timeout:</span> 3s
+      <span class="yk">retries:</span> 10
+
+<span class="yk">volumes:</span>
+  <span class="yk">dbdata:</span>            <span class="yc"># Docker-managed persistent storage</span>
+
+<span class="yk">secrets:</span>
+  <span class="yk">db_password:</span>
+    <span class="yk">file:</span> ./secrets/db_password.txt</pre>
+      <div class="compose-why">
+        <div><b>Validate before starting</b><code>docker compose config</code> parses the model, resolves variables, and shows the configuration Docker will use. Catch YAML and interpolation mistakes before startup noise hides them.</div>
+        <div><b>One command up</b><code>docker compose up -d --build</code> builds the web image, pulls Postgres, creates the volume and default network, starts db, waits for its health check, then creates web.</div>
+        <div><b>Names replace changing IPs</b>The web app connects to <code>db:5432</code>. Inside web, <code>localhost</code> means web itself — not your laptop and not Postgres.</div>
+        <div><b>Secrets are explicitly granted</b>Only services listing <code>db_password</code> receive the file at <code>/run/secrets/db_password</code>. Keep <code>secrets/</code> out of version control.</div>
+        <div><b>Down is intentionally conservative</b><code>docker compose down</code> removes containers and the network but keeps <code>dbdata</code>. <code>down -v</code> also deletes declared volumes and their data.</div>
+      </div>
+    </div>
+
+    <div class="network-lab">
+      <h3>🎛️ Trace the application</h3>
+      <p class="micro">Pick a path. Watch which pieces participate — and which ones stay private.</p>
+      <div class="route-controls" role="group" aria-label="Choose a Compose traffic path">
+        <button class="route-btn active" type="button" data-route="browser">Browser → web</button>
+        <button class="route-btn" type="button" data-route="service">Web → database</button>
+        <button class="route-btn" type="button" data-route="data">Database → volume</button>
+      </div>
+      <div class="network-map" aria-label="Compose application path">
+        <div class="network-node" id="routeNodeBrowser"><b>💻 Host browser</b><span><code>localhost:3000</code></span></div>
+        <div class="network-arrow" id="routeArrowOne">3000:3000<br>→</div>
+        <div class="network-node" id="routeNodeWeb"><b>🌐 Service: web</b><span>listens on 3000</span></div>
+        <div class="network-arrow" id="routeArrowTwo">db:5432<br>→</div>
+        <div class="network-node" id="routeNodeDb"><b>🗄️ Service: db</b><span>5432 + volume dbdata</span></div>
+      </div>
+      <div class="route-explain" id="routeExplain" aria-live="polite"></div>
+    </div>
+
+    <details class="deep">
+      <summary>What Compose does not do for you</summary>
+      <div class="deep-body">
+        <p><strong>It does not make every app ready-aware:</strong> short <code>depends_on: [db]</code> waits only until db is running, not until it accepts connections. The long form plus a health check closes that race. <strong>It does not back up volumes:</strong> persistence survives container replacement, but deletion, corruption, or disk failure still requires a backup plan. <strong>It does not turn one machine into a cluster:</strong> Compose is excellent for development, tests, demos, and many single-host deployments; multi-host scheduling and automatic rescheduling are orchestration concerns. <strong>It does not make a secret safe after you commit the source file:</strong> runtime mounting limits exposure to granted services, but you still protect and rotate the source credential.</p>
+      </div>
+    </details>
+
+    <h3 id="quizTitle">🏁 The 17-question challenge</h3>
+    <div class="quiz-top">
+      <span class="quiz-progress" id="quizProgress">Question 1 of 17</span>
+      <span class="score" id="quizScore"></span>
+    </div>
+    <p class="question" id="questionText"></p>
+    <div class="answers" id="answerList" role="group" aria-label="Answer choices"></div>
+    <div class="feedback" id="quizFeedback" aria-live="polite"><p id="feedbackText"></p></div>
+    <div class="quiz-actions">
+      <button class="btn outline small" id="prevQuestion" type="button">← Previous</button>
+      <button class="btn small" id="nextQuestion" type="button">Next →</button>
+    </div>
+    <div class="takeaway"><b>Where to go next:</b><span>Install <a href="https://docs.docker.com/desktop/" target="_blank" rel="noopener">Docker Desktop</a> (free for education) or open <a href="https://labs.play-with-docker.com/" target="_blank" rel="noopener">Play with Docker</a> and repeat Lab 2's missions on a real engine. Then package one of your own programs with Lab 4's walkthrough and use Lab 6's guardrails before you share the image.</span></div>
+    <details class="deep">
+      <summary>Glossary — the 12 words to keep straight</summary>
+      <div class="deep-body">
+        <p><strong>Image:</strong> immutable filesystem layers plus startup metadata. <strong>Container:</strong> an isolated process and its writable layer, created from an image. <strong>Registry:</strong> a service that stores and distributes images. <strong>Repository:</strong> a named collection of image versions in a registry. <strong>Tag:</strong> a human-friendly, mutable label such as <code>24-alpine</code>. <strong>Digest:</strong> a content-derived, immutable identifier beginning with <code>sha256:</code>.</p>
+        <p><strong>Build context:</strong> the files sent to the builder; <code>.</code> in <code>docker build .</code> selects the current directory. <strong>Layer:</strong> a cached filesystem or metadata change produced by a Dockerfile instruction. <strong>Volume:</strong> Docker-managed persistent storage outside a container's writable layer. <strong>Bind mount:</strong> a direct mapping of a host path into a container. <strong>Service:</strong> Compose's definition of a container role. <strong>Health check:</strong> a repeated command whose exit code says whether the app-level probe passes.</p>
+      </div>
+    </details>
+    <details class="deep">
+      <summary>Official references used by this field guide</summary>
+      <div class="deep-body">
+        <p>Use these when a flag or production decision matters; they are the maintained source of truth.</p>
+        <div class="source-list">
+          <a href="https://docs.docker.com/build/building/best-practices/" target="_blank" rel="noopener">Dockerfile building best practices ↗</a>
+          <a href="https://docs.docker.com/reference/dockerfile/" target="_blank" rel="noopener">Dockerfile instruction reference ↗</a>
+          <a href="https://docs.docker.com/engine/storage/" target="_blank" rel="noopener">Storage: writable layers, volumes, mounts ↗</a>
+          <a href="https://docs.docker.com/engine/network/" target="_blank" rel="noopener">Container networking overview ↗</a>
+          <a href="https://docs.docker.com/compose/how-tos/startup-order/" target="_blank" rel="noopener">Compose startup and readiness ↗</a>
+          <a href="https://docs.docker.com/engine/containers/resource_constraints/" target="_blank" rel="noopener">CPU and memory constraints ↗</a>
+          <a href="https://docs.docker.com/build/building/secrets/" target="_blank" rel="noopener">Build secrets and secret mounts ↗</a>
+          <a href="https://docs.docker.com/reference/compose-file/secrets/" target="_blank" rel="noopener">Compose secrets reference ↗</a>
+          <a href="https://docs.docker.com/subscription/desktop-license/" target="_blank" rel="noopener">Docker Desktop license terms ↗</a>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <nav class="footer-nav" aria-label="Footer navigation">
+    <a class="btn light" href="index.html">← Back to the course hub</a>
+    <a class="btn" href="week3-session7.html">Session 7: Virtualization ↗</a>
+  </nav>
+</main>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+
+/* ============ course progress + reusable learning helpers ============ */
+const COURSE_PROGRESS_KEY='docker-field-guide-progress-v2';
+const LAB_ORDER=[
+  {id:'picture',label:'Lab 1 · Big picture'},
+  {id:'terminal',label:'Lab 2 · Terminal missions'},
+  {id:'build',label:'Lab 3 · Build and share'},
+  {id:'fromscratch',label:'Lab 4 · From scratch'},
+  {id:'portsdata',label:'Lab 5 · Ports and data'},
+  {id:'operate',label:'Lab 6 · Operate'},
+  {id:'challenge',label:'Lab 7 · Compose and challenge'}
+];
+let completedLabs=new Set();
+try{
+  const saved=JSON.parse(localStorage.getItem(COURSE_PROGRESS_KEY)||'[]');
+  completedLabs=new Set(Array.isArray(saved)?saved.filter(id=>LAB_ORDER.some(l=>l.id===id)):[]);
+}catch(_err){completedLabs=new Set()}
+function persistProgress(){try{localStorage.setItem(COURSE_PROGRESS_KEY,JSON.stringify([...completedLabs]))}catch(_err){/* private/file contexts may deny storage */}}
+function renderLearningProgress(){
+  const total=LAB_ORDER.length,done=completedLabs.size;
+  $('#learningProgressText').textContent=done+' of '+total+' labs complete';
+  const next=LAB_ORDER.find(l=>!completedLabs.has(l.id));
+  $('#learningNextText').textContent=next?('Next: '+next.label):'All labs complete — revisit any section or try Docker for real.';
+  $('#learningBarFill').style.width=Math.round(done/total*100)+'%';
+  $('.learning-bar').setAttribute('aria-valuenow',done);
+  const continueLink=$('#continueLearning');
+  continueLink.href='#'+(next?next.id:'challenge');
+  continueLink.textContent=done===0?'Start Lab 1 →':next?('Continue with '+next.label+' →'):'Review the final challenge →';
+  LAB_ORDER.forEach(l=>{
+    const complete=completedLabs.has(l.id),rail=$('.progress-rail a[data-section="'+l.id+'"]'),section=$('#'+l.id);
+    if(rail)rail.classList.toggle('done',complete);
+    if(section){
+      const kicker=section.querySelector('.lab-kicker');let badge=kicker&&kicker.querySelector('.lab-complete');
+      if(complete&&!badge){badge=document.createElement('span');badge.className='lab-complete';badge.textContent='✓ complete';kicker.appendChild(badge)}
+      if(!complete&&badge)badge.remove();
+    }
+  });
+}
+function markLabComplete(id){
+  if(!LAB_ORDER.some(l=>l.id===id)||completedLabs.has(id))return;
+  completedLabs.add(id);persistProgress();renderLearningProgress();
+}
+$('#resetLearning').addEventListener('click',()=>{
+  if(confirm('Reset the saved completion marks for all seven Docker labs?')){try{localStorage.removeItem(COURSE_PROGRESS_KEY)}catch(_err){}location.reload()}
+});
+
+$$('.checkpoint').forEach(cp=>{
+  const buttons=[...cp.querySelectorAll('.checkpoint-option')],feedback=cp.querySelector('.checkpoint-feedback'),correct=Number(cp.dataset.correct);
+  buttons.forEach(button=>button.addEventListener('click',()=>{
+    const picked=Number(button.dataset.choice),isCorrect=picked===correct;
+    button.classList.add(isCorrect?'correct':'wrong');
+    feedback.classList.add('show');feedback.textContent=isCorrect?'✔ '+cp.dataset.success:'✘ '+cp.dataset.retry;
+    if(isCorrect){buttons.forEach((b,i)=>{b.disabled=true;if(i===correct)b.classList.add('correct')});markLabComplete(cp.dataset.checkpoint)}
+    else button.disabled=true;
+  }));
+});
+
+$$('pre.yaml').forEach(pre=>{
+  const wrap=document.createElement('div');wrap.className='code-sample';
+  pre.parentNode.insertBefore(wrap,pre);wrap.appendChild(pre);
+  const button=document.createElement('button');button.type='button';button.className='copy-code';button.textContent='Copy';button.setAttribute('aria-label','Copy code sample');wrap.appendChild(button);
+  button.addEventListener('click',async()=>{
+    const value=pre.textContent.replace(/^\n|\n$/g,'');let copied=false;
+    try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value);copied=true}}catch(_err){}
+    if(!copied){const area=document.createElement('textarea');area.value=value;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();try{copied=document.execCommand('copy')}catch(_err){}area.remove()}
+    button.textContent=copied?'Copied ✓':'Select + copy';button.classList.toggle('copied',copied);
+    setTimeout(()=>{button.textContent='Copy';button.classList.remove('copied')},1600);
+  });
+});
+renderLearningProgress();
+
+/* ============ LAB 1 · spawner ============ */
+const spawnNames=['brave_turing','sleepy_curie','festive_hopper','bold_lovelace','zen_torvalds','eager_hamilton','quirky_ritchie','calm_liskov'];
+let spawnCtrs=[],spawnTotal=0;
+function hex12(){let s='';for(let i=0;i<12;i++)s+='0123456789abcdef'[Math.floor(Math.random()*16)];return s}
+function hexN(n){let s='';while(s.length<n)s+=hex12();return s.slice(0,n)}
+function paintSpawner(){
+  const grid=$('#ctrGrid');
+  grid.innerHTML='';
+  if(!spawnCtrs.length){const e=document.createElement('span');e.className='spawn-empty';e.textContent='No containers yet — press ▶ docker run nginx a few times.';grid.appendChild(e);}
+  spawnCtrs.forEach(c=>{
+    const card=document.createElement('div');card.className='ctr-card'+(c.up?'':' stopped');
+    const b=document.createElement('b');b.textContent=c.name+' · '+c.id.slice(0,12);card.appendChild(b);
+    const st=document.createElement('span');st.className='state '+(c.up?'up':'down');st.textContent=c.up?'Up (running)':'Exited (stopped)';card.appendChild(st);
+    const row=document.createElement('div');row.className='row';
+    const tog=document.createElement('button');tog.type='button';tog.textContent=c.up?'⏹ stop':'▶ start';tog.setAttribute('aria-label',(c.up?'stop container ':'start container ')+c.name);tog.addEventListener('click',()=>{c.up=!c.up;paintSpawner()});row.appendChild(tog);
+    const rm=document.createElement('button');rm.type='button';rm.textContent='🗑 rm';rm.setAttribute('aria-label','remove container '+c.name);rm.addEventListener('click',()=>{spawnCtrs=spawnCtrs.filter(x=>x!==c);paintSpawner()});row.appendChild(rm);
+    card.appendChild(row);grid.appendChild(card);
+  });
+  $('#statImages').textContent='1';
+  $('#statTotal').textContent=spawnTotal;
+  $('#statRunning').textContent=spawnCtrs.filter(c=>c.up).length;
+}
+$('#spawnBtn').addEventListener('click',()=>{
+  if(spawnCtrs.length>=8){$('#spawnNote').textContent='Eight is plenty for the point — the image STILL hasn\'t changed. Remove a few, or press Reset.';return}
+  const used=new Set(spawnCtrs.map(c=>c.name));
+  spawnCtrs.push({id:hex12(),name:spawnNames.find(n=>!used.has(n)),up:true});spawnTotal++;paintSpawner();
+});
+$('#spawnReset').addEventListener('click',()=>{spawnCtrs=[];spawnTotal=0;$('#spawnNote').textContent='Each press creates a new, separate container from the same image — its own ID, its own name, its own separate set of files. Stop or remove any of them; the image count never moves.';paintSpawner()});
+paintSpawner();
+
+/* ============ LAB 1 · which-OS widget ============ */
+const OS_SCEN={
+  mac:'✅ It runs. But here is the secret: the walls trick needs a Linux boss program (kernel), and a Mac does not have one. So Docker Desktop quietly starts one tiny, invisible Linux helper machine, and every container you run lives inside it. You never see the helper — you just type docker run.',
+  win:'✅ It runs — same secret. Windows does not have a Linux kernel either, so Docker Desktop uses a hidden Linux helper too (Windows\u2019 built-in one is called WSL2). Your container never notices; it just sees Linux walls around it.',
+  linux:'✅ It runs with no tricks at all. A Linux server already has a Linux kernel, so containers run directly on it — no helper machine, nothing extra. This is why nearly the entire cloud runs containers on Linux.',
+  wincont:'❌ This is the hard kernel limit. A container borrows the kernel of the machine it runs on — and a Linux kernel does not implement Windows system calls. A Windows container needs a compatible Windows kernel; Docker cannot put that kernel inside an ordinary container.',
+  arch:'🧩 The name can travel, but the bytes must match the CPU. Most official images are multi-platform: nginx:latest is a manifest that points to one amd64 build for Intel/AMD machines and another arm64 build for Apple Silicon and ARM servers. Docker pulls the matching variant automatically. A single-architecture image needs emulation or a rebuild on the other architecture — slower or sometimes impossible.'
+};
+function paintOS(k){
+  $$('.choice[data-os]').forEach(x=>{x.classList.toggle('active',x.dataset.os===k);x.setAttribute('aria-pressed',x.dataset.os===k?'true':'false')});
+  $('#osPanel').textContent=OS_SCEN[k];
+}
+$$('.choice[data-os]').forEach(b=>b.addEventListener('click',()=>paintOS(b.dataset.os)));
+paintOS('mac');
+
+/* ============ LAB 2 · terminal simulator ============ */
+const KNOWN_IMAGES={
+  'hello-world':{size:'13.3kB',id:'d2c94e258dcb'},
+  'nginx':{size:'187MB',id:'a72860cb95fd'},
+  'alpine':{size:'7.8MB',id:'05455a08881e'},
+  'ubuntu':{size:'78.1MB',id:'2b7cc08dcdbb'},
+  'node':{size:'1.1GB',id:'8f2b8bff2b4a'},
+  'redis':{size:'117MB',id:'170a1e90f843'},
+  'postgres':{size:'432MB',id:'07f4de37bc60'}
+};
+const T={images:new Map(),containers:new Map(),history:[]};
+const termLog=$('#termLog'),termInput=$('#termInput');
+let cmdHistory=[],histIdx=-1;
+function tprint(text,cls){
+  const pre=document.createElement('pre');if(cls)pre.className=cls;pre.textContent=text;
+  termLog.appendChild(pre);termLog.scrollTop=termLog.scrollHeight;
+}
+function stripTag(img){return img.split(':')[0]}
+function findCtr(ref){
+  if(!ref)return null;
+  if(T.containers.has(ref))return T.containers.get(ref);
+  for(const c of T.containers.values())if(c.id.startsWith(ref))return c;
+  return null;
+}
+function pad(s,n){s=String(s);return s.length>=n?s+'  ':s+' '.repeat(n-s.length)}
+function doPull(img,quiet){
+  const name=stripTag(img),tag=img.includes(':')?img.split(':')[1]:'latest';
+  if(!KNOWN_IMAGES[name]){
+    tprint("Error response from daemon: pull access denied for "+name+", repository does not exist or may require 'docker login'",'err');
+    tprint('(simulator note: this sandbox knows these images: '+Object.keys(KNOWN_IMAGES).join(', ')+')','sys');
+    return false;
+  }
+  if(T.images.has(name)){
+    const have=T.images.get(name);
+    if(have.tag===tag){
+      tprint(tag+': Pulling from library/'+name+'\nDigest: sha256:'+hexN(64)+'\nStatus: Image is up to date for '+name+':'+tag);
+    }else{
+      tprint(tag+': Pulling from library/'+name+'\n'+hex12()+': Pull complete\nDigest: sha256:'+hexN(64)+'\nStatus: Downloaded newer image for '+name+':'+tag);
+      have.tag=tag;
+      tprint('(simulator note: this sandbox keeps one tag per image, so '+name+' now shows tag '+tag+' — real Docker would list both tags side by side.)','sys');
+    }
+    return true;
+  }
+  if(!quiet)tprint(tag+': Pulling from library/'+name);
+  else tprint("Unable to find image '"+name+':'+tag+"' locally\n"+tag+': Pulling from library/'+name);
+  tprint(hex12()+': Pull complete\n'+hex12()+': Pull complete\nDigest: sha256:'+hexN(64)+'\nStatus: Downloaded newer image for '+name+':'+tag);
+  T.images.set(name,{tag:tag,id:KNOWN_IMAGES[name].id,size:KNOWN_IMAGES[name].size,created:'2 weeks ago'});
+  return true;
+}
+const HELLO_MSG='Hello from Docker!\nThis message shows that your installation appears to be working correctly.\n\nTo generate this message, Docker took the following steps:\n 1. The Docker client contacted the Docker daemon.\n 2. The daemon pulled the "hello-world" image from Docker Hub.\n 3. The daemon created a new container from that image, which runs the\n    executable that produces this output.\n 4. The daemon streamed that output to the Docker client, which sent it\n    to your terminal.';
+function nginxLogs(){return '/docker-entrypoint.sh: Configuration complete; ready for start up\n192.168.65.1 - - [12/Mar/2026:14:02:11 +0000] "GET / HTTP/1.1" 200 615 "-" "Mozilla/5.0"\n192.168.65.1 - - [12/Mar/2026:14:02:12 +0000] "GET /favicon.ico HTTP/1.1" 404 153 "-" "Mozilla/5.0"'}
+function doRun(args){
+  let detached=false,name=null,port=null,vol=null,img=null,extra=[];
+  if(args.includes('--help')){
+    tprint('Usage:  docker run [OPTIONS] IMAGE [COMMAND] [ARG...]\n\nCommon options:\n  -d, --detach     Run container in background and print container ID\n      --name       Assign a name to the container\n  -p, --publish    Publish a port as HOST:CONTAINER (e.g. -p 8080:80)\n  -v, --volume     Attach a volume as NAME:PATH (e.g. -v notes:/app/data)\n  -it              Interactive terminal (accepted here, shallowly simulated)');
+    return;
+  }
+  for(let i=0;i<args.length;i++){
+    const a=args[i];
+    if(img){extra.push(a);continue} /* real docker: everything after IMAGE is the container's command */
+    if(a==='-d'||a==='--detach')detached=true;
+    else if(a==='-it'||a==='-i'||a==='-t'){/* accepted quietly */}
+    else if(/^-[ditp]+$/.test(a)&&a.includes('p')){ /* bundled short flags ending in p, e.g. -dp 8080:80 */
+      if(a.includes('d'))detached=true;port=args[++i];
+    }
+    else if(/^-[dit]+$/.test(a)){if(a.includes('d'))detached=true}
+    else if(a==='--name'){name=args[++i]}
+    else if(a.startsWith('--name='))name=a.slice(7);
+    else if(a==='-p'||a==='--publish'){port=args[++i]}
+    else if(a==='-v'||a==='--volume'){vol=args[++i]}
+    else if(a.startsWith('-')){tprint("docker: unknown flag: "+a+"\nSee 'docker run --help'",'err');return}
+    else img=a;
+  }
+  if(!img){tprint('"docker run" requires at least 1 argument.\nSee \'docker run --help\'','err');return}
+  if(extra.length&&extra[0].startsWith('-')){
+    tprint('docker: Error response from daemon: failed to create task for container: exec: "'+extra[0]+'": executable file not found in $PATH','err');
+    tprint('(the classic mistake: flags must come BEFORE the image name — docker treats everything AFTER the image as the command to run inside the container. Try: docker run '+extra.join(' ')+' '+img+')','sys');
+    return;
+  }
+  const iname=stripTag(img);
+  if(port&&!/^\d+:\d+$/.test(port)){
+    tprint('(simulator note: real Docker also accepts -p 80 — random host port — and -p 127.0.0.1:8080:80 — specific interface. This sandbox supports only the form you\'ll use 99% of the time: -p HOST:CONTAINER, e.g. -p 8080:80.)','sys');
+    return;
+  }
+  if(name&&T.containers.has(name)){
+    tprint('docker: Error response from daemon: Conflict. The container name "/'+name+'" is already in use. You have to remove (or rename) that container to be able to reuse that name.','err');return;
+  }
+  if(port){
+    const host=port.split(':')[0];
+    for(const c of T.containers.values())if(c.up&&c.port&&c.port.split(':')[0]===host){
+      tprint('docker: Error response from daemon: Bind for 0.0.0.0:'+host+' failed: port is already allocated','err');return;
+    }
+  }
+  if(!T.images.has(iname)){if(!doPull(img,true))return}
+  const id=hex12(),cname=name||spawnNames[Math.floor(Math.random()*spawnNames.length)]+'_'+id.slice(0,4);
+  const ctr={id:id,name:cname,image:iname,up:true,port:port,vol:vol,cmd:extra.join(' ')};
+  T.containers.set(cname,ctr);
+  T.history.push({cmd:'run',image:iname,name:cname,detached:detached,port:port});
+  if(iname==='hello-world'){ctr.up=false;ctr.exit=0;ctr.out=HELLO_MSG;tprint(HELLO_MSG);return}
+  if(iname==='alpine'||iname==='ubuntu'){
+    if(extra.length&&extra[0]==='echo')ctr.out=extra.slice(1).join(' ').replace(/^"|"$/g,'');
+    else if(extra.length)ctr.out='(simulated) ran `'+extra.join(' ')+'` inside '+iname;
+    else ctr.out='';
+    ctr.up=false;ctr.exit=0;
+    if(detached){tprint(id+hexN(52));if(ctr.out)tprint('(detached: the output went to the container\'s log — read it with docker logs '+cname+')','sys')}
+    else if(ctr.out)tprint(ctr.out);
+    if(!extra.length)tprint('(the container stopped right away: '+iname+'\'s starting program is a little command prompt, and with nobody connected to it, it had nothing to do — a container lives exactly as long as its main program. Check docker ps -a.)','sys');
+    return;
+  }
+  if(detached){tprint(id+hexN(52))}
+  else{
+    tprint(iname==='nginx'?'/docker-entrypoint.sh: Configuration complete; ready for start up':'(container started in the foreground)');
+    tprint('(simulator note: in real life this container now owns your terminal until you press Ctrl+C — most people add -d instead. We auto-detached for you. To redo it properly: docker rm -f '+cname+', then rerun with -d.)','sys');
+  }
+}
+function psTable(all){
+  const rows=[...T.containers.values()].filter(c=>all||c.up);
+  let out=pad('CONTAINER ID',15)+pad('IMAGE',13)+pad('COMMAND',22)+pad('STATUS',25)+pad('PORTS',22)+'NAMES';
+  rows.forEach(c=>{
+    const cmd=c.image==='nginx'?'"/docker-entrypoint.…"':c.image==='hello-world'?'"/hello"':'"'+(c.cmd||'entrypoint')+'"';
+    const status=c.up?'Up 2 minutes':'Exited ('+(c.exit||0)+') 1 minute ago';
+    const ports=c.up&&c.port?('0.0.0.0:'+c.port.split(':')[0]+'->'+c.port.split(':')[1]+'/tcp'):'';
+    out+='\n'+pad(c.id.slice(0,12),15)+pad(c.image,13)+pad(cmd,22)+pad(status,25)+pad(ports,22)+c.name;
+  });
+  tprint(out);
+}
+function runDocker(args){
+  const sub=args[0];
+  switch(sub){
+    case undefined:case '--help':case 'help':
+      tprint('Usage:  docker COMMAND\n\nCommands this simulator supports:\n  pull      Download an image from a registry\n  run       Create and run a new container from an image\n  images    List images\n  ps        List containers (-a for all)\n  logs      Fetch the logs of a container\n  inspect   Show detailed container state and configuration\n  port      Show published port mappings\n  stats     Show a one-shot resource snapshot\n  exec      Execute a command in a running container\n  stop      Stop a running container\n  start     Start a stopped container\n  restart   Restart a container\n  rm        Remove a container (-f to force)\n  rmi       Remove an image\n  version   Show the Docker version');break;
+    case 'version':
+      tprint('Client: Docker Engine (classroom simulator)\nServer: Docker Engine (classroom simulator)\nThis safe in-browser model teaches stable CLI behavior; it does not touch a real daemon.');break;
+    case 'pull':
+      if(!args[1])tprint('"docker pull" requires exactly 1 argument.','err');
+      else{if(doPull(args[1],false))T.history.push({cmd:'pull',image:stripTag(args[1])})}
+      break;
+    case 'images':{
+      let out=pad('REPOSITORY',15)+pad('TAG',9)+pad('IMAGE ID',15)+pad('CREATED',15)+'SIZE';
+      T.images.forEach((im,name)=>{out+='\n'+pad(name,15)+pad(im.tag,9)+pad(im.id,15)+pad(im.created,15)+im.size});
+      tprint(out);T.history.push({cmd:'images'});break;}
+    case 'run':doRun(args.slice(1));break;
+    case 'ps':{
+      const all=args.includes('-a')||args.includes('--all');
+      psTable(all);
+      const rows=[...T.containers.values()];
+      T.history.push({cmd:'ps',all:all,hadRunning:rows.some(c=>c.up),hadExited:rows.some(c=>!c.up)});break;}
+    case 'logs':{
+      const c=findCtr(args[1]||'');
+      if(!c){tprint('Error response from daemon: No such container: '+(args[1]||''),'err');break}
+      if(c.image==='nginx')tprint(nginxLogs());
+      else if(c.out)tprint(c.out);
+      else if(c.image==='redis')tprint('1:M 12 Mar 2026 14:02:11.000 * Ready to accept connections tcp');
+      else tprint('(no output logged yet)');
+      T.history.push({cmd:'logs',name:c.name});break;}
+    case 'inspect':{
+      const c=findCtr(args.filter(a=>!a.startsWith('-'))[1]||'');
+      if(!c){tprint('Error: No such object: '+(args[1]||''),'err');break}
+      const view=[{Id:c.id+hexN(52),Name:'/'+c.name,Config:{Image:c.image,Cmd:c.cmd?c.cmd.split(' '):null},State:{Status:c.up?'running':'exited',Running:c.up,ExitCode:c.up?0:(c.exit||0)},HostConfig:{PortBindings:c.port?{[c.port.split(':')[1]+'/tcp']:[{HostIp:'',HostPort:c.port.split(':')[0]}]}:{}},Mounts:c.vol?[{Type:'volume',Name:c.vol.split(':')[0],Destination:c.vol.split(':')[1]}]:[]}];
+      tprint(JSON.stringify(view,null,2));T.history.push({cmd:'inspect',name:c.name});break;}
+    case 'port':{
+      const c=findCtr(args[1]||'');
+      if(!c){tprint('Error: No such container: '+(args[1]||''),'err');break}
+      if(c.port)tprint(c.port.split(':')[1]+'/tcp -> 0.0.0.0:'+c.port.split(':')[0]+'\n'+c.port.split(':')[1]+'/tcp -> [::]:'+c.port.split(':')[0]);
+      else tprint('(no published ports)','sys');
+      T.history.push({cmd:'port',name:c.name});break;}
+    case 'stats':{
+      const running=[...T.containers.values()].filter(c=>c.up);
+      let out=pad('CONTAINER ID',15)+pad('NAME',18)+pad('CPU %',9)+pad('MEM USAGE / LIMIT',25)+pad('NET I/O',18)+'BLOCK I/O';
+      running.forEach((c,i)=>{out+='\n'+pad(c.id.slice(0,12),15)+pad(c.name,18)+pad((0.12+i*0.07).toFixed(2)+'%',9)+pad((8.4+i*2.1).toFixed(1)+'MiB / 512MiB',25)+pad((1.2+i*.4).toFixed(1)+'kB / 648B',18)+'0B / 0B'});
+      tprint(out);tprint('(simulator note: real docker stats streams live until Ctrl+C; this sandbox prints one snapshot.)','sys');T.history.push({cmd:'stats'});break;}
+    case 'exec':{
+      const a=args.slice(1).filter(x=>x!=='-it'&&x!=='-i'&&x!=='-t');
+      const c=findCtr(a[0]||'');
+      if(!c){tprint('Error response from daemon: No such container: '+(a[0]||''),'err');break}
+      if(!c.up){tprint('Error response from daemon: container '+c.id.slice(0,12)+' is not running','err');break}
+      const inner=a.slice(1).join(' ');
+      if(inner==='ls')tprint('bin   dev  docker-entrypoint.sh  home  media  opt   root  sbin  sys  usr\nboot  etc  docker-entrypoint.d   lib   mnt    proc  run   srv  tmp  var');
+      else if(inner==='hostname')tprint(c.id.slice(0,12));
+      else if(inner==='cat /etc/os-release'){
+        if(c.image==='alpine')tprint('NAME="Alpine Linux"\nID=alpine\nVERSION_ID=3.20.3\nPRETTY_NAME="Alpine Linux v3.20"');
+        else if(c.image==='ubuntu')tprint('PRETTY_NAME="Ubuntu 24.04.2 LTS"\nNAME="Ubuntu"\nVERSION_ID="24.04"');
+        else tprint('PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"\nNAME="Debian GNU/Linux"\nVERSION_ID="12"');
+      }
+      else if(inner==='sh'||inner==='bash'||inner==='/bin/sh')tprint('(simulator note: a real interactive shell would open here — this sandbox supports: ls, hostname, cat /etc/os-release)','sys');
+      else if(!inner)tprint('"docker exec" requires at least 2 arguments.','err');
+      else tprint('(simulated exec) supported commands here: ls, hostname, cat /etc/os-release','sys');
+      T.history.push({cmd:'exec',name:c.name});break;}
+    case 'stop':{
+      const c=findCtr(args[1]||'');
+      if(!c){tprint('Error response from daemon: No such container: '+(args[1]||''),'err');break}
+      c.up=false;c.exit=0;tprint(c.name);T.history.push({cmd:'stop',name:c.name});break;}
+    case 'start':{
+      const c=findCtr(args[1]||'');
+      if(!c){tprint('Error response from daemon: No such container: '+(args[1]||''),'err');break}
+      c.up=true;tprint(c.name);T.history.push({cmd:'start',name:c.name});break;}
+    case 'restart':{
+      const c=findCtr(args[1]||'');
+      if(!c){tprint('Error response from daemon: No such container: '+(args[1]||''),'err');break}
+      c.up=true;tprint(c.name);T.history.push({cmd:'restart',name:c.name});break;}
+    case 'rm':{
+      const force=args.includes('-f')||args.includes('--force');
+      const ref=args.filter(x=>x!=='rm'&&!x.startsWith('-'))[0];
+      const c=findCtr(ref||'');
+      if(!c){tprint('Error response from daemon: No such container: '+(ref||''),'err');break}
+      if(c.up&&!force){tprint('Error response from daemon: cannot remove container "/'+c.name+'": container is running: stop the container before removing or force remove','err');break}
+      T.containers.delete(c.name);tprint(c.name);T.history.push({cmd:'rm',name:c.name});break;}
+    case 'rmi':{
+      const iname=stripTag(args[1]||'');
+      if(!T.images.has(iname)){tprint('Error response from daemon: No such image: '+(args[1]||''),'err');break}
+      const users=[...T.containers.values()].filter(c=>c.image===iname);
+      if(users.length){tprint('Error response from daemon: conflict: unable to remove repository reference "'+iname+'" (must force) - container '+users[0].id.slice(0,12)+' is using its referenced image\n(hint: remove that container first with docker rm)','err');break}
+      tprint('Untagged: '+iname+':latest\nDeleted: sha256:'+hexN(64));
+      T.images.delete(iname);T.history.push({cmd:'rmi',image:iname});break;}
+    case 'compose':
+      tprint('(simulator note: Compose reads compose.yaml plus project files from disk, so it is taught visually in Lab 7. On a real engine, begin with docker compose config, then docker compose up -d --build.)','sys');break;
+    default:
+      tprint("docker: '"+sub+"' is not a docker command.\nSee 'docker --help'",'err');
+  }
+}
+const MISSIONS=[
+  {text:'Run your very first container',hint:'docker run hello-world',test:()=>T.history.some(h=>h.cmd==='run'&&h.image==='hello-world')},
+  {text:'Download the nginx image ahead of time',hint:'docker pull nginx',test:()=>T.history.some(h=>h.cmd==='pull'&&h.image==='nginx')},
+  {text:'Start nginx in the background, named web, publishing port 8080 → 80',hint:'docker run -d -p 8080:80 --name web nginx',test:()=>T.history.some(h=>h.cmd==='run'&&h.image==='nginx'&&h.name==='web'&&h.detached&&h.port==='8080:80')},
+  {text:'List the running containers',hint:'docker ps',test:()=>T.history.some(h=>h.cmd==='ps'&&!h.all&&h.hadRunning)},
+  {text:"Read a container's logs",hint:'docker logs web',test:()=>T.history.some(h=>h.cmd==='logs')},
+  {text:'Run a command inside the running container',hint:'docker exec web ls',test:()=>T.history.some(h=>h.cmd==='exec')},
+  {text:'Stop web',hint:'docker stop web',test:()=>T.history.some(h=>h.cmd==='stop'&&h.name==='web')},
+  {text:'Prove a stopped container still exists',hint:'docker ps -a',test:()=>T.history.some(h=>h.cmd==='ps'&&h.all&&h.hadExited)},
+  {text:'Start web back up — same container, no new one',hint:'docker start web',test:()=>T.history.some(h=>h.cmd==='start'&&h.name==='web')},
+  {text:'Clean up: remove web, then remove the nginx image',hint:'docker rm -f web · then · docker rmi nginx',test:()=>T.history.some(h=>h.cmd==='rm'&&h.name==='web')&&T.history.some(h=>h.cmd==='rmi'&&h.image==='nginx')}
+];
+const MISSION_COMMANDS=['docker run hello-world','docker pull nginx','docker run -d -p 8080:80 --name web nginx','docker ps','docker logs web','docker exec web ls','docker stop web','docker ps -a','docker start web','docker rm -f web'];
+const missionDone=MISSIONS.map(()=>false);
+function nextMissionCommand(){
+  const next=missionDone.findIndex(done=>!done);
+  if(next<0)return '';
+  return next===9&&T.history.some(h=>h.cmd==='rm'&&h.name==='web')?'docker rmi nginx':MISSION_COMMANDS[next];
+}
+function paintMissions(){
+  const list=$('#missionList');list.innerHTML='';
+  MISSIONS.forEach((m,i)=>{
+    const d=document.createElement('div');d.className='mission'+(missionDone[i]?' done':'');
+    const mk=document.createElement('span');mk.className='mk';mk.textContent=missionDone[i]?'✓':(i+1);d.appendChild(mk);
+    const body=document.createElement('span');
+    const b=document.createElement('b');b.textContent=m.text;body.appendChild(b);
+    const c=document.createElement('code');c.textContent=m.hint;body.appendChild(c);
+    d.appendChild(body);list.appendChild(d);
+  });
+  $('#missionProg').textContent=missionDone.filter(Boolean).length+' / '+MISSIONS.length+' complete'+(missionDone.every(Boolean)?' — 🎉 you can drive Docker!':'');
+  $('#fillMissionHint').disabled=missionDone.every(Boolean);
+  $('#fillMissionHint').textContent=missionDone.every(Boolean)?'All missions complete ✓':'Run the next mission command →';
+}
+function checkMissions(){MISSIONS.forEach((m,i)=>{if(!missionDone[i]&&m.test())missionDone[i]=true});paintMissions();if(missionDone.every(Boolean))markLabComplete('terminal')}
+function execLine(line){
+  tprint('student@cloudlab:~$ '+line,'cmd');
+  const args=line.trim().split(/\s+/).filter(Boolean);
+  if(!args.length)return;
+  if(args[0]==='clear'){termLog.innerHTML='';return}
+  if(args[0]==='help'){tprint('This is a Docker simulator. Try: docker --help  ·  docker run hello-world  ·  clear','sys');return}
+  if(args[0]!=='docker'){tprint('(simulated shell) Only docker commands, clear, and help work here — this terminal teaches Docker, not all of Linux.','sys');return}
+  runDocker(args.slice(1));
+  checkMissions();
+}
+termInput.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){const v=termInput.value;if(v.trim()){cmdHistory.push(v);histIdx=cmdHistory.length}termInput.value='';execLine(v)}
+  else if(e.key==='ArrowUp'){e.preventDefault();if(histIdx>0){histIdx--;termInput.value=cmdHistory[histIdx]}}
+  else if(e.key==='ArrowDown'){if(histIdx<cmdHistory.length-1){histIdx++;termInput.value=cmdHistory[histIdx]}else if(histIdx===cmdHistory.length-1){histIdx=cmdHistory.length;termInput.value=''}}
+});
+$('#fillMissionHint').addEventListener('click',()=>{
+  const command=nextMissionCommand();if(!command)return;
+  cmdHistory.push(command);histIdx=cmdHistory.length;
+  termInput.value=command;
+  execLine(command);
+  termInput.value='';termInput.focus();
+});
+$('#termReset').addEventListener('click',()=>{
+  T.images.clear();T.containers.clear();T.history.length=0;cmdHistory=[];histIdx=-1;missionDone.fill(false);termLog.innerHTML='';termInput.value='';
+  tprint('Terminal reset. Mission 1 is waiting: type  docker run hello-world  and press Enter.','sys');paintMissions();termInput.focus();
+});
+tprint('Welcome! This terminal is a safe Docker simulator — real commands, real-looking output, zero risk.','sys');
+tprint('Mission 1 is waiting: type  docker run hello-world  and press Enter.','sys');
+paintMissions();
+
+/* ============ LAB 3 · dockerfile explainer ============ */
+const DLINES=[
+  {tag:'Line 1 · FROM',title:'Start from someone else\u2019s finished recipe',body:'Every recipe starts by borrowing a finished one. node:24-alpine means: start with a small Linux user-space that already has the current Node.js LTS installed, maintained by the official Node image team. Later COPY and RUN instructions add filesystem layers; metadata instructions add configuration, and the builder caches each step.',gotcha:'Gotcha: \u201calpine\u201d versions are small, but they use musl instead of glibc and omit familiar tools. Some native libraries expect glibc; if one fails, try a supported slim Debian variant rather than randomly adding packages.'},
+  {tag:'Line 2 · WORKDIR',title:'Pick the folder to work in',body:'Choose which folder inside the box we will work in — /app — and create it if it is not there yet. Every later line happens inside this folder. Without it, files land scattered all over the place.',gotcha:'Gotcha: use WORKDIR, not \u201cRUN cd /app\u201d — every line starts fresh and forgets where the last line was standing.'},
+  {tag:'Line 3 · COPY (the shopping list only)',title:'Copy ONLY the list of libraries first',body:'Copy just the shopping list of libraries the app needs (package.json — the * also grabs package-lock.json). Nothing else yet — on purpose! This thin layer only changes when the shopping list changes, and that is rare.',gotcha:'This little line is the secret behind the speed demo below. Copying everything here instead is the most common Dockerfile mistake on the internet.'},
+  {tag:'Line 4 · RUN',title:'Install exactly the locked production libraries',body:'npm ci reads package-lock.json, installs that exact dependency tree, leaves development-only packages out, and freezes the result into a layer. This is the slow step. If the lockfile does not change, Docker can reuse the whole layer.',gotcha:'Gotcha: RUN happens while BUILDING the image. If you want something to happen every time a container STARTS, that is CMD\u2019s job, not RUN\u2019s. npm ci also requires a lockfile — a useful reproducibility guardrail.'},
+  {tag:'Line 5 · COPY (everything else)',title:'NOW copy the actual program in',body:'Copy the rest of your project (server.js and friends) into /app. It sits BELOW the shopping layers on purpose: code changes every day, so the slow stuff must sit above it, safe from rebuilds.',gotcha:'Gotcha: add a .dockerignore file (works like .gitignore) so junk files and secrets never get copied into the box by this line.'},
+  {tag:'Line 6 · EXPOSE',title:'A sticky note about the port',body:'This line is a sticky note that says \u201cthe app inside listens on door 3000.\u201d Surprise: it is ONLY a note — it does not open anything. People and tools read it to know which -p to use.',gotcha:'Gotcha: EXPOSE alone never makes localhost work. Opening the door is always the -p HOST:CONTAINER flag when you run the container — Lab 5 is entirely about this.'},
+  {tag:'Line 7 · CMD',title:'Write down what to run LATER',body:'The last line writes down what every future container should run the moment it starts: node server.js. It does nothing during the build — it is instructions for later. One image can start fifty containers; each one begins life running this line.',gotcha:'Gotcha: a container lives exactly as long as this program. When node server.js stops, the container stops — just like hello-world stopped the moment its message was printed.'}
+];
+let dsel=0;
+function paintDline(){
+  $$('.dline').forEach((b,i)=>b.classList.toggle('selected',i===dsel));
+  const d=DLINES[dsel],p=$('#dlinePanel');
+  p.innerHTML='';
+  const tag=document.createElement('span');tag.className='panel-tag';tag.textContent=d.tag;p.appendChild(tag);
+  const h=document.createElement('h3');h.textContent=d.title;p.appendChild(h);
+  const body=document.createElement('p');body.textContent=d.body;p.appendChild(body);
+  const g=document.createElement('div');g.className='gotcha';g.textContent=d.gotcha;p.appendChild(g);
+}
+$$('.dline').forEach((b,i)=>b.addEventListener('click',()=>{dsel=i;paintDline()}));
+paintDline();
+
+/* layer cache demo */
+const LAYER_LABELS=['FROM node:24-alpine','WORKDIR /app','COPY package*.json ./','RUN npm ci --omit=dev','COPY . .','EXPOSE 3000','CMD ["node","server.js"]'];
+const LAYER_COST=[8,0,1,42,2,0,0]; /* illustrative seconds of build work per instruction */
+const FULL_BUILD_COST=LAYER_COST.reduce((sum,cost)=>sum+cost,0);
+let built=false;
+function paintLayers(status,msg,totalNote){
+  const stack=$('#layerStack');stack.innerHTML='';
+  LAYER_LABELS.forEach((l,i)=>{
+    const row=document.createElement('div');row.className='layer'+(status[i]!=='pending'?' built':'');
+    const label=document.createElement('span');label.textContent=(i+1)+' · '+l;row.appendChild(label);
+    const dur=document.createElement('span');dur.className='tdur';
+    const badge=document.createElement('span');badge.className='badge';
+    if(status[i]==='first'){badge.classList.add('first');badge.textContent='BUILT';dur.textContent=LAYER_COST[i]?'~'+LAYER_COST[i]+'s':'metadata'}
+    else if(status[i]==='cached'){badge.classList.add('cached');badge.textContent='CACHED';dur.textContent='0s'}
+    else if(status[i]==='rebuilt'){badge.classList.add('rebuilt');badge.textContent='REBUILT';dur.textContent=LAYER_COST[i]?'~'+LAYER_COST[i]+'s':'metadata'}
+    else{badge.textContent='—';dur.textContent=''}
+    row.appendChild(badge);row.appendChild(dur);stack.appendChild(row);
+  });
+  const total=status.reduce((s,st,i)=>s+((st==='first'||st==='rebuilt')?LAYER_COST[i]:0),0);
+  $('#buildBarFill').style.width=Math.min(100,Math.round(total/FULL_BUILD_COST*100))+'%';
+  $('#buildTime').textContent=totalNote?totalNote.replace('{t}',total):'';
+  $('#buildMsg').innerHTML='';$('#buildMsg').textContent=msg;
+}
+paintLayers(LAYER_LABELS.map(()=>'pending'),'Press 🔨 docker build to run the first build.','');
+$('#buildFirst').addEventListener('click',()=>{
+  built=true;
+  paintLayers(LAYER_LABELS.map(()=>'first'),'First build: nothing is cached yet, so every instruction is evaluated. The slow one is npm ci — 42 of the illustrative ~53 seconds. Remember that number.','Illustrative build time: ~{t}s');
+});
+$('#buildSrc').addEventListener('click',()=>{
+  if(!built){$('#buildMsg').textContent='Run the first build first — there is no cache to reuse yet.';return}
+  paintLayers(['cached','cached','cached','cached','rebuilt','rebuilt','rebuilt'],'You changed server.js — the everyday edit. Steps 1–4 still have the same inputs, so Docker reuses them — including the slow npm ci result. Evaluation resumes at COPY . ., followed by the metadata steps. This is why instruction order matters.','Illustrative rebuild time: ~{t}s — the 42-second dependency install was skipped entirely.');
+});
+$('#buildDeps').addEventListener('click',()=>{
+  if(!built){$('#buildMsg').textContent='Run the first build first — there is no cache to reuse yet.';return}
+  paintLayers(['cached','cached','rebuilt','rebuilt','rebuilt','rebuilt','rebuilt'],'You changed package.json or package-lock.json — the shopping list itself. Layer 3’s ingredients are different now, so from that line DOWN everything must be remade, including the slow npm ci. Saved layers are only reused up to the first changed line.','Rebuild time: ~{t}s — changing the locked dependency tree is the expensive rebuild, and that’s unavoidable.');
+});
+
+/* ============ LAB 4 · language tabs ============ */
+$$('.choice[data-lang]').forEach(b=>b.addEventListener('click',()=>{
+  $$('.choice[data-lang]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',x===b?'true':'false')});
+  $$('.lang-pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===b.dataset.lang));
+}));
+
+/* ============ LAB 4 · single vs multi-stage toggle ============ */
+const STAGE_SCEN={
+  single:{w:'100%',cap:'The bar is the whole 2.14 GB image, drawn to scale.',
+    msg:'Inside the one-stage image: your compiled program (about 70 kB — a speck) riding along with the ENTIRE gcc workshop and its Linux — about 2.14 GB of tools the finished program will never touch again. Every machine that pulls this image downloads the whole kitchen.'},
+  multi:{w:'0.06%',cap:'Same scale. That sliver on the far left IS the entire 1.27 MB image — about 1,700× smaller.',
+    msg:'Inside the two-stage image: your compiled program (885 kB) and one 0-byte sticky note (the CMD line). Nothing else — no compiler, no packages, no Linux. docker history — the command that lists an image\u2019s layers — shows exactly two entries. Same program, same output, 99.94% less to ship. (Two footnotes for sharp eyes: the program grew from ~70 kB to 885 kB because -static packed its helpers inside — and the image STILL shrank ~1,700×. Docker Desktop\u2019s 1.27 MB figure adds a little filesystem bookkeeping on top of the 885 kB layer.)'}
+};
+function paintStage(k){
+  $$('.choice[data-stage]').forEach(x=>{x.classList.toggle('active',x.dataset.stage===k);x.setAttribute('aria-pressed',x.dataset.stage===k?'true':'false')});
+  $('#stageBarFill').style.width=STAGE_SCEN[k].w;
+  $('#stageCaption').textContent=STAGE_SCEN[k].cap;
+  $('#stagePanel').textContent=STAGE_SCEN[k].msg;
+}
+$$('.choice[data-stage]').forEach(b=>b.addEventListener('click',()=>paintStage(b.dataset.stage)));
+paintStage('single');
+
+/* ============ LAB 5 · ports ============ */
+const PORT_SCEN={
+  good:{pipe:'-p 8080:80<br>→',dead:false,host:'Browser asks for <code>localhost:8080</code>',ok:true,
+    msg:'<h4>Welcome to nginx!</h4>If you see this page, the web server is working. <span class="micro">(your computer’s door 8080 → the box’s door 80 — the doorway exists and points the right way)</span>'},
+  reversed:{pipe:'-p 80:8080<br>→',dead:true,host:'Browser asks for <code>localhost:8080</code>',ok:false,
+    msg:'<h4>❌ This site can’t be reached</h4>localhost:8080 refused to connect. The flag is reversed: <code>-p 80:8080</code> forwards host port <strong>80</strong> to container port <strong>8080</strong> — but nginx listens on container port 80, and nothing is on host 8080 at all. Remember: <strong>outside:inside</strong>.'},
+  none:{pipe:'(no -p flag)<br>✕',dead:true,host:'Browser asks for <code>localhost:8080</code>',ok:false,
+    msg:'<h4>❌ This site can’t be reached</h4>localhost:8080 refused to connect. The container is running and healthy — but with no <code>-p</code> flag there is no doorway through the container’s walls. It can hear only itself.'}
+};
+let portScen='good';
+$$('.choice[data-port]').forEach(b=>b.addEventListener('click',()=>{
+  portScen=b.dataset.port;
+  $$('.choice[data-port]').forEach(x=>{x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',x===b?'true':'false')});
+  const s=PORT_SCEN[portScen];
+  $('#portPipe').innerHTML=s.pipe;$('#portPipe').classList.toggle('dead',s.dead);
+  $('#portHostTxt').innerHTML=s.host;
+  const r=$('#portResult');r.className='browser-body';r.textContent='Press the button to load the page.';
+}));
+$('#portTest').addEventListener('click',()=>{
+  const s=PORT_SCEN[portScen],r=$('#portResult');
+  r.className='browser-body '+(s.ok?'ok':'no');r.innerHTML=s.msg;
+});
+
+/* ============ LAB 5 · volumes ============ */
+const vol={A:{stage:0},B:{stage:0}};
+function volFilesHTML(has){return has?'<span class="vol-file">📄 notes.txt</span>':'<span class="vol-none">empty</span>'}
+function paintVol(){
+  const A=vol.A,B=vol.B;
+  $('#volAfilesC').innerHTML=volFilesHTML(A.stage===1);
+  $('#volAstatus').textContent=A.stage===0?'Container a1 is running.':A.stage===1?'Container a1 is running — notes.txt saved into its own filesystem.':A.stage===2?'Container a1 removed. Its files — notes.txt included — were thrown away with it.':'Fresh container a2 is running. It starts from the clean image: no notes.txt anywhere.';
+  $('#volBfilesC').innerHTML=volFilesHTML(B.stage===1||B.stage===3);
+  $('#volBfilesV').innerHTML=volFilesHTML(B.stage>=1);
+  $('#volBstatus').textContent=B.stage===0?'Container b1 is running, volume plugged into /app/data.':B.stage===1?'Container b1 is running — notes.txt saved into /app/data, which lives on the volume.':B.stage===2?'Container b1 removed — but the volume "notes" is separate, and notes.txt is still on it.':'Fresh container b2 is running with -v notes:/app/data — and notes.txt is right there waiting.';
+  if(A.stage===3&&B.stage===3){$('#volVerdict').innerHTML='<strong>Same steps, opposite endings.</strong> Without a volume, the file was thrown away with container a1. With a volume, the file outlived its container and was waiting for the next one. That is the whole rule: containers are throwaway; volumes are for keeps.'}
+  else if(A.stage===2&&B.stage<2){$('#volVerdict').textContent='notes.txt on the left is gone forever. Now run the right column and watch the same removal play out differently.'}
+  else{$('#volVerdict').textContent='Work both columns top to bottom, then compare what the fresh containers can see.'}
+}
+function volStep(side,want,next){
+  const s=vol[side];
+  if(s.stage===want){s.stage=next;paintVol();return}
+  paintVol();
+  const labels=['1 · Save notes.txt','2 · remove the container','3 · run a fresh container'];
+  $('#volVerdict').textContent=s.stage>=3?('That column is finished — press Reset to run it again.'):('Do the steps in order — next up on that side: '+labels[s.stage]+'.');
+}
+$('#volAwrite').addEventListener('click',()=>volStep('A',0,1));
+$('#volArm').addEventListener('click',()=>volStep('A',1,2));
+$('#volAnew').addEventListener('click',()=>volStep('A',2,3));
+$('#volBwrite').addEventListener('click',()=>volStep('B',0,1));
+$('#volBrm').addEventListener('click',()=>volStep('B',1,2));
+$('#volBnew').addEventListener('click',()=>volStep('B',2,3));
+$('#volReset').addEventListener('click',()=>{vol.A.stage=0;vol.B.stage=0;paintVol()});
+paintVol();
+
+/* ============ LAB 6 · runtime states ============ */
+const RUNTIME_STATES={
+  created:{tag:'created',title:'Configured, not started',body:'Docker has created the writable layer, network settings, mounts, and metadata, but has not launched the image’s startup command. This state is brief after docker create and before docker start.',evidence:'See it with: docker ps -a',next:'Next question: was it intentionally created without starting, or did an automation step stop early?'},
+  running:{tag:'running',title:'PID 1 is alive',body:'The container’s main process is still running. That proves lifecycle, not usefulness: a web server can be deadlocked, returning errors, or still warming up while Docker honestly reports Running.',evidence:'Read process output: docker logs --tail 100 web',next:'Next question: is there a meaningful health probe, and does it pass?'},
+  healthy:{tag:'healthy',title:'The chosen probe is passing',body:'A HEALTHCHECK command has recently returned exit code 0. The signal is only as good as the test: a shallow “process exists” probe proves less than a request through the app’s critical path.',evidence:'Inspect health history: docker inspect web',next:'Next question: does the probe measure the user-visible capability you care about without creating load?'},
+  unhealthy:{tag:'unhealthy',title:'The process lives, but probes keep failing',body:'After the configured retry threshold, Docker labels the container unhealthy. Docker Engine records the result and probe output; it does not automatically repair the application merely because the label changed.',evidence:'Inspect .State.Health, then read docker logs',next:'Next question: did the probe fail because the app is broken, a dependency is not ready, or the probe itself is wrong?'},
+  exited:{tag:'exited',title:'PID 1 ended',body:'The container stops when its main process exits. Exit 0 means the command completed successfully; non-zero usually signals failure. An OOM kill, stop signal, or application crash leaves different evidence in inspect and logs.',evidence:'Start with: docker ps -a',next:'Next question: what exit code and error did the original process leave behind?' }
+};
+function paintRuntimeState(key){
+  $$('.state-btn').forEach(b=>{const on=b.dataset.runtimeState===key;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});
+  const s=RUNTIME_STATES[key],panel=$('#runtimeStatePanel');panel.innerHTML='';
+  const tag=document.createElement('span');tag.className='status-pill';tag.textContent=s.tag;panel.appendChild(tag);
+  const title=document.createElement('h3');title.textContent=s.title;panel.appendChild(title);
+  const body=document.createElement('p');body.textContent=s.body;panel.appendChild(body);
+  const evidence=document.createElement('p');const strong=document.createElement('strong');strong.textContent='Evidence · ';evidence.appendChild(strong);evidence.append(s.evidence);panel.appendChild(evidence);
+  const next=document.createElement('p');next.className='micro';next.textContent=s.next;panel.appendChild(next);
+}
+$$('.state-btn').forEach(b=>b.addEventListener('click',()=>paintRuntimeState(b.dataset.runtimeState)));
+paintRuntimeState('created');
+
+/* ============ LAB 6 · incident desk ============ */
+const INCIDENTS=[
+  {symptom:'Yesterday web worked. Today `docker ps` is empty, but you never removed the container. What should you ask Docker first?',answers:['docker ps -a','docker build --no-cache .','docker pull nginx','docker volume prune'],correct:0,why:'Plain docker ps hides stopped containers. docker ps -a establishes whether web exited and exposes its status before you change anything. Then read its logs and exit code.'},
+  {symptom:'web says “Up,” but localhost:8080 refuses the connection. Which command most directly checks whether Docker published a host port?',answers:['docker exec web pwd','docker port web','docker rmi web','docker stats --no-stream'],correct:1,why:'docker port web lists the host-to-container mappings actually applied. No output means no published port. A mapping can still point at the wrong internal port, so compare it with what the app listens on and then read logs.'},
+  {symptom:'web says “Up 3 minutes (unhealthy).” Which command exposes the failed probe history and its recorded output?',answers:['docker images','docker top web','docker inspect web','docker rename web healthy'],correct:2,why:'docker inspect includes State.Health with recent probe exit codes and output. That tells you whether the app, a dependency, or the probe command is failing. Renaming changes no health.'},
+  {symptom:'Your laptop is lagging and the fans are loud after starting a stack. Which live view shows CPU, memory, network, and block I/O by container?',answers:['docker history','docker stats','docker compose config','docker login'],correct:1,why:'docker stats is the live resource dashboard. Find the noisy service, then compare measured demand with sensible CPU and memory limits instead of guessing.'}
+];
+let incidentIndex=0;const incidentAnswers=INCIDENTS.map(()=>null);
+function paintIncident(){
+  const item=INCIDENTS[incidentIndex],picked=incidentAnswers[incidentIndex];
+  $('#incidentSymptom').textContent=item.symptom;
+  const list=$('#incidentOptions');list.innerHTML='';
+  item.answers.forEach((answer,i)=>{
+    const button=document.createElement('button');button.type='button';button.className='incident-option';button.textContent=answer;
+    if(picked!=null){button.disabled=true;if(i===item.correct)button.classList.add('correct');else if(i===picked)button.classList.add('wrong')}
+    else button.addEventListener('click',()=>{incidentAnswers[incidentIndex]=i;paintIncident()});
+    list.appendChild(button);
+  });
+  const feedback=$('#incidentFeedback');
+  if(picked!=null){feedback.classList.add('show');feedback.textContent=(picked===item.correct?'✔ Strong first move. ':'✘ A better first move is '+item.answers[item.correct]+'. ')+item.why}
+  else{feedback.classList.remove('show');feedback.textContent=''}
+  $('#incidentScore').textContent=incidentAnswers.filter((a,i)=>a===INCIDENTS[i].correct).length+' / '+INCIDENTS.length+' diagnosed';
+  $('#incidentPrev').disabled=incidentIndex===0;
+  $('#incidentNext').textContent=incidentIndex===INCIDENTS.length-1?'Review incidents ↻':'Next incident →';
+}
+$('#incidentPrev').addEventListener('click',()=>{if(incidentIndex>0){incidentIndex--;paintIncident()}});
+$('#incidentNext').addEventListener('click',()=>{incidentIndex=incidentIndex<INCIDENTS.length-1?incidentIndex+1:0;paintIncident()});
+paintIncident();
+
+$$('.hardening-card').forEach(card=>{
+  card.setAttribute('aria-expanded','false');
+  card.addEventListener('click',()=>{const open=!card.classList.contains('open');card.classList.toggle('open',open);card.setAttribute('aria-expanded',open?'true':'false')});
+});
+
+/* ============ LAB 7 · Compose path tracer ============ */
+const COMPOSE_ROUTES={
+  browser:{nodes:['routeNodeBrowser','routeNodeWeb'],arrows:['routeArrowOne'],text:'The browser connects to host port 3000. Compose publishes that doorway to port 3000 inside web. The db service stays private because it has no ports entry.'},
+  service:{nodes:['routeNodeWeb','routeNodeDb'],arrows:['routeArrowTwo'],text:'web asks Docker’s embedded DNS for the service name db, then connects directly to db:5432 on the private Compose network. Inside web, localhost would point back to web and fail.'},
+  data:{nodes:['routeNodeDb'],arrows:[],text:'Postgres writes under /var/lib/postgresql/data, where Compose mounted dbdata. Replacing the db container leaves the named volume intact; docker compose down -v explicitly deletes it.'}
+};
+function paintComposeRoute(key){
+  $$('.route-btn').forEach(b=>{const on=b.dataset.route===key;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on?'true':'false')});
+  $$('.network-node,.network-arrow').forEach(el=>el.classList.remove('active'));
+  COMPOSE_ROUTES[key].nodes.forEach(id=>$('#'+id).classList.add('active'));
+  COMPOSE_ROUTES[key].arrows.forEach(id=>$('#'+id).classList.add('active'));
+  $('#routeExplain').textContent=COMPOSE_ROUTES[key].text;
+}
+$$('.route-btn').forEach(b=>b.addEventListener('click',()=>paintComposeRoute(b.dataset.route)));
+paintComposeRoute('browser');
+
+/* ============ LAB 7 · challenge quiz ============ */
+const questions=[
+  {q:'You typed docker run nginx three separate times. What exists on your machine now?',
+   answers:['Three nginx images, each with one container inside it','Three images and three containers, created in matching pairs','One nginx image and three separate containers made from it','One container that restarted itself three times in a row'],
+   correct:2,
+   why:'run always creates a NEW container from the image, and the image itself is a read-only template that never multiplies. Three runs = one recipe, three cakes. That is also why the fix for "I want that same container back" is docker start, not another docker run.'},
+  {q:'Containers start in about a second; virtual machines take minutes. What is the main structural reason?',
+   answers:['A container has no guest OS to boot — it borrows the host’s already-running kernel','Container files are compressed much harder, so they load from disk faster than VM files','Docker containers always run with higher CPU priority than any virtual machine','Containers skip all security checks at startup, and VMs are required to run them'],
+   correct:0,
+   why:'A VM must boot an entire operating system before its app can start. A container is just a normal program with walls around it — the kernel it needs is already up and running. That single fact explains the startup speed, the tiny sizes, AND the limitation that a Linux machine can’t run Windows containers.'},
+  {q:'In docker run -d -p 8080:80 nginx, what does 8080:80 mean?',
+   answers:['The container may use any port in the range from 80 up to 8080','Requests to port 8080 on your machine are forwarded to port 80 inside the container','nginx is moved off port 80 and reconfigured to listen on port 8080 instead of its default','Port 80 on your machine forwards into port 8080 inside the container'],
+   correct:1,
+   why:'Read it outside:inside — HOST first, CONTAINER second. Your browser hits localhost:8080; Docker forwards that into the container’s port 80, where nginx is listening. The reversed reading (option D) is exactly the mistake the Lab 5 widget let you experience.'},
+  {q:'Yesterday you ran a container named web. Today docker ps shows nothing at all. What is the most likely story?',
+   answers:['The container crashed, and crashed containers always erase themselves from the system automatically','docker ps output resets every day, so yesterday’s containers never appear in it','The nginx image expired overnight and took its containers along with it','The container is stopped — plain docker ps lists only running ones; docker ps -a would show it'],
+   correct:3,
+   why:'Stopped containers still exist, with all their files still there — they are just not running, and plain docker ps hides them. docker ps -a shows everything, and docker start web brings the same container back. Containers never delete themselves unless run with --rm.'},
+  {q:'A teammate saved data inside a running container’s filesystem, then ran docker rm -f on it. The data was in no volume. What happened to it?',
+   answers:['It is waiting inside the image, and the next container started from that image will contain it','It was deleted with the container — the writable filesystem dies when its container is removed','Docker automatically archived it to Docker Hub before removing the container','Nothing — rm only removes the container’s name, never its files'],
+   correct:1,
+   why:'The container’s own box of files is part of the container itself. Remove the container, lose the files — that is the entire reason volumes exist, and why the two columns in Lab 5 ended so differently. (Option A is backwards: containers never write back into their image.)'},
+  {q:'A running container deletes /app/default.json, a file supplied by its image. What will happen after restarting that same container, then starting a fresh container from the image?',
+   answers:['Both containers permanently lose the file because deleting it changed the image','The restarted container still hides it, while the fresh container sees the original image file','The restarted container restores it, while the fresh container loses it','Docker refuses the deletion because every container filesystem is read-only'],
+   correct:1,
+   why:'The image layer is immutable. Docker records a hide marker in this container’s writable layer, so stop/start keeps the deletion for that same container. A fresh container gets a fresh writable layer and therefore sees the unchanged file from the image again.'},
+  {q:'A Compose database writes into the project’s declared named volume dbdata. What is the important difference between docker compose down and docker compose down --volumes?',
+   answers:['Both commands always delete dbdata; --volumes only prints more detail','Plain down keeps dbdata, while --volumes deletes the project-declared volume and its data','Plain down deletes dbdata, while --volumes uploads it before deletion','Neither can remove a volume; only deleting the image removes database data'],
+   correct:1,
+   why:'Compose down removes the service containers and network but preserves declared named volumes by default. Adding --volumes deliberately removes project-declared and anonymous volumes too. An external volume is the exception: Compose never owns or removes it.'},
+  {q:'Why do good Dockerfiles COPY package*.json and RUN npm ci before copying the rest of the source code?',
+   answers:['So everyday code edits don’t invalidate the cached dependency layer with the slow npm ci','Because npm refuses to run at all if any JavaScript source files are already present','Because Docker requires all COPY instructions to appear in alphabetical order of filename','So the finished image ends up smaller, since dependencies compress better when they are copied in first'],
+   correct:0,
+   why:'Cache reuse stops at the first instruction whose inputs changed. Source code changes daily; the locked shopping list changes rarely. Splitting them means the expensive npm ci result survives almost every rebuild — the illustrative demo showed ~2s instead of ~53s. Dockerfile order decides rebuild speed; it is not just tidiness.'},
+  {q:'What is the difference between RUN and CMD in a Dockerfile?',
+   answers:['RUN is for Linux images and CMD is the same instruction for Windows images','They are interchangeable — both execute a command whenever a container starts up','CMD executes during the image build, while RUN sets what every container executes at startup','RUN executes at build time and bakes a layer; CMD records the process containers start with'],
+   correct:3,
+   why:'RUN happens once, while the image is being made (install, compile). CMD happens later, every time a container starts — it IS the container’s main program, and the container lives exactly as long as it does. Option C says it backwards — that is the trap.'},
+  {q:'docker rmi nginx fails with "conflict: unable to remove repository reference." What is Docker telling you?',
+   answers:['The image is corrupted, and the only fix is reinstalling Docker from scratch','You need to run the command a second time to confirm the deletion','A container from that image still exists — remove the container first, then the image','nginx is an official image, and official images can never be removed from a local machine'],
+   correct:2,
+   why:'Containers depend on their image’s read-only layers, so Docker refuses to delete an image that any container — even a stopped one — still uses. The cleanup order is always: stop container → rm container → rmi image. You lived this exact error in the Lab 2 missions if you tried rmi early.'},
+  {q:'What does the -d flag do in docker run -d nginx?',
+   answers:['Runs the container detached in the background and gives your prompt back','Runs the container in debug mode so it prints extra diagnostic output about each request','Deletes the container automatically the moment its main process stops','Downloads the image but stops just before actually starting a container'],
+   correct:0,
+   why:'Without -d, the container’s output owns your terminal until you stop it — fine for a quick script, wrong for a server. Detached mode is how services actually run. (Auto-delete on exit is a real flag, but it’s --rm; download-without-running is docker pull.)'},
+  {q:'You built myapp:1.0 locally and want a teammate to run that already-built image. What is the normal registry handoff?',
+   answers:['Send the container ID so the teammate can run docker start with the same ID','Tag the image with your registry namespace, push it, then send the teammate that reference to pull and run','Send only the Dockerfile because it contains the finished image layers','Run docker export on the source folder and tell the teammate to use docker build on the archive'],
+   correct:1,
+   why:'A local image exists only in your Docker Engine. Tagging gives it a registry address, push uploads its layers, and the teammate uses that exact address with pull and run. A container ID is local to one Engine; a Dockerfile asks the teammate to rebuild instead of receiving your built image.'},
+  {q:'Your app needs a web container, a database container, and a cache container. What is Docker Compose’s job here?',
+   answers:['It merges all three containers into a single bigger container so they can share files','It describes all three services in one YAML file so one command starts and stops them together','It compresses the three images into one archive so they download faster from Docker Hub','It automatically rewrites your application code so the three services can talk to each other over the network'],
+   correct:1,
+   why:'Compose is the application model for one Docker environment: services, builds or images, ports, volumes, networks, health dependencies, and secrets written in compose.yaml. docker compose up brings that model to life. It never merges containers and never rewrites your code.'},
+  {q:'docker ps reports “Up 5 minutes” for an API container. What has Docker definitely proved?',
+   answers:['The API is returning correct responses to users','Its database connection is healthy','The container’s main process is still alive','The image has no known vulnerabilities'],
+   correct:2,
+   why:'Running is a lifecycle signal: PID 1 has not exited. Readiness needs an application-specific health check, and correctness still needs tests and monitoring. A living process can be stuck or returning errors.'},
+  {q:'Why add --memory=512m and --cpus=1 to a docker run command after measuring the app’s needs?',
+   answers:['Docker otherwise gives every container exactly 512 MB and one CPU automatically','Containers have no resource constraints by default, so limits contain a noisy or runaway process','The flags make the image smaller before it is pushed','The flags encrypt memory so neighboring containers cannot read it'],
+   correct:1,
+   why:'Without runtime constraints, a container can use as much CPU and memory as the host kernel allows. Measured limits reduce noisy-neighbor and host-stability risk; unrealistic limits can cause throttling or OOM kills, so measurement matters.'},
+  {q:'A database password is needed by two Compose services. Which approach best avoids baking it into an image or exposing it to every service?',
+   answers:['Write it in the Dockerfile with ENV so it travels with the image','Put it in a source file, COPY it into the image, then delete it in the next layer','Declare a Compose secret and grant it only to the two services that read its runtime-mounted file','Use the password as the image tag so teammates can remember it'],
+   correct:2,
+   why:'Compose secrets are explicitly granted per service and mounted as files under /run/secrets. ENV and copied files can be exposed through configuration or image history/layers; deleting a file in a later layer does not erase the earlier layer.'},
+  {q:'web depends_on db, but the database needs eight seconds to accept connections. Which Compose pattern handles that startup race?',
+   answers:['Publish the database port to the host and sleep in the browser','Give db a meaningful healthcheck and make web depend on condition: service_healthy','Rename db to localhost so web waits for DNS','Run docker compose up eight times'],
+   correct:1,
+   why:'Short depends_on controls startup order but running is not the same as ready. A database health check plus the long-form service_healthy condition makes Compose wait for proven readiness before creating the dependent service.'}
+];
+let qIndex=0;const quizAnswers=questions.map(()=>null);
+function paintQuestion(){
+  const item=questions[qIndex],picked=quizAnswers[qIndex];
+  $('#quizProgress').textContent='Question '+(qIndex+1)+' of '+questions.length;
+  $('#questionText').textContent=item.q;
+  const list=$('#answerList');list.innerHTML='';
+  item.answers.forEach((a,i)=>{
+    const b=document.createElement('button');b.type='button';b.className='answer';b.dataset.answer=i;b.textContent=String.fromCharCode(65+i)+'. '+a;
+    if(picked!=null){b.disabled=true;if(i===item.correct)b.classList.add('correct');else if(i===picked)b.classList.add('wrong')}
+    else b.addEventListener('click',()=>{quizAnswers[qIndex]=i;paintQuestion()});
+    list.appendChild(b);
+  });
+  const fb=$('#quizFeedback');
+  if(picked!=null){fb.classList.add('show');$('#feedbackText').textContent=(picked===item.correct?'✔ Correct. ':'✘ Not quite — the answer is '+String.fromCharCode(65+item.correct)+'. ')+item.why}
+  else fb.classList.remove('show');
+  const done=quizAnswers.filter(a=>a!=null).length,right=quizAnswers.filter((a,i)=>a===questions[i].correct).length;
+  $('#quizScore').textContent=done?('Score: '+right+' / '+done+(done===questions.length?(right===questions.length?' — perfect! 🎉':' — read the feedback on the ones you missed'):'')):'';
+  if(done===questions.length)markLabComplete('challenge');
+  $('#nextQuestion').textContent=qIndex<questions.length-1?'Next →':'Start over ↻';
+}
+$('#prevQuestion').addEventListener('click',()=>{if(qIndex>0){qIndex--;paintQuestion()}});
+$('#nextQuestion').addEventListener('click',()=>{if(qIndex<questions.length-1)qIndex++;else{qIndex=0;quizAnswers.fill(null)}paintQuestion()});
+paintQuestion();
+
+/* ============ progress rail scrollspy ============ */
+if('IntersectionObserver' in window){
+  const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)$$('.progress-rail a').forEach(a=>a.classList.toggle('active',a.dataset.section===e.target.id))}),{rootMargin:'-30% 0px -60%'});
+  $$('.lab').forEach(l=>observer.observe(l));
+}
+</script>
+</body>
+</html>
