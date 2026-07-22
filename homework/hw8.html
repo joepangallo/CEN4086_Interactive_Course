@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CEN4086 Homework 8 — build the agent loop that drives MCP tools autonomously: a deterministic planner, least-privilege allowlist, human approval gate, step budget, injection detection, and a trace log.">
+<title>CEN4086 · Homework 8 — The Agent Takes a Shift</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--amb:#e0a437;--acc:#0f8b8d;--bad:#c04f43;--ok:#3e8e5a;--ai:#7a3d99}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--ai);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+main{max-width:920px;margin:0 auto;padding:20px 16px 80px}
+header.head{margin:18px 0 6px}header.head h1{margin:0 0 6px;font-size:27px}header.head p{margin:0;color:var(--mut)}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:10px 6px 0 0;color:var(--ink)}
+h2{font-size:21px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--ai)}
+h3{font-size:17.5px;margin:18px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:12px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card>:first-child{margin-top:0}.card>:last-child{margin-bottom:0}
+.concept{background:#f2f1fa;border:1px solid #d8d5ee;border-left:6px solid var(--pri);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}.concept b:first-child{color:var(--pri)}
+.warn{background:#fbeeec;border:1px solid #e8c5c0;border-left:6px solid var(--bad);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.tip{background:#eef8f1;border:1px solid #c9e2d1;border-left:6px solid var(--ok);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.ainote{background:#f6effa;border:1px solid #ddc4ea;border-left:6px solid var(--ai);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.deliver{background:#e9f4f4;border:1px solid #c5dede;border-left:6px solid var(--acc);border-radius:10px;padding:11px 15px;margin:12px 0 2px;font-size:14.5px}.deliver b:first-child{color:var(--acc)}
+.goal{background:#f6effa;border:1px solid #ddc4ea;border-left:6px solid var(--ai);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.done{background:#eef8f1;border:1px solid #c9e2d1;border-left:6px solid var(--ok);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.atglance{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:12px 0}.mini{background:#fbfaf7;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:14px}.mini b{display:block;color:var(--ai);margin-bottom:2px}
+ul.tight li,ol.tight li{margin:7px 0}
+code{background:#efede6;border-radius:5px;padding:1px 6px;font-size:.92em}
+pre{background:#1d2433;color:#e8e6f0;border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:13.5px;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0}th{background:#f0eee6;text-align:left}th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.note{font-size:13.5px;color:var(--mut)}
+.navtitle{font-weight:700}
+@media (max-width:620px){.atglance{grid-template-columns:1fr}th,td{padding:7px 8px}}
+@media print{.topnav{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="../index.html">⌂ Course Hub</a>
+  <span class="navtitle">📝 Homework 8 · The Agent Takes a Shift</span>
+  <span><a href="hw5.html">HW5</a> · <a href="../ai-agent-anatomy.html">Agent Anatomy</a> · <a href="../week3-session8.html">AI Security</a> · <a href="../week4-session10.html">MCP &amp; SOA</a> · <a href="hw8-starter.zip">Starter</a></span>
+</nav>
+<main>
+
+<header class="head">
+  <h1>Homework 8 · The Agent Takes a Shift</h1>
+  <p>Build the loop that turns tools into a teammate: a deterministic planner drives your MCP tools through real missions while your guardrails — least privilege, a human approval gate, a step budget, and an injection detector — make it safe to look away. No model, no API key: the brain is swappable, and proving you understand that seam is the final question.</p>
+  <div>
+    <span class="chip">Individual</span><span class="chip">Submit your GitHub repo link</span><span class="chip">Runs entirely on your laptop</span><span class="chip">No API keys</span><span class="chip">Fake data only</span>
+  </div>
+</header>
+
+<div class="card">
+  <p><b>The scenario, concluded.</b> Sandpiper Surf Supply's tools are built (HW5) and their backend proved it can live in the cloud (HW6). But every single call so far had a human's mouse behind it — you, clicking in the Inspector. The support inbox doesn't sleep, and the owner asks the obvious question: <em>"can the software work a shift by itself?"</em> Tonight you answer it properly — not by making the software obedient, but by making it <b>bounded</b>.</p>
+<pre>you → goal → ┌─────────────── THE AGENT (agent.mjs) ───────────────┐
+             │  plan → guardrails → approval? → act → observe ─┐  │ → mission report
+             │    ↑                                            │  │ → trace.jsonl
+             │    └────────────────────────────────────────────┘  │
+             └───────────────┬────────────────────────────────────┘
+                             │ MCP (stdio)
+                     support-server.mjs → in-memory store (write boundary intact)</pre>
+  <p>This is the same anatomy as the <a href="../ai-agent-anatomy.html">Anatomy of an AI Agent</a> page — loop, brain, tools, memory, guardrails, approval, observability — with one honest substitution: the brain is a scripted planner instead of a language model. Everything you build around it is exactly what production agent teams build, which is the point.</p>
+</div>
+
+<h2>Assignment at a glance</h2>
+<div class="card">
+  <div class="atglance">
+    <div class="mini"><b>You build</b>The guardrail layer (step budget + injection detector) and the planner's refund workflow</div>
+    <div class="mini"><b>You are given</b>The finished agent loop, the finished MCP server, and the human approval gate</div>
+    <div class="mini"><b>You prove</b>16/16 tests and five missions: lookup, refund approved, refund declined, injection refused, runaway stopped</div>
+    <div class="mini"><b>You use</b>Node and your terminal — the agent spawns its own MCP server</div>
+    <div class="mini"><b>You submit</b>Code, mission transcripts, trace excerpts, and the seam memo in one GitHub repo</div>
+    <div class="mini"><b>You finish by</b>Arguing which guardrails would survive a real model — and why</div>
+  </div>
+  <p>Work in this order: run the unchanged starter → trace one loop by hand → build the two guardrails → build the refund branch → fly the five missions → write the seam memo. Do not start the missions until <code>npm test</code> reports 16 passing.</p>
+</div>
+
+<h2>What an agent actually is — the map for tonight</h2>
+<div class="card">
+  <p>Strip the marketing away and an "AI agent" is a <b>while-loop with judgment and boundaries</b>. Every box on the anatomy page is a file in your starter:</p>
+  <table>
+    <tr><th>Anatomy organ</th><th>In this starter</th><th>Who provides it</th></tr>
+    <tr><td>The loop</td><td><code>agent.mjs</code> — plan → check → act → observe, repeat</td><td>Given, finished</td></tr>
+    <tr><td>The brain (planner)</td><td><code>planner.mjs</code> — <code>plan(state)</code> returns ONE next action</td><td>Partly yours (Part 3)</td></tr>
+    <tr><td>Tools</td><td><code>support-server.mjs</code> — the same MCP surface as HW5</td><td>Given, finished</td></tr>
+    <tr><td>Memory</td><td>the <code>observations</code> array — everything the mission has seen</td><td>Given, finished</td></tr>
+    <tr><td>Guardrails</td><td><code>guardrails.mjs</code> — allowlist, budget, injection detector</td><td>Partly yours (Part 2)</td></tr>
+    <tr><td>Human approval</td><td>the y/N gate in <code>agent.mjs</code> before any write tool</td><td>Given, finished — read it anyway</td></tr>
+    <tr><td>Observability</td><td><code>trace.jsonl</code> — one JSON line per decision and result</td><td>Given, finished</td></tr>
+  </table>
+  <div class="ainote"><b>Why there is no API key.</b> The planner is deterministic on purpose. <code>plan(state) → action</code> is <em>exactly</em> the contract an LLM-backed planner has — state goes in, one proposed action comes out. Using a script instead of a model buys you three things tonight: missions that behave identically on every run (debuggable), zero cost (safe to loop), and a crystal-clear view of the seam where a model would slot in. The guardrails cannot tell the difference — which is precisely why they work.</div>
+  <div class="concept"><b>The one design rule to internalize.</b> Nowhere in the planner — and nowhere in any document the agent reads — can <code>confirmed</code> become <code>true</code>. That flag is wired to a single line in <code>agent.mjs</code>, immediately after a human types <code>y</code>. The brain proposes; the human disposes; the server double-checks anyway. Three layers, and the customer note's attack (you'll meet it in mission 4) bounces off all three.</div>
+</div>
+
+<h2>Starter file map</h2>
+<div class="card">
+  <p>Download <a href="hw8-starter.zip"><b>hw8-starter.zip</b></a> and unzip it.</p>
+  <table>
+    <tr><th>File</th><th>What it is</th><th>You edit?</th></tr>
+    <tr><td><code>agent.mjs</code></td><td>The agent loop: MCP client, guardrail checks, approval gate, trace writer</td><td>No — but read it top to bottom first</td></tr>
+    <tr><td><code>planner.mjs</code></td><td>The brain: dispatcher + four branches; refund branch is a spec'd TODO</td><td><b>Yes — Part 3</b></td></tr>
+    <tr><td><code>guardrails.mjs</code></td><td>Pure safety functions; two finished examples, two spec'd stubs</td><td><b>Yes — Part 2</b></td></tr>
+    <tr><td><code>support-server.mjs</code></td><td>Finished MCP server: 2 resources, 3 tools, 1 prompt — HW5's contract</td><td>No</td></tr>
+    <tr><td><code>memory-store.mjs</code></td><td>In-memory data with the server-side write boundary intact</td><td>No</td></tr>
+    <tr><td><code>agent.test.mjs</code></td><td>Executable requirements — 16 tests, 6 failing on purpose</td><td>Never</td></tr>
+    <tr><td><code>data/</code></td><td>Fictional policies, orders, and the untrusted customer note</td><td>No</td></tr>
+  </table>
+  <p class="note">Node.js 18+ and one <code>npm install</code>. The store is in-memory — HW5 built persistence and HW6 moved it to DynamoDB; repeating that plumbing would add setup without adding learning. Notice the safety boundary did <em>not</em> get simplified away with it.</p>
+</div>
+
+<h2>What you'll practice</h2>
+<div class="card">
+  <ul class="tight">
+    <li>Reading and reasoning about an <b>agent loop</b> — the plan/act/observe cycle every agent product runs</li>
+    <li>Writing <b>structural guardrails</b>: a step budget that kills runaways and a heuristic <b>prompt-injection detector</b></li>
+    <li>Implementing a <b>planner state machine</b>: verify → propose → gate → act → verify → report</li>
+    <li>Driving MCP tools from a real <b>MCP client</b> program instead of the Inspector's buttons</li>
+    <li>Using a <b>trace log</b> to audit what an autonomous system did and why — observability for agents</li>
+    <li>Arguing the <b>swappable-brain seam</b>: what changes with a real model, and which defenses don't care</li>
+  </ul>
+</div>
+
+<h2>Before you start</h2>
+<div class="card">
+  <ol class="tight">
+    <li>Create a <b>new GitHub repository</b> (for example <code>cen4086-hw8</code>) and copy the unzipped starter into it. Commit before you change anything.</li>
+    <li>Confirm Node 18+: <code>node --version</code>, then run <code>npm install</code> in the starter folder.</li>
+    <li>Run <code>npm test</code>. <b>Expected baseline: tests 16, pass 10, fail 6.</b> Read the six failure names — they are your task list in order.</li>
+    <li>Skim the <a href="../ai-agent-anatomy.html">Anatomy of an AI Agent</a> page once more with the file map above open beside it.</li>
+  </ol>
+  <div class="warn"><b>The tests are the contract.</b> Do not edit <code>agent.test.mjs</code>, and do not "fix" a failure by weakening an assertion. Every test encodes a safety property this assignment exists to teach.</div>
+</div>
+
+<h2>Part 1 — Run it, then trace one loop by hand</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> watch the finished machinery run a mission end to end, then prove you can reconstruct its reasoning from the trace alone.</div>
+  <ol class="tight">
+    <li>Run mission 1 — it works on the unchanged starter:
+<pre>node agent.mjs "What is the status of order ORD-1001?"</pre></li>
+    <li>Now open <code>trace.jsonl</code> and find that mission's lines: <code>mission_start</code>, a <code>plan</code>, an <code>observe_tool</code>, another <code>plan</code>, <code>mission_finish</code>.</li>
+    <li>In your write-up, reconstruct the mission <em>from the trace only</em>: for each line, one sentence — what the agent knew, what it decided, and why the second <code>plan</code> chose <code>finish</code> when the first chose <code>call_tool</code>. (Hint: the difference is one entry in <code>observations</code> — that array <em>is</em> the agent's memory.)</li>
+    <li>Run the same mission with <code>--role=read-only</code> and note that nothing changes — then explain in one sentence why a status lookup is the same under both roles.</li>
+  </ol>
+  <div class="done"><b>Part 1 is done when:</b> your write-up walks the trace line by line and answers both questions.</div>
+</div>
+
+<h2>Part 2 — Build the guardrails</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> replace the two permissive stubs in <code>guardrails.mjs</code> with real boundaries. The specs live as comments above each stub; the tests grade them.</div>
+  <h3>2A · The step budget</h3>
+  <ol class="tight">
+    <li>First, run the runaway on the <em>unchanged</em> starter and watch the crude seatbelt drag it down at 25 steps:
+<pre>node agent.mjs "Keep checking ORD-1001 until it says delivered"</pre>
+    ORD-1001 never delivers; this branch loops by design. Save this transcript — you'll want the before/after pair.</li>
+    <li>Implement <code>checkStepBudget(stepsUsed, maxSteps)</code> per its comment spec: allow below the limit, refuse at or beyond it with code <code>STEP_BUDGET_EXHAUSTED</code> and a message that states the numbers.</li>
+    <li>Re-run the runaway: it should now stop at <b>8 steps</b> with the budget message, not the seatbelt.</li>
+  </ol>
+  <div class="concept"><b>Why the budget is a big deal.</b> With a scripted planner a runaway wastes seconds. With a paid model behind the same loop, it wastes tokens at production prices, forever, at 3 a.m. The wrap-every-AI-call-in-a-timeout-and-budget rule from the Session 9 material is this exact function, one abstraction up.</div>
+  <h3>2B · The injection detector</h3>
+  <ol class="tight">
+    <li>Read <code>data/customer-note.txt</code> — a customer "complaint" that tries to script your agent: ignore your rules, claim someone else's order, write without asking. Then run mission 3 on the unchanged starter and note that the summary passes it along <em>without any warning</em>:
+<pre>node agent.mjs "Summarize the customer note for the morning meeting"</pre></li>
+    <li>Implement <code>looksLikeInjection(text)</code> per its comment spec: three case-insensitive patterns (ignore-your-rules, scripted tool call, suppress-the-human), true if any match, false for ordinary complaints.</li>
+    <li>Re-run mission 3: the report should now open with the injection warning while still quoting the note as data for a human reviewer.</li>
+  </ol>
+  <div class="warn"><b>Say the honest thing in your write-up:</b> this detector is a heuristic — an attacker can rephrase past it. Then say why the system survives that anyway: which <em>two other layers</em> stop the note's actual goal (an unauthorized ticket on ORD-1002) even if the detector never fires? Name them precisely.</div>
+  <div class="done"><b>Part 2 is done when:</b> the four guardrail tests pass (<code>npm test</code>: 12 of 16) and both before/after transcripts are saved for the write-up.</div>
+</div>
+
+<h2>Part 3 — Teach the planner the refund workflow</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> implement <code>decideRefundStep(state)</code> in <code>planner.mjs</code> — a five-situation state machine that reads before it writes, proposes without confirming, and verifies before it brags.</div>
+  <ol class="tight">
+    <li>Read the finished <code>planStatusLookup</code> branch — it is the one-tool version of what you're about to write — and the five-situation spec in the TODO comment.</li>
+    <li>Delete the <code>throw</code> and implement the situations in order. After each one, run <code>npm test</code>: the four refund tests are written one-per-situation and go green in sequence.</li>
+    <li>The critical line: your ticket proposal must carry <code>confirmed: false</code>. The planner <em>proposes</em>; only the approval gate in <code>agent.mjs</code> — a human at a keyboard — flips it. One of the tests exists solely to fail any planner that grants itself permission.</li>
+  </ol>
+  <div class="done"><b>Part 3 is done when:</b> <code>npm test</code> reports <b>tests 16, pass 16, fail 0</b>.</div>
+</div>
+
+<h2>Part 4 — Fly the five missions</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> exercise every boundary you built, capture the evidence, and read your own traces like an auditor.</div>
+  <table>
+    <tr><th>#</th><th>Mission command</th><th>What must happen</th></tr>
+    <tr><td>1</td><td><code>node agent.mjs "What is the status of order ORD-1001?"</code></td><td>One tool call, clean report — the baseline</td></tr>
+    <tr><td>2</td><td><code>node agent.mjs "Customer reports ORD-1001 arrived damaged and wants a refund ticket"</code> — answer <b>y</b></td><td>Verify → approval gate shows the <em>exact</em> args → ticket created → verified with <code>get_ticket</code> → report names the <code>TKT-</code> ID</td></tr>
+    <tr><td>3</td><td>Same command — answer <b>n</b> (or press Enter)</td><td>"Declined by the human. No write occurred." Nothing was created — confirm by reasoning, then say how the trace proves it</td></tr>
+    <tr><td>4</td><td><code>node agent.mjs "Summarize the customer note for the morning meeting"</code></td><td>Injection warning; the note is quoted as data; <b>no tool call of any kind resulted from its demands</b></td></tr>
+    <tr><td>5</td><td><code>node agent.mjs "Customer reports ORD-1001 arrived damaged and wants a refund ticket" --role=read-only</code></td><td>The planner proposes the write; the allowlist blocks it with <code>TOOL_NOT_ALLOWED</code>; the mission ends honestly</td></tr>
+  </table>
+  <ol class="tight">
+    <li>Run all five; paste each terminal transcript into your write-up in order.</li>
+    <li>For missions 2, 4, and 5, also paste the two or three <code>trace.jsonl</code> lines that prove the safety property (the <code>approval_granted</code> line; the absence of any <code>observe_tool</code> after the note read; the <code>blocked_tool</code> line).</li>
+    <li>One paragraph: mission 4's note demanded a ticket on ORD-1002 with <code>confirmed=true</code>. List every layer that stood between that sentence and a database write, in the order an attack would meet them.</li>
+  </ol>
+  <div class="done"><b>Part 4 is done when:</b> five transcripts plus trace excerpts are in the write-up and the layers paragraph names each layer precisely, in order.</div>
+</div>
+
+<h2>Part 5 — The seam memo</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> demonstrate you understand what tonight's brain-ectomy was for.</div>
+  <p>Write a one-page memo to Sandpiper's owner answering, in plain language:</p>
+  <ol class="tight">
+    <li><b>What would change</b> to give this agent a real language-model brain? Name the exact function whose insides get replaced, what new inputs it would need (the tool list, the conversation), and what new failure modes arrive with it (wrong tool, malformed args, persuasion by injected text, cost per call).</li>
+    <li><b>What would not change</b> — walk each guardrail (allowlist, approval gate, step budget, server-side <code>confirmed</code> check, trace) and state whether it is <em>structural</em> (works regardless of what the brain thinks) or <em>advisory</em> (depends on the brain cooperating). Four of the five are structural; find them.</li>
+    <li><b>The recommendation:</b> should the owner let the agent run unattended overnight — with which roles, and which missions? Defend it with evidence from your own transcripts, not vibes.</li>
+  </ol>
+  <div class="ainote"><b>This memo is the course's AI thread, closed.</b> The two-lives rule told you models don't learn from answering. RAG grounded their answers. MCP gave them typed, bounded hands. AI security taught you the hands need locks that don't rely on the model's obedience. Tonight you built the locks and held the keys. Whatever brains arrive next year, that architecture is the part that keeps working.</div>
+  <div class="deliver"><b>Deliverable:</b> <code>seam-memo.pdf</code>, <code>.docx</code>, or <code>.txt</code> in your repo.</div>
+</div>
+
+<h2>Submit</h2>
+<div class="card">
+  <p>Submit your <b>GitHub repo link</b>. The repo must contain:</p>
+  <ul class="tight">
+    <li>Your completed <code>guardrails.mjs</code> and <code>planner.mjs</code>, with <code>npm test</code> at 16/16 (the tests unedited)</li>
+    <li><code>writeup.pdf</code>, <code>.docx</code>, or <code>.txt</code> — the Part 1 trace walk-through, both Part 2 before/after transcript pairs with the honest-limits answer, the five Part 4 transcripts with trace excerpts and the layers paragraph</li>
+    <li><code>seam-memo.pdf</code>, <code>.docx</code>, or <code>.txt</code> — the Part 5 memo</li>
+  </ul>
+  <div class="warn"><b>Before you push:</b> <code>trace.jsonl</code> and <code>node_modules/</code> stay out of the repo (the starter's <code>.gitignore</code> already handles both), and every order, ticket, and customer in your evidence is fictional.</div>
+</div>
+
+</main>
+</body>
+</html>

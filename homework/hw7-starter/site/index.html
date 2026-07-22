@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--
+  Sandpiper Surf Supply — Front Desk page.
+
+  This is the ENTIRE application: three static files (this page, style.css,
+  status.json). No database, no login, no server-side code. That is what makes
+  it a perfect "rehost" candidate in the 6-Rs exercise — S3 static website
+  hosting can serve these bytes without a single server to manage.
+
+  The only moving part is the small script at the bottom, which fetches
+  status.json and shows the banner. It runs in the CUSTOMER'S browser, not on
+  any server — which is why the page works identically on your laptop server
+  and on S3.
+-->
+<title>Sandpiper Surf Supply · Front Desk</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>🏄 Sandpiper Surf Supply</h1>
+  <p class="tagline">Boards, wax, and honest answers — Gulf Coast since forever (fictionally).</p>
+</header>
+
+<!--
+  The status banner. Its text comes from status.json at load time so the
+  business can change the message (storm closure, shipping delay) by uploading
+  ONE small file instead of re-editing the whole page.
+-->
+<section class="status" id="status-banner">
+  <p id="status-message">Checking today's status…</p>
+  <p class="version">site release <span id="status-version">…</span></p>
+</section>
+
+<main>
+  <section class="card">
+    <h2>Store hours</h2>
+    <ul>
+      <li>Monday – Friday: 9:00 AM – 6:00 PM</li>
+      <li>Saturday: 8:00 AM – 5:00 PM</li>
+      <li>Sunday: closed (gone surfing)</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Our three promises</h2>
+    <ul>
+      <li><strong>30-day returns</strong> — unused gear with a receipt, no interrogation.</li>
+      <li><strong>Wax guarantee</strong> — if a bar delaminates, we replace it, period.</li>
+      <li><strong>Straight shipping talk</strong> — orders leave within 2 business days or we email you why.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Need help with an order?</h2>
+    <p>Email <strong>frontdesk@example.com</strong> with your order number (it looks like
+      <code>ORD-1042</code>). A human reads every message — assisted, these days, by some
+      software you may have heard about in other assignments.</p>
+  </section>
+</main>
+
+<footer>
+  <p>All names, orders, and promises on this page are fictional coursework data.</p>
+</footer>
+
+<script>
+/*
+  Fetch the machine-readable status file and place its message on the page.
+
+  WHY fetch instead of hard-coding the text: the banner and the page now deploy
+  independently. On cutover day you will exploit exactly this property — the
+  drill breaks status.json alone and your monitor catches it alone.
+
+  WHY the catch branch: if status.json is missing or unparsable, customers see
+  an honest "status unavailable" instead of a blank page or a raw error. Fail
+  visible, not silent.
+*/
+fetch('status.json')
+  .then(response => {
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    return response.json();
+  })
+  .then(status => {
+    document.getElementById('status-message').textContent = status.banner;
+    document.getElementById('status-version').textContent = status.version;
+  })
+  .catch(() => {
+    document.getElementById('status-message').textContent =
+      'Live status is unavailable right now — call or email the front desk.';
+    document.getElementById('status-version').textContent = 'unknown';
+    document.getElementById('status-banner').classList.add('status-down');
+  });
+</script>
+</body>
+</html>

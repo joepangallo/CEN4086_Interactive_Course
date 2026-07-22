@@ -1,0 +1,19 @@
+{
+  "name": "cen4086-hw8-agent-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CEN4086 HW8 starter: an autonomous agent loop that drives MCP tools with guardrails, an approval gate, a step budget, and a trace log.",
+  "scripts": {
+    "agent": "node agent.mjs",
+    "test": "node --test agent.test.mjs",
+    "inspect": "npx -y @modelcontextprotocol/inspector@0.22.0 node support-server.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "zod": "4.4.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

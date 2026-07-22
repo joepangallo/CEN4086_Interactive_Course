@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CEN4086 Homework 7 — disposition a small app portfolio with the 6 Rs, rehost a static site to Amazon S3, rehearse a cutover and rollback with a synthetic monitor, add operations guardrails, and estimate the bill.">
+<title>CEN4086 · Homework 7 — Cutover Weekend</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--amb:#e0a437;--acc:#0f8b8d;--bad:#c04f43;--ok:#3e8e5a;--aws:#b86b00}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--aws);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+main{max-width:920px;margin:0 auto;padding:20px 16px 80px}
+header.head{margin:18px 0 6px}header.head h1{margin:0 0 6px;font-size:27px}header.head p{margin:0;color:var(--mut)}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:10px 6px 0 0;color:var(--ink)}
+h2{font-size:21px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--aws)}
+h3{font-size:17.5px;margin:18px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin:12px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card>:first-child{margin-top:0}.card>:last-child{margin-bottom:0}
+.concept{background:#f2f1fa;border:1px solid #d8d5ee;border-left:6px solid var(--pri);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}.concept b:first-child{color:var(--pri)}
+.warn{background:#fbeeec;border:1px solid #e8c5c0;border-left:6px solid var(--bad);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.tip{background:#eef8f1;border:1px solid #c9e2d1;border-left:6px solid var(--ok);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.awsnote{background:#fff5e7;border:1px solid #ead2ad;border-left:6px solid var(--aws);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.deliver{background:#e9f4f4;border:1px solid #c5dede;border-left:6px solid var(--acc);border-radius:10px;padding:11px 15px;margin:12px 0 2px;font-size:14.5px}.deliver b:first-child{color:var(--acc)}
+.goal{background:#fff5e7;border:1px solid #ead2ad;border-left:6px solid var(--aws);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.done{background:#eef8f1;border:1px solid #c9e2d1;border-left:6px solid var(--ok);border-radius:10px;padding:11px 15px;margin:12px 0;font-size:14.5px}
+.atglance{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:12px 0}.mini{background:#fbfaf7;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:14px}.mini b{display:block;color:var(--aws);margin-bottom:2px}
+.where{font-weight:700;color:var(--aws)}
+ul.tight li,ol.tight li{margin:7px 0}
+code{background:#efede6;border-radius:5px;padding:1px 6px;font-size:.92em}
+pre{background:#1d2433;color:#e8e6f0;border-radius:10px;padding:14px 16px;overflow-x:auto;font-size:13.5px;line-height:1.5}
+table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0}th{background:#f0eee6;text-align:left}th,td{border:1px solid var(--line);padding:8px 11px;vertical-align:top}
+.note{font-size:13.5px;color:var(--mut)}
+.navtitle{font-weight:700}
+@media (max-width:620px){.atglance{grid-template-columns:1fr}th,td{padding:7px 8px}}
+@media print{.topnav{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="../index.html">⌂ Course Hub</a>
+  <span class="navtitle">📝 Homework 7 · Cutover Weekend</span>
+  <span><a href="hw6.html">HW6</a> · <a href="../week4-session11.html">Cloud Operations</a> · <a href="../week4-session12.html">Migration</a> · <a href="../aws-cost-calculator.html">Cost Calculator</a> · <a href="../project/aws-monday-checklist.html">Learner Lab</a> · <a href="hw7-starter.zip">Starter</a></span>
+</nav>
+<main>
+
+<header class="head">
+  <h1>Homework 7 · Cutover Weekend</h1>
+  <p>Disposition a small application portfolio with the 6 Rs, rehost the public front-desk site to Amazon S3 static website hosting, rehearse a real cutover — bad deploy, detection, rollback — with your own synthetic monitor, put operations guardrails on the bucket, estimate the monthly bill, and leave the account exactly as you found it.</p>
+  <div>
+    <span class="chip">Individual</span><span class="chip">Submit your GitHub repo link</span><span class="chip">AWS Academy Learner Lab</span><span class="chip">us-east-1</span><span class="chip">Fake data only</span>
+  </div>
+</header>
+
+<div class="card">
+  <p><b>The scenario, continued.</b> Sandpiper Surf Supply's support tools now live in the cloud (HW6) — but the business's public <em>front desk</em> page still runs on the aging computer in the back office. It has hours, policies, and a status banner, and it goes dark every time that machine reboots. The owner has approved a migration weekend. You are the engineer who plans it, executes it, proves it with a monitor, and — because Session 11 taught you the bill is a metric too — prices it.</p>
+<pre>BEFORE   customer → office computer (serve.mjs on your laptop) → static files
+AFTER    customer → S3 static website endpoint → the same static files
+                    ↘ versioning (rollback net) · tags · lifecycle · monitor</pre>
+  <p>No servers survive this migration. That is the point: a static site on S3 has no machine to patch, no process to restart, and no midnight pager for a dead power supply. Your job shifts from <em>keeping a computer alive</em> to <em>operating a service</em> — verifying deploys, planning rollback, tagging for cost, and reading the bill.</p>
+</div>
+
+<h2>Assignment at a glance</h2>
+<div class="card">
+  <div class="atglance">
+    <div class="mini"><b>You build</b>One migrated static site on S3 with versioning, tags, and a lifecycle rule</div>
+    <div class="mini"><b>You keep local</b>The legacy server and the synthetic monitor — the monitor outlives the migration</div>
+    <div class="mini"><b>You prove</b>A 6-Rs disposition, a healthy migration, a detected bad deploy, a rollback, and a costed bill</div>
+    <div class="mini"><b>You use</b>The AWS console and your terminal — no servers, no SDKs, no API keys</div>
+    <div class="mini"><b>You submit</b>Code, runbook, write-up, and memo in one GitHub repo</div>
+    <div class="mini"><b>You finish by</b>Emptying every object version and deleting the bucket</div>
+  </div>
+  <p>Work in this order: run the legacy site → disposition the portfolio → rehost to S3 → cutover drill with rollback → tags and lifecycle → cost memo → cleanup. Do not start the cutover drill until the monitor reports the migrated site healthy.</p>
+</div>
+
+<h2>Read this first — what runs where</h2>
+<div class="card">
+  <p>Three programs appear in this assignment, and only one of them moves to the cloud:</p>
+  <table>
+    <tr><th>Program</th><th>Role in the story</th><th>Where it runs</th><th>What happens to it</th></tr>
+    <tr><td><code>site/</code> (three files)</td><td>The application being migrated</td><td class="where">Laptop → S3</td><td><b>Rehosted.</b> The files do not change; only where they are served from changes.</td></tr>
+    <tr><td><code>serve.mjs</code></td><td>The legacy on-prem server</td><td class="where">Laptop only</td><td><b>Retired</b> at the end — the happiest of the 6 Rs.</td></tr>
+    <tr><td><code>monitor.mjs</code></td><td>Your synthetic monitor</td><td class="where">Laptop only</td><td><b>Retained.</b> It verifies the old site, the new site, and every deploy after cutover.</td></tr>
+  </table>
+  <div class="concept"><b>Why the monitor is the star.</b> Session 11's first law was <em>you can't manage what you can't see</em>. The monitor is the smallest possible "seeing" machine: it fetches the site like a customer, checks content — not just status codes — and returns an exit code a scheduler could act on. Notice that it takes <em>any</em> base URL. A monitor that only worked against one hosting setup would die in the migration; yours survives it, which is exactly what real operations teams demand of their tooling on cutover day.</div>
+  <div class="concept"><b>Static hosting is not "less cloud."</b> S3 static website hosting is a fully managed service: eleven-nines durability, no capacity planning, pay-per-use pricing. It cannot run server-side code — no Lambda-style logic, no database calls from the server — which is why the <em>disposition</em> step matters: rehost is only right for apps that truly are static. Choosing it blindly for everything is how migrations fail.</div>
+</div>
+
+<h2>Starter file map</h2>
+<div class="card">
+  <p>Download <a href="hw7-starter.zip"><b>hw7-starter.zip</b></a> and unzip it. The starter ships complete and all its tests pass — your work is the migration and the operations around it, not new code.</p>
+  <table>
+    <tr><th>File</th><th>What it is</th></tr>
+    <tr><td><code>serve.mjs</code></td><td>Zero-dependency local web server for <code>site/</code> at <code>http://localhost:8080</code> — the "legacy" machine</td></tr>
+    <tr><td><code>monitor.mjs</code></td><td>The synthetic monitor: five checks (six with <code>--expect-version</code>), PASS/FAIL lines, honest exit code</td></tr>
+    <tr><td><code>monitor.test.mjs</code></td><td>Executable requirements for the monitor's judgment; run with <code>npm test</code>; keep passing</td></tr>
+    <tr><td><code>site/index.html</code></td><td>The front desk page; fetches <code>status.json</code> in the browser for its banner</td></tr>
+    <tr><td><code>site/style.css</code></td><td>The stylesheet — exists so the migration moves more than one file</td></tr>
+    <tr><td><code>site/status.json</code></td><td>Machine-readable release file: <code>service</code>, <code>version</code> (starts at <code>1.0.0</code>), <code>banner</code></td></tr>
+    <tr><td><code>drills/broken-status.json</code></td><td>A deliberately truncated status file — the "bad deploy" you will ship on purpose in Part 3</td></tr>
+  </table>
+  <p class="note">Node.js 18+ required. No <code>npm install</code> — the starter has zero dependencies, because static sites should be boring.</p>
+</div>
+
+<h2>What you'll practice</h2>
+<div class="card">
+  <ul class="tight">
+    <li>Applying the <b>6 Rs</b> (rehost, replatform, repurchase, refactor, retire, retain) to a concrete portfolio instead of a slide</li>
+    <li>Creating an S3 bucket, enabling <b>static website hosting</b>, and publishing objects with a scoped public-read bucket policy</li>
+    <li>Running a <b>cutover</b> the professional way: deploy, verify with a monitor, detect a bad release, roll back with <b>S3 versioning</b></li>
+    <li>Operations guardrails: <b>tags</b> for cost allocation and a <b>lifecycle rule</b> that stops old versions from billing forever</li>
+    <li>Reading <b>measured service</b>: estimating a real monthly bill for storage, requests, and data transfer</li>
+    <li>Complete, verified <b>cleanup</b> of a versioned bucket — harder than it sounds, and treated like it matters, because in real accounts it does</li>
+  </ul>
+</div>
+
+<h2>Before you start</h2>
+<div class="card">
+  <ol class="tight">
+    <li>Create a <b>new GitHub repository</b> (for example <code>cen4086-hw7</code>) and copy the unzipped starter into it. Commit before you change anything.</li>
+    <li>Confirm Node 18+: <code>node --version</code>.</li>
+    <li>Start your AWS Academy Learner Lab session and open the console. Everything in this assignment happens in <b>us-east-1</b>. The <a href="../project/aws-monday-checklist.html">Learner Lab checklist</a> covers starting, stopping, and budget basics.</li>
+    <li>Record your lab budget's starting value in your write-up — you will read it again at the end.</li>
+  </ol>
+  <div class="warn"><b>Public means public.</b> This bucket will be readable by the entire internet — that is what a public website is. Fictional data only: no real names, no real emails, no credentials, ever. The starter's data is already fictional; keep it that way.</div>
+  <div class="awsnote"><b>Learner Lab notes.</b> Bucket names are globally unique — include something distinctive (initials + random digits). If a console action fails with a permissions error, confirm the lab session is running (green dot) and the region is us-east-1 before assuming you did something wrong.</div>
+</div>
+
+<h2>Part 0 — Preflight: feel the legacy</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> prove the starter works, meet the monitor, and experience the outage the migration exists to eliminate.</div>
+  <ol class="tight">
+    <li>In the starter folder run <code>npm test</code>. Every test should pass — if not, fix your Node version before continuing.</li>
+    <li>Run <code>npm start</code> and open <code>http://localhost:8080</code>. The banner should read "All systems normal…" with release <code>1.0.0</code>.</li>
+    <li>In a second terminal run <code>node monitor.mjs http://localhost:8080</code> — five PASS lines, <code>SITE HEALTHY</code>.</li>
+    <li>Now stop the server (Ctrl+C) and run the monitor again. Watch it fail. In your write-up, answer: <em>which checks failed, what did the exit code become, and who in a real business notices this outage first — the engineer or the customer?</em></li>
+    <li>Restart the server for now; you retire it in Part 6.</li>
+  </ol>
+  <div class="done"><b>Preflight is done when:</b> tests pass, the monitor shows healthy against localhost, and your write-up describes the outage run.</div>
+</div>
+
+<h2>Part 1 — Disposition: the 6-Rs table</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> decide what should happen to each item in Sandpiper's little portfolio — before touching the console, like a real migration team.</div>
+  <p>Sandpiper's owner lists six "systems." For each, choose <b>exactly one</b> of the 6 Rs and defend it in one or two sentences. Wrong-but-defended beats right-but-unexplained.</p>
+  <table>
+    <tr><th>#</th><th>System</th><th>Facts you have</th></tr>
+    <tr><td>1</td><td>Front-desk website (this assignment's <code>site/</code>)</td><td>Three static files; no server-side logic; currently on the office computer</td></tr>
+    <tr><td>2</td><td>Support ticket service</td><td>You already moved it: HW6 turned it into API Gateway + Lambda + DynamoDB</td></tr>
+    <tr><td>3</td><td>The office computer itself</td><td>Runs the website and nothing else once tickets moved</td></tr>
+    <tr><td>4</td><td>Payroll</td><td>A spreadsheet the owner hates; several SaaS payroll products exist</td></tr>
+    <tr><td>5</td><td>The fax-order workflow</td><td>Received two orders last year, both from the same customer, who also emails</td></tr>
+    <tr><td>6</td><td>The point-of-sale terminal in the store</td><td>Certified hardware+software bundle from a vendor; contract renews in three years; works fine</td></tr>
+  </table>
+  <div class="concept"><b>The two traps.</b> Every real portfolio contains something that should be <b>retired</b> (migrating it would be waste) and something that should be <b>retained</b> (moving it now is needless risk). Migration maturity is measured by what you <em>don't</em> move. If your table has no retire and no retain, look again.</div>
+  <div class="deliver"><b>Deliverable:</b> the six-row disposition table with justifications, in your write-up.</div>
+</div>
+
+<h2>Part 2 — Rehost: the site moves to S3</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> serve the identical files from S3 static website hosting and prove it with the same monitor that watched the legacy server.</div>
+  <h3>2A · Create the bucket</h3>
+  <ol class="tight">
+    <li>Console → S3 → <b>Create bucket</b>. Region <b>us-east-1</b>. Name it something globally unique, e.g. <code>sandpiper-frontdesk-&lt;initials&gt;&lt;4 digits&gt;</code>.</li>
+    <li>Under <b>Block Public Access</b>, uncheck "Block all public access" and acknowledge the warning. You are hosting a public website; this is the one situation where that checkbox is supposed to come off. Leave every other default.</li>
+  </ol>
+  <h3>2B · Turn on static website hosting</h3>
+  <ol class="tight">
+    <li>Open the bucket → <b>Properties</b> → scroll to <b>Static website hosting</b> → Edit → Enable.</li>
+    <li>Index document: <code>index.html</code>. Save, then copy the <b>bucket website endpoint</b> URL — it looks like <code>http://BUCKET.s3-website-us-east-1.amazonaws.com</code>. This is your site's new address.</li>
+  </ol>
+  <h3>2C · Upload and publish</h3>
+  <ol class="tight">
+    <li><b>Objects</b> → Upload → add the three files from <code>site/</code> (<code>index.html</code>, <code>style.css</code>, <code>status.json</code>). Upload them at the top level of the bucket — not inside a <code>site/</code> folder — so the paths match what the page expects.</li>
+    <li>Attach the public-read policy: <b>Permissions</b> → Bucket policy → Edit → paste, replacing <code>BUCKET-NAME</code> with your bucket's exact name:</li>
+  </ol>
+<pre>{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Sid": "PublicReadGetObject",
+    "Effect": "Allow",
+    "Principal": "*",
+    "Action": "s3:GetObject",
+    "Resource": "arn:aws:s3:::BUCKET-NAME/*"
+  }]
+}</pre>
+  <div class="concept"><b>Read the policy before pasting it — it is four decisions.</b> <code>Principal: "*"</code> means <em>anyone</em> (a website's audience). <code>Action: s3:GetObject</code> means <em>read only</em> — the internet can download your files but can never upload, change, or delete one. <code>Resource: .../*</code> scopes it to objects in this one bucket. And there is no second statement: nothing here grants list, write, or delete to anyone. Least privilege isn't only for private systems; a public site is "everyone may GET, and that is all."</div>
+  <h3>2D · Verify like an operator</h3>
+  <ol class="tight">
+    <li>Open the website endpoint in your browser — same page, same banner, no laptop involved.</li>
+    <li>Now the professional version: <code>node monitor.mjs http://YOUR-ENDPOINT</code>. All five checks must pass.</li>
+    <li>Stop your local <code>serve.mjs</code> and run the monitor against the S3 endpoint again. It still passes — the site no longer needs your laptop. That single observation is the rehost, proven.</li>
+  </ol>
+  <div class="done"><b>Part 2 is done when:</b> the monitor reports SITE HEALTHY against the S3 website endpoint with your laptop server stopped.</div>
+  <div class="deliver"><b>Evidence:</b> the monitor's full output against the S3 endpoint (paste the terminal text into your write-up), plus one screenshot of the bucket's Static website hosting panel showing the endpoint.</div>
+</div>
+
+<h2>Part 3 — Cutover drill: ship it, break it, roll it back</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> rehearse the moment Session 12 called "the weekend everything switches": deploy a new release, verify it, then survive a bad deploy using versioning as the rollback net.</div>
+  <h3>3A · Arm the rollback net first</h3>
+  <ol class="tight">
+    <li>Bucket → <b>Properties</b> → <b>Bucket Versioning</b> → Edit → Enable.</li>
+    <li>In your write-up, note the order of operations here: versioning goes on <em>before</em> the risky deploy, for the same reason seatbelts fasten before the car moves.</li>
+  </ol>
+  <h3>3B · Ship release 1.1.0 (the good deploy)</h3>
+  <ol class="tight">
+    <li>Locally, edit <code>site/status.json</code>: change <code>version</code> to <code>1.1.0</code> and the banner to a message announcing the new cloud home (keep it fictional and professional). Commit.</li>
+    <li>Upload the edited <code>status.json</code> to the bucket, overwriting the old one.</li>
+    <li>Verify with a release expectation: <code>node monitor.mjs http://YOUR-ENDPOINT --expect-version=1.1.0</code> — six checks, all passing. Note why the sixth check exists: "something responds" and "the new release is live" are different claims.</li>
+  </ol>
+  <h3>3C · The bad deploy (on purpose)</h3>
+  <ol class="tight">
+    <li>Upload <code>drills/broken-status.json</code> to the bucket <b>renamed as</b> <code>status.json</code> (easiest: locally copy it over <code>site/status.json</code>, upload, then restore your local copy with <code>git checkout -- site/status.json</code>). This simulates the classic truncated-upload failure.</li>
+    <li>Run the monitor with <code>--expect-version=1.1.0</code>. Read the output carefully: which checks still pass, which fail, and what does the failure message tell an on-call engineer at 2 a.m.?</li>
+    <li>Open the site in your browser too — the page's own error handling shows a fallback banner. In your write-up: why is "fail visible" better than a blank page, and which of the two (monitor or page fallback) actually pages a human?</li>
+  </ol>
+  <h3>3D · Roll back with versioning</h3>
+  <ol class="tight">
+    <li>Bucket → Objects → toggle <b>Show versions</b>. <code>status.json</code> now lists multiple versions, newest first.</li>
+    <li>Select <b>only the newest (broken) version</b> of <code>status.json</code> and delete it. Deleting the newest version un-hides the previous good one — that is the whole rollback.</li>
+    <li>Verify: <code>node monitor.mjs http://YOUR-ENDPOINT --expect-version=1.1.0</code> — healthy again. Time yourself from "monitor red" to "monitor green" and record it.</li>
+  </ol>
+  <div class="warn"><b>Precision matters here.</b> Deleting the <em>object</em> instead of the <em>one broken version</em> deletes the site's status file entirely (it leaves a delete marker). If that happens, don't panic: show versions, delete the delete marker, breathe, and write down what you learned about why rollback procedures are rehearsed.</div>
+  <h3>3E · Write the cutover runbook</h3>
+  <p>Turn what you just did into a numbered runbook another student could execute: pre-checks, deploy step, verification command, the exact monitor output that triggers rollback, the rollback steps, and the final verification. One page, imperative voice ("Run…", "If X, then Y"), in your repo as <code>runbook.txt</code> or <code>runbook.pdf</code>.</p>
+  <div class="done"><b>Part 3 is done when:</b> your terminal history shows healthy 1.1.0 → broken → healthy 1.1.0 again, and the runbook exists.</div>
+  <div class="deliver"><b>Evidence:</b> the three monitor outputs (good deploy, bad deploy, post-rollback) pasted in order into your write-up, your red-to-green time, and the runbook file.</div>
+</div>
+
+<h2>Part 4 — Operate it: tags and a lifecycle rule</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> leave the bucket in a state an operations team could live with — attributable on the bill and unable to hoard old versions forever.</div>
+  <h3>4A · Tags: who pays for this?</h3>
+  <ol class="tight">
+    <li>Bucket → Properties → <b>Tags</b> → add two: <code>app = sandpiper-front-desk</code> and <code>env = production</code>.</li>
+    <li>In your write-up, connect this to Session 11's chargeback lesson: with fifty untagged buckets, what question can the finance team not answer?</li>
+  </ol>
+  <h3>4B · Lifecycle: versioning without a hoarding problem</h3>
+  <p>Versioning saved you in Part 3, but every old version is billed storage, forever, unless a rule says otherwise.</p>
+  <ol class="tight">
+    <li>Bucket → <b>Management</b> → Create lifecycle rule, e.g. <code>expire-old-versions</code>, applied to all objects.</li>
+    <li>Add the action <b>Permanently delete noncurrent versions</b> after <b>30</b> days.</li>
+    <li>Add the action <b>Delete expired object delete markers or incomplete multipart uploads</b> → incomplete multipart uploads after <b>7</b> days.</li>
+  </ol>
+  <div class="concept"><b>Why 30 days is a decision, not a default.</b> A shorter window shrinks the bill; a longer one lengthens how far back you can roll. Rollback nets are insurance, and lifecycle rules are the premium you choose. In your write-up, state one scenario where 30 days would be too short.</div>
+  <div class="done"><b>Part 4 is done when:</b> both tags exist and the lifecycle rule is Enabled with both actions.</div>
+  <div class="deliver"><b>Evidence:</b> one screenshot of the tags and one of the enabled lifecycle rule's summary.</div>
+</div>
+
+<h2>Part 5 — The bill: measured service, measured</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> price the migrated site like the metric it is.</div>
+  <p>Assume Sandpiper's front desk sees this traffic every month:</p>
+  <table>
+    <tr><th>Quantity</th><th>Value</th><th>Where it shows up on the bill</th></tr>
+    <tr><td>Page views</td><td>60,000 / month</td><td>Requests + data transfer</td></tr>
+    <tr><td>Requests per view</td><td>3 GETs (page, stylesheet, status)</td><td>GET request pricing</td></tr>
+    <tr><td>Data per view</td><td>~120 KB total</td><td>Data transfer out to the internet</td></tr>
+    <tr><td>Stored data</td><td>&lt; 1 MB current + old versions</td><td>Storage (S3 Standard)</td></tr>
+  </table>
+  <ol class="tight">
+    <li>Work the arithmetic: total GET requests/month, total GB transferred out/month, total GB stored. Show every step.</li>
+    <li>Using the course <a href="../aws-cost-calculator.html">AWS Cost Calculator</a> page and current public S3 pricing for us-east-1, estimate the monthly cost line by line: storage, requests, data transfer. State which line dominates and why the other two round to almost nothing.</li>
+    <li>Compare honestly against the office computer it replaced — electricity, the occasional dead disk, and the outage every reboot caused. Cheap is good; <em>predictable and visible</em> is the deeper win. Say which mattered more here and why.</li>
+    <li>Finish with one sentence on what would change if a viral post multiplied traffic by 100 overnight — for the S3 site, and for the office computer.</li>
+  </ol>
+  <div class="deliver"><b>Deliverable:</b> the cost memo (arithmetic + line estimates + comparison + viral-day sentence) as <code>cost-memo.pdf</code>, <code>.docx</code>, or <code>.txt</code> in your repo.</div>
+</div>
+
+<h2>Part 6 — Cleanup: leave no trace</h2>
+<div class="card">
+  <div class="goal"><b>Goal:</b> remove everything you created. A versioned bucket makes this a two-step operation — learning that <em>is</em> the exercise.</div>
+  <ol class="tight">
+    <li>Bucket → <b>Empty</b> → type the confirmation. Emptying a versioned bucket deletes <em>all versions and delete markers</em>, not just current objects — read the dialog and say so in your write-up.</li>
+    <li>Then Bucket → <b>Delete</b> → type the bucket name.</li>
+    <li>Confirm the S3 console shows no buckets of yours, record your lab budget's ending value next to the starting value from Part 0, and end the lab session.</li>
+    <li>Retire the legacy: you never need <code>serve.mjs</code> again. Note the retirement in your write-up — system #3 from your disposition table just exited the portfolio for real.</li>
+  </ol>
+  <div class="done"><b>Part 6 is done when:</b> the bucket is gone, both budget readings are in the write-up, and the lab session is ended.</div>
+</div>
+
+<h2>Submit</h2>
+<div class="card">
+  <p>Submit your <b>GitHub repo link</b>. The repo must contain:</p>
+  <ul class="tight">
+    <li>The starter code, with your <code>1.1.0</code> edit to <code>site/status.json</code> committed</li>
+    <li><code>writeup.pdf</code>, <code>.docx</code>, or <code>.txt</code> — Part 0 outage observations, the 6-Rs table, Part 2 monitor evidence, the three Part 3 monitor outputs with your red-to-green time, Part 4 answers, the two screenshots, and both budget readings</li>
+    <li><code>runbook.txt</code> or <code>runbook.pdf</code> — the Part 3E cutover runbook</li>
+    <li><code>cost-memo.pdf</code>, <code>.docx</code>, or <code>.txt</code> — the Part 5 memo</li>
+  </ul>
+  <div class="warn"><b>Before you push:</b> confirm no real personal data anywhere, and that your bucket is already deleted — a repo that advertises a live endpoint you forgot to remove is its own operations lesson, the bad kind.</div>
+</div>
+
+</main>
+</body>
+</html>

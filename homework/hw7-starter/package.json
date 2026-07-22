@@ -1,0 +1,15 @@
+{
+  "name": "cen4086-hw7-migration-starter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CEN4086 HW7 starter: a legacy static front-desk site, a local web server, and a synthetic monitor for verifying the migration to S3.",
+  "scripts": {
+    "start": "node serve.mjs",
+    "monitor": "node monitor.mjs",
+    "test": "node --test monitor.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
