@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Cloud Concepts Practice Lab — Post-Test Preparation</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0b6f71;--amb:#e0a437;--bad:#c04f43;--ok:#2f7045;--vio:#664795;--wk:#0b6f71}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.skiplink{position:absolute;left:-9999px;top:0;background:var(--pri);color:#fff;padding:10px 16px;border-radius:0 0 10px 0;z-index:100;font-weight:700}
+.skiplink:focus{left:0}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--wk);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+.topnav .mid{font-weight:700}
+#scoreChip{background:var(--pri);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:700}
+#matchChip{background:var(--acc);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:700}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--acc) 0%,#084c4e 100%);color:#fff;border-radius:16px;padding:28px 26px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:30px;line-height:1.25}
+.hero .sub{margin:0 0 12px;opacity:.92;font-size:16.5px}
+.hero p{position:relative}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:var(--ink)}
+.hero .chip{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .chip.obj{background:var(--amb);border-color:var(--amb);color:#3a2c05}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
+h3{font-size:18px;margin:20px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.guide{border-top:6px solid var(--vio);background:linear-gradient(180deg,#f7f3fc,#fff 90px)}
+.card.plan{border-top:6px solid var(--pri);background:linear-gradient(180deg,#f0f0fa,#fff 90px)}
+.card.howto{border-top:6px solid var(--acc)}
+.segment{position:relative}
+.segno{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--wk);color:#fff;font-weight:800;font-size:15px;margin-right:8px}
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.flip{border:1.5px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
+.flip h5{margin:0;font-size:15px;color:var(--pri)}
+.flip .back{display:none;margin-top:8px;font-size:14px;color:var(--ink)}
+.flip.open{background:#eef4f4;border-color:var(--acc)}
+.flip.open .back{display:block}
+.flip .hint{font-size:12px;color:var(--mut)}
+.matcher{margin:14px 0}
+.mcards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.mcard{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px;text-align:left;max-width:100%}
+.mcard.sel{outline:3px solid var(--amb);border-color:var(--amb)}
+.mcard.ok{background:#e7f3ec;border-color:var(--ok);color:#28583b;cursor:default}
+.mcard.ok::after{content:" ✓"}
+.mcard.no{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.mzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.mzone{border:2px dashed var(--acc);border-radius:12px;background:#f4faf9;padding:12px;cursor:pointer;font:inherit;text-align:center;font-weight:700;color:var(--acc)}
+.mzone small{display:block;font-weight:400;color:var(--mut);margin-top:4px}
+.mstatus{margin-top:10px;font-weight:700;color:var(--pri)}
+.quiz .q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.quiz .q h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
+.stem{margin:6px 0 10px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fbfaf7;cursor:pointer;font:inherit;font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--pri)}
+.opt:disabled{cursor:default;opacity:.85}
+.opt.right{background:#e7f3ec;border-color:var(--ok);opacity:1;font-weight:600}
+.opt.wrong{background:#f8e9e7;border-color:var(--bad);opacity:1}
+.expl{display:none;margin-top:10px;padding:12px 14px;background:#f4f6fb;border-left:4px solid var(--pri);border-radius:8px;font-size:14.5px}
+.q.done .expl{display:block}
+.qresult{margin-top:16px}
+.bar{height:12px;background:#e8e4da;border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .4s}
+.scoreline{font-weight:700;margin:6px 0 0}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.small{padding:5px 12px;font-size:13px}
+.kpis{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.kpi{flex:1;min-width:130px;background:#f4f6fb;border-radius:10px;padding:10px 14px;text-align:center}
+.kpi b{display:block;font-size:22px;color:var(--pri);line-height:1.2}
+.kpi small{color:var(--mut)}
+.note{font-size:13.5px;color:var(--mut)}
+ul.terms{margin:8px 0 14px;padding-left:24px}
+ul.terms li{margin:6px 0}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.footer-nav{display:flex;justify-content:space-between;margin-top:30px;gap:10px;flex-wrap:wrap}
+table.simple{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+table.simple th{background:#f0eee6;text-align:left}
+table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
+:focus-visible{outline:3px solid var(--amb);outline-offset:2px}
+@media print{.topnav,.btn{display:none}body{background:#fff}.expl{display:block!important}}
+table{max-width:100%;display:block;overflow-x:auto}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;transition-delay:0s!important}}
+</style>
+</head>
+<body>
+<a class="skiplink" href="#main-content">Skip to practice content</a>
+<nav class="topnav">
+  <a href="index.html">⌂ Course Hub</a>
+  <span class="mid">Cloud Concepts Practice Lab — Post-Test Preparation</span>
+  <span><span id="scoreChip" aria-live="polite">Quiz: 0/0</span> &nbsp; <span id="matchChip" aria-live="polite">Matches: 0/0</span></span>
+</nav>
+<main id="main-content" tabindex="-1">
+
+<div class="hero">
+  <h1>Cloud Concepts Practice Lab</h1>
+  <p class="sub">Twenty scenario questions and six sorting drills across everything the post-test covers — deployment models, service models, reliability, identity, storage, virtualization, and services.</p>
+  <p><span class="chip obj">20 quiz questions</span> <span class="chip obj">47 sorting cards</span> <span class="chip">Every option explained</span> <span class="chip">Progress saves in this browser</span></p>
+</div>
+
+<section class="card howto">
+  <h3>How to work this page</h3>
+  <p>This lab uses the same two drills as your session pages, so nothing here should feel new:</p>
+  <ul class="terms">
+    <li><strong>Sorters (🎮) come first in each part.</strong> Click a card, then click the zone it belongs to. A wrong zone shakes the card and leaves it in play — try again. The status line under each sorter counts what you have placed.</li>
+    <li><strong>Quizzes (📝) come second.</strong> Pick one answer per question. Your choice locks immediately and the explanation opens, covering the correct answer <em>and</em> why each of the other three fails. There is no penalty for a wrong pick — the explanation is the point.</li>
+    <li><strong>Do the sorter before the quiz in each part.</strong> The sorters build the vocabulary the quiz questions then apply to a situation.</li>
+    <li><strong>Your progress saves automatically</strong> in this browser, so you can close the tab and come back. The two chips in the top bar track your running totals; "Reset my progress" at the bottom clears everything if you want a clean second pass.</li>
+  </ul>
+  <p class="note">Practice only — nothing on this page is submitted or graded. Work it until every explanation reads as obvious rather than surprising.</p>
+</section>
+
+<!-- ============ PART 1 ============ -->
+<section class="segment">
+  <h2><span class="segno">1</span> Cloud models &amp; service delivery</h2>
+
+  <div class="card">
+    <h3>🎮 Sorter 1 · Which deployment model?</h3>
+    <p>Four deployment models, eight situations. The question each card answers is <em>who is allowed on this infrastructure, and who governs it</em> — not how big it is or what runs on it. Click a card, then its model:</p>
+    <div class="matcher" id="deployMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="public">A startup rents web servers from a provider that sells the same capacity to anyone with a credit card</button>
+        <button class="mcard" data-match="private">A defense contractor runs a cloud platform on hardware only its own staff may touch</button>
+        <button class="mcard" data-match="community">Six school districts jointly fund and govern one platform built to the same student-privacy rules</button>
+        <button class="mcard" data-match="hybrid">Patient records stay on the hospital's own platform while the public appointment site scales in a provider's cloud</button>
+        <button class="mcard" data-match="public">A photo app's storage sits on infrastructure shared with thousands of unrelated customers</button>
+        <button class="mcard" data-match="private">One bank owns and governs the whole environment; no other tenant exists on it</button>
+        <button class="mcard" data-match="community">State agencies bound by identical records-retention law share an environment closed to outsiders</button>
+        <button class="mcard" data-match="hybrid">A retailer keeps its ledger in-house and bursts into rented capacity every Black Friday</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="public">🌐 Public<small>open to any customer</small></button>
+        <button class="mzone" data-zone="private">🔒 Private<small>one organization only</small></button>
+        <button class="mzone" data-zone="community">🤝 Community<small>a closed group, shared requirements</small></button>
+        <button class="mzone" data-zone="hybrid">🔗 Hybrid<small>two environments, connected</small></button>
+      </div>
+      <p class="mstatus" aria-live="polite">0/8 placed</p>
+    </div>
+    <p class="note">The trap is <strong>private vs. community</strong>. Both are closed to the general public; the difference is the number of organizations governing it. One organization = private. Several organizations with a shared requirement = community.</p>
+
+    <h3>🎮 Sorter 2 · Who manages what?</h3>
+    <p>Nine situations, three service models. Ignore what the software <em>does</em> and ask one question instead: <em>where does the customer's responsibility stop?</em></p>
+    <div class="matcher" id="serviceMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="saas">Staff log in to a finished help-desk product and only configure fields and workflows</button>
+        <button class="mcard" data-match="paas">Developers push their own application code and the provider supplies the runtime and the scaling</button>
+        <button class="mcard" data-match="iaas">The customer rents virtual machines and is responsible for patching the guest operating system</button>
+        <button class="mcard" data-match="saas">The vendor patches, upgrades, and scales the application; customers never see a server</button>
+        <button class="mcard" data-match="paas">The team never patches an operating system, but it does write and deploy the application</button>
+        <button class="mcard" data-match="iaas">The team provisions virtual networks, disks, and instances, then installs everything above them</button>
+        <button class="mcard" data-match="saas">A payroll product reached entirely through a browser and priced per employee per month</button>
+        <button class="mcard" data-match="paas">A managed database and language runtime are supplied; the team's job stops at its own code</button>
+        <button class="mcard" data-match="iaas">The provider supplies raw compute and storage; everything installed on top belongs to the customer</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="saas">📱 SaaS<small>use a finished application</small></button>
+        <button class="mzone" data-zone="paas">🧱 PaaS<small>deploy your code on a managed platform</small></button>
+        <button class="mzone" data-zone="iaas">🖥️ IaaS<small>rent the infrastructure, run the stack</small></button>
+      </div>
+      <p class="mstatus" aria-live="polite">0/9 placed</p>
+    </div>
+    <p class="note">One sentence carries all three: <strong>SaaS = you use it · PaaS = you build on it · IaaS = you run on it.</strong> If the card mentions an operating system the customer patches, it is IaaS every time.</p>
+  </div>
+
+  <h3>📝 Practice quiz — Part 1</h3>
+  <p>Six situations. Pick the best answer; every question explains all four options as soon as you choose.</p>
+  <section class="quiz" id="quizModels">
+
+    <div class="q" data-a="1">
+      <h4>Q1 · <em>Four hospitals, one rulebook</em></h4>
+      <p class="stem">Four regional hospitals want to share cloud infrastructure. All four answer to the same patient-privacy regulator, all four need the same audit logging, and none of them wants to fund a data center alone. They will govern the environment jointly, and no outside customer will ever use it. Which deployment model fits?</p>
+      <button class="opt">A. Public cloud — provider-owned resources offered to any paying customer</button>
+      <button class="opt">B. Community cloud — shared by organizations bound by the same requirements</button>
+      <button class="opt">C. Private cloud — dedicated to one organization and to nobody else</button>
+      <button class="opt">D. Exclusive cloud — a fifth model reserved for regulated industries</button>
+      <div class="expl"><strong>Answer: B.</strong> ✔ A community cloud is the model defined by a <em>shared concern</em> — common security, policy, compliance, or mission requirements — with the infrastructure governed collectively by the participating organizations and closed to everyone else. Four hospitals under one privacy regulator, splitting the cost and carrying identical audit obligations, is the textbook case. ✘ A — a public cloud is offered for open use; the hospitals would be tenants alongside anyone with a credit card, and not one of them would govern it. ✘ C — a private cloud is dedicated to a <em>single</em> organization, which is exactly the arrangement each hospital rejected when it decided not to fund one alone. ✘ D — "exclusive cloud" is not one of the four deployment models (public, private, community, hybrid). An option naming a model you have never studied is a distractor, not a gap in your notes.</div>
+    </div>
+
+    <div class="q" data-a="2">
+      <h4>Q2 · <em>The browser tab that is the whole product</em></h4>
+      <p class="stem">The sales team at Gulfstream Supply signs in to a complete customer-management application through a browser. They configure fields and run reports; the vendor owns the code, the servers, the patching, and the upgrade schedule. Which service model is this?</p>
+      <button class="opt">A. IaaS — the team rents virtual machines and installs software on them</button>
+      <button class="opt">B. PaaS — the team deploys its own code onto a managed platform</button>
+      <button class="opt">C. SaaS — the team uses a finished application the vendor operates</button>
+      <button class="opt">D. None of these — browser-delivered software sits outside the service models</button>
+      <div class="expl"><strong>Answer: C.</strong> ✔ Software as a Service delivers a <em>finished</em> application through an interface. The customer's job stops at configuration and use, while the provider runs the application, the runtime, the servers, and the upgrades — which is why the sales team can adopt a CRM without hiring an administrator. ✘ A — with IaaS the customer receives raw compute, network, and storage, and owns the guest operating system and everything above it; nobody on this sales team installs anything. ✘ B — PaaS gives developers a managed place to deploy <em>their own</em> code; this team writes no code, it fills in fields. ✘ D — browser delivery is not a fourth category, it is simply how SaaS usually reaches a user.</div>
+    </div>
+
+    <div class="q" data-a="3">
+      <h4>Q3 · <em>One application, three hundred companies</em></h4>
+      <p class="stem">Meridian's accounting application serves roughly 300 client companies from one shared application environment. Each company sees only its own ledgers, users, and settings, and one company's configuration change never appears in another's account. Which design does this illustrate?</p>
+      <button class="opt">A. Failover — work moves to a backup when the primary system fails</button>
+      <button class="opt">B. Load balancing — requests are spread across several healthy servers</button>
+      <button class="opt">C. Single sign-on — one login grants access to many applications</button>
+      <button class="opt">D. Multitenancy — one environment serves many customers, data isolated</button>
+      <div class="expl"><strong>Answer: D.</strong> ✔ Multitenancy is the design where a single application environment serves many customers — "tenants" — while logically isolating each tenant's data and configuration. It is the economics behind SaaS: one codebase, one operations team, hundreds of customers, with the separation enforced in software instead of by giving everyone their own servers. ✘ A — failover is a reliability mechanism about what happens <em>when something breaks</em>, and nothing in this story has broken. ✘ B — load balancing distributes requests across resources; that is a capacity concern, not what keeps 300 companies' ledgers apart. ✘ C — SSO is about <em>authentication</em> across multiple applications, while this describes one application with separated data.</div>
+    </div>
+
+    <div class="q" data-a="0">
+      <h4>Q4 · <em>Three services, one screen</em></h4>
+      <p class="stem">Palm Coast Travel's new trip dashboard pulls maps from one service, forecasts from a second, and hotel availability from a third, then presents all three together as a single planning screen. What is the combined result called?</p>
+      <button class="opt">A. A mashup — a new experience assembled from several services</button>
+      <button class="opt">B. A merger — the formal combination of two software companies</button>
+      <button class="opt">C. A hypervisor — software that creates and manages virtual machines</button>
+      <button class="opt">D. A storage area network — a dedicated network for pooled storage</button>
+      <div class="expl"><strong>Answer: A.</strong> ✔ A mashup combines content or capabilities drawn from multiple services or data sources into one new experience. The value lives in the <em>combination</em> — not one of the three upstream services, on its own, shows a traveler a map, a forecast, and an available room in a single view. ✘ B — a merger is a business transaction between companies; the word sits close enough to "mashup" to tempt a fast reader and describes something entirely unrelated. ✘ C — a hypervisor sits between virtual machines and physical hardware, several layers below anything to do with combining web content. ✘ D — a SAN is storage infrastructure inside a data center, not an application-level combination of services.</div>
+    </div>
+
+    <div class="q" data-a="2">
+      <h4>Q5 · <em>Moving the servers out of the closet</em></h4>
+      <p class="stem">Bayside Marine moves its servers out of a back-office closet and into an ISP's managed data center. Which outcome is <strong>least</strong> likely to be a benefit of that move?</p>
+      <button class="opt">A. Room to scale, because the facility has capacity the closet never had</button>
+      <button class="opt">B. Better uptime, because the facility has redundant power and cooling</button>
+      <button class="opt">C. More on-site server administration back at the company's own office</button>
+      <button class="opt">D. Lower facility cost, because the closet's power and cooling stop</button>
+      <div class="expl"><strong>Answer: C.</strong> ✔ Read the question again: it asks for the <em>non</em>-benefit. The entire point of moving servers into a provider facility is to reduce what the company has to do at its own site, so ending up with <em>more</em> on-site administration back at the office would mean the move failed. ✘ A — capacity on demand is one of the standard hosting benefits; the ISP already owns racks, power, and bandwidth the closet never had. ✘ B — improved uptime is usually the headline reason: redundant power, cooling, connectivity, and staff on site around the clock. ✘ D — lower facility cost follows directly, because the company stops paying to power and cool a room full of servers. Three options are genuine benefits; the exam rewards noticing which question is actually being asked.</div>
+    </div>
+
+    <div class="q" data-a="3">
+      <h4>Q6 · <em>The platform and the twenty-year-old system</em></h4>
+      <p class="stem">Northshore Freight's developers choose PaaS to ship a new customer portal faster. Their risk review has to list what could still go wrong after that decision. Which concern belongs on the list?</p>
+      <button class="opt">A. The team would have to manufacture its own processors for the platform</button>
+      <button class="opt">B. Every application deployed on a PaaS platform must be released open source</button>
+      <button class="opt">C. A PaaS platform is unable to reach any network outside the provider</button>
+      <button class="opt">D. Integrating with the company's legacy dispatch system may prove difficult</button>
+      <div class="expl"><strong>Answer: D.</strong> ✔ Integration is the real PaaS tradeoff, alongside provider dependence and data-security questions. The platform accelerates <em>new</em> code, but the twenty-year-old dispatch system still has to exchange data with the portal, and the platform constrains how that connection can be built. A risk review lists what survives the decision, and this survives it. ✘ A — buying or building hardware is exactly what a cloud customer never does in any service model; that is the provider's business. ✘ B — nothing about PaaS requires open-sourcing your application; you keep ownership of your code. ✘ C — a platform with no outside network access could not serve a customer portal at all, since PaaS applications are network-facing by definition.</div>
+    </div>
+
+    <div class="qresult"><div class="bar"><span></span></div><p class="scoreline" aria-live="polite"></p></div>
+  </section>
+</section>
+
+<!-- ============ PART 2 ============ -->
+<section class="segment">
+  <h2><span class="segno">2</span> Reliability, identity, storage &amp; voice</h2>
+
+  <div class="card">
+    <h3>🎮 Sorter 3 · Keeping the service up</h3>
+    <p>Four mechanisms that all sound like "reliability" until you have to tell them apart. Click a card, then the mechanism it describes:</p>
+    <div class="matcher" id="upMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="load">Incoming requests are spread across four healthy application servers so none is overwhelmed</button>
+        <button class="mcard" data-match="redundancy">A second power supply, a second network link, and a spare server sit ready but unused</button>
+        <button class="mcard" data-match="failover">The primary database stops responding and the workload switches over to the standby copy</button>
+        <button class="mcard" data-match="isp">Servers move out of an office closet into a provider facility staffed around the clock</button>
+        <button class="mcard" data-match="load">A traffic director checks server health and routes each new request to the best candidate</button>
+        <button class="mcard" data-match="redundancy">Duplicate components exist specifically so that no single part is a single point of failure</button>
+        <button class="mcard" data-match="failover">When the main site goes dark, traffic is cut over to the backup site already holding the data</button>
+        <button class="mcard" data-match="isp">A company stops paying to power and cool its own server room by renting space instead</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="load">⚖️ Load balancing<small>spread the work</small></button>
+        <button class="mzone" data-zone="redundancy">🧰 Redundancy<small>duplicates standing ready</small></button>
+        <button class="mzone" data-zone="failover">🔁 Failover<small>the switch to the backup</small></button>
+        <button class="mzone" data-zone="isp">🏢 ISP hosting<small>somebody else's facility</small></button>
+      </div>
+      <p class="mstatus" aria-live="polite">0/8 placed</p>
+    </div>
+    <p class="note"><strong>Redundancy vs. failover</strong> is the pair people lose points on. Redundancy is the standing spare capacity; failover is the <em>act</em> of moving work onto it. You can have redundancy that never fails over — and untested failover that never works.</p>
+
+    <h3>🎮 Sorter 4 · Name the technology</h3>
+    <p>Four acronyms this course deliberately keeps close together. Click each clue, then the technology it points to:</p>
+    <div class="matcher" id="acronymMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="sso">One login at a trusted identity service opens the library, email, and the grade portal</button>
+        <button class="mcard" data-match="san">A dedicated high-speed network inside the data center links servers to pooled disk arrays</button>
+        <button class="mcard" data-match="cfs">An application creates, renames, and deletes cloud-resident files with ordinary file operations</button>
+        <button class="mcard" data-match="voip">A headset plugged into a laptop places customer calls with no telephone line involved</button>
+        <button class="mcard" data-match="sso">An authentication server issues a token that other applications validate instead of asking again</button>
+        <button class="mcard" data-match="san">Storage traffic is kept on its own network so it never competes with ordinary user traffic</button>
+        <button class="mcard" data-match="cfs">Files that physically live in the provider's storage appear to a program as an ordinary folder</button>
+        <button class="mcard" data-match="voip">Speech is digitized into packets and carried across the internet to the person being called</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="sso">🔑 SSO<small>single sign-on</small></button>
+        <button class="mzone" data-zone="san">🗄️ SAN<small>storage area network</small></button>
+        <button class="mzone" data-zone="cfs">📁 CFS<small>cloud file system</small></button>
+        <button class="mzone" data-zone="voip">☎️ VoIP<small>voice over IP</small></button>
+      </div>
+      <p class="mstatus" aria-live="polite">0/8 placed</p>
+    </div>
+    <p class="note">Learn these four as a <em>set</em>, not one at a time — the exam's favorite trick is offering all four as options and letting a half-remembered acronym pick the wrong one.</p>
+  </div>
+
+  <h3>📝 Practice quiz — Part 2</h3>
+  <p>Seven situations covering availability, identity, storage, and voice.</p>
+  <section class="quiz" id="quizReliable">
+
+    <div class="q" data-a="0">
+      <h4>Q7 · <em>Four servers, one queue</em></h4>
+      <p class="stem">A controller at Sandpiper Retail receives every incoming web request and hands each one to whichever of four healthy application servers is best placed to answer it, so no single server is buried during the lunch rush. What is it doing?</p>
+      <button class="opt">A. Load balancing — distributing incoming work across multiple resources</button>
+      <button class="opt">B. Single sign-on — authenticating once for several trusted applications</button>
+      <button class="opt">C. Loose coupling — reducing dependence between a caller and a service</button>
+      <button class="opt">D. File synchronization — keeping copies of files current across devices</button>
+      <div class="expl"><strong>Answer: A.</strong> ✔ Load balancing is precisely this: distributing incoming work across multiple computing resources so that none becomes the bottleneck. Paired with health checks it also supports availability, because the balancer simply stops sending traffic to a server that stops answering. ✘ B — SSO is an identity mechanism; it establishes <em>who</em> you are, not which server answers you. ✘ C — loose coupling is a design property of the relationship between a program and a service, not a runtime routing decision. ✘ D — file synchronization keeps copies of data consistent across devices; nothing here is being synchronized, requests are being routed.</div>
+    </div>
+
+    <div class="q" data-a="2">
+      <h4>Q8 · <em>The spares that sit ready</em></h4>
+      <p class="stem">Cypress Insurance keeps a duplicate set of servers, network links, and power supplies standing ready so service continues if the primary set fails. Those duplicate resources are described as what?</p>
+      <button class="opt">A. Coupled — bound tightly to the systems that depend on them</button>
+      <button class="opt">B. Virtualized — presented logically rather than as physical hardware</button>
+      <button class="opt">C. Redundant — duplicated so no single failure stops the service</button>
+      <button class="opt">D. Multitenant — shared by many customers from one environment</button>
+      <div class="expl"><strong>Answer: C.</strong> ✔ Redundancy means duplicating important components so that one failure does not take the service down. Keep its companion term straight: <em>failover</em> is the act of switching work onto those duplicates — redundancy is the standing capacity, failover is the move. ✘ A — coupling describes how strongly one piece of software depends on another and says nothing about spare capacity. ✘ B — virtualization separates logical resources from physical hardware; a virtual machine can be a single point of failure just as easily as a physical one, so virtualizing something does not make it redundant. ✘ D — multitenancy is about serving many customers from shared infrastructure, an economics decision rather than a resilience one.</div>
+    </div>
+
+    <div class="q" data-a="3">
+      <h4>Q9 · <em>Four letters on the sign-in page</em></h4>
+      <p class="stem">The IT bulletin at Live Oak College announces that "SSO is now enabled for the library, the grade portal, and campus email." In identity and access management, what does SSO stand for?</p>
+      <button class="opt">A. Shared storage organization</button>
+      <button class="opt">B. Secure server operation</button>
+      <button class="opt">C. System service optimization</button>
+      <button class="opt">D. Single sign-on</button>
+      <div class="expl"><strong>Answer: D.</strong> ✔ SSO is single sign-on: a user authenticates once with a trusted identity service and then reaches every participating application without re-entering credentials. The payoff runs both ways — fewer passwords for the user, and one place for IT to disable an account the day someone leaves. ✘ A — "shared storage organization" describes nothing in identity management; the storage term from this unit is SAN. ✘ B — "secure server operation" sounds like hardening a server, an operations task with no bearing on how often a user types a password. ✘ C — "system service optimization" is performance-tuning language, and SSO removes logins, not latency. All three wrong expansions are assembled from plausible IT vocabulary, which is exactly how definitional questions are built.</div>
+    </div>
+
+    <div class="q" data-a="0">
+      <h4>Q10 · <em>What the identity server hands over</em></h4>
+      <p class="stem">During an SSO login at Live Oak College, the authentication server has just verified a student's password successfully. The student now clicks through to the grade portal. What should normally happen next?</p>
+      <button class="opt">A. The identity server issues the student a trusted ticket or token</button>
+      <button class="opt">B. The grade portal collects the student's password a second time</button>
+      <button class="opt">C. The identity server deletes the student's stored identity record</button>
+      <button class="opt">D. The campus intranet server is disabled until the session ends</button>
+      <div class="expl"><strong>Answer: A.</strong> ✔ The identity or authentication server issues a ticket or token — portable, time-limited proof that authentication already happened. The student presents it to the grade portal, the portal validates it against the trusted identity service, and access is granted with no second password prompt. That single step <em>is</em> the mechanism of single sign-on. ✘ B — collecting the password again is exactly what SSO exists to eliminate; if the portal asked, single sign-on would not be in use. ✘ C — deleting the identity would end the account rather than authorize it; identities persist across sessions. ✘ D — nothing about a successful login requires disabling another server, and doing so would break the access the student just earned.</div>
+    </div>
+
+    <div class="q" data-a="1">
+      <h4>Q11 · <em>The network that only storage uses</em></h4>
+      <p class="stem">Inside a data center, a dedicated high-speed network connects a bank of servers to pooled storage devices, kept separate from the network that carries ordinary user traffic. Which technology is being described?</p>
+      <button class="opt">A. SOA — organizing capabilities as independent, reusable services</button>
+      <button class="opt">B. SAN — a specialized network linking servers to pooled storage</button>
+      <button class="opt">C. SSO — authenticating once to reach many trusted applications</button>
+      <button class="opt">D. VoIP — carrying voice conversations as data over IP networks</button>
+      <div class="expl"><strong>Answer: B.</strong> ✔ A storage area network is a specialized, high-speed network whose only job is connecting servers to shared storage. Keeping it separate from the general-purpose network is the whole point: storage traffic is heavy and latency-sensitive, so isolating it protects performance and reliability while letting any server on the SAN reach the pooled capacity. ✘ A — SOA is a software architecture pattern, not a physical network. ✘ C — SSO is an identity mechanism and moves no data between servers and disks. ✘ D — VoIP carries voice calls; the acronym is one letter from the answer and the meaning is nowhere near it. These four are offered together on purpose.</div>
+    </div>
+
+    <div class="q" data-a="1">
+      <h4>Q12 · <em>Files that live somewhere else</em></h4>
+      <p class="stem">An application at Harbor Lane Books creates, reads, renames, and deletes files that physically reside in cloud storage, using ordinary file-system operations as though the files sat on a local disk. Which term best fits?</p>
+      <button class="opt">A. Hypervisor — the layer that creates and manages virtual machines</button>
+      <button class="opt">B. CFS — an interface for manipulating files held in cloud storage</button>
+      <button class="opt">C. FIDM — federating identity information across separate organizations</button>
+      <button class="opt">D. NAS only — storage attached directly to one office's local network</button>
+      <div class="expl"><strong>Answer: B.</strong> ✔ A cloud file system exposes cloud-resident files through familiar operations — create, read, rename, delete — so applications and users work with them the way they work with a local disk, while the bytes actually live in the provider's storage. ✘ A — a hypervisor allocates CPU, memory, and storage to virtual machines; it presents no file interface to applications. ✘ C — FIDM is federated identity management, which shares identity information across organizational boundaries: right course, wrong unit. ✘ D — network-attached storage sits on a local network, which is not what "resides in cloud storage" describes, and the word "only" narrows the claim further than the scenario supports.</div>
+    </div>
+
+    <div class="q" data-a="2">
+      <h4>Q13 · <em>The call that never touches a phone line</em></h4>
+      <p class="stem">A support agent at Sandpiper Retail places a customer call from a headset plugged into her laptop. The audio travels over the company's internet connection, and no traditional telephone line is involved anywhere. Which technology makes that possible?</p>
+      <button class="opt">A. CFS — an interface for working with files stored in the cloud</button>
+      <button class="opt">B. PaaS — a managed platform for deploying custom applications</button>
+      <button class="opt">C. VoIP — voice carried as data packets over IP networks</button>
+      <button class="opt">D. SAN — a high-speed network connecting servers to storage</button>
+      <div class="expl"><strong>Answer: C.</strong> ✔ Voice over Internet Protocol digitizes speech, breaks it into packets, and carries it across IP networks such as the internet. That is why a cloud phone system follows an agent to any location with connectivity, and why call features (routing, recording, queues) become software features. ✘ A — CFS is about files, not audio streams. ✘ B — PaaS is where developers deploy code; a VoIP product might <em>run</em> on a platform, but the platform is not what carries the call. ✘ D — a SAN moves storage traffic inside a data center and never reaches a customer's phone.</div>
+    </div>
+
+    <div class="qresult"><div class="bar"><span></span></div><p class="scoreline" aria-live="polite"></p></div>
+  </section>
+</section>
+
+<!-- ============ PART 3 ============ -->
+<section class="segment">
+  <h2><span class="segno">3</span> Collaboration, virtualization &amp; services</h2>
+
+  <div class="card">
+    <h3>🎮 Sorter 5 · Virtualization &amp; collaboration vocabulary</h3>
+    <p>Three terms, two clues each. The virtualization pair is the one worth slowing down for — one is the concept, the other is the software that implements it:</p>
+    <div class="matcher" id="virtMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="virt">One physical host presents itself as six independent servers, each with its own guest OS</button>
+        <button class="mcard" data-match="hyp">The software layer that creates, runs, and allocates CPU and memory to virtual machines</button>
+        <button class="mcard" data-match="collab">Shared pages several teammates edit and revise, with a history of every change</button>
+        <button class="mcard" data-match="virt">Logical computing environments are separated from the physical hardware underneath them</button>
+        <button class="mcard" data-match="hyp">The component that keeps one virtual machine from reaching into another's memory</button>
+        <button class="mcard" data-match="collab">An instant-messaging space where a team coordinates its work day to day</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="virt">🧩 Virtualization<small>the concept</small></button>
+        <button class="mzone" data-zone="hyp">🧠 Hypervisor<small>the software that does it</small></button>
+        <button class="mzone" data-zone="collab">🤝 Collaboration tool<small>working together</small></button>
+      </div>
+      <p class="mstatus" aria-live="polite">0/6 placed</p>
+    </div>
+
+    <h3>🎮 Sorter 6 · Services and how they connect</h3>
+    <p>Eight clues across the four service-architecture terms. Watch the level each one describes — an architecture, a property, a single capability, or a combination:</p>
+    <div class="matcher" id="soaMatcher">
+      <div class="mcards">
+        <button class="mcard" data-match="soa">Business capabilities are built as independent, reusable services with published contracts</button>
+        <button class="mcard" data-match="coupling">A service is rebuilt internally and, because its interface held, no caller needs rewriting</button>
+        <button class="mcard" data-match="ws">A defined web interface that returns the weather for a ZIP code when it is called</button>
+        <button class="mcard" data-match="mashup">Maps, forecasts, and hotel availability from three providers combined into one planning screen</button>
+        <button class="mcard" data-match="soa">Rating, labeling, and tracking each become a separately callable capability instead of copied logic</button>
+        <button class="mcard" data-match="coupling">Callers depend only on the published contract, never on a service's internal details</button>
+        <button class="mcard" data-match="ws">A software capability that accepts submitted data or performs an operation over the web</button>
+        <button class="mcard" data-match="mashup">A new experience assembled by combining results drawn from several existing services</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="soa">🏗️ SOA<small>the architecture</small></button>
+        <button class="mzone" data-zone="coupling">🔗 Loose coupling<small>the property</small></button>
+        <button class="mzone" data-zone="ws">🔌 Web service<small>one capability</small></button>
+        <button class="mzone" data-zone="mashup">🎛️ Mashup<small>the combination</small></button>
+      </div>
+      <p class="mstatus" aria-live="polite">0/8 placed</p>
+    </div>
+    <p class="note">SOA is <em>how you organize</em> capabilities. A web service is <em>one</em> of those capabilities. Loose coupling is the <em>property</em> that makes the arrangement worth the trouble. A mashup is what somebody builds <em>on top</em> of several services.</p>
+  </div>
+
+  <h3>📝 Practice quiz — Part 3</h3>
+  <p>Seven situations covering collaboration tools, virtualization, and service architecture.</p>
+  <section class="quiz" id="quizArch">
+
+    <div class="q" data-a="0">
+      <h4>Q14 · <em>Publishing is not collaborating</em></h4>
+      <p class="stem">A project team lists the tools it uses. Using this course's categories, which one is primarily a <strong>media-publishing destination</strong> rather than a tool for working together?</p>
+      <button class="opt">A. A public video-sharing channel where the team posts finished clips</button>
+      <button class="opt">B. A shared project blog the team writes and comments on together</button>
+      <button class="opt">C. An instant-messaging space where the team coordinates day to day</button>
+      <button class="opt">D. A team wiki whose pages several members edit and revise</button>
+      <div class="expl"><strong>Answer: A.</strong> ✔ In this course's classification, a public video-sharing channel is a <em>publishing</em> platform: the flow runs outward, from the team to an audience, and the audience does not co-create the work. ✘ B — a blog the team writes and comments on together is listed as a collaboration tool; the co-authoring and the comment thread <em>are</em> the collaboration. ✘ C — instant messaging is the most direct collaboration tool of the four, existing so that people can work together in real time. ✘ D — a wiki is the classic example, where several members edit the same pages and the revision history records the collaboration. The distinction being tested is direction: broadcasting <em>to</em> an audience versus building <em>with</em> a team.</div>
+    </div>
+
+    <div class="q" data-a="3">
+      <h4>Q15 · <em>One box that behaves like six</em></h4>
+      <p class="stem">A single physical server at Bayfront Logistics presents itself to users as six independent servers, each running its own operating system, and any one of them can reboot without disturbing the other five. Which concept creates that illusion?</p>
+      <button class="opt">A. Load delegation — handing individual tasks off to spare machines</button>
+      <button class="opt">B. Multitenant SaaS — one application environment serving many customers</button>
+      <button class="opt">C. Visualization — rendering system performance data as charts and graphs</button>
+      <button class="opt">D. Virtualization — logical computing environments separated from hardware</button>
+      <div class="expl"><strong>Answer: D.</strong> ✔ Virtualization abstracts physical hardware so that several isolated virtual machines, each with its own guest operating system, run on one host. The isolation is the tell in this story: one virtual server reboots and the other five never notice. ✘ A — "load delegation" is not a standard term; the real concept for spreading <em>work</em> is load balancing, and it does not create operating systems. ✘ B — multitenancy shares one <em>application</em> among customers, a different layer entirely; here there are six separate operating systems. ✘ C — visualization means charts and dashboards. It is one letter from the answer, which is exactly why it appears here.</div>
+    </div>
+
+    <div class="q" data-a="1">
+      <h4>Q16 · <em>The layer that hands out the hardware</em></h4>
+      <p class="stem">On that same host, a piece of specialized software decides how much physical CPU time, memory, and storage each virtual machine receives, and prevents any one virtual machine from reaching into another's memory. What is that software called?</p>
+      <button class="opt">A. An authentication ticket — portable proof that a login already happened</button>
+      <button class="opt">B. A hypervisor — software that creates, runs, and manages virtual machines</button>
+      <button class="opt">C. A collaboration wiki — shared pages a team edits and revises together</button>
+      <button class="opt">D. A mashup — one experience assembled from several underlying services</button>
+      <div class="expl"><strong>Answer: B.</strong> ✔ The hypervisor is the layer between virtual machines and the host's physical resources: it creates and runs the VMs, schedules their access to CPU, memory, and storage, and enforces the isolation boundary between them. ✘ A — an authentication ticket belongs to the identity unit and carries proof of a login, not an allocation of hardware. ✘ C — a wiki manages pages, not processors. ✘ D — a mashup combines services at the application level, far above the hardware. Hold this alongside the previous question: virtualization is the <em>concept</em>, and the hypervisor is the <em>software that implements it</em>.</div>
+    </div>
+
+    <div class="q" data-a="2">
+      <h4>Q17 · <em>Three of these are not like the fourth</em></h4>
+      <p class="stem">A study group lists four products that appear in the virtualization unit's readings. Which one is best known for cloud file storage and synchronization rather than for creating or running virtual machines?</p>
+      <button class="opt">A. Parallels Desktop</button>
+      <button class="opt">B. VMware</button>
+      <button class="opt">C. Dropbox</button>
+      <button class="opt">D. Microsoft server virtualization</button>
+      <div class="expl"><strong>Answer: C.</strong> ✔ Dropbox is a cloud storage, synchronization, and file-sharing service: it keeps copies of files current across devices and people. It appears in the readings beside the virtualization products, which is exactly why it is worth filing separately in memory. ✘ A — Parallels Desktop runs guest operating systems on a personal computer, so a Mac can run Windows in a virtual machine. ✘ B — VMware is the best-known commercial virtualization vendor, from desktop products up to data-center hypervisors. ✘ D — Microsoft's server virtualization tooling creates and manages virtual machines on Windows Server. Three of the four build virtual machines; one moves files.</div>
+    </div>
+
+    <div class="q" data-a="0">
+      <h4>Q18 · <em>Capabilities with contracts</em></h4>
+      <p class="stem">Northshore Freight redesigns its software so that each business capability — rating a shipment, printing a label, tracking a package — becomes an independent service with a clearly defined interface that other applications can call and reuse. Which architecture is that?</p>
+      <button class="opt">A. Service-oriented architecture — reusable services with defined interfaces</button>
+      <button class="opt">B. Single-server operation — running the whole workload on one machine</button>
+      <button class="opt">C. Storage-oriented access — a scheme for reaching pooled disk capacity</button>
+      <button class="opt">D. Software optimization association — an industry group for performance</button>
+      <div class="expl"><strong>Answer: A.</strong> ✔ Service-oriented architecture organizes software capabilities as independent, reusable, discoverable services that communicate through defined contracts. "Rating a shipment" becomes one service every application calls, instead of the same logic copied into three applications that then drift apart. ✘ B — single-server operation is a deployment fact about <em>where</em> software runs and says nothing about how capabilities are organized. ✘ C — "storage-oriented access" is invented; the storage term from this course is SAN. ✘ D — "software optimization association" is a plausible-sounding trade body, not an architecture. When three expansions of an acronym are unfamiliar, trust the one you have actually seen defined.</div>
+    </div>
+
+    <div class="q" data-a="3">
+      <h4>Q19 · <em>Upgrade the service, keep the callers</em></h4>
+      <p class="stem">Northshore's shipping service is rebuilt internally — new database, new code, faster rating engine — while its published interface stays exactly the same, so none of the eleven applications that call it needs to be rewritten. Which quality does that demonstrate?</p>
+      <button class="opt">A. Physical redundancy — duplicate hardware standing by in case of failure</button>
+      <button class="opt">B. Server colocation — placing equipment in a shared provider facility</button>
+      <button class="opt">C. Tight coupling — callers depending on a service's internal details</button>
+      <button class="opt">D. Loose coupling — low dependence between a caller and a service</button>
+      <div class="expl"><strong>Answer: D.</strong> ✔ Loose coupling means a caller depends on the service's published contract rather than on its internals. As long as that interface holds, the service can be rewritten, re-hosted, or re-tuned without touching a single client — which is why loose coupling is the property that makes SOA pay for itself. ✘ A — redundancy is about surviving failures, and nothing failed here. ✘ B — colocation concerns where hardware physically sits, not how software depends on software. ✘ C — tight coupling is the exact opposite, and it is the failure mode being avoided: under tight coupling, swapping the database <em>would</em> have forced eleven rewrites.</div>
+    </div>
+
+    <div class="q" data-a="1">
+      <h4>Q20 · <em>What software cannot do</em></h4>
+      <p class="stem">A vendor's catalog lists things its web services can do. Which listed request is <strong>least</strong> like an operation a web service can actually carry out on its own?</p>
+      <button class="opt">A. Return the current weather for a given ZIP code</button>
+      <button class="opt">B. Carry a package up a customer's front steps</button>
+      <button class="opt">C. Identify the country associated with an IP address</button>
+      <button class="opt">D. Accept a submitted traffic-condition report</button>
+      <div class="expl"><strong>Answer: B.</strong> ✔ A web service exchanges data or performs a software operation through a defined interface. It can <em>coordinate</em> a delivery — price it, book it, track it, notify the customer — but the last step happens in the physical world, performed by a person or a vehicle, not by the service. ✘ A — returning weather for a ZIP code is the standard textbook example of a data-returning web service. ✘ C — an IP-to-country lookup is a pure data operation over a table the service already holds. ✘ D — accepting a submitted report is the inbound direction of the same idea: a web service can receive and store data as readily as it can return it. The boundary this question draws is between information and physical action.</div>
+    </div>
+
+    <div class="qresult"><div class="bar"><span></span></div><p class="scoreline" aria-live="polite"></p></div>
+  </section>
+</section>
+
+<!-- ============ QUICK GUIDE ============ -->
+<section class="card guide">
+  <h3>📇 Quick guide — tap any card to reveal the definition</h3>
+  <p>Use this after a wrong answer, not before an attempt. Retrieving an answer badly and then correcting it is worth more than reading a definition you already half-knew.</p>
+  <div class="flipgrid">
+    <button class="flip"><h5>Deployment models</h5><span class="hint">tap to flip</span><span class="back"><strong>Public:</strong> provider resources offered for open use. <strong>Private:</strong> dedicated to one organization. <strong>Community:</strong> shared by organizations with common policy, mission, or compliance needs. <strong>Hybrid:</strong> two or more distinct environments connected together.</span></button>
+    <button class="flip"><h5>Service models</h5><span class="hint">tap to flip</span><span class="back"><strong>SaaS:</strong> use a finished application. <strong>PaaS:</strong> deploy your own code on a managed platform. <strong>IaaS:</strong> rent compute, network, and storage, and run the stack above them yourself.</span></button>
+    <button class="flip"><h5>Multitenancy</h5><span class="hint">tap to flip</span><span class="back">One application environment serves many customers at once while keeping each tenant's data and configuration isolated. It is the economic engine underneath SaaS.</span></button>
+    <button class="flip"><h5>Availability trio</h5><span class="hint">tap to flip</span><span class="back"><strong>Load balancing</strong> spreads requests across resources. <strong>Redundancy</strong> is duplicate capacity standing ready. <strong>Failover</strong> is the switch onto that duplicate when the primary fails.</span></button>
+    <button class="flip"><h5>SSO sequence</h5><span class="hint">tap to flip</span><span class="back">1. The user authenticates with a trusted identity service. 2. That service issues a ticket or token. 3. The user presents it to another application. 4. The application validates the token instead of asking for the password again.</span></button>
+    <button class="flip"><h5>Storage &amp; voice</h5><span class="hint">tap to flip</span><span class="back">A <strong>SAN</strong> is a dedicated high-speed network connecting servers to pooled storage. A <strong>CFS</strong> exposes cloud-resident files through ordinary file operations. <strong>VoIP</strong> carries voice calls as packets over IP networks.</span></button>
+    <button class="flip"><h5>Virtualization</h5><span class="hint">tap to flip</span><span class="back"><strong>Virtualization</strong> makes logical computing environments appear separate from the physical hardware. A <strong>hypervisor</strong> is the software that creates virtual machines, runs their guest operating systems, and allocates host resources between them.</span></button>
+    <button class="flip"><h5>SOA &amp; coupling</h5><span class="hint">tap to flip</span><span class="back"><strong>Service-oriented architecture</strong> organizes capabilities as independent, reusable services with published contracts. <strong>Loose coupling</strong> is the low dependence that lets a service change internally without breaking its callers.</span></button>
+    <button class="flip"><h5>Web services &amp; mashups</h5><span class="hint">tap to flip</span><span class="back">A <strong>web service</strong> exchanges data or performs a software operation through a defined web interface. A <strong>mashup</strong> combines results from several services into one new experience.</span></button>
+    <button class="flip"><h5>ISP hosting</h5><span class="hint">tap to flip</span><span class="back">Placing systems in a provider's facility. Typical benefits: better uptime from redundant power, cooling, and staffing; lower facility cost; and room to scale. It should <em>reduce</em> work at your own site, never increase it.</span></button>
+  </div>
+</section>
+
+<!-- ============ STUDY PLAN ============ -->
+<section class="card plan">
+  <h3>🎯 Turn this into a study plan</h3>
+  <p>Scores alone do not teach anything. Work the list below after a full pass:</p>
+  <label class="step"><input type="checkbox" data-step="p1"><span>Scroll back through every question with a <strong>red</strong> option and read only its explanation. Write the one sentence that would have saved you — in your own words, not the page's.</span></label>
+  <label class="step"><input type="checkbox" data-step="p2"><span>List every sorter card that shook before it landed. Those are the concepts your memory has stored next to each other, and the exam separates them on purpose.</span></label>
+  <label class="step"><input type="checkbox" data-step="p3"><span>Say the three confusable pairs out loud with the difference attached: <strong>private vs. community</strong>, <strong>redundancy vs. failover</strong>, <strong>virtualization vs. the hypervisor</strong>.</span></label>
+  <label class="step"><input type="checkbox" data-step="p4"><span>Name all four of <strong>SSO, SAN, CFS, VoIP</strong> from the acronym alone, without looking. If any one hesitates, that is your first review item.</span></label>
+  <label class="step"><input type="checkbox" data-step="p5"><span>Come back tomorrow, hit <strong>Reset my progress</strong>, and take the whole page cold. A second pass on a page you have already read is a memory test; a second pass a day later is a learning one.</span></label>
+  <div class="kpis">
+    <div class="kpi"><b id="kQuiz">0/20</b><small>quiz questions correct</small></div>
+    <div class="kpi"><b id="kMatch">0/47</b><small>sorting cards placed</small></div>
+    <div class="kpi"><b id="kPct">—</b><small>quiz accuracy</small></div>
+  </div>
+  <p class="note">These counters follow the same rule as the session pages: a quiz question counts as correct only on a first-attempt right answer, because that is the attempt the exam gets.</p>
+</section>
+
+<footer>
+  <div class="footer-nav">
+    <a class="btn ghost" href="index.html">⌂ Course Hub</a>
+    <button class="btn ghost small" onclick="resetPage()">Reset my progress on this page</button>
+    <a class="btn" href="week4-session12.html">Session 12: Migration + Final Review →</a>
+  </div>
+</footer>
+
+</main>
+<script>
+/* ===== CEN4086 core framework (same engines as the session pages) ===== */
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'page');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+function resetPage(){try{localStorage.removeItem(PKEY)}catch(e){};location.reload()}
+
+/* flips */
+document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));
+
+/* quiz engine */
+function updateQuiz(qz){
+  const qs=[...qz.querySelectorAll('.q')];
+  const done=qs.filter(q=>q.classList.contains('done'));
+  const right=qs.filter(q=>q.classList.contains('gotit')).length;
+  const res=qz.querySelector('.qresult');
+  if(res){res.querySelector('.bar span').style.width=(done.length?Math.round(100*right/qs.length):0)+'%';
+    res.querySelector('.scoreline').textContent='Score: '+right+' / '+qs.length+(done.length===qs.length?(right===qs.length?' — perfect! 🎉':' — review the explanations above.'):' ('+(qs.length-done.length)+' remaining)');}
+  updateChip();
+}
+function updateChip(){
+  let r=0,t=0;
+  document.querySelectorAll('.quiz').forEach(qz=>qz.querySelectorAll('.q').forEach(q=>{t++;if(q.classList.contains('gotit'))r++;}));
+  const c=document.getElementById('scoreChip');if(c)c.textContent='Quiz: '+r+'/'+t;
+  const k=document.getElementById('kQuiz');if(k)k.textContent=r+'/'+t;
+  const p=document.getElementById('kPct');
+  if(p){const done=document.querySelectorAll('.quiz .q.done').length;p.textContent=done?Math.round(100*r/done)+'%':'—';}
+}
+document.querySelectorAll('.quiz').forEach((qz,qzi)=>{
+  const qid=qz.id||('qz'+qzi);
+  qz.querySelectorAll('.q').forEach((q,i)=>{
+    const a=+q.dataset.a,opts=[...q.querySelectorAll('.opt')];
+    const key=qid+':q'+i;
+    function answer(j,fresh){
+      q.classList.add('done');if(j===a)q.classList.add('gotit');
+      opts.forEach(o=>o.disabled=true);
+      opts[a].classList.add('right');if(j!==a)opts[j].classList.add('wrong');
+      if(fresh)save(key,j);
+    }
+    opts.forEach((o,j)=>o.addEventListener('click',()=>{if(!q.classList.contains('done')){answer(j,true);updateQuiz(qz);}}));
+    if(S[key]!=null)answer(S[key],false);
+  });
+  updateQuiz(qz);
+});
+
+/* matcher engine */
+function updateMatchChip(){
+  const total=document.querySelectorAll('.matcher .mcard').length;
+  const placed=document.querySelectorAll('.matcher .mcard.ok').length;
+  const c=document.getElementById('matchChip');if(c)c.textContent='Matches: '+placed+'/'+total;
+  const k=document.getElementById('kMatch');if(k)k.textContent=placed+'/'+total;
+}
+document.querySelectorAll('.matcher').forEach((m,mi)=>{
+  const key='match:'+(m.id||mi);let sel=null,done=0;
+  const cards=[...m.querySelectorAll('.mcard')],st=m.querySelector('.mstatus');
+  function stat(){st.textContent=done+'/'+cards.length+' placed'+(done===cards.length?' — all correct! 🎉':'');updateMatchChip();}
+  cards.forEach((c,ci)=>{c.addEventListener('click',()=>{
+    if(c.classList.contains('ok'))return;
+    cards.forEach(x=>x.classList.remove('sel'));c.classList.add('sel');sel=c;
+  });});
+  m.querySelectorAll('.mzone').forEach(z=>z.addEventListener('click',()=>{
+    if(!sel)return;
+    if(sel.dataset.match===z.dataset.zone){
+      sel.classList.remove('sel');sel.classList.add('ok');done++;stat();
+      const solved=(S[key]||[]);solved.push(cards.indexOf(sel));save(key,solved);sel=null;
+    }else{
+      sel.classList.add('no');setTimeout(()=>sel&&sel.classList.remove('no'),400);
+      st.textContent='✘ Not that zone — read the card again and try a different one. '+done+'/'+cards.length+' placed';
+    }
+  }));
+  (S[key]||[]).forEach(ci=>{if(cards[ci]&&!cards[ci].classList.contains('ok')){cards[ci].classList.add('ok');done++;}});
+  stat();
+});
+
+/* study-plan checkboxes */
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+
+updateChip();updateMatchChip();
+</script>
+</body>
+</html>
