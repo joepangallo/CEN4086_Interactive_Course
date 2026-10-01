@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEN4086 · Bonus · Serverless Deep Dive — Functions, Triggers &amp; Pay-Per-Use</title>
+<style>
+:root{--bg:#f6f4ef;--ink:#1d2433;--mut:#5c6474;--panel:#fff;--line:#e5e1d8;--pri:#3f3d99;--acc:#0f8b8d;--amb:#e0a437;--bad:#c04f43;--ok:#3e8e5a;--vio:#7b5ea7;--wk:#7b5ea7}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+.topnav{position:sticky;top:0;z-index:50;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 18px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:3px solid var(--wk);font-size:14px;flex-wrap:wrap}
+.topnav a{color:var(--pri);text-decoration:none;font-weight:600}
+.topnav .mid{font-weight:700}
+#scoreChip{background:var(--pri);color:#fff;border-radius:999px;padding:2px 12px;font-size:12.5px;font-weight:700}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px}
+.hero{background:linear-gradient(135deg,var(--pri) 0%,#2b2a6e 100%);color:#fff;border-radius:16px;padding:28px 26px;margin:14px 0 22px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero h1{margin:0 0 6px;font-size:30px;line-height:1.25}
+.hero .sub{margin:0 0 12px;opacity:.9;font-size:16.5px}
+.chip{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:600;margin:2px;color:var(--ink)}
+.hero .chip{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);color:#fff}
+.hero .chip.obj{background:var(--amb);border-color:var(--amb);color:#3a2c05}
+h2{font-size:23px;margin:34px 0 10px;padding-left:12px;border-left:6px solid var(--wk)}
+h3{font-size:18px;margin:20px 0 8px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:0 2px 10px rgba(29,36,51,.05)}
+.card.warmup{border-top:6px solid var(--amb)}
+.card.ai{border-top:6px solid var(--vio);background:linear-gradient(180deg,#f7f3fc,#fff 90px)}
+.card.disc{border-top:6px solid var(--acc)}
+.card.capstone{border-top:6px solid var(--pri);background:linear-gradient(180deg,#f0f0fa,#fff 90px)}
+.card.exit{border-top:6px solid var(--bad)}
+.segment{position:relative}
+.segno{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--wk);color:#fff;font-weight:800;font-size:15px;margin-right:8px}
+.agenda{width:100%;border-collapse:collapse;font-size:14px;background:rgba(255,255,255,.1);border-radius:10px;overflow:hidden}
+.agenda td{padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.15)}
+.agenda tr:last-child td{border-bottom:none}
+.bdg{display:inline-block;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:700;letter-spacing:.3px}
+.b-lec{background:#c9d4f5;color:#22307a}.b-int{background:#ffe3a3;color:#6b4d05}.b-lab{background:#bfe6e0;color:#0b5450}.b-quiz{background:#f3c9c2;color:#7a2417}.b-brk{background:#e4e4e4;color:#555}.b-cap{background:#ddd3f0;color:#432c73}
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.flip{border:1.5px solid var(--line);border-radius:12px;background:#fbfaf7;padding:12px 14px;cursor:pointer;text-align:left;font:inherit}
+.flip h5{margin:0;font-size:15px;color:var(--pri)}
+.flip .back{display:none;margin-top:8px;font-size:14px;color:var(--ink)}
+.flip.open{background:#eef4f4;border-color:var(--acc)}
+.flip.open .back{display:block}
+.flip .hint{font-size:12px;color:var(--mut)}
+.tabs .tabrow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:-1px}
+.tabbtn{border:1px solid var(--line);border-bottom:none;background:#eceadf;border-radius:10px 10px 0 0;padding:8px 16px;cursor:pointer;font:inherit;font-weight:600;font-size:14px}
+.tabbtn.on{background:#fff;color:var(--pri)}
+.tabpane{display:none;border:1px solid var(--line);border-radius:0 12px 12px 12px;background:#fff;padding:16px 18px}
+.tabpane.on{display:block}
+.matcher{margin:14px 0}
+.mcards{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.mcard{border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;cursor:pointer;font:inherit;font-size:14px;text-align:left}
+.mcard.sel{outline:3px solid var(--amb);border-color:var(--amb)}
+.mcard.ok{background:#e7f3ec;border-color:var(--ok);color:#28583b;cursor:default}
+.mcard.ok::after{content:" ✓"}
+.mcard.no{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.mzones{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.mzone{border:2px dashed var(--acc);border-radius:12px;background:#f4faf9;padding:12px;cursor:pointer;font:inherit;text-align:center;font-weight:700;color:var(--acc)}
+.mzone small{display:block;font-weight:400;color:var(--mut);margin-top:4px}
+.mstatus{margin-top:10px;font-weight:700;color:var(--pri)}
+.lab{border-left:6px solid var(--acc)}
+.lab .labno{color:var(--acc);font-weight:800;letter-spacing:.5px;font-size:13px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:8px;margin:4px 0;background:#fbfaf7;border:1px solid var(--line);cursor:pointer}
+.step input{margin-top:5px;accent-color:var(--acc);width:16px;height:16px}
+.step.done{background:#e9f4ee;border-color:#bcd9c6}
+.promptbox{background:#171c2e;color:#dfe6ff;border-radius:10px;padding:14px 16px;position:relative;margin:10px 0}
+.promptbox pre{margin:0;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.5}
+.copybtn{position:absolute;top:8px;right:8px;background:var(--acc);border:none;color:#fff;border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+.aichat{margin-top:14px;border:1.5px solid var(--vio);border-radius:12px;background:#fff;overflow:hidden}
+.aichat-head{background:var(--vio);color:#fff;padding:8px 14px;font-weight:700;font-size:14px}
+.aichat-log{max-height:320px;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:#faf9fd}
+.aichat-msg{max-width:85%;padding:8px 12px;border-radius:12px;font-size:14.5px;line-height:1.5;white-space:pre-wrap}
+.aichat-msg.user{align-self:flex-end;background:var(--pri);color:#fff;border-bottom-right-radius:3px}
+.aichat-msg.bot{align-self:flex-start;background:#eee9f7;color:var(--ink);border-bottom-left-radius:3px}
+.aichat-msg.sys{align-self:center;background:none;color:var(--mut);font-size:12.5px;font-style:italic;max-width:100%;text-align:center}
+.aichat-row{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line);background:#fff}
+.aichat-row input{flex:1;border:1.5px solid var(--line);border-radius:8px;padding:8px 12px;font:inherit;font-size:14px}
+.aichat-load{padding:14px;text-align:center}
+.aichat-bar{height:8px;border-radius:999px;background:#e8e4f5;overflow:hidden;margin:10px 0 6px}
+.aichat-bar span{display:block;height:100%;width:0%;background:var(--vio);transition:width .2s}
+.aichat-status{font-size:13px;color:var(--mut)}
+.quiz .q{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.sa{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;background:#fff}
+.sa h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
+.quiz .q h4{margin:0 0 6px;font-size:15.5px;color:var(--pri)}
+.stem{margin:6px 0 10px}
+.opt{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 14px;border:1.5px solid var(--line);border-radius:10px;background:#fbfaf7;cursor:pointer;font:inherit;font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--pri)}
+.opt:disabled{cursor:default;opacity:.85}
+.opt.right{background:#e7f3ec;border-color:var(--ok);opacity:1;font-weight:600}
+.opt.wrong{background:#f8e9e7;border-color:var(--bad);opacity:1}
+.expl{display:none;margin-top:10px;padding:12px 14px;background:#f4f6fb;border-left:4px solid var(--pri);border-radius:8px;font-size:14.5px}
+.q.done .expl{display:block}
+.qresult{margin-top:16px}
+.bar{height:12px;background:#e8e4da;border-radius:99px;overflow:hidden}
+.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--pri));transition:width .4s}
+.scoreline{font-weight:700;margin:6px 0 0}
+.btn{background:var(--pri);color:#fff;border:none;border-radius:10px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;font-size:14.5px}
+.btn:hover{filter:brightness(1.12)}
+.btn:disabled{background:#9aa0ab;cursor:not-allowed;filter:none}
+.btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}
+.btn.small{padding:5px 12px;font-size:13px}
+.kpis{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.kpi{flex:1;min-width:130px;background:#f4f6fb;border-radius:10px;padding:10px 14px;text-align:center}
+.kpi b{display:block;font-size:22px;color:var(--pri);line-height:1.2}
+.kpi small{color:var(--mut)}
+.poll .popt{display:inline-block;margin:4px 6px 4px 0;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 16px;cursor:pointer;font:inherit;font-size:14px}
+.poll .popt.sel{background:var(--amb);border-color:var(--amb);font-weight:700}
+.pollwhy{display:none;margin-top:8px;padding:10px 12px;background:#fdf6e6;border-left:4px solid var(--amb);border-radius:8px;font-size:14px}
+.poll.done .pollwhy{display:block}
+.stackrow{display:flex;align-items:center;gap:10px;margin:3px 0}
+.stackrow .lay{flex:1;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;background:#fbfaf7;transition:all .3s}
+.stackrow .who{width:96px;text-align:center;font-size:12px;font-weight:800;border-radius:8px;padding:4px}
+.who.you{background:#f3c9c2;color:#7a2417}
+.who.prov{background:#bfe6e0;color:#0b5450}
+input[type=range]{width:100%;accent-color:var(--pri)}
+.svgwrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;overflow-x:auto;text-align:center}
+.note{font-size:13.5px;color:var(--mut)}
+.serverfarm{display:flex;flex-wrap:wrap;gap:5px;min-height:40px;margin:8px 0}
+.srv{width:34px;height:40px;border-radius:6px;background:linear-gradient(180deg,#3f3d99,#2b2a6e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px}
+.srv.big{width:64px;height:56px;font-size:26px}
+.checkfield{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
+.checkfield input[type=number],.checkfield input[type=text]{border:1.5px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;width:110px}
+.fb{font-weight:700;font-size:14px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--bad)}
+textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font:inherit;min-height:70px}
+.exitrow{display:flex;align-items:center;gap:10px;margin:6px 0;flex-wrap:wrap}
+.light{font-size:20px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:4px 12px;cursor:pointer}
+.footer-nav{display:flex;justify-content:space-between;margin-top:30px;gap:10px;flex-wrap:wrap}
+table.simple{border-collapse:collapse;width:100%;font-size:14.5px;margin:10px 0}
+table.simple th{background:#f0eee6;text-align:left}
+table.simple th,table.simple td{border:1px solid var(--line);padding:7px 10px}
+@media print{.topnav,.btn,.copybtn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="index.html">⌂ Course Hub</a>
+  <span class="mid">Bonus · Serverless Deep Dive — Functions, Triggers &amp; Pay-Per-Use</span>
+  <span><span id="scoreChip">Quiz: 0/0</span> &nbsp; <a href="week4-session12.html">← Session 12</a></span>
+</nav>
+<main>
+
+<section class="hero">
+  <h1>Serverless &amp; Event-Driven Cloud</h1>
+  <p class="sub">Functions, triggers, and pay-per-use: the cloud model where code sleeps until an event wakes it — and the bill sleeps with it.</p>
+  <span class="chip">BONUS LESSON</span> <span class="chip obj">EXTENDS OBJ 8 · SOA</span> <span class="chip">SELF-PACED · ~2 HOURS</span> <span class="chip">100% FREE · RUNS IN YOUR BROWSER</span>
+  <table class="agenda" style="margin-top:14px">
+    <tr><td><span class="bdg b-int">POLL</span></td><td>Warm-up: where is your code sleeping right now?</td></tr>
+    <tr><td><span class="bdg b-lec">1</span></td><td>“Serverless” still has servers — you just stopped managing them</td></tr>
+    <tr><td><span class="bdg b-lec">2</span></td><td>Functions &amp; triggers: anatomy of an event-driven app</td></tr>
+    <tr><td><span class="bdg b-lab">LAB</span></td><td>Pay-per-use calculator + auto-checked cost drills</td></tr>
+    <tr><td><span class="bdg b-lec">3</span></td><td>Cold starts, limits, and when to say no</td></tr>
+    <tr><td><span class="bdg b-lab">LAB</span></td><td>Sort it: function, container, or VM?</td></tr>
+    <tr><td><span class="bdg b-cap">WALK</span></td><td>Worked walkthrough: the Pelican Tours upload pipeline, priced step by step</td></tr>
+    <tr><td><span class="bdg b-quiz">QUIZ</span></td><td>8 story problems (last two: AI inference as an event)</td></tr>
+  </table>
+</section>
+
+<!-- ============ WARM-UP ============ -->
+<section class="card warmup">
+  <h3>🔥 Warm-Up Polls <span class="note">(no wrong answers — vote, then discuss)</span></h3>
+  <div class="poll" id="poll1">
+    <p><strong>Poll 1:</strong> A small website gets 3 visitors a day. Its server runs 24/7. Roughly what share of that server's life is spent actually serving someone?</p>
+    <button class="popt">About half</button><button class="popt">About 10%</button><button class="popt">Under 1%</button><button class="popt">Servers don't idle, they multitask</button>
+    <div class="pollwhy">Three short visits a day is well under <strong>1%</strong> utilization — yet a traditional always-on server bills for 100% of the month. That gap between <em>capacity you rent</em> and <em>work you actually do</em> is the entire economic argument for serverless. Today we price that gap precisely.</div>
+  </div>
+  <div class="poll" id="poll2">
+    <p><strong>Poll 2:</strong> “Serverless” means…</p>
+    <button class="popt">There are literally no servers involved</button><button class="popt">Someone else manages the servers, scaling, and patching</button><button class="popt">Your code runs on the visitor's phone</button><button class="popt">It's just a marketing word for websites</button>
+    <div class="pollwhy">Your code absolutely runs on servers — in the provider's data centers. <strong>Serverless means the servers stop being your job:</strong> no provisioning, no patching, no capacity planning. You ship a function; the provider runs it when an event arrives and scales it up or down to zero.</div>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 1 ============ -->
+<section class="segment">
+  <h2><span class="segno">1</span> “Serverless” Still Has Servers</h2>
+  <div class="card">
+    <h3>The one-sentence version</h3>
+    <p><strong>Serverless = you rent <em>executions</em>, not <em>machines</em>.</strong> In Session 3 you rented virtual machines by the hour whether they worked or slept. In Session 10 you built services that wait behind an API. Here, the unit shrinks again: a single <strong>function</strong> — one small piece of code — that the provider starts when an <strong>event</strong> occurs, runs just long enough to finish, then tears down. No event, no run, no charge.</p>
+    <p>Tap each card to flip it over:</p>
+    <div class="flipgrid">
+      <div class="flip"><strong>Myth: “No servers”</strong><span class="back">Reality: servers exist — the provider owns, patches, and scales them. You stopped seeing them, not using them.</span></div>
+      <div class="flip"><strong>Myth: “Always free”</strong><span class="back">Reality: you pay per request plus per fraction-of-a-second of memory used. Cheap at spiky, low volume; it can cost <em>more</em> than a VM at heavy, steady volume.</span></div>
+      <div class="flip"><strong>Myth: “Functions remember things”</strong><span class="back">Reality: functions are <strong>stateless</strong>. Any run may start in a fresh environment. Memory, carts, and sessions live in a database or cache — never in the function.</span></div>
+      <div class="flip"><strong>Myth: “It replaces everything”</strong><span class="back">Reality: functions have short maximum runtimes (often ~15 minutes) and startup quirks. Long jobs, steady firehoses, and persistent connections still belong on containers or VMs.</span></div>
+    </div>
+    <p class="note">🧭 <strong>Where this sits in the course:</strong> Session 10's SOA lesson said “build small, loosely coupled services that talk over the network.” A function is that idea taken to its limit — a service so small it only exists while it's answering.</p>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 2 ============ -->
+<section class="segment">
+  <h2><span class="segno">2</span> Functions &amp; Triggers: Anatomy of an Event-Driven App</h2>
+  <div class="card">
+    <h3>Every serverless app has the same three bones</h3>
+    <p><strong>1 · The event (trigger).</strong> Something happens: an HTTP request arrives, a file lands in storage, a timer fires, a row is added to a database, a message enters a queue.<br>
+    <strong>2 · The function.</strong> Your code runs in a fresh, right-sized environment, does one job, returns a result.<br>
+    <strong>3 · The managed services around it.</strong> Storage, databases, queues, and identity — all operated by the provider, all billed per use, all connected by events instead of by servers you babysit.</p>
+    <table>
+      <tr><th>Event source</th><th>Typical function job</th><th>Course connection</th></tr>
+      <tr><td>HTTP request (API)</td><td>Answer one endpoint: place order, fetch tour</td><td>Session 10 · REST &amp; SOA</td></tr>
+      <tr><td>File uploaded to storage</td><td>Thumbnail it, scan it, transcribe it</td><td>Session 5 · object storage</td></tr>
+      <tr><td>Timer (cron)</td><td>Nightly cleanup, morning report</td><td>Session 11 · operations</td></tr>
+      <tr><td>Database change</td><td>Send the confirmation email</td><td>Session 6 · collaboration</td></tr>
+      <tr><td>Queue message</td><td>Process one job at a time, retry on failure</td><td>Session 9 · reliability</td></tr>
+    </table>
+    <p><strong>The discipline that makes it work:</strong> one function, one job, no memory of the last run. The moment a function needs to “remember,” that memory moves into a database, a cache, or object storage — the same state stores you met in Week 2, now doing double duty.</p>
+  </div>
+</section>
+
+<!-- ============ COST LAB ============ -->
+<section class="segment">
+  <h2><span class="segno">3</span> 🔬 Hands-On Lab — Price the Sleep</h2>
+  <div class="card">
+    <h3>The pay-per-use formula (memorize this shape)</h3>
+    <p>Teaching prices, close to real published rates: <strong>$0.20 per million requests</strong> plus <strong>$0.0000167 per GB-second</strong> of memory-time (memory in gigabytes × seconds the function ran).</p>
+    <p style="text-align:center;font-size:19px"><strong>Monthly cost ≈ (requests × $0.0000002) + (requests × seconds × GB × $0.0000167)</strong></p>
+    <h3>Try it: the pay-per-use calculator</h3>
+    <p>
+      Requests per month <input type="number" id="cReq" value="40000" min="0" style="width:130px;border:1.5px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit">
+      &nbsp; Average run <input type="number" id="cMs" value="800" min="0" style="width:90px;border:1.5px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit"> ms
+      &nbsp; Memory <input type="number" id="cMb" value="512" min="0" style="width:90px;border:1.5px solid var(--line);border-radius:8px;padding:6px 10px;font:inherit"> MB
+      &nbsp; <button class="btn" id="cBtn">Compute monthly cost</button>
+    </p>
+    <p class="fb" id="cOut" style="font-size:17px"></p>
+    <p class="note">Defaults above are the walkthrough's photo pipeline (40,000 uploads, 800&nbsp;ms, 512&nbsp;MB). Compare with a small always-on VM at ~$12/month that idles between uploads. Then try 5 million requests at 200&nbsp;ms / 256&nbsp;MB and watch the crossover approach.</p>
+  </div>
+  <div class="card">
+    <h3>Cost drills — checked instantly, no server involved</h3>
+    <p>Do the arithmetic first, then click. Every answer explains itself.</p>
+    <section class="quiz" id="costDrills">
+      <div class="q" data-a="0">
+        <h4>Drill 1 · The sleepy endpoint</h4>
+        <p class="stem">An endpoint runs 500,000 times a month, 100 ms each, at 128 MB (0.125 GB). Using the teaching prices, the monthly bill is closest to…</p>
+        <button class="opt">A. $0.20</button>
+        <button class="opt">B. $2.00</button>
+        <button class="opt">C. $20.00</button>
+        <button class="opt">D. $200.00</button>
+        <div class="expl"><strong>Answer: A.</strong> ✔ Duration: 500,000 × 0.1 s × 0.125 GB = 6,250 GB-seconds × $0.0000167 ≈ $0.10. Requests: 500,000 × $0.0000002 = $0.10. Total ≈ <strong>$0.20</strong>. ✘ B/C/D are each 10×/100×/1000× slips — the classic error is pricing the requests as if each one cost $0.20 instead of <em>a million of them</em> costing $0.20.</div>
+      </div>
+      <div class="q" data-a="1">
+        <h4>Drill 2 · The busy API</h4>
+        <p class="stem">A product API runs 2,000,000 times a month, 200 ms each, at 256 MB (0.25 GB). Monthly bill?</p>
+        <button class="opt">A. $0.47</button>
+        <button class="opt">B. $2.07</button>
+        <button class="opt">C. $20.70</button>
+        <button class="opt">D. $207.00</button>
+        <div class="expl"><strong>Answer: B.</strong> ✔ Duration: 2,000,000 × 0.2 s × 0.25 GB = 100,000 GB-seconds × $0.0000167 ≈ $1.67. Requests: 2 × $0.20 = $0.40. Total ≈ <strong>$2.07</strong> — still less than the $12 always-on VM, and this API is doing real work. ✘ A forgot the request charge is per-million (2 million = $0.40, not $0.04). ✘ C/D repeat the 10× slip from Drill 1.</div>
+      </div>
+      <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+    </section>
+  </div>
+</section>
+
+<!-- ============ SEGMENT 3 (limits) ============ -->
+<section class="segment">
+  <h2><span class="segno">4</span> Cold Starts, Limits, and When to Say No</h2>
+  <div class="card">
+    <h3>The cold start</h3>
+    <p>When a function hasn't run for a while, the provider must prepare a fresh environment before your code starts — downloading it, booting the runtime, running your setup code. That first request pays a <strong>cold start</strong> (often a few hundred milliseconds; more for heavy runtimes); quick follow-ups reuse a warm environment and skip it. The fixes are boring and effective: keep the package small, lazy-load heavy libraries inside the handler instead of at startup, and keep setup code minimal. Paying for “always warm” capacity exists — and quietly converts your serverless bill back into a server bill, so reach for it last.</p>
+    <h3>Know the walls before you build</h3>
+    <table>
+      <tr><th>Limit</th><th>Typical shape</th><th>What it rules out</th></tr>
+      <tr><td>Maximum runtime</td><td>~15 minutes per run</td><td>Long renders, big migrations, model training</td></tr>
+      <tr><td>Statelessness</td><td>Fresh environment any run</td><td>Carts/sessions held in local variables</td></tr>
+      <tr><td>Cold starts</td><td>First request after idle is slower</td><td>Hard real-time, latency-critical paths (without mitigation)</td></tr>
+      <tr><td>Cost crossover</td><td>Per-request billing never sleeps</td><td>Steady 24/7 firehoses — a VM/container wins on price</td></tr>
+    </table>
+    <p><strong>Rule of thumb:</strong> spiky, short, and event-shaped → function. Long, steady, or stateful → container or VM. Most real systems are a hybrid, which is exactly what your course project already taught you to design.</p>
+  </div>
+  <div class="card">
+    <h3>Lab B · Sort it: function, container, or VM?</h3>
+    <p>Pick a card, then place it where it belongs. All six must land correctly.</p>
+    <div class="matcher" id="sortLab">
+      <div class="mcards">
+        <button class="mcard" data-match="fn">Resize each uploaded photo, once, the moment it arrives</button>
+        <button class="mcard" data-match="vm">Nightly report crunch that runs flat-out for 40 minutes</button>
+        <button class="mcard" data-match="fn">Email a receipt when a new order row lands in the database</button>
+        <button class="mcard" data-match="vm">Game server holding player connections open for hours</button>
+        <button class="mcard" data-match="fn">API idle 20 hours a day that bursts hard at lunch</button>
+        <button class="mcard" data-match="vm">Storefront API under heavy, steady traffic around the clock</button>
+      </div>
+      <div class="mzones">
+        <button class="mzone" data-zone="fn">⚡ Function<small>short · spiky · stateless</small></button>
+        <button class="mzone" data-zone="vm">🖥️ Container or VM<small>long · steady · stateful</small></button>
+      </div>
+      <p class="mstatus"></p>
+    </div>
+    <p class="note">Stuck on the storefront? A function <em>could</em> serve it — the question is the bill. At heavy steady volume, per-request pricing loses to renting the machine outright. “Can” and “should” are different engineering questions.</p>
+  </div>
+</section>
+
+<!-- ============ WALKTHROUGH ============ -->
+<section class="segment">
+  <h2><span class="segno">5</span> 🎓 Worked Walkthrough — The Upload Pipeline, Priced Step by Step</h2>
+  <div class="card capstone">
+    <p><strong>The job:</strong> Pelican Tours customers upload a photo with each booking. Every upload needs a thumbnail for the tours page. Volume: <strong>40,000 uploads a month</strong>, arriving in bursts around weekend promotions. Work through it exactly as you would on the job — every number shown, nothing skipped.</p>
+    <h3>Step 1 · Name the event</h3>
+    <p>The trigger is <strong>“a file landed in storage.”</strong> No server polls a folder; the storage service itself announces each upload. Event-driven design starts by naming the event in one sentence — if you can't, you don't have a function yet, you have a program looking for a home.</p>
+    <h3>Step 2 · Write the smallest function that does the job</h3>
+    <p>One function: read the uploaded image, produce a 300-pixel thumbnail, save it beside the original, done. It remembers nothing between runs; the <em>storage bucket</em> is the memory. Measured on real uploads: <strong>800 ms average</strong>. We configure <strong>512 MB</strong> of memory — image work is memory-hungry, and on this pricing model more memory also buys proportionally more CPU, so the run gets shorter as well as roomier.</p>
+    <h3>Step 3 · Convert one run into GB-seconds</h3>
+    <p>512 MB = 0.5 GB. One run: 0.5 GB × 0.8 s = <strong>0.40 GB-seconds</strong>. This single number is the atom of every serverless estimate — get it right and the rest is multiplication.</p>
+    <h3>Step 4 · Price one run</h3>
+    <p>Duration: 0.40 × $0.0000167 ≈ <strong>$0.0000067</strong>. Request: $0.20 ÷ 1,000,000 = <strong>$0.0000002</strong>. One thumbnail ≈ <strong>$0.0000069</strong> — about seven millionths of a dollar. Notice the shape: at this size the <em>duration</em> is 97% of the cost, so optimizing run time beats optimizing request counts.</p>
+    <h3>Step 5 · Scale to the month</h3>
+    <p>40,000 × $0.0000069 ≈ <strong>$0.28 a month</strong>. The always-on alternative — a small VM waiting all month for weekend bursts — is ~$12 whether it thumbnails 40,000 photos or four. Serverless wins here not because it's fashionable, but because the workload <em>sleeps</em>: most of the month, there is simply nothing to bill.</p>
+    <h3>Step 6 · Argue the other side (always do this)</h3>
+    <p>If uploads grew 100× and arrived steadily all day, the same math gives ~$28/month and climbing, while the VM stays ~$12 — the crossover from Lab A. And the 800 ms thumbnail is safely inside the runtime limit, but a 45-minute video render would hit the wall and belong on a container. <strong>The walkthrough's real deliverable isn't $0.28; it's the habit: event → GB-seconds → unit price → monthly → argue the opposite.</strong> That five-beat argument is your template for every “should this be serverless?” question you will ever be asked.</p>
+    <div class="step"><label><input type="checkbox" data-step="walk1"> I worked each step with my own calculator before reading the result</label></div>
+  </div>
+</section>
+
+<!-- ============ AI CONCEPT ============ -->
+<section class="card ai">
+  <h3>🧠 AI Concept of the Day — AI Inference Is an Event</h3>
+  <p>Look at the shape of an AI chatbot call: a prompt arrives, the model thinks for a few seconds, an answer streams back, silence. That is <em>exactly</em> the function shape — short, stateless, spiky, billed per use (per token, Session 1). It's no accident that model APIs are sold the way functions are billed: both sell <strong>executions, not machines</strong>.</p>
+  <p>So the modern pattern is a matryoshka: <strong>your function calls the model API</strong>. A customer message (event) wakes your function, your function sends the prompt to a hosted model, the answer returns per-token, your function saves the conversation to a database (because functions remember nothing) and replies. You pay twice in the best way: per request for your code, per token for the model's thinking — and $0 for every hour nobody chats. The one job that never fits this shape: <strong>training or fine-tuning</strong>, which runs for hours to days on GPUs. That's renting machines (Session 3's IaaS), and no event trigger will save it.</p>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<h2>📝 Session Quiz — Serverless Story Problems</h2>
+<p>Eight workplace scenarios — the last two test today's AI concept. Pick the best answer; every question explains all four options after you answer. Counts toward the syllabus “Exercises/Quizzes” grade (30%).</p>
+<section class="quiz" id="quiz1">
+  <div class="q" data-a="2">
+    <h4>Q1 · <em>The Saturday stampede</em></h4>
+    <p class="stem">A bakery's ordering API sits nearly idle Monday–Friday, then takes 50× traffic for three hours every Saturday morning. The owner is tired of paying for a server that's bored all week. Why do functions fit this workload so well?</p>
+    <button class="opt">A. Functions run faster than servers, so Saturday pages load quicker</button>
+    <button class="opt">B. Functions come with free unlimited storage for the menu photos</button>
+    <button class="opt">C. The provider scales executions per request and bills only while code runs — idle weekdays cost essentially nothing</button>
+    <button class="opt">D. Functions never need a database, so the bakery can delete its order records</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Spiky + short + stateless is the function sweet spot: capacity appears per request at the stampede and vanishes (with the bill) on Tuesday. ✘ A — a function on a cold start can be <em>slower</em>; speed isn't the selling point. ✘ B — storage is a separate managed service with its own per-use bill. ✘ D — functions are stateless, so the order database matters <em>more</em>, not less.</div>
+  </div>
+  <div class="q" data-a="1">
+    <h4>Q2 · <em>The 45-minute render</em></h4>
+    <p class="stem">A videographer wants one function to transcode each client's 45-minute video. The platform caps a single function run at about 15 minutes. What's the right call?</p>
+    <button class="opt">A. Start the function three times and have each do a third — the cap resets per call, problem solved</button>
+    <button class="opt">B. Run the transcode on a container or VM built for long jobs; keep functions for the short event-shaped work around it</button>
+    <button class="opt">C. Raise the function's memory until the render finishes inside the cap</button>
+    <button class="opt">D. Compress the video until it transcodes in under 15 minutes, whatever the quality</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ A hard runtime wall is an architecture signal, not an obstacle to outsmart: long, continuous work belongs on containers/VMs (Lab B sorted exactly this). ✘ A — splitting helps only if the tool supports chunked processing with merged output; as stated it produces three unrelated partial files. ✘ C — memory buys CPU speed, not permission; a faster 45-minute job is still a long job, and you'd pay premium rates the whole way. ✘ D — destroying the product to fit the platform inverts every priority from Session 12.</div>
+  </div>
+  <div class="q" data-a="3">
+    <h4>Q3 · <em>Price it before you pitch it</em></h4>
+    <p class="stem">Your manager asks what the Drill 2 API (2,000,000 runs/month, 200 ms, 256 MB) costs as functions versus the $12 always-on VM. Using the teaching prices, your answer is…</p>
+    <button class="opt">A. About $207 — per-request billing always loses at millions of requests</button>
+    <button class="opt">B. About $20.70 — cheaper than the VM, but barely</button>
+    <button class="opt">C. Exactly $0.40 — you only pay the request charge</button>
+    <button class="opt">D. About $2.07 — $1.67 of duration plus $0.40 of requests, well under the VM</button>
+    <div class="expl"><strong>Answer: D.</strong> ✔ 2,000,000 × 0.2 s × 0.25 GB = 100,000 GB-s ≈ $1.67, plus 2 × $0.20 = $0.40 → <strong>$2.07</strong>. ✘ A/B are the 100×/10× decimal slips from the drills — always sanity-check against the VM price. ✘ C forgets duration entirely; at longer runtimes duration is most of the bill (Step 4 of the walkthrough).</div>
+  </div>
+  <div class="q" data-a="0">
+    <h4>Q4 · <em>The sleepy first click</em></h4>
+    <p class="stem">Testers report: “The page is fast all day, except the very first visit each morning takes two extra seconds.” The app is functions behind an API. Best first move?</p>
+    <button class="opt">A. Shrink the deployment package and lazy-load heavy libraries so the runtime starts fast; keep setup code minimal</button>
+    <button class="opt">B. Move the whole app to a VM — cold starts prove functions don't work</button>
+    <button class="opt">C. Tell testers to click twice every morning</button>
+    <button class="opt">D. Pay for always-warm capacity across the whole fleet before trying anything else</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ That's a textbook cold start, and package size + startup work is where most of it lives. ✘ B throws away the pay-per-use economics over a known, mitigable quirk. ✘ C is not an engineering answer. ✘ D works but bills like a server — it's the last resort, not the first move (Segment 4).</div>
+  </div>
+  <div class="q" data-a="2">
+    <h4>Q5 · <em>The vanishing cart</em></h4>
+    <p class="stem">A developer stores each shopper's cart in a variable inside the function. In testing it works; in production, carts randomly empty. Why?</p>
+    <button class="opt">A. The provider deletes carts to encourage database sales</button>
+    <button class="opt">B. Shoppers are clearing their cookies</button>
+    <button class="opt">C. Functions are stateless — any run may start in a fresh environment, so state must live in a database or cache</button>
+    <button class="opt">D. The function needs more memory to remember harder</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ It's the flip-card myth from Segment 1, live in production. Warm environments sometimes reuse memory — which is why it “worked in testing” — but nothing guarantees it. ✘ A is conspiracy, not architecture. ✘ B wouldn't be random per-run on the server side. ✘ D confuses capacity with persistence; memory size doesn't make an environment permanent.</div>
+  </div>
+  <div class="q" data-a="1">
+    <h4>Q6 · <em>Name that trigger</em></h4>
+    <p class="stem">“Every time a customer uploads a booking photo, a thumbnail appears on the tours page a second later — including at 3 AM, with nobody watching.” Which design produces exactly that?</p>
+    <button class="opt">A. A staffer runs a thumbnail script when they arrive each morning</button>
+    <button class="opt">B. An object-created event in storage invokes the thumbnail function on each upload</button>
+    <button class="opt">C. The tours page rebuilds all thumbnails every time any visitor loads it</button>
+    <button class="opt">D. A VM polls the upload folder every 60 seconds, around the clock</button>
+    <div class="expl"><strong>Answer: B.</strong> ✔ It's the walkthrough verbatim: the storage event <em>is</em> the trigger — instant, automatic, and billed only per upload. ✘ A fails “3 AM, nobody watching.” ✘ C does the work thousands of times for zero new uploads and slows every page view. ✘ D is the always-on pattern serverless replaces — a machine billing all night to check an empty folder.</div>
+  </div>
+  <div class="q" data-a="2">
+    <h4>Q7 · <em>The chatbot's two meters</em> (AI concept)</h4>
+    <p class="stem">A tour company adds AI support chat: traffic is unpredictable, each reply calls a hosted model billed per token, and some nights nobody writes in at all. Why is wrapping the chat endpoint in a function a sound design?</p>
+    <button class="opt">A. The function trains the model between chats, so answers improve free of charge</button>
+    <button class="opt">B. Functions make the per-token model bill disappear</button>
+    <button class="opt">C. You pay per request for your code plus per token for the model's thinking — and roughly $0 for the silent nights</button>
+    <button class="opt">D. Regulators require all chatbots to be serverless</button>
+    <div class="expl"><strong>Answer: C.</strong> ✔ Both meters only run while someone is chatting — the matryoshka from today's AI section. ✘ A — functions serve <em>inference</em>; training is a different shape of job entirely (Q8). ✘ B — the token bill is the model's price; your function just stops adding an idle-server bill on top of it. ✘ D — no such rule; choose the shape because the economics fit.</div>
+  </div>
+  <div class="q" data-a="0">
+    <h4>Q8 · <em>Three days on GPUs</em> (AI concept)</h4>
+    <p class="stem">A team wants to fine-tune a model on their support tickets: one continuous job, roughly three days, needs GPUs throughout. A teammate proposes “just make it a function — it's AI, so it's serverless, right?” Your response?</p>
+    <button class="opt">A. No — rent GPU instances (IaaS) for the run; functions cap out in minutes, don't promise GPUs, and per-second billing over three days is the priciest way to rent a machine</button>
+    <button class="opt">B. Yes — AI workloads are always cheaper as functions</button>
+    <button class="opt">C. Yes, if they split it into 300 chained functions</button>
+    <button class="opt">D. No — fine-tuning can only happen on a laptop</button>
+    <div class="expl"><strong>Answer: A.</strong> ✔ Training is long, steady, stateful, GPU-shaped — every wall in Segment 4 at once. Inference is the event; training is the factory. ✘ B repeats the “AI = serverless” confusion the AI section dismantled. ✘ C chains straight into runtime caps, lost state, and premium per-second pricing. ✘ D — the cloud rents GPUs precisely so laptops don't have to do this (Session 3).</div>
+  </div>
+  <div class="qresult"><div class="bar"><span></span></div><p class="scoreline"></p></div>
+</section>
+
+<!-- ============ DISCUSS + EXIT ============ -->
+<section class="card disc">
+  <h3>💬 Discussion Prompts</h3>
+  <p><strong>Prompt 1:</strong> Pick one app you use daily. Which of its features are event-shaped (short, spiky, stateless) and which are machine-shaped (long, steady, stateful)? Defend one of each in two sentences.</p>
+  <textarea data-persist="disc1" placeholder="One of each, with your reasoning…"></textarea>
+  <p><strong>Prompt 2:</strong> “Serverless is cheaper” is a workload claim, not a technology claim. Describe a workload where functions are the <em>expensive</em> choice, using the cost-crossover idea from the walkthrough.</p>
+  <textarea data-persist="disc2" placeholder="The expensive case, with numbers…"></textarea>
+</section>
+
+<section class="card exit">
+  <h3>🎟️ Exit Ticket</h3>
+  <p>Before you close the tab: in one sentence each — (1) the event, function, and state store of an app you'd build serverless-first; (2) the muddiest point from today.</p>
+  <textarea data-persist="exitTicket" placeholder="Event → function → state lives in… / I'm least sure about…"></textarea>
+</section>
+
+<section class="card ai">
+  <h3>🤖 Learn It With AI — Serverless Drills</h3>
+  <p>Copy any prompt into your free AI assistant, then <strong>fact-check its answer against this page</strong> — that verification step is the skill.</p>
+  <p><strong>Socratic tutor:</strong></p>
+  <div class="promptbox">Quiz me on serverless computing one question at a time. Cover triggers, statelessness, cold starts, runtime limits, and pay-per-use pricing. Don't tell me the answer until I've tried, and explain why each wrong answer is wrong.</div>
+  <p><strong>Cost sparring partner:</strong></p>
+  <div class="promptbox">Give me a serverless pricing problem: invent requests/month, average milliseconds, and memory in MB. Let me compute the monthly cost using $0.20 per million requests plus $0.0000167 per GB-second (GB = MB/1024). Check my GB-seconds first, then my total, and point out any decimal slip.</div>
+  <p><strong>Design debate:</strong></p>
+  <div class="promptbox">Argue AGAINST using serverless functions for a busy, steady, 24/7 storefront API — cost crossover, cold starts, and operational control. Then switch sides and argue FOR a hybrid: functions at the spiky edges, containers at the steady core. I'll judge which side is stronger.</div>
+</section>
+
+<footer>
+  <div class="card" style="background:#f0eee6">
+    <strong>📚 Keep going:</strong> revisit <strong>Session 10 (SOA &amp; REST)</strong> and notice how much of it was quietly preparing you for this page — then price one feature of your course project both ways (function vs. always-on) and bring the two numbers to class.
+  </div>
+  <div class="footer-nav">
+    <a class="btn ghost" href="index.html">⌂ Course Hub</a>
+    <span><button class="btn ghost small" onclick="resetPage()">Reset my progress on this page</button></span>
+    <a class="btn" href="week4-session12.html">← Session 12: Migration + Finale</a>
+  </div>
+</footer>
+
+</main>
+
+<script>
+/* ===== CEN4086 core framework (copy verbatim into every session file) ===== */
+const PKEY='cen4086v3:'+(location.pathname.split('/').pop()||'page');
+const store={get(){try{return JSON.parse(localStorage.getItem(PKEY))||{}}catch(e){return{}}},set(d){try{localStorage.setItem(PKEY,JSON.stringify(d))}catch(e){}}};
+let S=store.get();
+function save(k,v){S[k]=v;store.set(S)}
+function resetPage(){try{localStorage.removeItem(PKEY)}catch(e){};location.reload()}
+
+/* flips */
+document.querySelectorAll('.flip').forEach(f=>f.addEventListener('click',()=>f.classList.toggle('open')));
+/* tabs */
+document.querySelectorAll('.tabs').forEach(t=>{
+  t.querySelectorAll('.tabbtn').forEach(b=>b.addEventListener('click',()=>{
+    t.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('on'));
+    t.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');t.querySelector('.tabpane[data-p="'+b.dataset.t+'"]').classList.add('on');
+  }));
+});
+/* polls */
+document.querySelectorAll('.poll').forEach((p,pi)=>{
+  const key='poll:'+(p.id||pi);
+  p.querySelectorAll('.popt').forEach((o,oi)=>o.addEventListener('click',()=>{
+    if(p.classList.contains('done'))return;
+    o.classList.add('sel');p.classList.add('done');save(key,oi);
+  }));
+  if(S[key]!=null){p.classList.add('done');const o=p.querySelectorAll('.popt')[S[key]];if(o)o.classList.add('sel');}
+});
+/* quiz engine */
+function updateQuiz(qz){
+  const qs=[...qz.querySelectorAll('.q')];
+  const done=qs.filter(q=>q.classList.contains('done'));
+  const right=qs.filter(q=>q.classList.contains('gotit')).length;
+  const res=qz.querySelector('.qresult');
+  if(res){res.querySelector('.bar span').style.width=(done.length?Math.round(100*right/qs.length):0)+'%';
+    res.querySelector('.scoreline').textContent='Score: '+right+' / '+qs.length+(done.length===qs.length?(right===qs.length?' — perfect! 🎉':' — review the explanations above.'):' ('+(qs.length-done.length)+' remaining)');}
+  updateChip();
+}
+function updateChip(){
+  let r=0,t=0;
+  document.querySelectorAll('.quiz').forEach(qz=>qz.querySelectorAll('.q').forEach(q=>{t++;if(q.classList.contains('gotit'))r++;}));
+  const c=document.getElementById('scoreChip');if(c)c.textContent='Quiz: '+r+'/'+t;
+}
+document.querySelectorAll('.quiz').forEach((qz,qzi)=>{
+  const qid=qz.id||('qz'+qzi);
+  qz.querySelectorAll('.q').forEach((q,i)=>{
+    const a=+q.dataset.a,opts=[...q.querySelectorAll('.opt')];
+    const key=qid+':q'+i;
+    function answer(j,fresh){
+      q.classList.add('done');if(j===a)q.classList.add('gotit');
+      opts.forEach(o=>o.disabled=true);
+      opts[a].classList.add('right');if(j!==a)opts[j].classList.add('wrong');
+      if(fresh)save(key,j);
+    }
+    opts.forEach((o,j)=>o.addEventListener('click',()=>{if(!q.classList.contains('done')){answer(j,true);updateQuiz(qz);}}));
+    if(S[key]!=null)answer(S[key],false);
+  });
+  updateQuiz(qz);
+});
+/* matcher engine */
+document.querySelectorAll('.matcher').forEach((m,mi)=>{
+  const key='match:'+(m.id||mi);let sel=null,done=0;
+  const cards=[...m.querySelectorAll('.mcard')],st=m.querySelector('.mstatus');
+  function stat(){st.textContent=done+'/'+cards.length+' placed'+(done===cards.length?' — all correct! 🎉':'');}
+  cards.forEach((c,ci)=>{c.addEventListener('click',()=>{
+    if(c.classList.contains('ok'))return;
+    cards.forEach(x=>x.classList.remove('sel'));c.classList.add('sel');sel=c;
+  });});
+  m.querySelectorAll('.mzone').forEach(z=>z.addEventListener('click',()=>{
+    if(!sel)return;
+    if(sel.dataset.match===z.dataset.zone){
+      sel.classList.remove('sel');sel.classList.add('ok');done++;stat();
+      const solved=(S[key]||[]);solved.push(cards.indexOf(sel));save(key,solved);sel=null;
+    }else{sel.classList.add('no');setTimeout(()=>sel&&sel.classList.remove('no'),400);}
+  }));
+  (S[key]||[]).forEach(ci=>{if(cards[ci]&&!cards[ci].classList.contains('ok')){cards[ci].classList.add('ok');done++;}});
+  stat();
+});
+/* lab step checkboxes */
+document.querySelectorAll('.step input[type=checkbox]').forEach(cb=>{
+  const key='step:'+cb.dataset.step;
+  if(S[key]){cb.checked=true;cb.closest('.step').classList.add('done');}
+  cb.addEventListener('change',()=>{cb.closest('.step').classList.toggle('done',cb.checked);save(key,cb.checked);});
+});
+/* persisted inputs/textareas */
+document.querySelectorAll('[data-persist]').forEach(el=>{
+  const key='p:'+el.dataset.persist;
+  if(S[key]!=null)el.value=S[key];
+  el.addEventListener('input',()=>save(key,el.value));
+});
+/* exit ticket lights */
+const LIGHTS=['⚪','🔴','🟡','🟢'];
+document.querySelectorAll('.light').forEach(b=>{
+  const key='exit:'+b.dataset.exit;let i=S[key]||0;b.textContent=LIGHTS[i];
+  b.addEventListener('click',()=>{i=(i+1)%4;b.textContent=LIGHTS[i];save(key,i);});
+});
+/* copy prompt */
+function copyPrompt(btn){
+  const txt=btn.parentNode.querySelector('pre').textContent;
+  const done=()=>{btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='📋 Copy',1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(()=>fallbackCopy(txt,done));}
+  else fallbackCopy(txt,done);
+}
+function fallbackCopy(txt,done){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+
+/* ===== quiz submission to instructor ===== */
+(function(){
+  const QUIZ_ENDPOINT='https://quiz.metaltorque.dev/submit';
+  const QUIZ_ID=(location.pathname.split('/').pop()||'page').replace(/\.html$/,'');
+  const NAME_KEY='cen4086v3:studentName';
+  const DONE_KEY='cen4086v3:submitted:'+QUIZ_ID;
+  const nameInput=document.getElementById('studentName');
+  const btn=document.getElementById('submitQuizBtn');
+  const statusEl=document.getElementById('submitStatus');
+  if(!btn)return;
+  try{const saved=localStorage.getItem(NAME_KEY);if(saved&&nameInput)nameInput.value=saved;}catch(e){}
+  if(nameInput)nameInput.addEventListener('input',()=>{try{localStorage.setItem(NAME_KEY,nameInput.value);}catch(e){}});
+
+  /* One submission per browser: once the server confirms receipt, the button
+     stays disabled — including across reloads — so accidental double
+     submissions can't happen. */
+  function lockSubmitted(when){
+    btn.disabled=true;
+    btn.textContent='✓ Submitted';
+    if(when){statusEl.textContent='You already submitted this quiz on '+new Date(when).toLocaleString()+'.';statusEl.style.color='var(--ok)';}
+  }
+  try{const done=localStorage.getItem(DONE_KEY);if(done){lockSubmitted(done);}}catch(e){}
+
+  function collectQuizData(){
+    // Only the chosen option index is sent — correctness is decided
+    // server-side against the answer key, never trusted from this page.
+    const answers=[];let total=0;
+    document.querySelectorAll('.quiz').forEach((qz,qzi)=>{
+      const qid=qz.id||('qz'+qzi);
+      qz.querySelectorAll('.q').forEach((q,i)=>{
+        total++;
+        const opts=[...q.querySelectorAll('.opt')];
+        const stemEl=q.querySelector('.stem')||q.querySelector('h4');
+        const stem=stemEl?stemEl.textContent.trim():'';
+        const chosenIdx=S[qid+':q'+i];
+        const answered=chosenIdx!=null&&opts[chosenIdx];
+        answers.push({
+          question:stem,
+          response:answered?opts[chosenIdx].textContent.trim():'(not answered)',
+          optionIndex:answered?chosenIdx:undefined
+        });
+      });
+    });
+    document.querySelectorAll('.sa').forEach(sa=>{
+      const stemEl=sa.querySelector('.stem')||sa.querySelector('h4');
+      const input=sa.querySelector('.sa-input');
+      if(!input)return;
+      answers.push({
+        question:stemEl?stemEl.textContent.trim():'',
+        response:input.value.trim()||'(not answered)'
+      });
+    });
+    return {answers,total};
+  }
+
+  btn.addEventListener('click',async()=>{
+    const name=(nameInput&&nameInput.value||'').trim();
+    if(!name){statusEl.textContent='Please enter your name first.';statusEl.style.color='var(--bad)';return;}
+    const {answers,total}=collectQuizData();
+    if(total===0){statusEl.textContent='No quiz questions found on this page.';statusEl.style.color='var(--bad)';return;}
+    btn.disabled=true;statusEl.textContent='Submitting…';statusEl.style.color='var(--mut)';
+    try{
+      const res=await fetch(QUIZ_ENDPOINT,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          quizId:QUIZ_ID,
+          quizTitle:document.title,
+          studentName:name,
+          answers
+        })
+      });
+      if(res.status===409){
+        // The server already has a submission under this name (one per
+        // student, enforced server-side) — lock this browser too.
+        let msg='A submission for this quiz has already been received under this name. If you believe this is an error, contact your instructor.';
+        try{const data=await res.json();if(data&&data.error)msg=data.error;}catch(e){}
+        try{localStorage.setItem(DONE_KEY,new Date().toISOString());}catch(e){}
+        lockSubmitted(null);
+        statusEl.textContent=msg;
+        statusEl.style.color='var(--bad)';
+        return;
+      }
+      if(!res.ok)throw new Error('server returned '+res.status);
+      try{localStorage.setItem(DONE_KEY,new Date().toISOString());}catch(e){}
+      lockSubmitted(null);
+      const answeredCount=answers.filter(a=>a.response!=='(not answered)').length;
+      statusEl.textContent='✓ Submitted! You answered '+answeredCount+'/'+answers.length+' questions. You can keep working or close this page.';
+      statusEl.style.color='var(--ok)';
+    }catch(err){
+      statusEl.textContent='Could not submit ('+err.message+'). Check your connection and try again.';
+      statusEl.style.color='var(--bad)';
+      btn.disabled=false;
+    }
+  });
+})();
+
+/* ===== Session 1 custom interactives ===== */
+/* stack painter */
+const LAYERS=['Data & access','Applications','Runtime','Middleware','Operating system','Virtualization','Servers','Storage','Networking'];
+const MODELS={
+  onprem:{cut:9,cap:'On-premises: YOU manage every layer — and buy the hardware.'},
+  iaas:{cut:5,cap:'IaaS: provider runs the physical + virtualization layers; you manage the OS upward. Example: Amazon EC2, Azure VMs.'},
+  paas:{cut:1,cap:'PaaS: you bring code and data; provider runs the whole platform. Example: Heroku-style platforms, Google App Engine, GitHub Pages.'},
+  saas:{cut:0,cap:'SaaS: provider manages everything — you manage only your data, users, and settings. Example: Gmail, Salesforce.'}
+};
+const sv=document.getElementById('stackViz');
+function paintStack(model){
+  const m=MODELS[model];if(!m)return;
+  sv.innerHTML=LAYERS.map((l,i)=>{
+    const you=i<m.cut;
+    return '<div class="stackrow"><div class="lay" style="'+(you?'background:#fdf1ef;border-color:#e5b3ab':'background:#eef7f6;border-color:#a9d8d2')+'">'+l+'</div><div class="who '+(you?'you':'prov')+'">'+(you?'YOU':'PROVIDER')+'</div></div>';
+  }).join('');
+  document.getElementById('stackCaption').textContent=m.cap;
+  document.querySelectorAll('.stackbtn').forEach(b=>b.classList.toggle('ghost',b.dataset.model!==model));
+  save('stackModel',model);
+}
+document.querySelectorAll('.stackbtn').forEach(b=>b.addEventListener('click',()=>paintStack(b.dataset.model)));
+paintStack(S['stackModel']||'onprem');
+
+/* scalability simulator */
+const UP_TIERS=[[1000,90,'M'],[2000,180,'L'],[4000,400,'XL'],[8000,900,'XXL']];
+const tr=document.getElementById('traffic');
+function fmt(n){return n.toLocaleString('en-US')}
+function simScale(){
+  const t=+tr.value;
+  document.getElementById('traffVal').textContent=fmt(t);
+  const n=Math.ceil(t/500),out=n*40+18;
+  document.getElementById('kOut').textContent='$'+fmt(out);
+  document.getElementById('kOutN').textContent=n;
+  const farm=document.getElementById('farmOut');
+  farm.innerHTML='<div class="srv" title="load balancer" style="background:linear-gradient(180deg,#0f8b8d,#0a6365)">LB</div>'+Array(Math.min(n,40)).fill('<div class="srv">🖥</div>').join('')+(n>40?'<div style="align-self:center;font-weight:700">+'+(n-40)+' more</div>':'');
+  const tier=UP_TIERS.find(x=>x[0]>=t);
+  const up=document.getElementById('kUp'),upN=document.getElementById('kUpN'),fu=document.getElementById('farmUp'),v=document.getElementById('kVerdict');
+  if(tier){up.textContent='$'+fmt(tier[1]);upN.textContent=tier[2];
+    fu.innerHTML='<div class="srv big">🖥</div>';
+    v.textContent=tier[1]<out?'UP cheaper':'OUT cheaper';
+    document.getElementById('simNote').textContent=tier[1]<out?'At low loads one machine is simpler AND cheaper. Keep sliding…':'Scale-out now wins on price — and it also survives a single server failing. Keep going to find scale-up’s ceiling.';
+  }else{up.textContent='—';upN.textContent='NONE';fu.innerHTML='<div class="srv big" style="background:#c04f43">✖</div>';
+    v.textContent='UP impossible';
+    document.getElementById('simNote').textContent='No single machine in our catalog can serve '+fmt(t)+' req/min. This is the scale-up ceiling: beyond it, scaling OUT is the only option. (Lab A, question 2!)';
+  }
+}
+tr.addEventListener('input',simScale);simScale();
+
+/* grid visualizer */
+const gs=document.getElementById('gridSlider');
+function simGrid(){
+  const n=+gs.value,base=3200;
+  const time=base/n*(1+0.02*(n-1));
+  const speed=base/time,eff=speed/n*100;
+  document.getElementById('gridN').textContent=n;
+  document.getElementById('gTime').textContent=(time>=100?Math.round(time):time.toFixed(1)).toLocaleString('en-US')+' h';
+  document.getElementById('gSpeed').textContent=speed.toFixed(1)+'×';
+  document.getElementById('gEff').textContent=Math.round(eff)+'%';
+  document.getElementById('gBar').style.width=Math.max(2,100*time/base)+'%';
+  document.getElementById('gNote').textContent=eff>75?'Great efficiency — nearly every node-hour you pay for does useful work.':(eff>50?'Overhead is growing: coordination eats '+(100-Math.round(eff))+'% of what you pay for.':'Past the sweet spot: more than half of every node-hour is wasted on coordination. More machines ≠ free speed.');
+}
+gs.addEventListener('input',simGrid);simGrid();
+
+/* Lab A checks */
+function checkA(i){
+  const val=+document.getElementById('labA'+i).value,fb=document.getElementById('fbA'+i);
+  let ok=false,msg='';
+  if(i===1){ok=(val===258);msg=ok?'✔ Correct: 6 servers × $40 + $18 LB = $258.':'✘ Not yet. Set the slider to exactly 3,000 and read the scale-OUT cost. Hint: 6 small servers + the load balancer.';}
+  if(i===2){ok=(val>8000&&val<=8250);msg=ok?'✔ Right: above 8,000 req/min no single machine exists — the first failing slider stop is 8,250.':'✘ Slide until the scale-up machine shows ✖. The ceiling is the largest machine’s capacity (8,000); first failing traffic level is 8,250.';}
+  if(i===4){ok=(val>=50&&val<=53);msg=ok?'✔ Yes — around 50–53 nodes efficiency dips under 50%: overhead 1+0.02(n−1) ≥ speedup gain.':'✘ Drag the node slider and watch the efficiency KPI; find where it first reads 49%.';}
+  fb.textContent=msg;fb.className='fb '+(ok?'ok':'no');
+}
+
+</script>
+
+<script>
+/* ===== Serverless Deep Dive custom interactive: pay-per-use calculator ===== */
+(function(){
+  var btn=document.getElementById('cBtn'); if(!btn)return;
+  var out=document.getElementById('cOut');
+  function n(id){var v=parseFloat(document.getElementById(id).value);return isFinite(v)&&v>0?v:0;}
+  function money(x){return x<1?('$'+x.toFixed(4)):('$'+x.toFixed(2));}
+  btn.addEventListener('click',function(){
+    var req=n('cReq'), ms=n('cMs'), mb=n('cMb');
+    var gb=mb/1024, secs=ms/1000, gbs=req*secs*gb;
+    var dur=gbs*0.0000167, rcost=req*0.20/1000000, total=dur+rcost;
+    out.innerHTML='<strong>'+req.toLocaleString()+' requests</strong> × '+ms+' ms × '+mb+' MB = <strong>'+gbs.toLocaleString(undefined,{maximumFractionDigits:0})+' GB-seconds</strong> → duration '+money(dur)+' + requests '+money(rcost)+' = <strong style="color:var(--ok)">'+money(total)+' / month</strong>. An always-on small VM (~$12/mo) is '+(total<12?'<strong>more</strong> expensive at this volume — the workload sleeps, so the function wins.':'<strong>cheaper</strong> — at steady volume the crossover has arrived; rent the machine.')+'</strong>';
+  });
+})();
+</script>
+
+</body>
+</html>
